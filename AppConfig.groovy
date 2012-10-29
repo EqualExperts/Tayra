@@ -4,7 +4,7 @@ def toCompleteVersion() {
 	completeVersion << '.'
 	completeVersion << configuration.product.version.minor
 	completeVersion << '.'
-	completeVersion << configuration.product.version.patch
+	completeVersion << configuration.product.version.micro
 	completeVersion << '.'
 	completeVersion << configuration.product.version.qualifier.alphaNumeric
 	completeVersion.toString()
@@ -15,13 +15,13 @@ configuration {
 		name = 'MongoBeaver'
 		
 		vendor {
-			name = 'Equal Experts'
+			name = 'Equal Experts Pvt. Ltd.'
 		}
         //JBoss Versioning Convention
 		version {
 			major = 0 //number related to production release
 			minor = 0 //changes or feature additions
-			patch = 0 //patches and bug fixes
+			micro = 0 //patches and bug fixes
 			qualifier {
 				alphaNumeric = 'Alpha1' //Alpha# or Beta# or CR# or GA, or SP#
 			}

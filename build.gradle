@@ -2,6 +2,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+apply plugin: 'jdepend'  //for dependency analysis
+apply plugin: 'findbugs' //for static code analysis
+apply plugin: 'pmd' 
+
 defaultTasks 'clean', 'build'
 
 project.ext {
@@ -16,8 +20,15 @@ project.ext {
   //test-libs
   junit = 'junit:junit:4.8.1'
   hamcrest = 'org.hamcrest:hamcrest-all:1.3'
+  
+  //code coverage lib
+  coberturaLib = 'net.sourceforge.cobertura:cobertura:1.9.4.1'
+  instrumentedClassesDir = "$project.buildDir/classes/instrumented"
+  coverageReportsDir = "$reporting.baseDir/cobertura"
+  coverageDataFile = 'cobertura.ser'
+  lineCoverageBaseline = 85
+  branchCoverageBaseline = 70
 }
-
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name 
 
@@ -25,9 +36,15 @@ repositories {
   mavenCentral()
 }  
 
+configurations {
+	cobertura
+}
+  
 dependencies {
   compile(project.ext.mongoDriver)
   testCompile(project.ext.junit, project.ext.hamcrest)
+  cobertura(project.ext.coberturaLib)
+  testRuntime(project.ext.coberturaLib)
 }
 
 jar {
@@ -35,3 +52,64 @@ jar {
 		attributes.putAll(project.ext.manifest)
 	}
 }
+
+clean << {
+	ant.delete(file:"$coverageDataFile")
+}
+
+test {
+	def originalClasspath = getClasspath()
+	doFirst {
+		ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
+		//Note the classpath order: instrumented classes are before the original 
+		//uninstrumented classes.  This is important
+		setClasspath(files("$instrumentedClassesDir") + originalClasspath)
+		
+		ant.'cobertura-instrument'(todir:project.ext.instrumentedClassesDir) {
+			ignore(regex:"org.apache.*, com.mongodb.*")
+			fileset(dir:"${project.buildDir}/classes/main", includes:'**/*.class', excludes:'**/*Specs.class')
+		}
+	}
+	
+	doLast {
+		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'html') {
+			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
+		}
+		ant.'cobertura-check'(totalbranchrate:project.ext.branchCoverageBaseline, totallinerate:project.ext.lineCoverageBaseline)
+		setClasspath(originalClasspath)
+	}
+}
+
+/*
+findbugsMain {
+	reports {
+		html {
+			destination file("file:///$reporting.baseDir/findbugs/main.html")
+		}
+	}
+}
+
+findbugsTest {
+	reports {
+		html {
+			destination file("file:///$reporting.baseDir/findbugs/test.html")
+		}
+	}
+}
+
+jdependMain {
+	reports {
+		text {
+			destination "$reportsDir/jdepend/main.txt"
+		}
+	}
+}
+
+jdependTest {
+	reports {
+		text {
+			destination "$reportsDir/jdepend/test.txt"
+		}
+	}
+}
+*/

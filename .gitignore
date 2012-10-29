@@ -45,4 +45,5 @@ bin
 *.iws
 .project
 .classpath
+cobertura.ser
 
