@@ -5,16 +5,33 @@ apply plugin: 'idea'
 defaultTasks 'clean', 'build'
 
 project.ext {
+  //App Config
+  appConfigUrl = new URL("file:///${projectDir}/AppConfig.groovy")
+  appConfig = new ConfigSlurper('configuration').parse(appConfigUrl).configuration
+  manifest = project.ext.appConfig.product.distribution.jar.manifest.details
+  
   //libs
+  mongoDriver = 'org.mongodb:mongo-java-driver:2.7.3'
+  
   //test-libs
   junit = 'junit:junit:4.8.1'
   hamcrest = 'org.hamcrest:hamcrest-all:1.3'
 }
+
+
+project.archivesBaseName = project.ext.appConfig.product.distribution.name 
 
 repositories {
   mavenCentral()
 }  
 
 dependencies {
+  compile(project.ext.mongoDriver)
   testCompile(project.ext.junit, project.ext.hamcrest)
+}
+
+jar {
+	manifest {
+		attributes.putAll(project.ext.manifest)
+	}
 }
