@@ -72,6 +72,9 @@ test {
 	}
 	
 	doLast {
+		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'xml') {
+			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
+		}
 		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'html') {
 			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
 		}
