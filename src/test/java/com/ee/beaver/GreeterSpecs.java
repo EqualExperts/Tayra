@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import org.junit.Test;
 
 public class GreeterSpecs {
+  
   @Test
   public void itGreets() {
       Greeter greeter = new Greeter();

@@ -1,7 +1,7 @@
 package com.ee.beaver;
 
 public class Greeter {
-	public String greet(String who) {
-		return "Hello " + who;
-	}
+  public final String greet(final String who) {
+    return "Hello " + who;
+  }
 }

@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+apply plugin: 'checkstyle' //for java code conventions
 apply plugin: 'jdepend'  //for dependency analysis
 apply plugin: 'findbugs' //for static code analysis
 apply plugin: 'pmd' 
@@ -82,3 +83,9 @@ test {
 		setClasspath(originalClasspath)
 	}
 }
+
+checkstyleTest {
+	exclude('**/*Specs.java')
+}
+
+
