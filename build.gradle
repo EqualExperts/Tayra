@@ -82,37 +82,3 @@ test {
 		setClasspath(originalClasspath)
 	}
 }
-
-/*
-findbugsMain {
-	reports {
-		html {
-			destination file("file:///$reporting.baseDir/findbugs/main.html")
-		}
-	}
-}
-
-findbugsTest {
-	reports {
-		html {
-			destination file("file:///$reporting.baseDir/findbugs/test.html")
-		}
-	}
-}
-
-jdependMain {
-	reports {
-		text {
-			destination "$reportsDir/jdepend/main.txt"
-		}
-	}
-}
-
-jdependTest {
-	reports {
-		text {
-			destination "$reportsDir/jdepend/test.txt"
-		}
-	}
-}
-*/
