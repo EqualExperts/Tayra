@@ -21,6 +21,7 @@ project.ext {
   //test-libs
   junit = 'junit:junit:4.8.1'
   hamcrest = 'org.hamcrest:hamcrest-all:1.3'
+  mockito = 'org.mockito:mockito-all:1.3'
   
   //code coverage lib
   coberturaLib = 'net.sourceforge.cobertura:cobertura:1.9.4.1'
@@ -43,7 +44,7 @@ configurations {
   
 dependencies {
   compile(project.ext.mongoDriver)
-  testCompile(project.ext.junit, project.ext.hamcrest)
+  testCompile(project.ext.junit, project.ext.hamcrest, project.ext.mockito)
   cobertura(project.ext.coberturaLib)
   testRuntime(project.ext.coberturaLib)
 }
