@@ -9,7 +9,11 @@ apply plugin: 'pmd'
 
 defaultTasks 'clean', 'build'
 
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
 project.ext {
+  
   //App Config
   appConfigUrl = new URL("file:///${projectDir}/AppConfig.groovy")
   appConfig = new ConfigSlurper('configuration').parse(appConfigUrl).configuration
