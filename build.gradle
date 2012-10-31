@@ -2,10 +2,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-apply plugin: 'checkstyle' //for java code conventions
+//apply plugin: 'checkstyle' //for java code conventions
 apply plugin: 'jdepend'  //for dependency analysis
 apply plugin: 'findbugs' //for static code analysis
-apply plugin: 'pmd' 
+apply plugin: 'pmd'
 
 defaultTasks 'clean', 'build'
 
@@ -14,15 +14,16 @@ project.ext {
   appConfigUrl = new URL("file:///${projectDir}/AppConfig.groovy")
   appConfig = new ConfigSlurper('configuration').parse(appConfigUrl).configuration
   manifest = project.ext.appConfig.product.distribution.jar.manifest.details
-  
+
   //libs
   mongoDriver = 'org.mongodb:mongo-java-driver:2.7.3'
-  
+  gson = 'com.google.code.gson:gson:2.2.2'
+
   //test-libs
   junit = 'junit:junit:4.8.1'
   hamcrest = 'org.hamcrest:hamcrest-all:1.3'
-  mockito = 'org.mockito:mockito-all:1.3'
-  
+  mockito = 'org.mockito:mockito-all:1.9.0'
+
   //code coverage lib
   coberturaLib = 'net.sourceforge.cobertura:cobertura:1.9.4.1'
   instrumentedClassesDir = "$project.buildDir/classes/instrumented"
@@ -32,18 +33,19 @@ project.ext {
   branchCoverageBaseline = 70
 }
 
-project.archivesBaseName = project.ext.appConfig.product.distribution.name 
+project.archivesBaseName = project.ext.appConfig.product.distribution.name
 
 repositories {
   mavenCentral()
-}  
+  mavenRepo url: 'http://bits.netbeans.org/maven2/'
+}
 
 configurations {
 	cobertura
 }
-  
+
 dependencies {
-  compile(project.ext.mongoDriver)
+  compile(project.ext.mongoDriver, project.ext.gson)
   testCompile(project.ext.junit, project.ext.hamcrest, project.ext.mockito)
   cobertura(project.ext.coberturaLib)
   testRuntime(project.ext.coberturaLib)
@@ -63,16 +65,16 @@ test {
 	def originalClasspath = getClasspath()
 	doFirst {
 		ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
-		//Note the classpath order: instrumented classes are before the original 
+		//Note the classpath order: instrumented classes are before the original
 		//uninstrumented classes.  This is important
 		setClasspath(files("$instrumentedClassesDir") + originalClasspath)
-		
+
 		ant.'cobertura-instrument'(todir:project.ext.instrumentedClassesDir) {
 			ignore(regex:"org.apache.*, com.mongodb.*")
 			fileset(dir:"${project.buildDir}/classes/main", includes:'**/*.class', excludes:'**/*Specs.class')
 		}
 	}
-	
+
 	doLast {
 		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'xml') {
 			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
@@ -85,8 +87,17 @@ test {
 	}
 }
 
-checkstyleTest {
-	exclude('**/*Specs.java')
+findbugs {
+	toolVersion = "2.0.1"
+	reportsDir = file("$reporting.baseDir/findbugs")
+	effort = "max"
+	reportLevel = "high"
 }
 
+tasks.withType(FindBugs) {
+	excludeFilter = file("${projectDir}/config/findbugs/excludeFilter.xml")
+}
 
+//checkstyleTest {
+//	exclude('**/*Specs.java')
+//}
