@@ -4,7 +4,8 @@
 ##Incremental backup tool for MongoDB
 * Use Cases
  * [Re-Syncing](http://www.kchodorow.com/blog/2010/10/14/getting-to-know-your-oplog/) 
-
+ * [Rollback](http://www.mongodb.org/display/DOCS/Replica+Sets+-+Rollbacks)
+ 
 ## Build Info
 we are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
 Please do not checkin Eclipse or Intellij or any IDE specific files.  For Idea or Eclipse they
