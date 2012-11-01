@@ -78,7 +78,7 @@ public class ReadOperationsSpecs {
 		entry.op = "i";
 		entry.ns = "ee.people";
 		entry.o = new InsertDocument("ObjectId(\"50920e139826a65153560b30\")",
-				"swanand");
+				"test");
 
 		given(mockOplogCollectionIterator.next()).willReturn(entry);
 
@@ -111,7 +111,7 @@ public class ReadOperationsSpecs {
 		entry2.op = "i";
 		entry2.ns = "ee.people";
 		entry2.o = new InsertDocument("ObjectId(\"50920e139826a65153560b30\")",
-				"testUser 2");
+				"test2");
 
 		List<OplogDocument> insertDocuments = new ArrayList<OplogDocument>();
 		insertDocuments.add(entry1);
