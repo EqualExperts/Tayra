@@ -13,5 +13,13 @@
 			<Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
 		</Not>
 	</Match>
+	
+	<Match>
+		<Class name="com.ee.beaver.InsertDocument" />
+		<Not>
+			<Bug code="URF_UNREAD_FIELD" />
+			<Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+		</Not>
+	</Match>
 </FindBugsFilter>
 
