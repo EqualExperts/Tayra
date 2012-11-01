@@ -9,7 +9,8 @@ public class OplogDocument {
   public String op;
   public String ns;
   public Object o;
-  public String toJson() {
+
+  public final String toJson() {
     Gson gson = new GsonBuilder().serializeNulls().create();
     return gson.toJson(this).replaceAll("\\\\", "");
   }
