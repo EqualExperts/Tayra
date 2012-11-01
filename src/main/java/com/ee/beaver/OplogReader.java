@@ -11,11 +11,11 @@ public class OplogReader {
   }
 
   public final OplogDocument readDocument() {
-    Iterator<OplogDocument> iterator = collection.iterator();
+    Iterator<OplogDocument> iterator = collection.find();
       while (iterator.hasNext()) {
         OplogDocument oplogDocument = iterator.next();
-          return oplogDocument;
+        return oplogDocument;
       }
-  return null;
+    return null;
   }
 }

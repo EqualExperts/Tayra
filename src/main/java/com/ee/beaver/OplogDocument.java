@@ -1,11 +1,13 @@
 package com.ee.beaver;
 
+import org.bson.types.BSONTimestamp;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class OplogDocument {
-  public String ts;
-  public String h;
+  public BSONTimestamp ts;
+  public long h;
   public String op;
   public String ns;
   public Object o;

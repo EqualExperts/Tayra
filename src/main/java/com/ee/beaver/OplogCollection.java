@@ -4,6 +4,6 @@ import java.util.Iterator;
 
 public interface OplogCollection {
 
-  Iterator<OplogDocument> iterator();
+  Iterator<OplogDocument> find();
 
 }

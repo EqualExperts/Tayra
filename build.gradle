@@ -13,7 +13,7 @@ sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 
 project.ext {
-  
+
   //App Config
   appConfigUrl = new URL("file:///${projectDir}/AppConfig.groovy")
   appConfig = new ConfigSlurper('configuration').parse(appConfigUrl).configuration
@@ -35,6 +35,7 @@ project.ext {
   coverageDataFile = 'cobertura.ser'
   lineCoverageBaseline = 85
   branchCoverageBaseline = 70
+
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name

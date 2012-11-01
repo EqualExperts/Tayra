@@ -4,8 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Date;
 import java.util.Iterator;
 
+import org.bson.types.BSONTimestamp;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +31,7 @@ public class ReadOperationsSpecs {
 
 	@Before
 	public void setupOplogReader() {
-		given(mockOplogCollection.iterator()).willReturn(mockOplogCollectionIterator);
+		given(mockOplogCollection.find()).willReturn(mockOplogCollectionIterator);
 		reader = new OplogReader(mockOplogCollection);
 	}
 
@@ -38,8 +40,8 @@ public class ReadOperationsSpecs {
 		//Given
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		OplogDocument entry = new OplogDocument();
-		entry.ts = "Timestamp(1351665063000, 1)";
-		entry.h = "NumberLong(\"5881556024799929122\")";
+		entry.ts = new BSONTimestamp(123456, 0);
+		entry.h = 5881556024799929122L;
 		entry.op = "c";
 		entry.ns = "ee.$cmd";
 		entry.o = new CreateCollection("people");
