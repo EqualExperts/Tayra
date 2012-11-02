@@ -22,7 +22,7 @@ import com.google.gson.GsonBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class ReadOperationsSpecs {
 	@Mock
-	private OplogCollection mockOplogCollection;
+	private MongoCollection mockOplogCollection;
 
 	@Mock
 	private Iterator<OplogDocument> mockOplogCollectionIterator;

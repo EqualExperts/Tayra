@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 public class OplogReader {
 
-  private final OplogCollection collection;
+  private final MongoCollection collection;
 
-  public OplogReader(final OplogCollection aCollection) {
+  public OplogReader(final MongoCollection aCollection) {
     this.collection = aCollection;
   }
 
