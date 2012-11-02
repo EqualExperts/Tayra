@@ -19,24 +19,24 @@ import com.mongodb.MongoException;
 
 public class OplogSpecs {
 
-	private static Mongo mongo;
+	private static Mongo replicaSet;
+	private static final String HOST = "localhost";
+	private static final int PORT = 27017;
 	private MongoCollection oplog;
 
 	@BeforeClass
 	public static void connectToMongo() throws UnknownHostException, MongoException {
-		String host = "localhost";
-		int port = 27017;
-		mongo = new Mongo(host, port);
+		replicaSet = new Mongo(HOST, PORT);
 	}
 
 	@AfterClass
 	public static void closeConnectionToMongo() {
-		mongo.close();
+		replicaSet.close();
 	}
 	
 	@Before
-	public void usesLocal() {
-		DB local = mongo.getDB("local");
+	public void useLocalDB() {
+		DB local = replicaSet.getDB("local");
 		oplog = new Oplog(local);
 	}
 	
@@ -74,7 +74,7 @@ public class OplogSpecs {
 	@Test
 	public void permitsReadingFromLocalDBOnly() {
 		//Given
-		DB nonLocalDB = mongo.getDB("notLocal");
+		DB nonLocalDB = replicaSet.getDB("nonLocal");
 		
 		//When
 		try{

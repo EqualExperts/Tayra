@@ -4,18 +4,17 @@ import java.util.Iterator;
 
 public class OplogReader {
 
-  private final MongoCollection collection;
+  private final Iterator<OplogDocument> iterator;
 
-  public OplogReader(final MongoCollection aCollection) {
-    this.collection = aCollection;
+  public OplogReader(final MongoCollection collection) {
+    iterator = collection.find();
+  }
+
+  public final boolean hasDocument() {
+    return iterator.hasNext();
   }
 
   public final OplogDocument readDocument() {
-    Iterator<OplogDocument> iterator = collection.find();
-      while (iterator.hasNext()) {
-        OplogDocument oplogDocument = iterator.next();
-        return oplogDocument;
-      }
-    return null;
+    return iterator.next();
   }
 }

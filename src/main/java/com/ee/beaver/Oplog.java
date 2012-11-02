@@ -16,7 +16,7 @@ public class Oplog implements MongoCollection {
   public Oplog(final DB local) {
     if (!"local".equals(local.getName())) {
       throw new NotALocalDB("Not a local DB");
-  }
+    }
     oplog = local.getCollection("oplog.rs");
   }
 

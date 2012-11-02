@@ -1,5 +1,10 @@
 package com.ee.beaver.runner
 
+import com.ee.beaver.*
+import com.mongodb.DB
+import com.mongodb.Mongo;
+import com.mongodb.ServerAddress;
+
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [-p port] -f <file>')
 cli.with {
   h longOpt:'help', 'Show usage information'
@@ -32,7 +37,20 @@ println "source is $sourceMongoDB"
 println "port is $port"
 println "recordTo is $recordToFile"
 
-def backupRunner = new BackupRunner(sourceMongoDB, port)
-def writer = new FileWriter(recordToFile)
-backupRunner.backup(writer)
-backupRunner.close()
+Mongo mongo = null
+try {
+  ServerAddress server = new ServerAddress(sourceMongoDB, port);
+  mongo = new Mongo(server);
+  DB local = mongo.getDB("local");
+
+  def backupRunner = new BackupRunner(local)
+  def writer = new FileWriter(recordToFile)
+  MongoCollection oplog = new Oplog(local)
+  def reader = new OplogReader(oplog)
+  backupRunner.copy(reader, writer)
+} catch (Exception e) {
+} finally {
+	if(mongo) {
+		mongo.close()
+	}
+}

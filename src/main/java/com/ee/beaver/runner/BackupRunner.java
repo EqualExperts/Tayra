@@ -2,24 +2,21 @@ package com.ee.beaver.runner;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.UnknownHostException;
 
-import com.ee.beaver.MongoCollection;
+import com.ee.beaver.NotALocalDB;
+import com.ee.beaver.OplogDocument;
+import com.ee.beaver.OplogReader;
 import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.ServerAddress;
 
 public class BackupRunner {
-  private Mongo mongo;
 
-  public BackupRunner(final String host, final int port)
-  throws UnknownHostException {
-    ServerAddress server = new ServerAddress(host, port);
-    mongo = new Mongo(server);
-    DB local = mongo.getDB("local");
+  public BackupRunner(final DB local) {
+  if (!"local".equals(local.getName())) {
+  throw new NotALocalDB("Not a local DB");
+}
+
     boolean oplogExists = local.collectionExists("oplog.rs");
     if (!oplogExists) {
-      close();
       throw new NotAReplicaSetNode("localhost is not a part of ReplicaSet");
     }
     // TO DO: Investigate why this API does not work?
@@ -27,12 +24,11 @@ public class BackupRunner {
     //boolean master = replicaSetStatus.isMaster(server);
   }
 
-  public final void backup(final MongoCollection oplog, final Writer writer)
+  public final void copy(final OplogReader fromReader, final Writer toWriter)
     throws IOException {
-    writer.append("something");
-  }
-
-  public final void close() {
-    mongo.close();
+    while (fromReader.hasDocument()) {
+      OplogDocument document = fromReader.readDocument();
+      toWriter.append(document.toJson());
+    }
   }
 }
