@@ -10,5 +10,4 @@ public class NotAReplicaSetNode extends RuntimeException {
   public NotAReplicaSetNode(final String message) {
     super(message);
   }
-
 }
