@@ -105,6 +105,5 @@ tasks.withType(FindBugs) {
 
 checkstyleTest {
 	exclude('**/*/*Specs.java')
-	exclude('**/*/CreateCollection.java')
-	exclude('**/*/InsertDocument.java')
+	exclude('**/*/*Payload.java')
 }

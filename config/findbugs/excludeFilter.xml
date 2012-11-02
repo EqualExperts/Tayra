@@ -5,9 +5,24 @@
 			<Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
 		</Not>
 	</Match>
+	
+	<Match>
+    <Class name="com.ee.beaver.UpdateOplogDocument" />
+    <Not>
+      <Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+    </Not>
+  </Match>
+  
+  <Match>
+    <Class name="com.ee.beaver.DeleteOplogDocument" />
+    <Not>
+      <Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+    </Not>
+  </Match>
+	
 	<Match>
 <!-- 		<Class name="~.*\.*Specs" /> -->
-		<Class name="com.ee.beaver.CreateCollection" />
+		<Class name="com.ee.beaver.CreateCollectionPayload" />
 		<Not>
 			<Bug code="URF_UNREAD_FIELD" />
 			<Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
@@ -15,11 +30,34 @@
 	</Match>
 	
 	<Match>
-		<Class name="com.ee.beaver.InsertDocument" />
+		<Class name="com.ee.beaver.InsertDocumentPayload" />
 		<Not>
 			<Bug code="URF_UNREAD_FIELD" />
 			<Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
 		</Not>
 	</Match>
+	
+	<Match>
+    <Class name="com.ee.beaver.UpdateDocumentPayload" />
+    <Not>
+      <Bug code="URF_UNREAD_FIELD" />
+      <Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+    </Not>
+  </Match>
+  
+  <Match>
+    <Class name="com.ee.beaver.DeleteDocumentPayload" />
+    <Not>
+      <Bug code="URF_UNREAD_FIELD" />
+      <Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+    </Not>
+  </Match>
+  
+  <Match>
+    <Class name="com.ee.beaver.DropCollectionPayload" />
+    <Not>
+      <Bug code="URF_UNREAD_FIELD" />
+      <Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+    </Not>
+  </Match>
 </FindBugsFilter>
-

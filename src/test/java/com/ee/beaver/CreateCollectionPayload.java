@@ -1,9 +1,9 @@
 package com.ee.beaver;
 
-public class CreateCollection {
+public class CreateCollectionPayload {
   private final String create;
 
-  public CreateCollection(String name) {
+  public CreateCollectionPayload(String name) {
     create = name;
   }
   public String capped;
