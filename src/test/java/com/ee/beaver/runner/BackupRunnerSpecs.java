@@ -42,6 +42,10 @@ public class BackupRunnerSpecs {
 	@Before
 	public void useLocalDB() {
 		local = replicaSet.getDB("local");
+		boolean oplogExists = local.collectionExists("oplog.rs");
+	    if (!oplogExists) {
+	      throw new NotAReplicaSetNode("localhost is not a part of ReplicaSet");
+	    }
 	}
 
 	@Test

@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.ee.beaver.runner.NotAReplicaSetNode;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
@@ -37,7 +38,11 @@ public class OplogSpecs {
 	@Before
 	public void useLocalDB() {
 		DB local = replicaSet.getDB("local");
-		oplog = new Oplog(local);
+		boolean oplogExists = local.collectionExists("oplog.rs");
+	    if (!oplogExists) {
+	      throw new NotAReplicaSetNode("localhost is not a part of ReplicaSet");
+	    }
+	    oplog = new Oplog(local);
 	}
 	
 	@Test
