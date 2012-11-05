@@ -1,4 +1,4 @@
-package com.ee.beaver.runner;
+package com.ee.beaver.io;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -13,16 +13,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ee.beaver.NotALocalDB;
-import com.ee.beaver.Oplog;
-import com.ee.beaver.OplogReader;
-import com.ee.beaver.runner.BackupRunner;
-import com.ee.beaver.runner.NotAReplicaSetNode;
+import com.ee.beaver.domain.NotALocalDB;
+import com.ee.beaver.domain.Oplog;
+import com.ee.beaver.io.OplogReader;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
-public class BackupRunnerSpecs {
+public class CopierSpecs {
 	private static Mongo replicaSet;
 	private static final String HOST = "localhost";
 	private static final int PORT = 27017;
@@ -50,7 +48,7 @@ public class BackupRunnerSpecs {
 
 	@Test
 	public void connectsToANodeInReplicaSet() throws Exception {
-		assertThat(new BackupRunner(local), notNullValue());
+		assertThat(new Copier(local), notNullValue());
 	}
 
 	@Test
@@ -59,7 +57,7 @@ public class BackupRunnerSpecs {
 		DB local = standalone.getDB("local");
 		try {
 			// When
-			new BackupRunner(local);
+			new Copier(local);
 			fail("Should Not Connect to a standalone node");
 		} catch (NotAReplicaSetNode e) {
 			// Then
@@ -75,7 +73,7 @@ public class BackupRunnerSpecs {
 
 		// When
 		try {
-			new BackupRunner(nonLocalDB);
+			new Copier(nonLocalDB);
 			fail("DB used is not local, should raise an Exception");
 		} catch (NotALocalDB naldb) {
 			// Then
@@ -86,12 +84,12 @@ public class BackupRunnerSpecs {
 	@Test
 	public void writesOplogToDestination() throws Exception {
 		// Given
-		BackupRunner backupRunner = new BackupRunner(local);
+		Copier copier = new Copier(local);
 		Writer writer = new StringWriter();
 		OplogReader reader = new OplogReader(new Oplog(local));
 
 		// When
-		backupRunner.copy(reader, writer);
+		copier.copy(reader, writer);
 
 		// Then
 		assertThat(writer.toString(), containsString("ts"));

@@ -1,4 +1,4 @@
-package com.ee.beaver;
+package com.ee.beaver.domain;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -13,7 +13,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ee.beaver.runner.NotAReplicaSetNode;
+import com.ee.beaver.domain.MongoCollection;
+import com.ee.beaver.domain.NotALocalDB;
+import com.ee.beaver.domain.Oplog;
+import com.ee.beaver.io.NotAReplicaSetNode;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;

@@ -1,8 +1,15 @@
 <FindBugsFilter>
-	<!-- <Match>
-		<Class name="com.ee.beaver.OplogDocument" />
+	<Match>
+		<Class name="com.ee.beaver.command.Backup$_run_closure1" />
 		<Not>
-			<Bug code="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD" />
+			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
-</Match> -->
+	</Match>
+  
+  	<Match>
+		<Class name="~.*\.*Specs.*" />
+		<Not>
+			<Bug code="SE_NO_SERIALVERSIONID" />
+		</Not>
+	</Match>
 </FindBugsFilter>

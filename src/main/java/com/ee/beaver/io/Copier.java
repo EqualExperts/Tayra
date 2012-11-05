@@ -1,15 +1,18 @@
-package com.ee.beaver.runner;
+package com.ee.beaver.io;
 
 import java.io.IOException;
 import java.io.Writer;
 
-import com.ee.beaver.NotALocalDB;
-import com.ee.beaver.OplogReader;
+import com.ee.beaver.io.OplogReader;
+import com.ee.beaver.domain.NotALocalDB;
 import com.mongodb.DB;
 
-public class BackupRunner {
+public class Copier {
 
-  public BackupRunner(final DB local) {
+  private static final CharSequence NEW_LINE =
+    System.getProperty("line.separator");
+
+  public Copier(final DB local) {
     if (!"local".equals(local.getName())) {
       throw new NotALocalDB("Not a local DB");
     }
@@ -25,6 +28,7 @@ public class BackupRunner {
     while (fromReader.hasDocument()) {
       String document = fromReader.readDocument();
       toWriter.append(document);
+      toWriter.append(NEW_LINE);
     }
   }
 }

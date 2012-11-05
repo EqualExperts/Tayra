@@ -37,7 +37,9 @@ project.ext {
   coverageDataFile = 'cobertura.ser'
   lineCoverageBaseline = 85
   branchCoverageBaseline = 70
-
+  
+  //Distribution settings
+  distsTemplateDir = 'distribution-template'
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
@@ -49,9 +51,11 @@ repositories {
 
 configurations {
 	cobertura
+	compile
 }
 
 dependencies {
+  groovy(groovy)
   compile(project.ext.mongoDriver, project.ext.gson, project.ext.groovy, project.ext.commonsCli)
   testCompile(project.ext.junit, project.ext.hamcrest, project.ext.mockito)
   cobertura(project.ext.coberturaLib)
@@ -61,6 +65,13 @@ dependencies {
 jar {
 	manifest {
 		attributes.putAll(project.ext.manifest)
+	}
+	
+	doLast {
+		copy {
+			from configurations.compile.asPath.split(';')
+			into "$libsDir"
+		}
 	}
 }
 
@@ -85,13 +96,21 @@ test {
 	doLast {
 		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'xml') {
 			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
+			sourceSets.main*.groovy.srcDirs*.each { fileset(dir:it) }
 		}
 		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'html') {
 			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
+			sourceSets.main*.groovy.srcDirs*.each { fileset(dir:it) }
 		}
 		ant.'cobertura-check'(totalbranchrate:project.ext.branchCoverageBaseline, totallinerate:project.ext.lineCoverageBaseline)
 		setClasspath(originalClasspath)
 	}
+}
+
+task distribute(type:Zip, dependsOn: 'assemble') {
+	//copy .sh, .bat,.txt files
+	from "$project.ext.distsTemplateDir" 
+	from("$libsDir") { into('libs') }
 }
 
 findbugs {
@@ -108,3 +127,5 @@ tasks.withType(FindBugs) {
 checkstyleTest {
 	exclude('**/*/*Specs.java')
 }
+
+build.dependsOn = ['check', 'distribute']

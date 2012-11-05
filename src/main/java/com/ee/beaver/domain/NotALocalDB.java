@@ -1,4 +1,4 @@
-package com.ee.beaver;
+package com.ee.beaver.domain;
 
 public class NotALocalDB extends RuntimeException {
 

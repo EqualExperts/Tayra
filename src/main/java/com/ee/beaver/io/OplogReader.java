@@ -1,9 +1,10 @@
-package com.ee.beaver;
+package com.ee.beaver.io;
 
 import java.util.Iterator;
 
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import com.ee.beaver.domain.MongoCollection;
 
 public class OplogReader {
 

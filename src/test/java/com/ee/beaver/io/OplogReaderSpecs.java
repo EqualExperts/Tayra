@@ -1,4 +1,4 @@
-package com.ee.beaver;
+package com.ee.beaver.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.ee.beaver.domain.MongoCollection;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
