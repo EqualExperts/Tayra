@@ -174,7 +174,6 @@
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>
        	<module name="VisibilityModifier">
-       <!-- 		<property name="publicMemberPattern" value="[o|ns|h|ts|b]"/> -->
 		</module>
 
 
