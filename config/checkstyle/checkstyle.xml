@@ -174,7 +174,7 @@
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>
        	<module name="VisibilityModifier">
-       		<property name="publicMemberPattern" value="[o|ns|h|ts|b]"/>
+       <!-- 		<property name="publicMemberPattern" value="[o|ns|h|ts|b]"/> -->
 		</module>
 
 
@@ -188,5 +188,5 @@
     </module>
 	<module name="SuppressionFilter"> 
 		<property name="file" value="config/checkstyle/suppressions.xml"/> 
-	</module> 
+	</module>
 </module>

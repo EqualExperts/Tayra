@@ -1,8 +1,8 @@
 package com.ee.beaver;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 
 import java.net.UnknownHostException;
@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.ee.beaver.runner.NotAReplicaSetNode;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
@@ -48,23 +49,19 @@ public class OplogSpecs {
 	@Test
 	public void itReadsFirstDocument() throws UnknownHostException, MongoException {
 		//Given
-		Iterator<OplogDocument> iterator = oplog.find();
+		Iterator<DBObject> iterator = oplog.find();
 
 		//When
-		OplogDocument oplogDocument = iterator.next();
+		DBObject actualDBObject = iterator.next();
 
 		//Then
-		assertThat(oplogDocument.o, notNullValue());
-		assertThat(oplogDocument.ts, notNullValue());
-		assertThat(oplogDocument.h, notNullValue());
-		assertThat(oplogDocument.op, notNullValue());
-		assertThat(oplogDocument.ns, notNullValue());
+		assertThat(actualDBObject, instanceOf(DBObject.class));
 	}
 
 	@Test
 	public void doesNotAllowDocumentRemoval() {
 		//Given
-		Iterator<OplogDocument> iterator = oplog.find();
+		Iterator<DBObject> iterator = oplog.find();
 
 		//When
 		try {

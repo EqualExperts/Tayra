@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.ee.beaver.NotALocalDB;
-import com.ee.beaver.OplogDocument;
 import com.ee.beaver.OplogReader;
 import com.mongodb.DB;
 
@@ -24,8 +23,8 @@ public class BackupRunner {
   public final void copy(final OplogReader fromReader, final Writer toWriter)
     throws IOException {
     while (fromReader.hasDocument()) {
-      OplogDocument document = fromReader.readDocument();
-      toWriter.append(document.toJson());
+      String document = fromReader.readDocument();
+      toWriter.append(document);
     }
   }
 }

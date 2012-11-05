@@ -2,8 +2,6 @@ package com.ee.beaver;
 
 import java.util.Iterator;
 
-import org.bson.types.BSONTimestamp;
-
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -21,11 +19,11 @@ public class Oplog implements MongoCollection {
   }
 
   @Override
-  public final Iterator<OplogDocument> find() {
+  public final Iterator<DBObject> find() {
     return new OplogIterator(oplog);
   }
 
-  private static class OplogIterator implements Iterator<OplogDocument> {
+  private static class OplogIterator implements Iterator<DBObject> {
 
     private final DBCursor cursor;
 
@@ -39,15 +37,8 @@ public class Oplog implements MongoCollection {
     }
 
     @Override
-    public OplogDocument next() {
-      DBObject dbObject = cursor.next();
-      OplogDocument oplogDocument = new OplogDocument();
-      oplogDocument.ts = (BSONTimestamp) dbObject.get("ts");
-      oplogDocument.h = (Long) dbObject.get("h");
-      oplogDocument.op = (String) dbObject.get("op");
-      oplogDocument.ns = (String) dbObject.get("ns");
-      oplogDocument.o = dbObject.get("o");
-      return oplogDocument;
+    public DBObject next() {
+      return cursor.next();
     }
 
     @Override
