@@ -30,5 +30,6 @@ public class Copier {
       toWriter.append(document);
       toWriter.append(NEW_LINE);
     }
+    toWriter.flush();
   }
 }

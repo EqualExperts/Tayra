@@ -1,30 +1,22 @@
 package com.ee.beaver.command
 
-import java.io.Writer;
-
-import groovy.lang.GroovySystem;
-import groovy.lang.MetaClass;
-import groovy.lang.MetaClassRegistry;
-import groovy.lang.ProxyMetaClass;
-import groovy.lang.Interceptor;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import java.io.Writer
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import com.ee.beaver.io.OplogReader;
+import com.ee.beaver.io.OplogReader
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
 
 public class BackupSpecs {
+	
 	private static StringBuilder result;
 	
 	@BeforeClass
-	public static void inject() {
+	public static void setupInterceptor() {
 		ExpandoMetaClass.enableGlobally()
 		
 		PrintWriter.metaClass.println = { String data ->
@@ -33,12 +25,12 @@ public class BackupSpecs {
 	}
 	
 	@Before
-	public void setupResult() {
+	public void setupResultCollector() {
 		result = new StringBuilder()
 	}
 	
 	@Test
-	public void invokesErrorInfoWhenNoArgsAreSupplied() {
+	public void shoutsWhenNoMandatoryArgsAreSupplied() {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', [])
@@ -53,7 +45,7 @@ public class BackupSpecs {
 	}
 	
 	@Test
-	public void invokesErrorInfoWhenNoOutputFileIsSupplied() {
+	public void shoutsWhenNoOutputFileIsSupplied() {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-s', 'localhost'])
@@ -68,7 +60,7 @@ public class BackupSpecs {
 	}
 	
 	@Test
-	public void invokesErrorInfoWhenNoSourceMongoDBIsSupplied() {
+	public void shoutsWhenNoSourceMongoDBIsSupplied() {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-f', 'test.out'])
@@ -87,20 +79,19 @@ public class BackupSpecs {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
+		def result = new StringWriter()
+		context.setVariable('writer', result)
 		Script backup = new Backup(context)
-		
-		com.ee.beaver.io.Copier.metaClass.copy = { fromReader, toWriter ->
-			//Then
-			assertThat toWriter, isA(FileWriter.class)
-		}
 		
 		//When
 		backup.run()
 		
+		//Then
+		assertThat result.toString(), containsString('"ts"')
 	}
 	
 	@Test
-	public void detectsProblemWhenMongoDBUrlIsIncorrect() {
+	public void shoutsWhenMongoDBUrlIsIncorrect() {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-s', 'nonexistentHost', '-f', 'test.out'])
@@ -108,7 +99,25 @@ public class BackupSpecs {
 		
 		//When
 		backup.run()
+		
+		//Then
 		String expected = "Oops!! Could not perform backup...nonexistentHost"
 		assertThat result.toString(), is(expected)
 	}
+	
+	@Test
+	public void shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
+		//Given
+		def context = new Binding()
+		context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27020'])
+		Script backup = new Backup(context)
+		
+		//When
+		backup.run()
+		
+		//Then
+		String expected = 'Oops!! Could not perform backup...localhost is not a part of ReplicaSet'
+		assertThat result.toString(), is(expected)
+	}
 }
+

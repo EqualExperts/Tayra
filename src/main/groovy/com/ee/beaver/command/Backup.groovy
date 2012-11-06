@@ -19,6 +19,11 @@ def options = cli.parse(args)
 if(!options) {
 	return
 }
+
+def getWriter() {
+  binding.hasVariable('writer') ? binding.getVariable('writer')
+	: new FileWriter(recordToFile)
+}
  
 int port = 27017
 if(options.p) {
@@ -28,21 +33,20 @@ if(options.p) {
 String sourceMongoDB = options.s
 String recordToFile = options.f
 
-Mongo mongo = null
+mongo = null
 try {
   ServerAddress server = new ServerAddress(sourceMongoDB, port);
   mongo = new Mongo(server);
   DB local = mongo.getDB("local");
 
-  Copier copier = new Copier(local)
-  FileWriter writer = new FileWriter(recordToFile)
-  MongoCollection oplog = new Oplog(local)
-  OplogReader reader = new OplogReader(oplog)
+  copier = new Copier(local)
+  def writer = getWriter() 
+  oplog = new Oplog(local)
+  reader = new OplogReader(oplog)
   copier.copy(reader, writer)
 } catch (Throwable problem) {
 	PrintWriter writer = new PrintWriter(System.out, true)
 	writer.println "Oops!! Could not perform backup...$problem.message"
-//	problem.printStackTrace(writer)
 } finally {
 	if(mongo) {
 		mongo.close()

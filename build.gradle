@@ -40,6 +40,7 @@ project.ext {
   
   //Distribution settings
   distsTemplateDir = 'distribution-template'
+  distsBinDir = "$distsDir/bin"
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
@@ -69,7 +70,7 @@ jar {
 	
 	doLast {
 		copy {
-			from configurations.compile.asPath.split(';')
+			from (configurations.compile.asPath.split(File.pathSeparator))
 			into "$libsDir"
 		}
 	}
@@ -108,8 +109,12 @@ test {
 }
 
 task distribute(type:Zip, dependsOn: 'assemble') {
-	//copy .sh, .bat,.txt files
-	from "$project.ext.distsTemplateDir" 
+	doFirst {
+		ant.mkdir(dir:"$distsBinDir")
+		prepareExecutables()
+	}
+	from "$project.ext.distsBinDir"
+	from ("$project.ext.distsTemplateDir") { include ('*.txt') } 
 	from("$libsDir") { into('libs') }
 }
 
@@ -126,6 +131,23 @@ tasks.withType(FindBugs) {
 
 checkstyleTest {
 	exclude('**/*/*Specs.java')
+}
+
+def prepareExecutables() {
+	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }.join(File.pathSeparator)
+	new File("$distsTemplateDir").list().each { filename ->
+		if(filename.startsWith('backup')) {
+			def contents = new File("$distsTemplateDir/$filename").getText()
+			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
+				if(filename.endsWith('.sh')) {
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replaceAll(File.pathSeparator,':')
+				}
+				if(filename.endsWith('.bat')) {
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replaceAll(File.pathSeparator,';')
+				}
+			}
+		}
+	}
 }
 
 build.dependsOn = ['check', 'distribute']

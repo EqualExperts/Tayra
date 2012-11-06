@@ -47,4 +47,5 @@ bin
 .classpath
 cobertura.ser
 db
-a.out
+*.out
+
