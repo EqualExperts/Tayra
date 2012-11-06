@@ -20,6 +20,9 @@ if(!options) {
 	return
 }
 
+sourceMongoDB = options.s
+recordToFile = options.f
+
 def getWriter() {
   binding.hasVariable('writer') ? binding.getVariable('writer')
 	: new FileWriter(recordToFile)
@@ -30,8 +33,6 @@ if(options.p) {
 	port = Integer.parseInt(options.p)
 }
 
-String sourceMongoDB = options.s
-String recordToFile = options.f
 
 mongo = null
 try {

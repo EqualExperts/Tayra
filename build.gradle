@@ -21,7 +21,6 @@ project.ext {
 
   //libs
   mongoDriver = 'org.mongodb:mongo-java-driver:2.7.3'
-  gson = 'com.google.code.gson:gson:2.2.2'
   groovy = 'org.codehaus.groovy:groovy-all:2.0.4'
   commonsCli = 'commons-cli:commons-cli:1.1'
 
@@ -57,7 +56,7 @@ configurations {
 
 dependencies {
   groovy(groovy)
-  compile(project.ext.mongoDriver, project.ext.gson, project.ext.groovy, project.ext.commonsCli)
+  compile(project.ext.mongoDriver, project.ext.groovy, project.ext.commonsCli)
   testCompile(project.ext.junit, project.ext.hamcrest, project.ext.mockito)
   cobertura(project.ext.coberturaLib)
   testRuntime(project.ext.coberturaLib)

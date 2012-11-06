@@ -3,7 +3,6 @@ package com.ee.beaver.io;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.ee.beaver.io.OplogReader;
 import com.ee.beaver.domain.NotALocalDB;
 import com.mongodb.DB;
 
