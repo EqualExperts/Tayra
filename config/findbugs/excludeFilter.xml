@@ -6,7 +6,14 @@
 		</Not>
 	</Match>
   
-  	<Match>
+  <Match>
+		<Class name="com.ee.beaver.command.Restore$_run_closure1" />
+		<Not>
+			<Bug code="SE_NO_SERIALVERSIONID" />
+		</Not>
+	</Match>
+  
+  <Match>
 		<Class name="~.*\.*Specs.*" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />

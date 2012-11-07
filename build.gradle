@@ -135,7 +135,7 @@ checkstyleTest {
 def prepareExecutables() {
 	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }.join(File.pathSeparator)
 	new File("$distsTemplateDir").list().each { filename ->
-		if(filename.startsWith('backup')) {
+		if(filename.startsWith('backup') || filename.startsWith('restore')) {
 			def contents = new File("$distsTemplateDir/$filename").getText()
 			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
 				if(filename.endsWith('.sh')) {

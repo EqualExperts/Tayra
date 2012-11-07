@@ -26,6 +26,11 @@ def getReader() {
   binding.hasVariable('reader') ? binding.getVariable('reader')
 	: new FileReader(restoreFromFile)
 }
+
+def getWriter(Oplog oplog) {
+	binding.hasVariable('writer') ? binding.getVariable('writer')
+			: new OplogWriter(oplog)
+}
  
 int port = 27017
 if(options.p) {
@@ -36,10 +41,10 @@ if(options.p) {
 mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
-  mongo = new Mongo(server);
-  DB local = mongo.getDB("local");
+  mongo = new Mongo(server)
+  DB local = mongo.getDB("local")
   oplog = new Oplog(local)
-  writer = new OplogWriter(oplog)
+  def writer = getWriter(oplog)
   def reader = getReader()
   new Copier().copy(writer, reader)
 } catch (Throwable problem) {

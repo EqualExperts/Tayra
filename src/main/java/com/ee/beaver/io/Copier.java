@@ -21,8 +21,14 @@ public class Copier {
     }
     to.flush();
   }
-  
+
   public final void copy(final OplogWriter from, final Reader to)
-		  throws IOException {
+    throws IOException {
+    int data;
+    StringBuilder document = new StringBuilder();
+    while ((data = to.read()) != -1) {
+      document.append((char) data);
+    }
+    from.writeDocument(document.toString());
   }
 }
