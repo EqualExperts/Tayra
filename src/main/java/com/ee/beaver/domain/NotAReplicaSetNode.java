@@ -1,4 +1,4 @@
-package com.ee.beaver.io;
+package com.ee.beaver.domain;
 
 public class NotAReplicaSetNode extends RuntimeException {
   private static final long serialVersionUID = 1L;

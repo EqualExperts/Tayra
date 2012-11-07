@@ -2,7 +2,6 @@ package com.ee.beaver.io;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -13,7 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ee.beaver.domain.NotALocalDB;
+import com.ee.beaver.domain.NotAReplicaSetNode;
 import com.ee.beaver.domain.Oplog;
 import com.ee.beaver.io.OplogReader;
 import com.mongodb.DB;
@@ -47,44 +46,9 @@ public class CopierSpecs {
 	}
 
 	@Test
-	public void connectsToANodeInReplicaSet() throws Exception {
-		assertThat(new Copier(local), notNullValue());
-	}
-
-	@Test
-	public void doesNotConnectToStandaloneMongoInstance() throws Exception {
-		Mongo standalone = new Mongo(HOST, 27020);
-		DB local = standalone.getDB("local");
-		try {
-			// When
-			new Copier(local);
-			fail("Should Not Connect to a standalone node");
-		} catch (NotAReplicaSetNode e) {
-			// Then
-			assertThat(e.getMessage(),
-					is("localhost is not a part of ReplicaSet"));
-		}
-	}
-
-	@Test
-	public void permitsReadingFromLocalDBOnlyForReplicaSet() {
-		// Given
-		DB nonLocalDB = replicaSet.getDB("nonLocal");
-
-		// When
-		try {
-			new Copier(nonLocalDB);
-			fail("DB used is not local, should raise an Exception");
-		} catch (NotALocalDB naldb) {
-			// Then
-			assertThat(naldb.getMessage(), is("Not a local DB"));
-		}
-	}
-
-	@Test
 	public void writesOplogToDestination() throws Exception {
 		// Given
-		Copier copier = new Copier(local);
+		Copier copier = new Copier();
 		Writer writer = new StringWriter();
 		OplogReader reader = new OplogReader(new Oplog(local));
 

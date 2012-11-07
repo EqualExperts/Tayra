@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.ee.beaver.domain.MongoCollection;
 import com.ee.beaver.domain.NotALocalDB;
 import com.ee.beaver.domain.Oplog;
-import com.ee.beaver.io.NotAReplicaSetNode;
+import com.ee.beaver.io.Copier;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -47,6 +47,21 @@ public class OplogSpecs {
 	      throw new NotAReplicaSetNode("localhost is not a part of ReplicaSet");
 	    }
 	    oplog = new Oplog(local);
+	}
+
+	@Test
+	public void doesNotConnectToStandaloneMongoInstance() throws Exception {
+		Mongo standalone = new Mongo(HOST, 27020);
+		DB local = standalone.getDB("local");
+		try {
+			// When
+			new Oplog(local);
+			fail("Should Not Connect to a standalone node");
+		} catch (NotAReplicaSetNode e) {
+			// Then
+			assertThat(e.getMessage(),
+					is("localhost is not a part of ReplicaSet"));
+		}
 	}
 	
 	@Test

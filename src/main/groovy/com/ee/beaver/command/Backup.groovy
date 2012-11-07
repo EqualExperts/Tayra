@@ -39,12 +39,10 @@ try {
   ServerAddress server = new ServerAddress(sourceMongoDB, port);
   mongo = new Mongo(server);
   DB local = mongo.getDB("local");
-
-  copier = new Copier(local)
-  def writer = getWriter() 
   oplog = new Oplog(local)
   reader = new OplogReader(oplog)
-  copier.copy(reader, writer)
+  def writer = getWriter() 
+  new Copier().copy(reader, writer)
 } catch (Throwable problem) {
 	PrintWriter writer = new PrintWriter(System.out, true)
 	writer.println "Oops!! Could not perform backup...$problem.message"
