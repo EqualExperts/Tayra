@@ -159,9 +159,15 @@
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         
+<<<<<<< HEAD
         <module name="HiddenField">
         	<property name="tokens" value="VARIABLE_DEF"/>  
         </module>
+=======
+        <module name="HiddenField">  
+        <property name="tokens" value="VARIABLE_DEF"/>  
+        </module>  
+>>>>>>> Introduced TimestampWriter
         
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
