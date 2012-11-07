@@ -66,4 +66,22 @@ class RunnerSpecs {
 			assertThat(problem.message, containsString("Don't know how to process: $scriptName"))
 		}
 	}
+	
+	@Test
+	void invokesRestoreCommand() {
+		//Given
+		Binding binding = new Binding()
+		def scriptName = 'restore'
+		String [] args = new String[1]
+		args[0] = scriptName
+		binding.setVariable('args', args)
+		Script runner = new Runner(binding)
+
+		//When
+		runner.run()
+		
+		//Then
+		def expected = 'error: Missing required options: df'
+		assertThat result.toString(), is(expected)
+	}
 }

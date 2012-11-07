@@ -1,6 +1,7 @@
 package com.ee.beaver.io;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 
 public class Copier {
@@ -11,13 +12,17 @@ public class Copier {
   public Copier() {
   }
 
-  public final void copy(final OplogReader fromReader, final Writer toWriter)
+  public final void copy(final OplogReader from, final Writer to)
     throws IOException {
-    while (fromReader.hasDocument()) {
-      String document = fromReader.readDocument();
-      toWriter.append(document);
-      toWriter.append(NEW_LINE);
+    while (from.hasDocument()) {
+      String document = from.readDocument();
+      to.append(document);
+      to.append(NEW_LINE);
     }
-    toWriter.flush();
+    to.flush();
+  }
+  
+  public final void copy(final OplogWriter from, final Reader to)
+		  throws IOException {
   }
 }

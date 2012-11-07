@@ -11,7 +11,7 @@ def cli = new CliBuilder(usage:'backup -s <MongoDB> [-p port] -f <file>')
 cli.with {
   s args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
   p args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
-  f args:1, argName: 'file', longOpt:'recordTo', 'REQUIRED, File To Record Oplog To', required: true
+  f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
 }
 
 def options = cli.parse(args)
