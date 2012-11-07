@@ -1,7 +1,6 @@
 package com.ee.beaver.domain;
 
-import java.util.Iterator;
-
+import com.mongodb.Bytes;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -26,21 +25,47 @@ public class Oplog implements MongoCollection {
   }
 
   @Override
-  public final Iterator<DBObject> find() {
-    return new OplogIterator(oplog);
+  public final MongoCollectionIterator<DBObject> find() {
+    return find(false);
   }
 
-  private static class OplogIterator implements Iterator<DBObject> {
+  @Override
+  public final MongoCollectionIterator<DBObject> find (boolean tailable) {
+    return new OplogIterator(oplog, tailable);
+  }
+
+  private static class OplogIterator implements MongoCollectionIterator<DBObject> {
 
     private final DBCursor cursor;
+    private final boolean tailable;
 
-    public OplogIterator(final DBCollection oplog) {
-      cursor = oplog.find();
+    public OplogIterator (final DBCollection collection, final boolean tailable) {
+      this.tailable = tailable;
+      cursor = collection.find();
+      if (tailable) {
+        cursor.addOption(Bytes.QUERYOPTION_TAILABLE);
+        cursor.addOption(Bytes.QUERYOPTION_AWAITDATA);
+      }
     }
 
     @Override
     public boolean hasNext() {
+  	  if(tailable) {
+      while(!cursor.hasNext() && noExplicitBreak());
+        return true;
+      } else {
       return cursor.hasNext();
+      }
+    }
+
+    private boolean noExplicitBreak() {
+      if(cursor.count() > 125) {
+      close();
+      return false;
+      }
+      else {
+       return true;
+      }
     }
 
     @Override
@@ -53,6 +78,11 @@ public class Oplog implements MongoCollection {
       throw new UnsupportedOperationException(
         "remove document on oplog is not supported"
       );
+    }
+
+    @Override
+    public void close() {
+      cursor.close();
     }
   }
 }

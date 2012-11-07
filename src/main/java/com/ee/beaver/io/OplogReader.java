@@ -1,17 +1,17 @@
 package com.ee.beaver.io;
 
-import java.util.Iterator;
-
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.ee.beaver.domain.MongoCollection;
+import com.ee.beaver.domain.MongoCollectionIterator;
 
 public class OplogReader implements CollectionReader {
 
-  private final Iterator<DBObject> iterator;
+  private final MongoCollectionIterator<DBObject> iterator;
 
-  public OplogReader(final MongoCollection collection) {
-    iterator = collection.find();
+  public OplogReader(final MongoCollection collection, final boolean
+    readContinuously) {
+      iterator = collection.find(readContinuously);
   }
 
   @Override
@@ -24,4 +24,9 @@ public class OplogReader implements CollectionReader {
     DBObject dbObject = iterator.next();
     return JSON.serialize(dbObject);
   }
+
+  public void close() {
+    iterator.close();
+  }
+
 }

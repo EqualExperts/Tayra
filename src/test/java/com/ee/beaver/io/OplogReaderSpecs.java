@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.ee.beaver.domain.MongoCollection;
+import com.ee.beaver.domain.MongoCollectionIterator;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -24,7 +25,7 @@ public class OplogReaderSpecs {
 	private MongoCollection mockOplogCollection;
 
 	@Mock
-	private Iterator<DBObject> mockOplogCollectionIterator;
+	private MongoCollectionIterator<DBObject> mockOplogCollectionIterator;
 
 	private CollectionReader reader;
 
@@ -32,7 +33,7 @@ public class OplogReaderSpecs {
 	public void setupOplogReader() {
 		given(mockOplogCollection.find()).willReturn(
 				mockOplogCollectionIterator);
-		reader = new OplogReader(mockOplogCollection);
+		reader = new OplogReader(mockOplogCollection, false);
 	}
 
 	@Test
@@ -56,13 +57,13 @@ public class OplogReaderSpecs {
 		ts.put("$ts", 1351755677000L);
 		ts.put("$inc", (long)1);
 		entry.put("ts", ts);
-		
+
 		entry.put("h", 8548170154004386733L);
-		
+
 		entry.put("op", "c");
-		
+
 		entry.put("ns", "person.$cmd");
-		
+
 		Map<String, String> o = new HashMap<String, String>();
 		o.put("create", "people");
 		entry.put("o", o);
@@ -75,7 +76,7 @@ public class OplogReaderSpecs {
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		DBObject entry = makeInsertOperationDBObject();
 		given(mockOplogCollectionIterator.next()).willReturn(entry);
-	
+
 		// When
 		String oplogDocumentString = reader.readDocument();
 
@@ -90,13 +91,13 @@ public class OplogReaderSpecs {
 		ts.put("$ts", 1352094941L);
 		ts.put("$inc", (long)1);
 		entry.put("ts", ts);
-		
+
 		entry.put("h", -5637503227244014604L);
-		
+
 		entry.put("op", "i");
-		
+
 		entry.put("ns", "person.things");
-		
+
 		Map<String, String> o = new HashMap<String, String>();
 		o.put("name", "test");
 		entry.put("o", o);
@@ -124,17 +125,17 @@ public class OplogReaderSpecs {
 		ts.put("$ts", 1352094941L);
 		ts.put("$inc", (long)1);
 		entry.put("ts", ts);
-		
+
 		entry.put("h", -5637503227244014604L);
-		
+
 		entry.put("op", "u");
-		
+
 		entry.put("ns", "person.things");
-		
+
 		Map<String, String> o2 = new HashMap<String, String>();
 		o2.put("$oid", "50978ff171274a096d2a9b33");
 		entry.put("o2", o2);
-		
+
 		Map<String, String> o = new HashMap<String, String>();
 		o.put("name", "test");
 		entry.put("o", o);
@@ -162,13 +163,13 @@ public class OplogReaderSpecs {
 		ts.put("$ts", 1352094941L);
 		ts.put("$inc", (long)1);
 		entry.put("ts", ts);
-		
+
 		entry.put("h", -5637503227244014604L);
-		
+
 		entry.put("op", "d");
 		entry.put("ns", "person.things");
 		entry.put("b", true);
-		
+
 		Map<String, String> o = new HashMap<String, String>();
 		o.put("$oid", "509754dd2862862d511f6b57");
 		entry.put("o", o);
@@ -197,13 +198,13 @@ public class OplogReaderSpecs {
 		ts.put("$ts", 1351755677000L);
 		ts.put("$inc", (long)1);
 		entry.put("ts", ts);
-		
+
 		entry.put("h", 8548170154004386733L);
-		
+
 		entry.put("op", "c");
-		
+
 		entry.put("ns", "person.$cmd");
-		
+
 		Map<String, String> o = new HashMap<String, String>();
 		o.put("drop", "people");
 		entry.put("o", o);
