@@ -37,8 +37,8 @@ if(options.p) {
 mongo = null
 try {
   ServerAddress server = new ServerAddress(sourceMongoDB, port);
-  mongo = new Mongo(server);
-  DB local = mongo.getDB("local");
+  mongo = new Mongo(server)
+  DB local = mongo.getDB("local")
   oplog = new Oplog(local)
   reader = new OplogReader(oplog)
   def writer = getWriter() 

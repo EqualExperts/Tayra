@@ -5,9 +5,22 @@
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
+	<Match>
+		<Class name="com.ee.beaver.io.Copier" />
+		<Not>
+			<Bug code="EC_UNRELATED_CLASS_AND_INTERFACE" />
+		</Not>
+	</Match>
   
   <Match>
 		<Class name="com.ee.beaver.command.Restore$_run_closure1" />
+		<Not>
+			<Bug code="SE_NO_SERIALVERSIONID" />
+		</Not>
+	</Match>
+
+  <Match>
+		<Class name="com.ee.beaver.domain.operation.DocumentBuilder$_asType_closure1" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>

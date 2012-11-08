@@ -1,5 +1,6 @@
 package com.ee.beaver.io;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -9,26 +10,22 @@ public class Copier {
   private static final CharSequence NEW_LINE =
     System.getProperty("line.separator");
 
-  public Copier() {
-  }
-
   public final void copy(final OplogReader from, final Writer to)
     throws IOException {
     while (from.hasDocument()) {
       String document = from.readDocument();
       to.append(document);
       to.append(NEW_LINE);
+      to.flush();
     }
-    to.flush();
   }
 
-  public final void copy(final OplogWriter from, final Reader to)
+  public final void copy(final OplogReplayer from, final Reader to)
     throws IOException {
-    int data;
-    StringBuilder document = new StringBuilder();
-    while ((data = to.read()) != -1) {
-      document.append((char) data);
+    BufferedReader bufferedReader = new BufferedReader(to);
+    String document = null;
+    while ((document = bufferedReader.readLine()) != null) {
+        from.replayDocument(document);
     }
-    from.writeDocument(document.toString());
   }
 }

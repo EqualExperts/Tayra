@@ -7,11 +7,13 @@ import java.io.Reader
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
 import static org.mockito.Mockito.*
-import com.ee.beaver.io.OplogWriter
+import com.ee.beaver.io.OplogReplayer
+import com.mongodb.BasicDBObject
 
 class RestoreSpecs {
 
 	private static StringBuilder result;
+	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
 	
 	@BeforeClass
 	public static void setupInterceptor() {
@@ -77,17 +79,17 @@ class RestoreSpecs {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-d', 'localhost', '-f', 'test.out'])
-		def result = new StringReader('"ts"')
+		def result = new StringReader('"ts"' + NEW_LINE)
 		context.setVariable('reader', result)
-		def mockOplogWriter = mock(OplogWriter)
-		context.setVariable('writer', mockOplogWriter)
+		def mockOplogReplayer = mock(OplogReplayer)
+		context.setVariable('writer', mockOplogReplayer)
 		Script restore = new Restore(context)
 		
 		//When
 		restore.run()
 		
 		//Then
-		verify(mockOplogWriter).writeDocument('"ts"')
+		verify(mockOplogReplayer).replayDocument('"ts"')
 	}
 	
 	@Test
@@ -102,21 +104,6 @@ class RestoreSpecs {
 		
 		//Then
 		String expected = "Oops!! Could not perform restore...nonexistentHost"
-		assertThat result.toString(), is(expected)
-	}
-	
-	@Test
-	public void shoutsWhenDestinationMongoDBIsNotAPartOfReplicaSet() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-d', 'localhost', '-f', 'test.out', '-p', '27020'])
-		Script restore = new Restore(context)
-		
-		//When
-		restore.run()
-		
-		//Then
-		String expected = 'Oops!! Could not perform restore...localhost is not a part of ReplicaSet'
 		assertThat result.toString(), is(expected)
 	}
 }

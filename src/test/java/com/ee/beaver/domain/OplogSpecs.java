@@ -42,10 +42,6 @@ public class OplogSpecs {
 	@Before
 	public void useLocalDB() {
 		DB local = replicaSet.getDB("local");
-		boolean oplogExists = local.collectionExists("oplog.rs");
-	    if (!oplogExists) {
-	      throw new NotAReplicaSetNode("localhost is not a part of ReplicaSet");
-	    }
 	    oplog = new Oplog(local);
 	}
 

@@ -4,6 +4,7 @@ import com.mongodb.DB
 import com.mongodb.Mongo
 import com.mongodb.ServerAddress
 import com.ee.beaver.domain.*
+import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [-p port] -f <file>')
@@ -27,9 +28,9 @@ def getReader() {
 	: new FileReader(restoreFromFile)
 }
 
-def getWriter(Oplog oplog) {
+def getWriter() {
 	binding.hasVariable('writer') ? binding.getVariable('writer')
-			: new OplogWriter(oplog)
+			: new OplogReplayer(new Operations(mongo))
 }
  
 int port = 27017
@@ -43,13 +44,13 @@ try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
   mongo = new Mongo(server)
   DB local = mongo.getDB("local")
-  oplog = new Oplog(local)
-  def writer = getWriter(oplog)
+  def writer = getWriter()
   def reader = getReader()
   new Copier().copy(writer, reader)
 } catch (Throwable problem) {
 	PrintWriter writer = new PrintWriter(System.out, true)
 	writer.println "Oops!! Could not perform restore...$problem.message"
+	problem.printStackTrace(writer)
 } finally {
 	if(mongo) {
 		mongo.close()
