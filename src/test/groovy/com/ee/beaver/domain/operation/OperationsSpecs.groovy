@@ -66,4 +66,14 @@ public class OperationsSpecs {
 		//Then 
 		assertThat operation, sameInstance(Operation.NO_OP)
 	}
+	
+	@Test
+	public void producesDeleteDocumentOperation() throws Exception {
+		//When
+		Operation operation = operations.get('d')
+		
+		//Then
+		assertThat operation, instanceOf(DeleteDocument.class)
+	}
+
 }

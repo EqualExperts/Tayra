@@ -24,7 +24,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 
 	
 	@Before
-	public void setUp() {
+	public void given() {
 		operation = new InsertDocument(standalone)
 	}
 	

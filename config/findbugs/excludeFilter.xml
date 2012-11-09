@@ -25,6 +25,13 @@
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
+	
+  <Match>
+		<Class name="com.ee.beaver.domain.operation.DeleteDocumentBuilder$_asType_closure1" />
+		<Not>
+			<Bug code="SE_NO_SERIALVERSIONID" />
+		</Not>
+	</Match>
   
   <Match>
 		<Class name="~.*\.*Specs.*" />

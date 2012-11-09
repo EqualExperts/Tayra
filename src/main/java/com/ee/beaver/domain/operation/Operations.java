@@ -20,6 +20,7 @@ public class Operations {
   private void fillOperations() {
     operations.put("c", new CreateCollection(mongo));
     operations.put("i", new InsertDocument(mongo));
+    operations.put("d", new DeleteDocument(mongo));
   }
 
   public final Operation get(final String opCode) {
