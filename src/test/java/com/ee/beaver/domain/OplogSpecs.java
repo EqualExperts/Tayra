@@ -61,7 +61,7 @@ public class OplogSpecs {
 	}
 	
 	@Test
-	public void itReadsFirstDocument() throws UnknownHostException, MongoException {
+	public void readsFirstDocument() throws UnknownHostException, MongoException {
 		//Given
 		Iterator<DBObject> iterator = oplog.find();
 

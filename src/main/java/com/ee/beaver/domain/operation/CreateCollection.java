@@ -16,8 +16,8 @@ public class CreateCollection implements Operation {
 
   @Override
   public final void execute(final DBObject document) {
-    final String dbnameSpec = (String) document.get("ns");
-    String[] dbInfo = dbnameSpec.split("\\.");
+    final String ns = (String) document.get("ns");
+    String[] dbInfo = ns.split("\\.");
     String dbName = dbInfo[0];
     String dbCommand = dbInfo[1];
     if ("$cmd".equals(dbCommand)) {

@@ -36,7 +36,7 @@ public class OplogReaderSpecs {
 	}
 
 	@Test
-	public void itShouldReadACreateCollectionOperationDocument() {
+	public void readsACreateCollectionOperationDocument() {
 		// Given
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		DBObject entry = makeCreateCollectionDBObject();
@@ -70,7 +70,7 @@ public class OplogReaderSpecs {
 	}
 
 	@Test
-	public void itShouldReadAnInsertOperationDocument() {
+	public void readsAnInsertOperationDocument() {
 		// Given
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		DBObject entry = makeInsertOperationDBObject();
@@ -104,7 +104,7 @@ public class OplogReaderSpecs {
 	}
 
 	@Test
-	public void itShouldReadAnUpdateOperationDocument() {
+	public void readsAnUpdateOperationDocument() {
 		// Given
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		DBObject entry = makeUpdateOperationDBObject();
@@ -142,7 +142,7 @@ public class OplogReaderSpecs {
 	}
 
 	@Test
-	public void itShouldReadARemoveOperationDocument() {
+	public void readsARemoveOperationDocument() {
 		// Given
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		DBObject entry = makeRemoveOperationDBObject();
@@ -176,7 +176,7 @@ public class OplogReaderSpecs {
 	}
 
 	@Test
-	public void itShouldReadADropCollectionOperationDocument() {
+	public void readsADropCollectionOperationDocument() {
 		// Given
 		given(mockOplogCollectionIterator.hasNext()).willReturn(true);
 		DBObject entry = makeDropCollectionOperationDBObject();

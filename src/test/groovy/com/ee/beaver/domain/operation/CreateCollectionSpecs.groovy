@@ -19,32 +19,18 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class CreateCollectionSpecs {
-	private static Mongo standalone;
-	private static final String HOST = "localhost"
-	private static final int PORT = 27020
+class CreateCollectionSpecs extends RequiresMongoConnection {
 	def operation
-	private String dbName = 'beaver'
 	private String collectionName = 'home'
-	
-	@BeforeClass
-	public static void connectToMongo() throws UnknownHostException,
-			MongoException {
-		standalone = new Mongo(HOST, PORT);
-	}
-
-	@AfterClass
-	public static void closeConnectionToMongo() {
-		standalone.close();
-	}
 	
 	@Before
 	public void setUp() {
 		operation = new CreateCollection(standalone)
 	}
+	
 	@After
 	public void cleanUp() {
-		standalone.getDB(dbName).getCollection(collectionName).drop()
+		standalone.getDB(db).getCollection(collectionName).drop()
 	}
 
 	@Test
@@ -54,7 +40,7 @@ class CreateCollectionSpecs {
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
 			op :'c',
-			ns : dbName + '.$cmd',
+			ns : db + '.$cmd',
 			o : new BasicDBObjectBuilder().start()
 					.add('create', collectionName)
 					.add('capped', false)
@@ -66,7 +52,7 @@ class CreateCollectionSpecs {
 		operation.execute(document as DBObject)
 		
 		//Then
-		def collectionExists = standalone.getDB(dbName).collectionExists(collectionName)
+		def collectionExists = standalone.getDB(db).collectionExists(collectionName)
 		assertThat collectionExists, is(true)    
 	}
 	
@@ -76,7 +62,7 @@ class CreateCollectionSpecs {
 				ts: new BSONTimestamp(1352105652, 1),
 				h :'3493050463814977392',
 				op :'c',
-				ns : dbName + '.$cmd',
+				ns : db + '.$cmd',
 				o : new BasicDBObjectBuilder().start()
 				.add('create', collectionName)
 				.add('capped', false)
@@ -102,7 +88,7 @@ class CreateCollectionSpecs {
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
 			op :'c',
-			ns : dbName + '.$cmd',
+			ns : db + '.$cmd',
 			o : new BasicDBObjectBuilder().start()
 					.add('create', collectionName)
 					.add('capped', true)
@@ -114,7 +100,7 @@ class CreateCollectionSpecs {
 		operation.execute(document as DBObject)
 		
 		//Then
-		DB db = standalone.getDB(dbName)
+		DB db = standalone.getDB(db)
 		assertThat db.collectionExists(collectionName), is(true)
 		
 		CommandResult result = db.getCollection(collectionName).getStats()

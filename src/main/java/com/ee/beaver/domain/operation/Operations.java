@@ -1,21 +1,30 @@
 package com.ee.beaver.domain.operation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mongodb.Mongo;
 
 public class Operations {
 
-  private Mongo mongo;
+  private final Mongo mongo;
+
+  private final Map<String, Operation> operations;
 
   public Operations(final Mongo mongo) {
     this.mongo = mongo;
+    operations = new HashMap<String, Operation>();
+    fillOperations();
+  }
+
+  private void fillOperations() {
+    operations.put("c", new CreateCollection(mongo));
+    operations.put("i", new InsertDocument(mongo));
   }
 
   public final Operation get(final String opCode) {
-    if ("c".equals(opCode)) {
-      return new CreateCollection(mongo);
-    }
-    if ("i".equals(opCode)) {
-      return new InsertDocument();
+    if (operations.containsKey(opCode)) {
+      return operations.get(opCode);
     }
     return Operation.NO_OP;
   }
