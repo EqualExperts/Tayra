@@ -153,7 +153,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 		def oplogDocument = new UpdateDocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
-			op :'i',
+			op :'u',
 			ns : "$db.$collectionName",
 			o2: new BasicDBObjectBuilder().start()
 				.add('_id', nestedObjId)
