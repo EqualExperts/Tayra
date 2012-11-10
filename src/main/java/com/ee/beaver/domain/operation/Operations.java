@@ -21,6 +21,7 @@ public class Operations {
     operations.put("c", new CreateCollection(mongo));
     operations.put("i", new InsertDocument(mongo));
     operations.put("d", new DeleteDocument(mongo));
+    operations.put("u", new UpdateDocument(mongo));
   }
 
   public final Operation get(final String opCode) {
