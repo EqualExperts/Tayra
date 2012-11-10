@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.mongodb.Mongo;
 
-public class Operations {
+public class Operations implements OperationsFactory {
 
   private final Mongo mongo;
 

@@ -2,15 +2,15 @@ package com.ee.beaver.io;
 
 import java.io.IOException;
 
-import com.ee.beaver.domain.operation.Operations;
+import com.ee.beaver.domain.operation.OperationsFactory;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 public class OplogReplayer {
 
-  private final Operations operations;
+  private final OperationsFactory operations;
 
-  public OplogReplayer(final Operations operations) {
+  public OplogReplayer(final OperationsFactory operations) {
     this.operations = operations;
   }
 

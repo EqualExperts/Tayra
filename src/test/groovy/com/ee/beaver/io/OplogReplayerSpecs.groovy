@@ -13,9 +13,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.runners.MockitoJUnitRunner
 
-import com.ee.beaver.domain.operation.DocumentBuilder
-import com.ee.beaver.domain.operation.Operation
-import com.ee.beaver.domain.operation.Operations
+import com.ee.beaver.domain.operation.*;
 import com.ee.beaver.io.OplogReplayer
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
@@ -31,7 +29,7 @@ public class OplogReplayerSpecs {
 	private OplogReplayer replayer
 	
 	@Mock
-	private Operations mockOperations
+	private OperationsFactory mockOperations
 	
 	@Mock
 	private Operation mockOperation
@@ -44,7 +42,7 @@ public class OplogReplayerSpecs {
 	@Test
 	public void replaysCreateCollectionOperation() throws Exception {
 		//Given
-        def document = new DocumentBuilder(
+		def document = new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1), 
 			h: '3493050463814977392',
 			op: 'c',
