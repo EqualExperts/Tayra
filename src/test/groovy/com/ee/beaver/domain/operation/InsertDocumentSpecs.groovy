@@ -214,7 +214,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 		try {
 			operation.execute(oplogDocument as DBObject)
 			fail("Should not insert document with duplicate keys: $objId, already exists!")
-		} catch (Exception problem) {
+		} catch (InsertFailed problem) {
 		  //Then
 		  assertThat problem.message, is('''E11000 duplicate key error index: beaver.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }''')
 		}

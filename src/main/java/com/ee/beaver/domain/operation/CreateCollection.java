@@ -8,6 +8,9 @@ import com.mongodb.util.JSON;
 
 public class CreateCollection implements Operation {
 
+  private static final String MAX = "max";
+  private static final String SIZE = "size";
+  private static final String CAPPED = "capped";
   private final Mongo mongo;
 
   public CreateCollection(final Mongo mongo) {
@@ -26,9 +29,9 @@ public class CreateCollection implements Operation {
       final String collectionName = (String) createSpec.get("create");
       DBObject options = new BasicDBObjectBuilder()
                              .start()
-                             .add("capped", createSpec.get("capped"))
-                             .add("size", createSpec.get("size"))
-                             .add("max", createSpec.get("max"))
+                             .add(CAPPED, createSpec.get(CAPPED))
+                             .add(SIZE, createSpec.get(SIZE))
+                             .add(MAX, createSpec.get(MAX))
                              .get();
       try {
         db.createCollection(collectionName, options);

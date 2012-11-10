@@ -77,7 +77,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 		try {
 			operation.execute(document as DBObject)
 		    fail("Should not have created collection: $collectionName, as it already exists!")
-		} catch (Exception problem) {
+		} catch (CreateCollectionFailed problem) {
 		  assertThat problem.message, is("command failed [command failed [create] { \"serverUsed\" : \"localhost:27020\" , \"errmsg\" : \"collection already exists\" , \"ok\" : 0.0}")
 		}
 	}

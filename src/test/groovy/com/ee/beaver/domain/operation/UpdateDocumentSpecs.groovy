@@ -185,4 +185,31 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 		assertThatDocumentIsPresentInCollection(db, collectionName, expectedDocument)
 	}
 	
+	@Test
+	public void shoutsWhenDocumentToUpdateDoesNotExistInTarget() throws Exception {
+		//Given
+		def objId = new ObjectId('509e8839f91e1d01ec6dfb50')
+		def oplogDocument = new UpdateDocumentBuilder(
+			ts: new BSONTimestamp(1352105652, 1),
+			h :'3493050463814977392',
+			op :'u',
+			ns : "$db.$collectionName",
+			o2 : new BasicDBObjectBuilder().start()
+				.add('_id', objId)
+				.get(),
+				
+			o : new BasicDBObjectBuilder().start()
+				.add('name', "[Test Name 2]")
+				.get()
+		)
+
+		//When
+		try {
+			operation.execute(oplogDocument as DBObject)
+			fail("Should not update document that does not exist")
+		} catch (UpdateFailed problem) {
+		  //Then
+		  assertThat problem.message, is('Document does not exist { \"_id\" : { \"$oid\" : \"509e8839f91e1d01ec6dfb50\"}}')
+		}
+	}
 }

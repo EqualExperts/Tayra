@@ -75,5 +75,14 @@ public class OperationsSpecs {
 		//Then
 		assertThat operation, instanceOf(DeleteDocument.class)
 	}
+	
+	@Test
+	public void producesUpdateDocumentOperation() throws Exception {
+		//When
+		Operation operation = operations.get('u')
+				
+		//Then
+		assertThat operation, instanceOf(UpdateDocument.class)
+	}
 
 }
