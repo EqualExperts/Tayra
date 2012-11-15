@@ -6,7 +6,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.util.JSON;
 
-public class CreateCollection implements Operation {
+class CreateCollection implements Operation {
 
   private static final String MAX = "max";
   private static final String SIZE = "size";

@@ -1,7 +1,5 @@
 package com.ee.beaver.io;
 
-import java.io.IOException;
-
 import com.ee.beaver.domain.operation.OperationsFactory;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -14,7 +12,7 @@ public class OplogReplayer {
     this.operations = operations;
   }
 
-  public void replayDocument(final String document) throws IOException {
+  public void replayDocument(final String document) {
     DBObject mongoDocument = (DBObject) JSON.parse(document);
     final String operationCode = (String) mongoDocument.get("op");
     operations.get(operationCode).execute(mongoDocument);

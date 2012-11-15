@@ -23,6 +23,7 @@ project.ext {
   mongoDriver = 'org.mongodb:mongo-java-driver:2.7.3'
   groovy = 'org.codehaus.groovy:groovy-all:2.0.4'
   commonsCli = 'commons-cli:commons-cli:1.1'
+  functionaljava = 'org.functionaljava:functionaljava:3.1'
 
   //test-libs
   junit = 'junit:junit:4.8.1'
@@ -47,6 +48,7 @@ project.archivesBaseName = project.ext.appConfig.product.distribution.name
 repositories {
   mavenCentral()
   mavenRepo url: 'http://bits.netbeans.org/maven2/'
+  mavenRepo url: 'http://functionaljava.googlecode.com/svn/maven/' 
 }
 
 configurations {
@@ -56,7 +58,7 @@ configurations {
 
 dependencies {
   groovy(groovy)
-  compile(project.ext.mongoDriver, project.ext.groovy, project.ext.commonsCli)
+  compile(project.ext.mongoDriver, project.ext.groovy, project.ext.commonsCli, project.ext.functionaljava)
   testCompile(project.ext.junit, project.ext.hamcrest, project.ext.mockito)
   cobertura(project.ext.coberturaLib)
   testRuntime(project.ext.coberturaLib)

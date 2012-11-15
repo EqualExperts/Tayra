@@ -1,6 +1,6 @@
 package com.ee.beaver.domain.operation;
 
-public class InsertFailed extends RuntimeException {
+class InsertFailed extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 

@@ -4,7 +4,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.util.JSON;
 
-public class DeleteDocument implements Operation {
+class DeleteDocument implements Operation {
 
   private final Mongo mongo;
 

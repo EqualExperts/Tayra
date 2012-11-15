@@ -1,8 +1,8 @@
 package com.ee.beaver.command
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
 import java.io.Reader
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
@@ -79,8 +79,8 @@ class RestoreSpecs {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-d', 'localhost', '-f', 'test.out'])
-		def result = new StringReader('"ts"' + NEW_LINE)
-		context.setVariable('reader', result)
+		def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+		context.setVariable('reader', source)
 		def mockOplogReplayer = mock(OplogReplayer)
 		context.setVariable('writer', mockOplogReplayer)
 		Script restore = new Restore(context)
