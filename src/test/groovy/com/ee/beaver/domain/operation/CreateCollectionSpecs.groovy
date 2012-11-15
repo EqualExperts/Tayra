@@ -93,7 +93,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 			o : new BasicDBObjectBuilder().start()
 					.add('create', collectionName)
 					.add('capped', true)
-					.add('size', 536870912)
+					.add('size', 65536)
 					.add('max', 2048)
 					.get()
 		)
