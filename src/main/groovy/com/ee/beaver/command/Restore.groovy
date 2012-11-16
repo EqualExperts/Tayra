@@ -34,6 +34,7 @@ if(options.e) {
   exceptionFile = options.e
 }
 
+PrintWriter console = new PrintWriter(System.out, true)
 mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
@@ -46,15 +47,29 @@ try {
 	  : new OplogReplayer(new Operations(mongo))
 
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-	: new RestoreListener(new FileWriter(exceptionFile))
+	: new RestoreListener(new FileWriter(exceptionFile), console)
+
 
   new Copier().copy(reader, writer, listener)
+  
+  printSummaryTo console, listener
+  
 } catch (Throwable problem) {
-	PrintWriter writer = new PrintWriter(System.out, true)
-	writer.println "Oops!! Could not perform restore...$problem.message"
-	problem.printStackTrace(writer)
+	console.println "Oops!! Could not perform restore...$problem.message"
+	problem.printStackTrace(console)
 } finally {
 	if(mongo) {
 		mongo.close()
 	}
+}
+
+def printSummaryTo(console, listener) {
+	console.printf '%s\r', ''.padRight(79, ' ')
+	console.println ''
+	console.println '---------------------------------'
+	console.println '             Summary             '
+	console.println '---------------------------------'
+	console.println "Total Documents Read: $listener.documentsRead"
+	console.println "Documents Restored: $listener.documentsWritten"
+	console.println "Exception Documents: $listener.exceptionDocuments"
 }

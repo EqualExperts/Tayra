@@ -14,9 +14,7 @@ public class Copier {
     throws IOException {
     while (from.hasDocument()) {
       String document = from.readDocument();
-      to.append(document);
-      to.append(NEW_LINE);
-      to.flush();
+      to.append(document).append(NEW_LINE).flush();
     }
   }
 

@@ -49,5 +49,7 @@ cobertura.ser
 db
 test.out
 a.out
+*.documents
+
 
 
