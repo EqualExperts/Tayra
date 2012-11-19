@@ -49,9 +49,11 @@ try {
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 	: new ProgressReporter(new FileWriter(exceptionFile), console)
 
-
+  def startTime = new Date().time
+  console.println "Restore Started On: ${new Date(startTime)}"
   new Copier().copy(reader, writer, listener)
-  
+  def endTime = new Date().time
+  console.println "Completed in ${(endTime - startTime)/1000} secs"
   printSummaryTo console, listener
   
 } catch (Throwable problem) {

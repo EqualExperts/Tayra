@@ -23,29 +23,28 @@ if(!options) {
 sourceMongoDB = options.s
 recordToFile = options.f
 
-def getWriter() {
-  binding.hasVariable('writer') ? binding.getVariable('writer')
-	: new FileWriter(recordToFile)
-}
- 
 int port = 27017
 if(options.p) {
 	port = Integer.parseInt(options.p)
 }
 
-
 mongo = null
+PrintWriter console = new PrintWriter(System.out, true)
 try {
   ServerAddress server = new ServerAddress(sourceMongoDB, port);
   mongo = new Mongo(server)
   DB local = mongo.getDB("local")
   oplog = new Oplog(local)
   reader = new OplogReader(oplog)
-  def writer = getWriter() 
-  new Copier().copy(reader, writer)
+  def writer = binding.hasVariable('writer') ? binding.getVariable('writer')
+    : new FileWriter(recordToFile)
+ 
+  def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
+    : new ProgressReporter(null, console)
+  console.println "Backup Started On: ${new Date()}"
+  new Copier().copy(reader, writer, listener)
 } catch (Throwable problem) {
-	PrintWriter writer = new PrintWriter(System.out, true)
-	writer.println "Oops!! Could not perform backup...$problem.message"
+	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {
 	if(mongo) {
 		mongo.close()
