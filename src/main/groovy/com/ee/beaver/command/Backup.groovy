@@ -54,6 +54,7 @@ try {
     : new ProgressReporter(null, console)
   console.println "Backup Started On: ${new Date()}"
   new Copier().copy(reader, writer, listener)
+
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {

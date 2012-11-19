@@ -6,4 +6,6 @@ public interface CollectionReader {
 
   String readDocument();
 
+  void close();
+
 }

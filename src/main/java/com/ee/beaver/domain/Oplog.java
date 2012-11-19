@@ -30,17 +30,17 @@ public class Oplog implements MongoCollection {
   }
 
   @Override
-  public final MongoCollectionIterator<DBObject> find (boolean tailable) {
+  public final MongoCollectionIterator<DBObject> find(final boolean tailable) {
     return new OplogIterator(oplog, tailable);
   }
 
-  private static class OplogIterator implements MongoCollectionIterator<DBObject> {
+  private static class OplogIterator implements
+    MongoCollectionIterator<DBObject> {
 
-    private final DBCursor cursor;
-    private final boolean tailable;
+    private DBCursor cursor;
 
-    public OplogIterator (final DBCollection collection, final boolean tailable) {
-      this.tailable = tailable;
+    public OplogIterator(final DBCollection collection,
+        final boolean tailable) {
       cursor = collection.find();
       if (tailable) {
         cursor.addOption(Bytes.QUERYOPTION_TAILABLE);
@@ -50,26 +50,17 @@ public class Oplog implements MongoCollection {
 
     @Override
     public boolean hasNext() {
-  	  if(tailable) {
-      while(!cursor.hasNext() && noExplicitBreak());
-        return true;
-      } else {
+      if (cursor == null) {
+        throw new IteratorAlreadyClosed("Iterator Already Closed");
+      }
       return cursor.hasNext();
-      }
-    }
-
-    private boolean noExplicitBreak() {
-      if(cursor.count() > 125) {
-      close();
-      return false;
-      }
-      else {
-       return true;
-      }
     }
 
     @Override
     public DBObject next() {
+      if (cursor == null) {
+            throw new IteratorAlreadyClosed("Iterator Already Closed");
+      }
       return cursor.next();
     }
 
@@ -83,6 +74,7 @@ public class Oplog implements MongoCollection {
     @Override
     public void close() {
       cursor.close();
+      cursor = null;
     }
   }
 }

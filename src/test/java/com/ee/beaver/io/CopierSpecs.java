@@ -35,7 +35,6 @@ public class CopierSpecs {
 	private static final CharSequence NEW_LINE = System
 			.getProperty("line.separator");
 	private final String document = "\"ts\"";
-
 	@BeforeClass
 	public static void connectToMongo() throws UnknownHostException,
 			MongoException {

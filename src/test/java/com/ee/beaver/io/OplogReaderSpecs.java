@@ -1,10 +1,12 @@
 package com.ee.beaver.io;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
@@ -15,6 +17,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.ee.beaver.domain.MongoCollection;
 import com.ee.beaver.domain.MongoCollectionIterator;
+import com.ee.beaver.domain.ReaderAlreadyClosed;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -31,7 +34,7 @@ public class OplogReaderSpecs {
 
 	@Before
 	public void setupOplogReader() {
-		given(mockOplogCollection.find()).willReturn(
+		given(mockOplogCollection.find(false)).willReturn(
 				mockOplogCollectionIterator);
 		reader = new OplogReader(mockOplogCollection, false);
 	}
@@ -47,7 +50,9 @@ public class OplogReaderSpecs {
 		String oplogDocumentString = reader.readDocument();
 
 		// Then
-		assertEquals(oplogDocumentString, ("{ \"ts\" : { \"$ts\" : 1351755677000 , \"$inc\" : 1} , \"h\" : 8548170154004386733 , \"op\" : \"c\" , \"ns\" : \"person.$cmd\" , \"o\" : { \"create\" : \"people\"}}"));
+		assertEquals(
+				oplogDocumentString,
+				("{ \"ts\" : { \"$ts\" : 1351755677000 , \"$inc\" : 1} , \"h\" : 8548170154004386733 , \"op\" : \"c\" , \"ns\" : \"person.$cmd\" , \"o\" : { \"create\" : \"people\"}}"));
 	}
 
 	private DBObject makeCreateCollectionDBObject() {
@@ -55,7 +60,7 @@ public class OplogReaderSpecs {
 
 		Map<String, Long> ts = new HashMap<String, Long>();
 		ts.put("$ts", 1351755677000L);
-		ts.put("$inc", (long)1);
+		ts.put("$inc", (long) 1);
 		entry.put("ts", ts);
 
 		entry.put("h", 8548170154004386733L);
@@ -81,7 +86,9 @@ public class OplogReaderSpecs {
 		String oplogDocumentString = reader.readDocument();
 
 		// Then
-		assertEquals(oplogDocumentString,("{ \"ts\" : { \"$ts\" : 1352094941 , \"$inc\" : 1} , \"h\" : -5637503227244014604 , \"op\" : \"i\" , \"ns\" : \"person.things\" , \"o\" : { \"name\" : \"test\"}}"));
+		assertEquals(
+				oplogDocumentString,
+				("{ \"ts\" : { \"$ts\" : 1352094941 , \"$inc\" : 1} , \"h\" : -5637503227244014604 , \"op\" : \"i\" , \"ns\" : \"person.things\" , \"o\" : { \"name\" : \"test\"}}"));
 	}
 
 	private DBObject makeInsertOperationDBObject() {
@@ -89,7 +96,7 @@ public class OplogReaderSpecs {
 
 		Map<String, Long> ts = new HashMap<String, Long>();
 		ts.put("$ts", 1352094941L);
-		ts.put("$inc", (long)1);
+		ts.put("$inc", (long) 1);
 		entry.put("ts", ts);
 
 		entry.put("h", -5637503227244014604L);
@@ -115,7 +122,9 @@ public class OplogReaderSpecs {
 		String oplogDocumentString = reader.readDocument();
 
 		// Then
-		assertEquals(oplogDocumentString,("{ \"ts\" : { \"$ts\" : 1352094941 , \"$inc\" : 1} , \"h\" : -5637503227244014604 , \"op\" : \"u\" , \"ns\" : \"person.things\" , \"o2\" : { \"$oid\" : \"50978ff171274a096d2a9b33\"} , \"o\" : { \"name\" : \"test\"}}"));
+		assertEquals(
+				oplogDocumentString,
+				("{ \"ts\" : { \"$ts\" : 1352094941 , \"$inc\" : 1} , \"h\" : -5637503227244014604 , \"op\" : \"u\" , \"ns\" : \"person.things\" , \"o2\" : { \"$oid\" : \"50978ff171274a096d2a9b33\"} , \"o\" : { \"name\" : \"test\"}}"));
 	}
 
 	private DBObject makeUpdateOperationDBObject() {
@@ -123,7 +132,7 @@ public class OplogReaderSpecs {
 
 		Map<String, Long> ts = new HashMap<String, Long>();
 		ts.put("$ts", 1352094941L);
-		ts.put("$inc", (long)1);
+		ts.put("$inc", (long) 1);
 		entry.put("ts", ts);
 
 		entry.put("h", -5637503227244014604L);
@@ -153,7 +162,9 @@ public class OplogReaderSpecs {
 		String oplogDocumentString = reader.readDocument();
 
 		// Then
-		assertEquals(oplogDocumentString, ("{ \"ts\" : { \"$ts\" : 1352094941 , \"$inc\" : 1} , \"h\" : -5637503227244014604 , \"op\" : \"d\" , \"ns\" : \"person.things\" , \"b\" : true , \"o\" : { \"$oid\" : \"509754dd2862862d511f6b57\"}}"));
+		assertEquals(
+				oplogDocumentString,
+				("{ \"ts\" : { \"$ts\" : 1352094941 , \"$inc\" : 1} , \"h\" : -5637503227244014604 , \"op\" : \"d\" , \"ns\" : \"person.things\" , \"b\" : true , \"o\" : { \"$oid\" : \"509754dd2862862d511f6b57\"}}"));
 	}
 
 	private DBObject makeRemoveOperationDBObject() {
@@ -161,7 +172,7 @@ public class OplogReaderSpecs {
 
 		Map<String, Long> ts = new HashMap<String, Long>();
 		ts.put("$ts", 1352094941L);
-		ts.put("$inc", (long)1);
+		ts.put("$inc", (long) 1);
 		entry.put("ts", ts);
 
 		entry.put("h", -5637503227244014604L);
@@ -187,7 +198,9 @@ public class OplogReaderSpecs {
 		String oplogDocumentString = reader.readDocument();
 
 		// Then
-		assertEquals(oplogDocumentString, ("{ \"ts\" : { \"$ts\" : 1351755677000 , \"$inc\" : 1} , \"h\" : 8548170154004386733 , \"op\" : \"c\" , \"ns\" : \"person.$cmd\" , \"o\" : { \"drop\" : \"people\"}}"));
+		assertEquals(
+				oplogDocumentString,
+				("{ \"ts\" : { \"$ts\" : 1351755677000 , \"$inc\" : 1} , \"h\" : 8548170154004386733 , \"op\" : \"c\" , \"ns\" : \"person.$cmd\" , \"o\" : { \"drop\" : \"people\"}}"));
 
 	}
 
@@ -196,7 +209,7 @@ public class OplogReaderSpecs {
 
 		Map<String, Long> ts = new HashMap<String, Long>();
 		ts.put("$ts", 1351755677000L);
-		ts.put("$inc", (long)1);
+		ts.put("$inc", (long) 1);
 		entry.put("ts", ts);
 
 		entry.put("h", 8548170154004386733L);
@@ -209,5 +222,31 @@ public class OplogReaderSpecs {
 		o.put("drop", "people");
 		entry.put("o", o);
 		return entry;
+	}
+
+	@Test
+	public void shoutsWhenQueryingForDocumentWithAClosedReader() {
+		// When
+		reader.close();
+
+		try {
+			reader.hasDocument();
+			fail("Should Not Allow To Work With A closed Reader");
+		} catch (ReaderAlreadyClosed rac) {
+			assertThat(rac.getMessage(), is("Reader Already Closed"));
+		}
+	}
+
+	@Test
+	public void shoutsWhenFetchingForDocumentWithAClosedReader() {
+		// When
+		reader.close();
+
+		try {
+			reader.readDocument();
+			fail("Should Not Allow To Work With A closed Reader");
+		} catch (ReaderAlreadyClosed rac) {
+			assertThat(rac.getMessage(), is("Reader Already Closed"));
+		}
 	}
 }
