@@ -47,7 +47,7 @@ try {
 	  : new OplogReplayer(new Operations(mongo))
 
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-	: new RestoreListener(new FileWriter(exceptionFile), console)
+	: new ProgressReporter(new FileWriter(exceptionFile), console)
 
 
   new Copier().copy(reader, writer, listener)

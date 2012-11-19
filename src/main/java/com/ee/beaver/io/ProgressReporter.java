@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-class RestoreListener implements CopyListener {
+class ProgressReporter implements CopyListener {
 
-  private final Writer exceptionsWriter;
+  private final Writer exceptionDocsWriter;
   private final PrintWriter progressWriter;
   private final String [] spinner = new String [] {"/", "-", "\\", "|"};
   private static final CharSequence NEW_LINE =
@@ -15,9 +15,9 @@ class RestoreListener implements CopyListener {
   private int documentsRead = 0;
   private int exceptionDocuments = 0;
 
-  public RestoreListener(final Writer exceptionsWriter,
+  public ProgressReporter(final Writer exceptionDocsWriter,
     final PrintWriter progressWriter) {
-    this.exceptionsWriter = exceptionsWriter;
+    this.exceptionDocsWriter = exceptionDocsWriter;
     this.progressWriter = progressWriter;
   }
 
@@ -29,7 +29,7 @@ class RestoreListener implements CopyListener {
   @Override
   public final void onWriteSuccess(final String document) {
     ++documentsWritten;
-    progressWriter.printf("%s Restored %d document(s)\r",
+    progressWriter.printf("%s Wrote %d Document(s)\r",
       spinner[documentsWritten % spinner.length], documentsWritten);
   }
 
@@ -41,12 +41,20 @@ class RestoreListener implements CopyListener {
       return;
     }
 
+    exceptionDocuments++;
+    if (exceptionDocsWriter == null) {
+    progressWriter.printf("===> Unable to Write Document(s) %s",
+      problem.getMessage());
+    return;
+    }
+
     try {
-      exceptionsWriter.append(document);
-      exceptionsWriter.append(NEW_LINE);
-      exceptionsWriter.flush();
-      exceptionDocuments++;
+      exceptionDocsWriter.append(document);
+      exceptionDocsWriter.append(NEW_LINE);
+      exceptionDocsWriter.flush();
     } catch (IOException e) {
+      progressWriter.printf("===> Unable to Write Exceptioning Document(s) %s",
+        e.getMessage());
       problem.printStackTrace(progressWriter);
     }
   }
@@ -54,6 +62,8 @@ class RestoreListener implements CopyListener {
   @Override
   public final void onReadFailure(final String document,
     final Throwable problem) {
+    progressWriter.printf("===> Unable to Read Documents: %s\r",
+      problem.getMessage());
   }
 
   public int getDocumentsRead() {

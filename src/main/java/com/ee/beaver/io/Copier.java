@@ -4,17 +4,29 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 
-
 public class Copier {
 
   private static final CharSequence NEW_LINE =
     System.getProperty("line.separator");
 
-  public final void copy(final OplogReader from, final Writer to)
-    throws IOException {
-    while (from.hasDocument()) {
-      String document = from.readDocument();
-      to.append(document).append(NEW_LINE).flush();
+  public final void copy(final CollectionReader from, final Writer to,
+    final CopyListener... listeners) {
+    Notifier notifier = new Notifier(listeners);
+    try {
+      while (from.hasDocument()) {
+        String document = from.readDocument();
+        notifier.notifyReadSuccess(document);
+        try {
+          to.append(document);
+          to.append(NEW_LINE);
+          to.flush();
+          notifier.notifyWriteSuccess(document);
+        } catch (IOException problem) {
+          notifier.notifyWriteFailure(document, problem);
+        }
+      }
+    } catch (RuntimeException problem) {
+      notifier.notifyReadFailure(null, problem);
     }
   }
 

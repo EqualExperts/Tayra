@@ -2,8 +2,6 @@ package com.ee.beaver.io;
 
 import static fj.data.List.list;
 
-import java.io.IOException;
-
 import fj.Effect;
 
 public class Notifier {
@@ -43,7 +41,7 @@ public class Notifier {
   }
 
   public final void notifyReadFailure(final String document,
-  final IOException problem) {
+  final Throwable problem) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
       public void e(final CopyListener listener) {

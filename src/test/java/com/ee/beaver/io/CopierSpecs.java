@@ -1,13 +1,11 @@
 package com.ee.beaver.io;
 
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -24,9 +22,6 @@ import com.ee.beaver.io.OplogReader;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 
 
 public class CopierSpecs {
@@ -36,6 +31,7 @@ public class CopierSpecs {
 	private DB local;
 	private Copier copier;
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator");
+	private final String document = "\"ts\"";
 
 	@BeforeClass
 	public static void connectToMongo() throws UnknownHostException,
@@ -75,50 +71,49 @@ public class CopierSpecs {
 	public void replaysOplog() throws Exception {
 		//Given
 		OplogReplayer mockOplogReplayer = mock(OplogReplayer.class);
-		BufferedReader from = new BufferedReader(new StringReader("\"ts\"" + NEW_LINE));
+		BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE));
 		
 		//When
 		copier.copy(from, mockOplogReplayer);
 		
 		//Then   
-		verify(mockOplogReplayer).replayDocument("\"ts\"");
+		verify(mockOplogReplayer).replayDocument(document);
 	}
 	
 	@Test
-	public void notifiesWhenReadingADocumentIsDone() throws Exception {
+	public void notifiesWhenReadingADocumentFromReaderIsSuccessful() throws Exception {
 		//Given
 		OplogReplayer mockOplogReplayer = mock(OplogReplayer.class);
-		BufferedReader from = new BufferedReader(new StringReader("\"ts\"" + NEW_LINE));
+		BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE));
 		
 		CopyListener mockCopyListener = mock(CopyListener.class);
 		
 		//When
-		copier.copy(from, mockOplogReplayer, new CopyListener[] {mockCopyListener});
+		copier.copy(from, mockOplogReplayer, mockCopyListener);
 		
 		//Then   
-		verify(mockCopyListener).onReadSuccess("\"ts\"");
+		verify(mockCopyListener).onReadSuccess(document);
 	}
 	
 	@Test
-	public void notifiesWhenWritingADocumentIsDone() throws Exception {
+	public void notifiesWhenWritingADocumentToReplayerIsSuccessful() throws Exception {
 		//Given
 		OplogReplayer mockOplogReplayer = mock(OplogReplayer.class);
-		BufferedReader from = new BufferedReader(new StringReader("\"ts\"" + NEW_LINE));
+		BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE));
 		
 		CopyListener mockCopyListener = mock(CopyListener.class);
 		
 		//When
-		copier.copy(from, mockOplogReplayer, new CopyListener[] {mockCopyListener});
+		copier.copy(from, mockOplogReplayer, mockCopyListener);
 		
 		//Then   
-		verify(mockCopyListener).onWriteSuccess("\"ts\"");
+		verify(mockCopyListener).onWriteSuccess(document);
 	}
 	
 	@Test
-	public void notifiesWhenRestoreOperationFails() throws Exception {
+	public void notifiesWhenReplayerOperationFails() throws Exception {
 		OplogReplayer mockOplogReplayer = mock(OplogReplayer.class);
-		final String document = "\"ts\"";
-		BufferedReader from = new BufferedReader(new StringReader("\"ts\"" + NEW_LINE));
+		BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE));
 		
 		CopyListener mockCopyListener = mock(CopyListener.class);
 		final RuntimeException problem = new RuntimeException("Document to update does not exist");
@@ -127,7 +122,7 @@ public class CopierSpecs {
 			.replayDocument(document);
 		
 		//When
-		copier.copy(from, mockOplogReplayer, new CopyListener[] {mockCopyListener});
+		copier.copy(from, mockOplogReplayer, mockCopyListener);
 		
 		//Then   
 		verify(mockCopyListener, never()).onReadFailure(document, problem);
@@ -137,9 +132,8 @@ public class CopierSpecs {
 	}
 	
 	@Test
-	public void notifiesWhenReadingFromSourceFails() throws Exception {
+	public void notifiesWhenReadingFromReaderFails() throws Exception {
 		OplogReplayer mockOplogReplayer = mock(OplogReplayer.class);
-		final String document = "\"ts\"";
 		BufferedReader mockReader = mock(BufferedReader.class);
 		final IOException problem = new IOException();
 		given(mockReader.readLine()).willThrow(problem);
@@ -147,7 +141,7 @@ public class CopierSpecs {
 		CopyListener mockCopyListener = mock(CopyListener.class);
 		
 		//When
-		copier.copy(mockReader, mockOplogReplayer, new CopyListener[] {mockCopyListener});
+		copier.copy(mockReader, mockOplogReplayer, mockCopyListener);
 		
 		//Then   
 		verify(mockCopyListener).onReadFailure(null, problem);
@@ -155,4 +149,83 @@ public class CopierSpecs {
 		verify(mockCopyListener, never()).onWriteSuccess(document);
 		verify(mockCopyListener, never()).onWriteFailure(document, problem);
 	}
+	
+	@Test
+	public void notifiesWhenReadingADocumentFromOplogIsSuccessful() throws Exception {
+		//Given
+		CollectionReader mockReader = mock(CollectionReader.class);
+		given(mockReader.hasDocument()).willReturn(true, false);
+		given(mockReader.readDocument()).willReturn(document);
+		Writer mockWriter = mock(Writer.class);
+		CopyListener mockCopyListener = mock(CopyListener.class);
+		
+		//When
+		copier.copy(mockReader, mockWriter, mockCopyListener);
+		
+		//Then
+		verify(mockCopyListener).onReadSuccess(document);
+	}
+
+	@Test
+	public void notifiesWhenWritingADocumentToWriterIsSuccessful() throws Exception {
+		//Given
+		CollectionReader mockReader = mock(CollectionReader.class);
+		given(mockReader.hasDocument()).willReturn(true, false);
+		given(mockReader.readDocument()).willReturn(document);
+		Writer mockWriter = mock(Writer.class);
+		CopyListener mockCopyListener = mock(CopyListener.class);
+		
+		//When
+		copier.copy(mockReader, mockWriter, mockCopyListener);
+		
+		//Then   
+		verify(mockCopyListener).onWriteSuccess(document);
+	}
+
+	@Test
+	public void notifiesWhenWriterFailsToWrite() throws Exception {
+		//Given
+		CollectionReader mockReader = mock(CollectionReader.class);
+		given(mockReader.hasDocument()).willReturn(true, false);
+		given(mockReader.readDocument()).willReturn(document);
+		Writer mockWriter = mock(Writer.class);
+		CopyListener mockCopyListener = mock(CopyListener.class);
+
+		final IOException problem = new IOException("Disk Full");
+		doThrow(problem)
+			.when(mockWriter)
+			.append(document);
+		
+		//When
+		copier.copy(mockReader, mockWriter, mockCopyListener);
+		
+		//Then   
+		verify(mockCopyListener, never()).onReadFailure(document, problem);
+		verify(mockCopyListener).onReadSuccess(document);
+		verify(mockCopyListener).onWriteFailure(document, problem);
+		verify(mockCopyListener, never()).onWriteSuccess(document);
+	}
+
+	@Test
+	public void notifiesWhenReadingDocumentFromOplogFails() throws Exception {
+		CollectionReader mockReader = mock(CollectionReader.class);
+		given(mockReader.hasDocument()).willReturn(true, false);
+		given(mockReader.readDocument()).willReturn(document);
+		Writer mockWriter = mock(Writer.class);
+		CopyListener mockCopyListener = mock(CopyListener.class);
+		RuntimeException problem = new MongoException("Connection Lost!");
+		given(mockReader.readDocument()).willThrow(problem);
+		
+		
+		//When
+		copier.copy(mockReader, mockWriter, mockCopyListener);
+		
+		//Then   
+		verify(mockCopyListener).onReadFailure(null, problem);
+		verify(mockCopyListener, never()).onReadSuccess(document);
+		verify(mockCopyListener, never()).onWriteSuccess(document);
+		verify(mockCopyListener, never()).onWriteFailure(document, problem);
+	}
+	
+
 }

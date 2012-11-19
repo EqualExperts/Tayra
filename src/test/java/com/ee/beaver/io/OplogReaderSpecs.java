@@ -26,7 +26,7 @@ public class OplogReaderSpecs {
 	@Mock
 	private Iterator<DBObject> mockOplogCollectionIterator;
 
-	private OplogReader reader;
+	private CollectionReader reader;
 
 	@Before
 	public void setupOplogReader() {
