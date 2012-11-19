@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.*
 
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
+import com.mongodb.WriteResult;
+
 import org.bson.types.BSONTimestamp
 import org.bson.types.ObjectId;
 import org.junit.After
@@ -147,5 +149,30 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 
 		//Then
 		assertThatDocumentIsNotPresentInCollection(db, collectionName, documentToBeDeleted)
+	}
+	
+	@Test
+	public void shoutsWhenDocumentToDeleteDoesNotExistInTarget() throws Exception {
+		//Given
+		def absentObjId = new ObjectId('509e8839f91e1d01ec6dfb50')
+		def oplogDocument = new DeleteDocumentBuilder(
+			ts: new BSONTimestamp(1352105652, 1),
+			h :'3493050463814977392',
+			op :'d',
+			ns : "$db.$collectionName",
+			b : true,
+			o : new BasicDBObjectBuilder().start()
+				.add('_id', absentObjId)
+				.get()
+		)
+		
+		//When
+		try {
+			operation.execute(oplogDocument as DBObject)
+			fail("Should not delete document that does not exist")
+		} catch (DeleteFailed problem) {
+		  //Then
+		  assertThat problem.message, is('Document does not exist { \"_id\" : { \"$oid\" : \"509e8839f91e1d01ec6dfb50\"}}')
+		}
 	}
 }
