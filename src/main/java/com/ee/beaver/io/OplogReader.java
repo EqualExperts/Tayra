@@ -4,7 +4,6 @@ import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import com.ee.beaver.domain.MongoCollection;
 import com.ee.beaver.domain.MongoCollectionIterator;
-import com.ee.beaver.domain.ReaderAlreadyClosed;
 
 public class OplogReader implements CollectionReader {
 

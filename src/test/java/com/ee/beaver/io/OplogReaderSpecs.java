@@ -17,7 +17,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.ee.beaver.domain.MongoCollection;
 import com.ee.beaver.domain.MongoCollectionIterator;
-import com.ee.beaver.domain.ReaderAlreadyClosed;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
