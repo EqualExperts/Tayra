@@ -26,6 +26,7 @@ class UpdateDocument implements Operation {
                                   .getDB(dbName)
                                   .getCollection(collectionName)
                                   .update(id, newData);
+
       final Boolean updated = (Boolean) writeResult.getField("updatedExisting");
       if (!updated) {
         throw new UpdateFailed("Document does not exist " + id.toString());

@@ -26,7 +26,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	
 	@Before
 	public void setUp() {
-		operation = new CreateCollection(standalone)
+		operation = new DatabaseCommand(standalone)
 	}
 	
 	@After
@@ -108,4 +108,5 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 		assertThat result.get('capped'), is(true)    
 		assertThat result.get('max'), is(2048)    
 	}
+	
 }
