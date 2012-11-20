@@ -26,7 +26,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	
 	@Before
 	public void setUp() {
-		operation = new CreateAndDropCollection(standalone)
+		operation = new DatabaseCommand(standalone)
 	}
 	
 	@After

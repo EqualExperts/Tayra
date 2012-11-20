@@ -18,7 +18,7 @@ public class Operations implements OperationsFactory {
   }
 
   private void fillOperations() {
-    operations.put("c", new CreateAndDropCollection(mongo));
+    operations.put("c", new DatabaseCommand(mongo));
     operations.put("i", new InsertDocument(mongo));
     operations.put("d", new DeleteDocument(mongo));
     operations.put("u", new UpdateDocument(mongo));

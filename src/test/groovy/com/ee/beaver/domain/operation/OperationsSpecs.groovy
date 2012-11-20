@@ -46,7 +46,7 @@ public class OperationsSpecs {
 		Operation operation = operations.get('c')
 		
 		//Then 
-		assertThat operation, instanceOf(CreateAndDropCollection.class)
+		assertThat operation, instanceOf(DatabaseCommand.class)
 	}
 	
 	@Test

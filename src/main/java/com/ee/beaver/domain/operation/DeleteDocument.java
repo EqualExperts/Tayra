@@ -21,10 +21,13 @@ class DeleteDocument implements Operation {
       String dbName = ns.substring(0, index);
       String collectionName = ns.substring(index + 1, ns.length());
       DBObject deleteSpec = (DBObject) JSON.parse(document.get("o").toString());
-      WriteResult writeResult = mongo.getDB(dbName).getCollection(collectionName).remove(deleteSpec);
+      WriteResult writeResult = mongo.getDB(dbName)
+                                     .getCollection(collectionName)
+                                     .remove(deleteSpec);
       int deletedObjCount = writeResult.getN();
-      if(deletedObjCount == 0 ) {
-    	  throw new DeleteFailed("Document does not exist " + deleteSpec.toString());
+      if (deletedObjCount == 0) {
+        throw new DeleteFailed("Document does not exist "
+              + deleteSpec.toString());
       }
     }
   }
