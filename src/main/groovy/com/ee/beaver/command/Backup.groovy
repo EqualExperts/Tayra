@@ -23,6 +23,7 @@ if(!options) {
 
 sourceMongoDB = options.s
 recordToFile = options.f
+def timestampFile = "Timestamp.out"
 
 def getWriter() {
   binding.hasVariable('writer') ? binding.getVariable('writer')

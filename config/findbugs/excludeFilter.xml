@@ -5,6 +5,7 @@
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
+<<<<<<< HEAD
 	<Match>
 		<Class name="com.ee.beaver.io.Copier" />
 		<Not>
@@ -34,11 +35,16 @@
 	</Match>
   
   <Match>
+=======
+
+  	<Match>
+>>>>>>> Writes timestamp of last document read to file
 		<Class name="~.*\.*Specs.*" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
+<<<<<<< HEAD
 	
 	<Match>
 		<Class name="com.ee.beaver.domain.operation.UpdateDocumentBuilder$_asType_closure1" />
@@ -46,4 +52,13 @@
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
+=======
+
+	<Match>
+    <Class name="com.ee.beaver.io.GenericWriter" />
+    <Not>
+      <Bug code="DM_STRING_CTOR" />
+    </Not>
+  </Match>
+>>>>>>> Writes timestamp of last document read to file
 </FindBugsFilter>
