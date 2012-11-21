@@ -1,12 +1,4 @@
 <FindBugsFilter>
-<<<<<<< HEAD
-	<Match>
-		<Class name="com.ee.beaver.command.Backup$_run_closure1" />
-		<Not>
-			<Bug code="SE_NO_SERIALVERSIONID" />
-		</Not>
-	</Match>
-<<<<<<< HEAD
 	<Match>
 		<Class name="com.ee.beaver.io.Copier" />
 		<Not>
@@ -54,10 +46,4 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
-  <Match>
-    <Class name="~.*\.*Specs.*" />
-    <Not>
-      <Bug code="SE_NO_SERIALVERSIONID" />
-    </Not>
-  </Match>
-</FindBugsFilter>
+ </FindBugsFilter>
