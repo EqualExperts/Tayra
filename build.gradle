@@ -37,7 +37,7 @@ project.ext {
   coverageDataFile = 'cobertura.ser'
   lineCoverageBaseline = 85
   branchCoverageBaseline = 70
-  
+
   //Distribution settings
   distsTemplateDir = 'distribution-template'
   distsBinDir = "$distsDir/bin"
@@ -48,7 +48,7 @@ project.archivesBaseName = project.ext.appConfig.product.distribution.name
 repositories {
   mavenCentral()
   mavenRepo url: 'http://bits.netbeans.org/maven2/'
-  mavenRepo url: 'http://functionaljava.googlecode.com/svn/maven/' 
+  mavenRepo url: 'http://functionaljava.googlecode.com/svn/maven/'
 }
 
 configurations {
@@ -59,7 +59,7 @@ configurations {
 dependencies {
   groovy(groovy)
   compile(project.ext.mongoDriver, project.ext.groovy, project.ext.commonsCli, project.ext.functionaljava)
-  testCompile(project.ext.junit, project.ext.hamcrest, project.ext.mockito)
+  testCompile(project.ext.hamcrest, project.ext.junit, project.ext.mockito)
   cobertura(project.ext.coberturaLib)
   testRuntime(project.ext.coberturaLib)
 }
@@ -68,7 +68,7 @@ jar {
 	manifest {
 		attributes.putAll(project.ext.manifest)
 	}
-	
+
 	doLast {
 		copy {
 			from (configurations.compile.asPath.split(File.pathSeparator))
@@ -115,7 +115,7 @@ task distribute(type:Zip, dependsOn: 'assemble') {
 		prepareExecutables()
 	}
 	from "$project.ext.distsBinDir"
-	from ("$project.ext.distsTemplateDir") { include ('*.txt') } 
+	from ("$project.ext.distsTemplateDir") { include ('*.txt') }
 	from("$libsDir") { into('libs') }
 }
 
