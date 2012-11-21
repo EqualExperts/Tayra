@@ -1,6 +1,8 @@
 package com.ee.beaver.io;
 
+import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
@@ -18,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -125,6 +128,21 @@ public class TimestampWriterSpecs {
 			// Then
 			assertThat(timestampWriter.getTimestamp(), is(lastRecordedTimestamp));
 		}
+	}
+	
+	@Test
+	public void writesTimestampOnlyIfDocumentHasTimestampEntry() throws Exception {
+		//Given
+		String document = new BasicDBObjectBuilder()
+							.start().add("name", "test")
+							.get()
+							.toString();
+		
+		//When
+		timestampWriter.write(document , 0, document.length());
+
+		// Then
+		assertThat(timestampWriter.getTimestamp(), is(""));
 	}
 
 
