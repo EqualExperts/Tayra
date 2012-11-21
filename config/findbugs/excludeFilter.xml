@@ -1,4 +1,5 @@
 <FindBugsFilter>
+<<<<<<< HEAD
 	<Match>
 		<Class name="com.ee.beaver.command.Backup$_run_closure1" />
 		<Not>
@@ -12,7 +13,7 @@
 			<Bug code="EC_UNRELATED_CLASS_AND_INTERFACE" />
 		</Not>
 	</Match>
-  
+
   <Match>
 		<Class name="com.ee.beaver.command.Restore$_run_closure1" />
 		<Not>
@@ -26,48 +27,37 @@
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
-	
+
   <Match>
 		<Class name="com.ee.beaver.domain.operation.DeleteDocumentBuilder$_asType_closure1" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
-  
-  <Match>
-=======
 
-  	<Match>
->>>>>>> Writes timestamp of last document read to file
+  <Match>
 		<Class name="~.*\.*Specs.*" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
-<<<<<<< HEAD
-	
+
 	<Match>
 		<Class name="com.ee.beaver.domain.operation.UpdateDocumentBuilder$_asType_closure1" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
-=======
-
-	<Match>
-    <Class name="com.ee.beaver.io.GenericWriter" />
-    <Not>
-      <Bug code="DM_STRING_CTOR" />
-    </Not>
-  </Match>
-<<<<<<< HEAD
->>>>>>> Writes timestamp of last document read to file
-=======
   <Match>
-    <Class name="com.ee.beaver.io.TimestampWriter" />
+    <Class name="com.ee.beaver.command.Backup$_run_closure1" />
     <Not>
-      <Bug code="DM_STRING_CTOR" />
+      <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
->>>>>>> Completed Recording Timestamp
+  <Match>
+    <Class name="~.*\.*Specs.*" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
 </FindBugsFilter>
