@@ -14,21 +14,21 @@ class RestoreSpecs {
 
 	private static StringBuilder result;
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
-	
+
 	@BeforeClass
 	public static void setupInterceptor() {
 		ExpandoMetaClass.enableGlobally()
-		
+
 		PrintWriter.metaClass.println = { String data ->
 			result << data
 		}
 	}
-	
+
 	@Before
 	public void setupResultCollector() {
 		result = new StringBuilder()
 	}
-	
+
 	@Test
 	public void shoutsWhenNoMandatoryArgsAreSupplied() {
 		//Given
@@ -36,14 +36,14 @@ class RestoreSpecs {
 		context.setVariable('args', [])
 		def expected = 'error: Missing required options: df'
 		Script restore = new Restore(context)
-		
+
 		//When
 		restore.run()
-		
+
 		//Then
 		assertThat result.toString(), is(expected)
 	}
-	
+
 	@Test
 	public void shoutsWhenNoOutputFileIsSupplied() {
 		//Given
@@ -51,14 +51,14 @@ class RestoreSpecs {
 		context.setVariable('args', ['-d', 'localhost'])
 		def expected = 'error: Missing required option: f'
 		Script restore = new Restore(context)
-		
+
 		//When
 		restore.run()
-		
+
 		//Then
 		assertThat result.toString(), is(expected)
 	}
-	
+
 	@Test
 	public void shoutsWhenNoDestinationMongoDBIsSupplied() {
 		//Given
@@ -66,14 +66,14 @@ class RestoreSpecs {
 		context.setVariable('args', ['-f', 'test.out'])
 		def expected = 'error: Missing required option: d'
 		Script restore = new Restore(context)
-		
+
 		//When
 		restore.run()
-		
+
 		//Then
 		assertThat result.toString(), is(expected)
 	}
-	
+
 	@Test
 	public void invokesRestoreWhenAllMandatoryOptionsAreSupplied() {
 		//Given
@@ -84,26 +84,26 @@ class RestoreSpecs {
 		def mockOplogReplayer = mock(OplogReplayer)
 		context.setVariable('writer', mockOplogReplayer)
 		Script restore = new Restore(context)
-		
+
 		//When
 		restore.run()
-		
+
 		//Then
 		verify(mockOplogReplayer).replayDocument('"ts"')
 	}
-	
+
 	@Test
 	public void shoutsWhenMongoDBUrlIsIncorrect() {
 		//Given
 		def context = new Binding()
 		context.setVariable('args', ['-d', 'nonexistentHost', '-f', 'test.out'])
 		Script restore = new Restore(context)
-		
+
 		//When
 		restore.run()
-		
+
 		//Then
 		String expected = "Oops!! Could not perform restore...nonexistentHost"
-		assertThat result.toString(), is(expected)
+		assertThat result.toString(), containsString(expected)
 	}
 }
