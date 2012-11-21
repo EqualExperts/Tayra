@@ -23,7 +23,7 @@ if(!options) {
 
 sourceMongoDB = options.s
 recordToFile = options.f
-def timestampFile = "Timestamp.out"
+timestampFile = 'timestamp.out'
 
 def getWriter() {
   binding.hasVariable('writer') ? binding.getVariable('writer')
@@ -42,6 +42,7 @@ if(options.t) {
 
 mongo = null
 PrintWriter console = new PrintWriter(System.out, true)
+writer = new TimestampWriter(getWriter())
 try {
   ServerAddress server = new ServerAddress(sourceMongoDB, port);
   mongo = new Mongo(server)
@@ -59,6 +60,9 @@ try {
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {
+	if (writer){
+		new FileWriter(timestampFile).append(writer.timestamp).flush()
+	}
 	if(mongo) {
 		mongo.close()
 	}

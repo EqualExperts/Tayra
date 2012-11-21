@@ -141,6 +141,7 @@ public class CopierSpecs {
 
 	@Test
 	public void notifiesWhenReadingFromReaderFails() throws Exception {
+		//Given
 		OplogReplayer mockOplogReplayer = mock(OplogReplayer.class);
 		BufferedReader mockReader = mock(BufferedReader.class);
 		final IOException problem = new IOException();

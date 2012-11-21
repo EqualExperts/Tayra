@@ -4,35 +4,57 @@ import java.io.IOException;
 import java.io.Writer;
 
 public class TimestampWriter extends Writer {
-    private final Writer destination;
-    private final Writer delegateTarget;
 
-    public TimestampWriter(final Writer destination,
-      final Writer delegateTarget) {
-        this.destination = destination;
-        this.delegateTarget = delegateTarget;
-    }
+  private String timestamp = "";
+  private final Writer delegate;
+  private static final CharSequence NEW_LINE =
+    System.getProperty("line.separator");
 
-    @Override
-    public final void write(final char[] data, final int off, final int len)
-      throws IOException {
-        delegateTarget.write(data, off, len);
-        char[] ts = extractTimestamp(data);
-        destination.write(ts, off, ts.length);
-    }
+  public TimestampWriter(final Writer delegate) {
+    this.delegate = delegate;
+  }
 
-    private char[] extractTimestamp(final char[] data) {
-        String oplogDocument = new String(data);
-        String ts = oplogDocument.substring(oplogDocument.indexOf("\"ts\" :"),
-            oplogDocument.indexOf("}") + 1);
-        return ts.toCharArray();
-    }
+  @Override
+  public final void write(final String document, final int off, final int len)
+    throws IOException {
+    writeToDelegate(document, off, len);
+    storeTimestampFrom(document);
+  }
 
-    @Override
-    public void flush() throws IOException {
-    }
+  public final String getTimestamp() {
+    return timestamp;
+  }
 
-    @Override
-    public void close() throws IOException {
-    }
+  private void storeTimestampFrom(final String document) throws IOException {
+    timestamp = extractTimestamp(document);
+}
+
+  private void writeToDelegate(final String document, final int off,
+    final int len)
+    throws IOException {
+    delegate.append(document, off, len);
+    delegate.append(NEW_LINE);
+    delegate.flush();
+  }
+
+  private String extractTimestamp(final String data) {
+    String oplogDocument = new String(data);
+    String ts = oplogDocument.substring(oplogDocument.indexOf("\"ts\" :"),
+      oplogDocument.indexOf("}") + 1);
+    return ts;
+  }
+
+  @Override
+  public void flush() throws IOException {
+  }
+
+  @Override
+  public void close() throws IOException {
+  }
+
+@Override
+public void write(final char[] arg0, final int arg1, final int arg2)
+  throws IOException {
+}
+
 }

@@ -60,5 +60,14 @@
       <Bug code="DM_STRING_CTOR" />
     </Not>
   </Match>
+<<<<<<< HEAD
 >>>>>>> Writes timestamp of last document read to file
+=======
+  <Match>
+    <Class name="com.ee.beaver.io.TimestampWriter" />
+    <Not>
+      <Bug code="DM_STRING_CTOR" />
+    </Not>
+  </Match>
+>>>>>>> Completed Recording Timestamp
 </FindBugsFilter>
