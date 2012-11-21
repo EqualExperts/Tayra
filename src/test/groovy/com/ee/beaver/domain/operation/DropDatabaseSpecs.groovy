@@ -10,11 +10,12 @@ import org.junit.Test
 
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
+import com.mongodb.DB
+import com.mongodb.DBCollection
 import com.mongodb.DBObject
 
 class DropDatabaseSpecs extends RequiresMongoConnection {
 	def operation
-	private String collectionName = 'home'
 
 	@Before
 	public void given() {
@@ -24,13 +25,14 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 	@Test
 	public void dropsDatabase() throws Exception {
 		//Given
-		givenADatabase()
+		String dbName = 'databaseToBeDropped'
+		givenADatabase(dbName, 'home')
 		
 		def oplogDocument = new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
 			op :'c',
-			ns : db + '.$cmd',
+			ns : dbName + '.$cmd',
 			o : new BasicDBObjectBuilder().start()
 				.add('dropDatabase', 1)
 				.get()
@@ -41,24 +43,24 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 
 		//Then
 		List<String> databases = standalone.getDatabaseNames()
-		assertThat databases, not(hasItem(db))
+		assertThat databases, not(hasItem(dbName))
 	}
 	
-	private void givenADatabase() {
-		BasicDBObject dbObject = new BasicDBObject()
-		dbObject.put("name", "test")
-		standalone.getDB(db).createCollection(collectionName ,null)
-		standalone.getDB(db).getCollection(collectionName).insert(dbObject)
+	private void givenADatabase(dbName, collectionName) {
+		DB createDB = standalone.getDB(dbName)
+		DBCollection collection = createDB.createCollection(collectionName ,null)
+		collection.insert(new BasicDBObjectBuilder().start().get())
 	}
 	
 	@Test
 	public void shoutsWhenDatabaseToBeDroppedDoesNotExist() throws Exception {
 		//Given
+		def nonExistentDB = 'nonExistentDB'
 		def oplogDocument = new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
 			op :'c',
-			ns : db + '.$cmd',
+			ns : nonExistentDB + '.$cmd',
 			o : new BasicDBObjectBuilder().start()
 				.add('dropDatabase', 1)
 				.get()
@@ -67,10 +69,10 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		//When
 		try {
 			operation.execute(oplogDocument as DBObject)
-			fail("Should not drop database that does not exist")
+			fail('Should not drop database that does not exist')
 		} catch (DropDatabaseFailed problem) {
 		  //Then
-		  assertThat problem.message, is("Could Not Drop Database beaver")
+		  assertThat problem.message, containsString("Could Not Drop Database $nonExistentDB")
 		}
 	}
 }

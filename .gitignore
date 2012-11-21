@@ -50,6 +50,8 @@ db
 test.out
 a.out
 *.documents
+timestamp.out
+
 
 
 
