@@ -49,8 +49,6 @@ try {
   DB local = mongo.getDB("local")
   oplog = new Oplog(local)
   reader = new OplogReader(oplog, isContinuous)
-  def writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-    : new FileWriter(recordToFile)
 
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
     : new ProgressReporter(null, console)
