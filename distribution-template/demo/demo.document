@@ -1,0 +1,67 @@
+// switch to db
+use ee
+
+
+
+// Create collection
+
+// creates a collection people
+db.createCollection("people")
+
+// creates an uncapped collection people of size 1 mb
+db.createCollection("people.uncapped", { size: 1048576 })
+
+// creates a capped collection people of max size 1 mb and max 50 documents 
+db.createCollection("people.capped", { capped : true, size : 1048576, max : 50 } )
+
+// creates a prefixed collection
+db.createCollection("people.address")
+
+
+
+// Insert document into collection
+
+db.people.insert( { name: "testUser1" } )
+db.people.insert( { name: "testUser2", age: 21, city: "abc" } )
+
+// inserts nested document in prefixed collection
+db.people.address.insert( { name: "testUser3", age: 22, address: { street: "xyz" } } )
+
+// inserts a volume of documents in a collection
+for (var i=4; i<=200000; i++) { db.people.insert( { name: "testUser"+i } ); }
+
+
+
+// Update document
+
+db.people.update( { name: "testUser1" }, { name: "testUser1", age: 20 } )
+
+// updates nested document in prefixed collection 
+db.people.address.update( { name: "testUser3" }, { name: "testUser3", age: 22, address: { street: "xyz", city: "abc" } } )
+
+
+
+// Delete document
+
+//delete where name is testUser1
+db.people.remove( { name: "testUser1" } ) 
+
+//deletes nested in a prefixed collection
+db.people.address.remove( { address: { street: "xyz" } } )
+
+//delete all
+db.people.remove()
+
+
+
+// Drop collection
+
+db.people.drop()
+
+//drop prefixed collection
+db.people.address.drop()
+
+
+
+// Drop database
+db.dropDatabase()
