@@ -115,7 +115,7 @@ public class BackupSpecs {
 
 		//Then
 		String expected = 'Oops!! Could not perform backup...localhost is not a part of ReplicaSet'
-		assertThat result.toString(), is(expected)
+		assertThat result.toString(), containsString(expected)
 	}
 }
 

@@ -64,10 +64,9 @@ class ProgressReporter implements CopyListener {
     final Throwable problem) {
     progressWriter.printf("===> Unable to Read Documents: %s\r",
       problem.getMessage());
-    problem.printStackTrace();
   }
 
-  public int getDocumentsRead() {
+public int getDocumentsRead() {
     return documentsRead;
   }
 

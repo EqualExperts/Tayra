@@ -43,6 +43,8 @@ if(options.t) {
 mongo = null
 PrintWriter console = new PrintWriter(System.out, true)
 writer = new TimestampWriter(getWriter())
+listener = binding.hasVariable('listener') ? binding.getVariable('listener')
+		: new ProgressReporter(null, console)
 try {
   ServerAddress server = new ServerAddress(sourceMongoDB, port);
   mongo = new Mongo(server)
@@ -50,8 +52,6 @@ try {
   oplog = new Oplog(local)
   reader = new OplogReader(oplog, isContinuous)
 
-  def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-    : new ProgressReporter(null, console)
   console.println "Backup Started On: ${new Date()}"
   new Copier().copy(reader, writer, listener)
 
@@ -64,4 +64,17 @@ try {
 	if(mongo) {
 		mongo.close()
 	}
+	if (listener) {
+		printSummaryTo console, listener
+	}
+}
+
+def printSummaryTo(console, listener) {
+	console.printf '%s\r', ''.padRight(79, ' ')
+	console.println ''
+	console.println '---------------------------------'
+	console.println '             Summary             '
+	console.println '---------------------------------'
+	console.println "Total Documents Read: $listener.documentsRead"
+	console.println "Documents Written: $listener.documentsWritten"
 }
