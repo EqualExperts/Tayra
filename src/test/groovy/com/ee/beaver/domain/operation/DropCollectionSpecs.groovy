@@ -22,7 +22,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 	
 	@Before
 	public void setUp() {
-		operation = new DatabaseCommand(standalone)
+		operation = new DefaultSchemaOperation(standalone)
 	}
 	
 	@Test

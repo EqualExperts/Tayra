@@ -19,7 +19,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 
 	@Before
 	public void given() {
-		operation = new DatabaseCommand(standalone)
+		operation = new DefaultSchemaOperation(standalone)
 	}
 	
 	@Test
