@@ -1,20 +1,13 @@
 package com.ee.beaver.command
 
 import java.io.Writer
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Ignore
-import org.junit.Test
+import spock.lang.*
 
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.*
-
-public class BackupSpecs {
+public class BackupSpecs extends Specification {
 
 	private static StringBuilder result;
 
-	@BeforeClass
-	public static void setupInterceptor() {
+	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
 
 		PrintWriter.metaClass.println = { String data ->
@@ -22,100 +15,89 @@ public class BackupSpecs {
 		}
 	}
 
-	@Before
-	public void setupResultCollector() {
+	public void setup() {
 		result = new StringBuilder()
 	}
 
-	@Test
-	public void shoutsWhenNoMandatoryArgsAreSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', [])
-		def expected = 'error: Missing required options: sf'
-		Script backup = new Backup(context)
+	def shoutsWhenNoMandatoryArgsAreSupplied() {
+		given: 'that script does not run with any options'
+			def context = new Binding()
+			context.setVariable('args', [])
+			Script backup = new Backup(context)
 
-		//When
-		backup.run()
+		when: 'it runs'
+			backup.run()
 
-		//Then
-		assertThat result.toString(), is(expected)
+		then: 'error message should be shown as'
+			result.toString() == 'error: Missing required options: sf'
 	}
-
-	@Test
-	public void shoutsWhenNoOutputFileIsSupplied() {
-		//Given
+	
+	def shoutsWhenNoOutputFileIsSupplied() {
+		given: 'that script executes with -s option only'
 		def context = new Binding()
 		context.setVariable('args', ['-s', 'localhost'])
-		def expected = 'error: Missing required option: f'
 		Script backup = new Backup(context)
 
-		//When
-		backup.run()
+		when: 'it runs'
+			backup.run()
 
-		//Then
-		assertThat result.toString(), is(expected)
+			
+		then: 'error message should be shown as'
+			result.toString() == 'error: Missing required option: f'
 	}
 
-	@Test
-	public void shoutsWhenNoSourceMongoDBIsSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-f', 'test.out'])
-		def expected = 'error: Missing required option: s'
-		Script backup = new Backup(context)
+	def shoutsWhenNoSourceMongoDBIsSupplied() {
+		given: 'that script executes with -f option only'
+			def context = new Binding()
+			context.setVariable('args', ['-f', 'test.out'])
+			Script backup = new Backup(context)
 
-		//When
-		backup.run()
+		when: 'it runs'
+			backup.run()
 
-		//Then
-		assertThat result.toString(), is(expected)
+		then: 'error message should be shown as'
+			result.toString() == 'error: Missing required option: s'
 	}
 
-	@Test
-	public void invokesBackupWhenAllMandatoryOptionsAreSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
-		def result = new StringWriter()
-		context.setVariable('writer', result)
-		Script backup = new Backup(context)
+	def invokesBackupWhenAllMandatoryOptionsAreSupplied() {
+		given:'that script executes with -s and -f option'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
+			def result = new StringWriter()
+			context.setVariable('writer', result)
+			Script backup = new Backup(context)
 
-		//When
-		backup.run()
+		when:'it runs'
+			backup.run()
 
-		//Then
-		assertThat result.toString(), containsString('"ts"')
+		then: 'the output should contain "ts"'
+			result.toString().contains('ts')
 	}
 
-	@Test
-	public void shoutsWhenMongoDBUrlIsIncorrect() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-s', 'nonexistentHost', '-f', 'test.out'])
-		Script backup = new Backup(context)
+	def shoutsWhenMongoDBUrlIsIncorrect() {
+		given:'that script executes with non-existent source'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'nonexistentHost', '-f', 'test.out'])
+			Script backup = new Backup(context)
 
-		//When
-		backup.run()
+		when: 'it runs'
+			backup.run()
 
-		//Then
-		String expected = "Oops!! Could not perform backup...nonexistentHost"
-		assertThat result.toString(), containsString(expected)
+		then: 'error message should be shown as'
+			result.toString().contains('Oops!! Could not perform backup...nonexistentHost')
 	}
 
-	@Test
-	public void shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27020'])
-		Script backup = new Backup(context)
+	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
+		given: 'that script is run on a node that does not belong to rep set'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27020'])
+			Script backup = new Backup(context)
 
-		//When
-		backup.run()
+		when: 'it runs'
+			backup.run()
 
-		//Then
-		String expected = 'Oops!! Could not perform backup...localhost is not a part of ReplicaSet'
-		assertThat result.toString(), containsString(expected)
+		then: 'error message should be shown as'
+			result.toString().contains('Oops!! Could not perform backup...localhost is not a part of ReplicaSet')
 	}
 }
 
