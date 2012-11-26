@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
 
 import java.net.UnknownHostException
+import java.sql.DatabaseMetaData;
 
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.CommandResult
@@ -22,11 +23,13 @@ import static org.junit.Assert.fail
 
 class CreateCollectionSpecs extends RequiresMongoConnection {
 	def operation
+	DB database
 	private String collectionName = 'home'
 	
 	@Before
 	public void setUp() {
-		operation = new DefaultSchemaOperation(standalone)
+		operation = new CreateCollection()
+		database = standalone.getDB(db)
 	}
 	
 	@After
@@ -37,20 +40,28 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsACollection() throws Exception {
 		//Given
-		def document = new DocumentBuilder(
-			ts: new BSONTimestamp(1352105652, 1),
-			h :'3493050463814977392',
-			op :'c',
-			ns : db + '.$cmd',
-			o : new BasicDBObjectBuilder().start()
-					.add('create', collectionName)
-					.add('capped', false)
-					.add('size', null)
-					.add('max', null)
-					.get()
-		)
+//		def document = new DocumentBuilder(
+//			ts: new BSONTimestamp(1352105652, 1),
+//			h :'3493050463814977392',
+//			op :'c',
+//			ns : db + '.$cmd',
+//			o : new BasicDBObjectBuilder().start()
+//					.add('create', collectionName)
+//					.add('capped', false)
+//					.add('size', null)
+//					.add('max', null)
+//					.get()
+//		)
+		
+		DBObject spec = new BasicDBObjectBuilder().start()
+							.add('create', collectionName)
+							.add('capped', false)
+							.add('size', null)
+							.add('max', null)
+							.get()
+							
 		//When
-		operation.execute(document as DBObject)
+		operation.execute(database, spec)
 		
 		//Then
 		def collectionExists = standalone.getDB(db).collectionExists(collectionName)
@@ -59,23 +70,30 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	
 	@Test
 	public void shoutsWhenACollectionAlreadyExists() {
-		def document = new DocumentBuilder(
-				ts: new BSONTimestamp(1352105652, 1),
-				h :'3493050463814977392',
-				op :'c',
-				ns : db + '.$cmd',
-				o : new BasicDBObjectBuilder().start()
-				.add('create', collectionName)
-				.add('capped', false)
-				.add('size', null)
-				.add('max', null)
-				.get()
-				)
+//		def document = new DocumentBuilder(
+//				ts: new BSONTimestamp(1352105652, 1),
+//				h :'3493050463814977392',
+//				op :'c',
+//				ns : db + '.$cmd',
+//				o : new BasicDBObjectBuilder().start()
+//				.add('create', collectionName)
+//				.add('capped', false)
+//				.add('size', null)
+//				.add('max', null)
+//				.get()
+//				)
+//		
+		DBObject spec = new BasicDBObjectBuilder().start()
+							.add('create', collectionName)
+							.add('capped', false)
+							.add('size', null)
+							.add('max', null)
+							.get()
 		
 		//When
-		operation.execute(document as DBObject)
+		operation.execute(database, spec)
 		try {
-			operation.execute(document as DBObject)
+			operation.execute(database, spec)
 		    fail("Should not have created collection: $collectionName, as it already exists!")
 		} catch (CreateCollectionFailed problem) {
 		  assertThat problem.message, is("command failed [command failed [create] { \"serverUsed\" : \"localhost:27020\" , \"errmsg\" : \"collection already exists\" , \"ok\" : 0.0}")
@@ -85,20 +103,27 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsACappedCollection() throws Exception {
 		//Given
-		def document = new DocumentBuilder(
-			ts: new BSONTimestamp(1352105652, 1),
-			h :'3493050463814977392',
-			op :'c',
-			ns : db + '.$cmd',
-			o : new BasicDBObjectBuilder().start()
-					.add('create', collectionName)
-					.add('capped', true)
-					.add('size', 65536)
-					.add('max', 2048)
-					.get()
-		)
+//		def document = new DocumentBuilder(
+//			ts: new BSONTimestamp(1352105652, 1),
+//			h :'3493050463814977392',
+//			op :'c',
+//			ns : db + '.$cmd',
+//			o : new BasicDBObjectBuilder().start()
+//					.add('create', collectionName)
+//					.add('capped', true)
+//					.add('size', 65536)
+//					.add('max', 2048)
+//					.get()
+//		)
+		DBObject spec = new BasicDBObjectBuilder().start()
+							.add('create', collectionName)
+							.add('capped', true)
+							.add('size', 65536)
+							.add('max', 2048)
+							.get()
+							
 		//When
-		operation.execute(document as DBObject)
+		operation.execute(database, spec)
 		
 		//Then
 		DB db = standalone.getDB(db)

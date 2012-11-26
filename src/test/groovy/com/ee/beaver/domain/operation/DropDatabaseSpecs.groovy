@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.fail
 
+import java.sql.DatabaseMetaData;
+
 import org.bson.types.BSONTimestamp
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +21,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 
 	@Before
 	public void given() {
-		operation = new DefaultSchemaOperation(standalone)
+		operation = new DropDatabase(standalone)
 	}
 	
 	@Test
@@ -28,18 +30,21 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		String dbName = 'databaseToBeDropped'
 		givenADatabase(dbName, 'home')
 		
-		def oplogDocument = new DocumentBuilder(
-			ts: new BSONTimestamp(1352105652, 1),
-			h :'3493050463814977392',
-			op :'c',
-			ns : dbName + '.$cmd',
-			o : new BasicDBObjectBuilder().start()
-				.add('dropDatabase', 1)
-				.get()
-		)
+//		def oplogDocument = new DocumentBuilder(
+//			ts: new BSONTimestamp(1352105652, 1),
+//			h :'3493050463814977392',
+//			op :'c',
+//			ns : dbName + '.$cmd',
+//			o : new BasicDBObjectBuilder().start()
+//				.add('dropDatabase', 1)
+//				.get()
+//		)
+		DBObject spec = new BasicDBObjectBuilder().start()
+							.add('dropDatabase', 1)
+							.get()
 
 		//When
-		operation.execute(oplogDocument as DBObject)
+		operation.execute(standalone.getDB(dbName), spec)
 
 		//Then
 		List<String> databases = standalone.getDatabaseNames()
@@ -56,19 +61,22 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 	public void shoutsWhenDatabaseToBeDroppedDoesNotExist() throws Exception {
 		//Given
 		def nonExistentDB = 'nonExistentDB'
-		def oplogDocument = new DocumentBuilder(
-			ts: new BSONTimestamp(1352105652, 1),
-			h :'3493050463814977392',
-			op :'c',
-			ns : nonExistentDB + '.$cmd',
-			o : new BasicDBObjectBuilder().start()
-				.add('dropDatabase', 1)
-				.get()
-		)
+//		def oplogDocument = new DocumentBuilder(
+//			ts: new BSONTimestamp(1352105652, 1),
+//			h :'3493050463814977392',
+//			op :'c',
+//			ns : nonExistentDB + '.$cmd',
+//			o : new BasicDBObjectBuilder().start()
+//				.add('dropDatabase', 1)
+//				.get()
+//		)
+		DBObject spec = new BasicDBObjectBuilder().start()
+							.add('dropDatabase', 1)
+							.get()
 		
 		//When
 		try {
-			operation.execute(oplogDocument as DBObject)
+			operation.execute(standalone.getDB(nonExistentDB), spec)
 			fail('Should not drop database that does not exist')
 		} catch (DropDatabaseFailed problem) {
 		  //Then
