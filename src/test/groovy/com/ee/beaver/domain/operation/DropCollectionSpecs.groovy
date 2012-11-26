@@ -3,6 +3,8 @@ package com.ee.beaver.domain.operation
 import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
 
+import groovyjarjarcommonscli.Options;
+
 import java.sql.DatabaseMetaData;
 
 import org.junit.After;
@@ -16,6 +18,7 @@ import com.mongodb.DBObject
 import com.mongodb.BasicDBObject
 import static org.junit.Assert.fail
 import com.mongodb.Mongo
+import com.sun.java.util.jar.pack.CodingChooser.Sizer;
 
 class DropCollectionSpecs extends RequiresMongoConnection {
 	def operation
@@ -34,16 +37,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 	public void dropsACollection() throws Exception {
 		//Given
 		givenACollection()
-		
-//		def document = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : db + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//					.add('drop', collectionName)
-//					.get()
-//		)
+
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('drop', collectionName)
 							.get()
@@ -68,15 +62,6 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 		//Given
 		givenACappedCollection(standalone, db)
 
-//		def document = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : db + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//					.add('drop', cappedCollectionName)
-//					.get()
-//		)
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('drop', cappedCollectionName)
 							.get()
@@ -87,6 +72,15 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 		//Then
 		def collectionExists = database.collectionExists(cappedCollectionName)
 		assertThat collectionExists, is(false)
+	}
+	
+	def createCollection(name, isCapped = false, size = null, max = null) {
+		DBObject options = new BasicDBObjectBuilder()
+							.start()
+								.add('capped', isCapped)
+								.add('size', size)
+								.add('max', max)
+								.get()
 	}
 
 	private givenACappedCollection(Mongo standalone, String db) {
@@ -101,19 +95,9 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void shoutsWhenCollectionToBeDroppedDoesNotExistInTarget() throws Exception {
 		//Given
-//		def document = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : db + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//					.add('drop', absentCollectionName)
-//					.get()
-//		)
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('drop', absentCollectionName)
 							.get()
-		
 		//When
 		try {
 			operation.execute(database, spec)

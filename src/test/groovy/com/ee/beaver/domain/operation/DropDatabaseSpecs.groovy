@@ -30,15 +30,6 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		String dbName = 'databaseToBeDropped'
 		givenADatabase(dbName, 'home')
 		
-//		def oplogDocument = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : dbName + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//				.add('dropDatabase', 1)
-//				.get()
-//		)
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('dropDatabase', 1)
 							.get()
@@ -61,15 +52,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 	public void shoutsWhenDatabaseToBeDroppedDoesNotExist() throws Exception {
 		//Given
 		def nonExistentDB = 'nonExistentDB'
-//		def oplogDocument = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : nonExistentDB + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//				.add('dropDatabase', 1)
-//				.get()
-//		)
+		
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('dropDatabase', 1)
 							.get()

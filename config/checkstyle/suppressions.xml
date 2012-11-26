@@ -49,4 +49,5 @@
     <suppress checks="." files=".*[\\/]checkstyle[\\/]gui[\\/]"/>
     
     <suppress checks="DesignForExtension" files="[\\/]OplogReplayer.java" />
+    <suppress checks="DesignForExtension" files="[\\/]SchemaOperationsFactory.java" />
 </suppressions>

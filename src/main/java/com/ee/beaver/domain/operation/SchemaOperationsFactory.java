@@ -11,7 +11,7 @@ public class SchemaOperationsFactory {
     this.mongo = mongo;
   }
 
-  public final SchemaOperation make(final DBObject spec) {
+  public SchemaOperation from(final DBObject spec) {
     if (spec.containsField("create")) {
       return new CreateCollection();
     }
@@ -24,7 +24,7 @@ public class SchemaOperationsFactory {
       return new DropDatabase(mongo);
     }
 
-    throw new IllegalArgumentException();
+    return SchemaOperation.NO_OP;
   }
 
 }

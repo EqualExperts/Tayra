@@ -2,24 +2,17 @@ package com.ee.beaver.domain.operation
 
 import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
+import static org.junit.Assert.fail
 
-import java.net.UnknownHostException
-import java.sql.DatabaseMetaData;
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.CommandResult
 import com.mongodb.DB
 import com.mongodb.DBObject
 import com.mongodb.Mongo
-import com.mongodb.MongoException
-
-import org.bson.types.BSONTimestamp
-import org.junit.AfterClass
-import org.junit.BeforeClass
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import static org.junit.Assert.fail
 
 class CreateCollectionSpecs extends RequiresMongoConnection {
 	def operation
@@ -27,37 +20,25 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	private String collectionName = 'home'
 	
 	@Before
-	public void setUp() {
+	public void givenADatabase() {
 		operation = new CreateCollection()
 		database = standalone.getDB(db)
 	}
 	
 	@After
-	public void cleanUp() {
+	public void dropDB() {
 		standalone.getDB(db).getCollection(collectionName).drop()
 	}
 
 	@Test
 	public void createsACollection() throws Exception {
 		//Given
-//		def document = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : db + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//					.add('create', collectionName)
-//					.add('capped', false)
-//					.add('size', null)
-//					.add('max', null)
-//					.get()
-//		)
-		
-		DBObject spec = new BasicDBObjectBuilder().start()
-							.add('create', collectionName)
-							.add('capped', false)
-							.add('size', null)
-							.add('max', null)
+		DBObject spec = new BasicDBObjectBuilder()
+							.start()
+								.add('create', collectionName)
+								.add('capped', false)
+								.add('size', null)
+								.add('max', null)
 							.get()
 							
 		//When
@@ -70,19 +51,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	
 	@Test
 	public void shoutsWhenACollectionAlreadyExists() {
-//		def document = new DocumentBuilder(
-//				ts: new BSONTimestamp(1352105652, 1),
-//				h :'3493050463814977392',
-//				op :'c',
-//				ns : db + '.$cmd',
-//				o : new BasicDBObjectBuilder().start()
-//				.add('create', collectionName)
-//				.add('capped', false)
-//				.add('size', null)
-//				.add('max', null)
-//				.get()
-//				)
-//		
+		//Given
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('create', collectionName)
 							.add('capped', false)
@@ -103,24 +72,12 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsACappedCollection() throws Exception {
 		//Given
-//		def document = new DocumentBuilder(
-//			ts: new BSONTimestamp(1352105652, 1),
-//			h :'3493050463814977392',
-//			op :'c',
-//			ns : db + '.$cmd',
-//			o : new BasicDBObjectBuilder().start()
-//					.add('create', collectionName)
-//					.add('capped', true)
-//					.add('size', 65536)
-//					.add('max', 2048)
-//					.get()
-//		)
 		DBObject spec = new BasicDBObjectBuilder().start()
 							.add('create', collectionName)
 							.add('capped', true)
 							.add('size', 65536)
 							.add('max', 2048)
-							.get()
+						.get()
 							
 		//When
 		operation.execute(database, spec)
@@ -133,5 +90,6 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 		assertThat result.get('capped'), is(true)    
 		assertThat result.get('max'), is(2048)    
 	}
+	//TODO: spec for collection with size
 	
 }

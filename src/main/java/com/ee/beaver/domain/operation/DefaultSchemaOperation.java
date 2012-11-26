@@ -9,9 +9,12 @@ import com.mongodb.util.JSON;
 class DefaultSchemaOperation implements Operation {
 
   private final Mongo mongo;
+  private final SchemaOperationsFactory schemaOperationsFactory;
 
-  public DefaultSchemaOperation(final Mongo mongo) {
+  public DefaultSchemaOperation(final Mongo mongo,
+      final SchemaOperationsFactory schemaOperationsFactory) {
     this.mongo = mongo;
+    this.schemaOperationsFactory = schemaOperationsFactory;
   }
 
   @Override
@@ -23,8 +26,7 @@ class DefaultSchemaOperation implements Operation {
     if ("$cmd".equals(dbCommand)) {
       DB db = mongo.getDB(dbName);
       DBObject spec = (DBObject) JSON.parse(document.get("o").toString());
-      SchemaOperation schemaOperation = new SchemaOperationsFactory(mongo)
-                                            .make(spec);
+      SchemaOperation schemaOperation = schemaOperationsFactory.from(spec);
       schemaOperation.execute(db, spec);
     }
   }
