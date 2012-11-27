@@ -20,26 +20,24 @@ public class BackupSpecs extends Specification {
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
-		given: 'that script does not run with any options'
+		given: 'no arguments'
 			def context = new Binding()
 			context.setVariable('args', [])
-			Script backup = new Backup(context)
 
-		when: 'it runs'
-			backup.run()
+		when: 'backup runs'
+			new Backup(context).run()
 
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required options: sf'
 	}
 	
 	def shoutsWhenNoOutputFileIsSupplied() {
-		given: 'that script executes with -s option only'
-		def context = new Binding()
-		context.setVariable('args', ['-s', 'localhost'])
-		Script backup = new Backup(context)
+		given: 'argument contains -s option only'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost'])
 
-		when: 'it runs'
-			backup.run()
+		when: 'backup runs with above args'
+			new Backup(context).run()
 
 			
 		then: 'error message should be shown as'
@@ -47,54 +45,52 @@ public class BackupSpecs extends Specification {
 	}
 
 	def shoutsWhenNoSourceMongoDBIsSupplied() {
-		given: 'that script executes with -f option only'
+		given: 'argument contains -f option only'
 			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out'])
-			Script backup = new Backup(context)
 
-		when: 'it runs'
-			backup.run()
+		when: 'backup runs with above args'
+			new Backup(context).run()
 
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required option: s'
 	}
 
 	def invokesBackupWhenAllMandatoryOptionsAreSupplied() {
-		given:'that script executes with -s and -f option'
+		given:'arguments contains -s and -f option'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
+			
+		and: 'a result captor is injected'
 			def result = new StringWriter()
 			context.setVariable('writer', result)
-			Script backup = new Backup(context)
 
-		when:'it runs'
-			backup.run()
+		when: 'backup runs with above args'
+			new Backup(context).run()
 
 		then: 'the output should contain "ts"'
 			result.toString().contains('ts')
 	}
 
 	def shoutsWhenMongoDBUrlIsIncorrect() {
-		given:'that script executes with non-existent source'
+		given:'arguments containing non-existent source'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'nonexistentHost', '-f', 'test.out'])
-			Script backup = new Backup(context)
 
-		when: 'it runs'
-			backup.run()
+		when: 'backup runs with above args'
+			new Backup(context).run()
 
 		then: 'error message should be shown as'
 			result.toString().contains('Oops!! Could not perform backup...nonexistentHost')
 	}
 
 	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
-		given: 'that script is run on a node that does not belong to rep set'
+		given: 'localhost not belonging to replica set'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27020'])
-			Script backup = new Backup(context)
 
-		when: 'it runs'
-			backup.run()
+		when: 'backup runs with above args'
+			new Backup(context).run()
 
 		then: 'error message should be shown as'
 			result.toString().contains('Oops!! Could not perform backup...localhost is not a part of ReplicaSet')
