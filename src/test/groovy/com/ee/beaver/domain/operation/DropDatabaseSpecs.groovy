@@ -4,21 +4,19 @@ import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
 import static org.junit.Assert.fail
 
-import java.sql.DatabaseMetaData;
-
-import org.bson.types.BSONTimestamp
 import org.junit.Before
 import org.junit.Test
 
-import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBCollection
 import com.mongodb.DBObject
 
 class DropDatabaseSpecs extends RequiresMongoConnection {
+	
 	def operation
-
+	private MongoUtils mongoUtils = new MongoUtils()
+	
 	@Before
 	public void given() {
 		operation = new DropDatabase(standalone)
@@ -30,9 +28,8 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		String dbName = 'databaseToBeDropped'
 		givenADatabase(dbName, 'home')
 		
-		DBObject spec = new BasicDBObjectBuilder().start()
-							.add('dropDatabase', 1)
-							.get()
+		def builder = mongoUtils.dropDatabase(dbName)
+		DBObject spec = builder.o
 
 		//When
 		operation.execute(standalone.getDB(dbName), spec)
@@ -53,9 +50,8 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		//Given
 		def nonExistentDB = 'nonExistentDB'
 		
-		DBObject spec = new BasicDBObjectBuilder().start()
-							.add('dropDatabase', 1)
-							.get()
+		def builder = mongoUtils.dropDatabase(nonExistentDB)
+		DBObject spec = builder.o
 		
 		//When
 		try {

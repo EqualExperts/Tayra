@@ -8,6 +8,7 @@ import com.mongodb.util.JSON
 
 @TupleConstructor
 class DeleteDocumentBuilder extends DocumentBuilder {
+	
 	boolean b;
 	
 	def asType(Class type) {

@@ -2,31 +2,29 @@ package com.ee.beaver.io
 
 import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
-import static org.mockito.Mockito.*
 import static org.mockito.BDDMockito.*
+import static org.mockito.Mockito.*
 
-import org.bson.BSONObject
-import org.bson.types.BSONTimestamp
+import org.bson.types.ObjectId
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.runners.MockitoJUnitRunner
 
-import com.ee.beaver.domain.operation.*;
-import com.ee.beaver.io.OplogReplayer
-import com.mongodb.BasicDBObject
+import com.ee.beaver.domain.operation.*
 import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.DB
 import com.mongodb.DBObject
-import com.mongodb.Mongo
-import com.mongodb.MongoException
-import org.bson.types.ObjectId
 
 @RunWith(MockitoJUnitRunner.class)
 public class OplogReplayerSpecs {
 	
 	private OplogReplayer replayer
+	private String collectionName = 'home'
+	private MongoUtils mongoUtils = new MongoUtils()
+	def objId = new ObjectId('509754dd2862862d511f6b57')
+	def dbName = 'beaver'
+	def name = '[Test Name]'
 	
 	@Mock
 	private OperationsFactory mockOperations
@@ -35,47 +33,41 @@ public class OplogReplayerSpecs {
 	private Operation mockOperation
 	
 	@Before
-	public void setup() {
+	public void given() {
 		replayer = new OplogReplayer(mockOperations)
 	}
 
 	@Test
 	public void replaysCreateCollectionOperation() throws Exception {
 		//Given
-		def document = new DocumentBuilder(
-			ts: new BSONTimestamp(1352105652, 1), 
-			h: '3493050463814977392',
-			op: 'c',
-			ns: 'person.$cmd',
-			o:  new BasicDBObjectBuilder().start().add( "create" , "testCollection" ).get()
-		)
+		def builder = mongoUtils.createCollection(dbName, collectionName)
+		DBObject spec = builder.o
+		
 		given(mockOperations.get('c')).willReturn(mockOperation)
 		
 		//When
-		replayer.replayDocument(document as String)
+		replayer.replayDocument(builder as String)
 		
 		//Then
-		verify(mockOperation).execute(document as DBObject)
+		verify(mockOperation).execute(builder as DBObject)
 	}
 	
 	@Test
 	public void replaysInsertDocumentOperation() throws Exception {
 		//Given
-		def document = new DocumentBuilder(
-			ts: new BSONTimestamp(1352105652, 1),
-			h: '3493050463814977392',
-			op: 'i',
-			ns: 'person.things',
-			o:  new BasicDBObjectBuilder().start()
-				.add( "_id" , new BasicDBObject('$oid', new ObjectId()))
-				.add( "name" , "[Test Name]").get()
-		)
+		def o = new BasicDBObjectBuilder()
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+					.get()
+		def builder = mongoUtils.insertDocument(dbName, collectionName, o)
+		
 		given(mockOperations.get('i')).willReturn(mockOperation)
 		
 		//When
-		replayer.replayDocument(document as String)
+		replayer.replayDocument(builder as String)
 		
 		//Then
-		verify(mockOperation).execute(document as DBObject)
+		verify(mockOperation).execute(builder as DBObject)
 	}
 }

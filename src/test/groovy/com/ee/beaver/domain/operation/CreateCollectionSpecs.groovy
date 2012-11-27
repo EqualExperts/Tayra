@@ -8,56 +8,47 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.CommandResult
 import com.mongodb.DB
 import com.mongodb.DBObject
-import com.mongodb.Mongo
 
 class CreateCollectionSpecs extends RequiresMongoConnection {
+	
 	def operation
 	DB database
 	private String collectionName = 'home'
+	private MongoUtils mongoUtils = new MongoUtils()
 	
 	@Before
 	public void givenADatabase() {
 		operation = new CreateCollection()
-		database = standalone.getDB(db)
+		database = standalone.getDB(dbName)
 	}
 	
 	@After
 	public void dropDB() {
-		standalone.getDB(db).getCollection(collectionName).drop()
+		standalone.getDB(dbName).getCollection(collectionName).drop()
 	}
 
 	@Test
 	public void createsACollection() throws Exception {
 		//Given
-		DBObject spec = new BasicDBObjectBuilder()
-							.start()
-								.add('create', collectionName)
-								.add('capped', false)
-								.add('size', null)
-								.add('max', null)
-							.get()
-							
+		def builder = mongoUtils.createCollection(dbName, collectionName)
+		DBObject spec = builder.o
+
 		//When
 		operation.execute(database, spec)
 		
 		//Then
-		def collectionExists = standalone.getDB(db).collectionExists(collectionName)
+		def collectionExists = standalone.getDB(dbName).collectionExists(collectionName)
 		assertThat collectionExists, is(true)    
 	}
 	
 	@Test
 	public void shoutsWhenACollectionAlreadyExists() {
 		//Given
-		DBObject spec = new BasicDBObjectBuilder().start()
-							.add('create', collectionName)
-							.add('capped', false)
-							.add('size', null)
-							.add('max', null)
-							.get()
+		def builder = mongoUtils.createCollection(dbName, collectionName)
+		DBObject spec = builder.o
 		
 		//When
 		operation.execute(database, spec)
@@ -72,24 +63,32 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsACappedCollection() throws Exception {
 		//Given
-		DBObject spec = new BasicDBObjectBuilder().start()
-							.add('create', collectionName)
-							.add('capped', true)
-							.add('size', 65536)
-							.add('max', 2048)
-						.get()
-							
+		def builder = mongoUtils.createCollection(dbName, collectionName,true,2048,1024)
+		DBObject spec = builder.o
+
 		//When
 		operation.execute(database, spec)
 		
 		//Then
-		DB db = standalone.getDB(db)
+		DB db = standalone.getDB(dbName)
 		assertThat db.collectionExists(collectionName), is(true)
 		
 		CommandResult result = db.getCollection(collectionName).getStats()
-		assertThat result.get('capped'), is(true)    
-		assertThat result.get('max'), is(2048)    
+		assertThat result.get('capped'), is(true)
+		assertThat result.get('max'), is(1024)
 	}
-	//TODO: spec for collection with size
 	
+	@Test
+	public void createsCollectionWithSize() {
+		//Given
+		def builder = mongoUtils.createCollection(dbName, collectionName,false,2048,null)
+		DBObject spec = builder.o
+		
+		//When
+		operation.execute(database, spec)
+		
+		//Then
+		def collectionExists = standalone.getDB(dbName).collectionExists(collectionName)
+		assertThat collectionExists, is(true)
+	}
 }

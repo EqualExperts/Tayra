@@ -11,10 +11,11 @@ import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress
 
 abstract class RequiresMongoConnection {
+	
 	static Mongo standalone;
 	static final String HOST = "localhost"
 	static final int PORT = 27020
-	String db = 'beaver'
+	String dbName = 'beaver'
 	
 	@BeforeClass
 	public static void connectToMongo() throws UnknownHostException,

@@ -3,40 +3,20 @@ package com.ee.beaver.domain.operation
 import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
 
-import java.net.UnknownHostException
-
-import com.mongodb.BasicDBObject
-import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.DBObject
-import com.mongodb.Mongo
-import com.mongodb.MongoException
-import com.mongodb.util.JSON
-import org.bson.types.BSONTimestamp
-import org.bson.types.ObjectId
 import org.junit.AfterClass
-import org.junit.BeforeClass
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 
-public class OperationsSpecs {
-	private static Mongo standalone;
-	private static final String HOST = "localhost";
-	private static final int PORT = 27020;
+import com.mongodb.Mongo
+import com.mongodb.MongoException
+
+public class OperationsSpecs extends RequiresMongoConnection {
+	
 	def operations
 
-	@BeforeClass
-	public static void connectToMongo() throws UnknownHostException,
-			MongoException {
-		standalone = new Mongo(HOST, PORT);
-	}
-
-	@AfterClass
-	public static void closeConnectionToMongo() {
-		standalone.close();
-	}
-	
 	@Before
-	public void setup() {
+	public void given() {
 		operations = new Operations(standalone)
 	}
 	

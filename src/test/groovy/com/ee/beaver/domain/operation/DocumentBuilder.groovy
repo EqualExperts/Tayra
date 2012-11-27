@@ -9,7 +9,8 @@ import com.mongodb.DBObject
 import com.mongodb.util.JSON
 
 @TupleConstructor
-class DocumentBuilder  {
+class DocumentBuilder {
+	
 	BSONTimestamp ts
 	String h
 	String op
