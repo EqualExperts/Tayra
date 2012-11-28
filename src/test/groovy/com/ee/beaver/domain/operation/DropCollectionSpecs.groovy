@@ -1,12 +1,5 @@
 package com.ee.beaver.domain.operation
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.fail
-
-import org.junit.Before
-import org.junit.Test
-
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
@@ -21,26 +14,25 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 	private String absentCollectionName = 'people'
 	private DB db
 	
-	@Before
-	public void givenADb() {
+	def setup() {
 		operation = new DropCollection()
 		db = standalone.getDB(dbName)
 	}
 	
-	@Test
-	public void dropsACollection() throws Exception {
-		//Given
-		givenACollection()
+	
+	def dropsACollection() throws Exception {
+		given: 'a collection exists in a database'
+			givenACollection()
 		
-		def builder = MongoUtils.dropCollection(dbName, collectionName)
-		DBObject spec = builder.o
+		and: 'a drop collection oplog entry payload'
+			def builder = MongoUtils.dropCollection(dbName, collectionName)
+			DBObject spec = builder.o
 
-		//When
-		operation.execute(db, spec)
+		when: 'the operation runs'
+			operation.execute(db, spec)
 		
-		//Then
-		def collectionExists = db.collectionExists(collectionName)
-		assertThat collectionExists, is(false)
+		then: 'the collection should not exist'
+			! db.collectionExists(collectionName)
 	}
 
 	private givenACollection() {
@@ -50,20 +42,20 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 		db.getCollection(collectionName).insert(dbobj)
 	}
 	
-	@Test
-	public void dropsACappedCollection() throws Exception {
-		//Given
-		givenACappedCollection(standalone, db)
+	
+	def dropsACappedCollection() throws Exception {
+		given: 'a capped collection exists in a database'
+			givenACappedCollection(standalone, db)
 		
-		def builder = MongoUtils.dropCollection(dbName, cappedCollectionName)
-		DBObject spec = builder.o
+		and: 'a drop collection oplog entry payload'
+			def builder = MongoUtils.dropCollection(dbName, cappedCollectionName)
+			DBObject spec = builder.o
 		
-		//When
-		operation.execute(db, spec)
+		when: 'the operation runs'
+			operation.execute(db, spec)
 		
-		//Then
-		def collectionExists = db.collectionExists(cappedCollectionName)
-		assertThat collectionExists, is(false)
+		then: 'the collection should not exist'
+			! db.collectionExists(cappedCollectionName)
 	}
 	
 	private givenACappedCollection(Mongo standalone, DB db) {
@@ -76,19 +68,17 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 		db.createCollection(cappedCollectionName,options)
 	}
 	
-	@Test
-	public void shoutsWhenCollectionToBeDroppedDoesNotExistInTarget() throws Exception {
-		//Given
-		def builder = MongoUtils.dropCollection(dbName, absentCollectionName)
-		DBObject spec = builder.o
+	
+	def shoutsWhenCollectionToBeDroppedDoesNotExistInTarget() throws Exception {
+		given: 'a drop collection oplog entry payload for a non-existent collection'
+			def builder = MongoUtils.dropCollection(dbName, absentCollectionName)
+			DBObject spec = builder.o
 		
-		//When
-		try {
+		when: 'the operation runs'
 			operation.execute(db, spec)
-			fail("Should not drop collection that does not exist")
-		} catch (DropCollectionFailed problem) {
-		  //Then
-		  assertThat problem.message, is("Could Not Drop Collection people")
-		}
+			
+		then: 'it complains that collection to be dropped does not exist'
+			def problem = thrown(DropCollectionFailed)
+			problem.message == "Could Not Drop Collection people"
 	}
 }

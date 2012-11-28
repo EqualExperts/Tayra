@@ -1,16 +1,9 @@
 package com.ee.beaver.domain.operation
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.fail
-
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-
 import com.mongodb.CommandResult
 import com.mongodb.DB
 import com.mongodb.DBObject
+import spock.lang.*
 
 class CreateCollectionSpecs extends RequiresMongoConnection {
 	
@@ -18,76 +11,75 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	DB database
 	private String collectionName = 'home'
 	
-	@Before
-	public void givenADatabase() {
+	def setup() {
 		operation = new CreateCollection()
 		database = standalone.getDB(dbName)
 	}
 	
-	@After
-	public void dropDB() {
+	def cleanup() {
 		standalone.getDB(dbName).getCollection(collectionName).drop()
 	}
 
-	@Test
-	public void createsACollection() throws Exception {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName)
-		DBObject spec = builder.o
+	def createsACollection() throws Exception {
+		given: 'a create collection oplog entry'
+			def builder = MongoUtils.createCollection(dbName, collectionName)
+			DBObject spec = builder.o
 
-		//When
-		operation.execute(database, spec)
-		
-		//Then
-		def collectionExists = standalone.getDB(dbName).collectionExists(collectionName)
-		assertThat collectionExists, is(true)    
-	}
-	
-	@Test
-	public void shoutsWhenACollectionAlreadyExists() {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName)
-		DBObject spec = builder.o
-		
-		//When
-		operation.execute(database, spec)
-		try {
+		when: 'the operation runs'
 			operation.execute(database, spec)
-		    fail("Should not have created collection: $collectionName, as it already exists!")
-		} catch (CreateCollectionFailed problem) {
-		  assertThat problem.message, is("command failed [command failed [create] { \"serverUsed\" : \"localhost:27020\" , \"errmsg\" : \"collection already exists\" , \"ok\" : 0.0}")
-		}
+		
+		then: 'collection should exist'
+			standalone.getDB(dbName).collectionExists(collectionName)
 	}
 	
-	@Test
-	public void createsACappedCollection() throws Exception {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName,true,2048,1024)
-		DBObject spec = builder.o
+	
+	def shoutsWhenACollectionAlreadyExists() {
+		given: 'a create collection oplog entry'
+			def builder = MongoUtils.createCollection(dbName, collectionName)
+			DBObject spec = builder.o
+		
+		and: 'the collection already exists'
+			operation.execute(database, spec)
+		
+		when: 'the operation runs again'
+			operation.execute(database, spec)
 
-		//When
-		operation.execute(database, spec)
-		
-		//Then
-		DB db = standalone.getDB(dbName)
-		assertThat db.collectionExists(collectionName), is(true)
-		
-		CommandResult result = db.getCollection(collectionName).getStats()
-		assertThat result.get('capped'), is(true)
-		assertThat result.get('max'), is(1024)
+		then: 'it complains that the collection cannot be created again'
+			def problem = thrown(CreateCollectionFailed)
+		    problem.message == "command failed [command failed [create] { \"serverUsed\" : \"localhost:27020\" , \"errmsg\" : \"collection already exists\" , \"ok\" : 0.0}"
 	}
 	
-	@Test
-	public void createsCollectionWithSize() {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName,false,2048,null)
-		DBObject spec = builder.o
+	
+	def createsACappedCollection() throws Exception {
+		given: 'a create capped collection oplog entry'
+			def isCapped = true
+			def ignoreMaxSize = 1024
+			def builder = MongoUtils.createCollection(dbName, collectionName, isCapped, 2048, ignoreMaxSize)
+			DBObject spec = builder.o
+
+		when: 'the operation runs'
+			operation.execute(database, spec)
 		
-		//When
-		operation.execute(database, spec)
+		then: 'the capped collection with size should exist'
+			DB db = standalone.getDB(dbName)
+			db.collectionExists(collectionName)
 		
-		//Then
-		def collectionExists = standalone.getDB(dbName).collectionExists(collectionName)
-		assertThat collectionExists, is(true)
+			CommandResult result = db.getCollection(collectionName).getStats()
+			result.get('capped')
+			result.get('max')== 1024
+	}
+	
+	def createsCollectionWithSize() {
+		given:'a create collection oplog entry with specific size'
+		    def isCapped = false
+			def ignoreMaxSize = null
+			def builder = MongoUtils.createCollection(dbName, collectionName, isCapped, 2048, ignoreMaxSize)
+			DBObject spec = builder.o
+		
+		when: 'the operation runs'
+			operation.execute(database, spec)
+		
+		then: 'the collection should exist'
+			standalone.getDB(dbName).collectionExists(collectionName)
 	}
 }

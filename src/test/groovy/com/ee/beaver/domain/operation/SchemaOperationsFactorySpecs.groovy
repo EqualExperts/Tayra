@@ -1,79 +1,66 @@
 package com.ee.beaver.domain.operation
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
-
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 import com.mongodb.Mongo
-import com.mongodb.MongoException
 
 class SchemaOperationsFactorySpecs extends RequiresMongoConnection {
 
 	private String collectionName = 'home'
 	def schemaOperationsFactory
 
-	@Before
-	public void given() {
+	def setup() {
 		schemaOperationsFactory = new SchemaOperationsFactory(standalone)
 	}
 	
-	@Test
-	public void producesCreateCollectionOperation() throws Exception {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName)
-		DBObject spec = builder.o
+	def producesCreateCollectionOperation() throws Exception {
+		given: 'a create collection oplog entry payload'
+			def builder = MongoUtils.createCollection(dbName, collectionName)
+			DBObject spec = builder.o
 
-		//When
-		SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
+		when: 'SchemaOperation instance is created'
+			SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
 		
-		//Then
-		assertThat schemaOperation, instanceOf(CreateCollection.class)
+		then: 'it creates CreateCollection instance'
+			schemaOperation instanceof CreateCollection
 	}
 	
-	@Test
-	public void producesDropCollectionOperation() throws Exception {
-		//Given
-		def builder = MongoUtils.dropCollection(dbName, collectionName)
-		DBObject spec = builder.o
+	def producesDropCollectionOperation() throws Exception {
+		given: 'a drop collection oplog entry payload'
+			def builder = MongoUtils.dropCollection(dbName, collectionName)
+			DBObject spec = builder.o
 		
-		//When
-		SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
+		when: 'SchemaOperation instance is created'
+			SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
 		
-		//Then
-		assertThat schemaOperation, instanceOf(DropCollection.class)
+		then: 'it creates DropCollection instance'
+			schemaOperation instanceof DropCollection
 	}
 	
-	@Test
-	public void producesDropDatabaseOperation() throws Exception {
-		//Given
-		def builder = MongoUtils.dropDatabase("SomeDbName")
-		DBObject spec = builder.o
+	def producesDropDatabaseOperation() throws Exception {
+		given: 'a drop database oplog entry payload'
+			def builder = MongoUtils.dropDatabase("SomeDbName")
+			DBObject spec = builder.o
 		
-		//When
-		SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
+		when: 'SchemaOperation instance is created'
+			SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
 		
-		//Then
-		assertThat schemaOperation, instanceOf(DropDatabase.class)
+		then: 'it creates DropDatabase instance'
+			schemaOperation instanceof DropDatabase
 	}
 	
-	@Test
-	public void producesaNoOperationForInvalidField() throws Exception {
-		//Given
-		DBObject spec = new BasicDBObjectBuilder()
-							.start()
-								.add('invalid', 1)
-							.get()
-		//When
-		SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
+	def producesaNoOperationForInvalidField() throws Exception {
+		given: 'an invalid oplog entry payload'
+			DBObject spec = new BasicDBObjectBuilder()
+								.start()
+									.add('invalid', 1)
+								.get()
+								
+		when: 'SchemaOperation instance is created'
+			SchemaOperation schemaOperation = schemaOperationsFactory.from(spec)
 
-		//Then
-		assertThat schemaOperation, sameInstance(SchemaOperation.NO_OP)
+		then: 'No operation is performed'
+			schemaOperation == SchemaOperation.NO_OP
 	}
 	
 }

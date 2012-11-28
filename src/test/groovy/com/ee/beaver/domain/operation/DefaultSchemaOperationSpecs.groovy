@@ -1,49 +1,36 @@
 package com.ee.beaver.domain.operation
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.mockito.BDDMockito.*
-import static org.mockito.Mockito.*
-
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.runners.MockitoJUnitRunner
-
 import com.mongodb.DBObject
 import com.mongodb.Mongo
 
-@RunWith(MockitoJUnitRunner.class)
 class DefaultSchemaOperationSpecs extends RequiresMongoConnection {
 
 	DefaultSchemaOperation defaultSchemaOperation
 	private String collectionName = 'home'
 	
-	@Mock
 	private SchemaOperation mockSchemaOperation
 
-	@Mock
 	private SchemaOperationsFactory mockSchemaOperationsFactory
 
-	@Before
-	public void givenADefaultSchemaOperation() {
+	def setup() {
+		mockSchemaOperationsFactory = Stub(SchemaOperationsFactory)
+		mockSchemaOperation = Mock(SchemaOperation)
 		defaultSchemaOperation = new DefaultSchemaOperation(standalone,mockSchemaOperationsFactory)
 	}
 
-	@Test
-	public void performsCorrectSchemaOperation() {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName)
-		DBObject spec = builder.o
-
-		given(mockSchemaOperationsFactory.from(spec)).willReturn(mockSchemaOperation)
+	def performsCorrectSchemaOperation() {
+		given: 'a create collection oplog entry and its payload'
+			def builder = MongoUtils.createCollection(dbName, collectionName)
+			DBObject spec = builder.o
 		
-		//When
-		defaultSchemaOperation.execute(builder as DBObject)
+		and: 'SchemaOperations factory gets a Create Collection Operation'
+			mockSchemaOperationsFactory.from(spec) >> mockSchemaOperation
 		
-		//Then
-		verify(mockSchemaOperation).execute(standalone.getDB(dbName), spec)
+		when: 'the operation runs'
+			defaultSchemaOperation.execute(builder as DBObject)
+		
+		then: 'Create Collection Operation executes the oplog entry'
+			1 * mockSchemaOperation.execute(standalone.getDB(dbName), spec)
 	}
 	
 }

@@ -1,24 +1,21 @@
 package com.ee.beaver.domain.operation
 
-import java.net.UnknownHostException;
+import java.net.UnknownHostException
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
-import com.mongodb.MongoOptions;
+import com.mongodb.Mongo
+import com.mongodb.MongoException
+import com.mongodb.MongoOptions
 import com.mongodb.ServerAddress
+import spock.lang.*
 
-abstract class RequiresMongoConnection {
+abstract class RequiresMongoConnection extends Specification {
 	
 	static Mongo standalone;
 	static final String HOST = "localhost"
 	static final int PORT = 27020
 	String dbName = 'beaver'
 	
-	@BeforeClass
-	public static void connectToMongo() throws UnknownHostException,
+	def setupSpec() throws UnknownHostException,
 			MongoException {
 		def options = new MongoOptions()
 		options.safe = true
@@ -26,8 +23,7 @@ abstract class RequiresMongoConnection {
 		standalone = new Mongo(server, options);
 	}
 
-	@AfterClass
-	public static void closeConnectionToMongo() {
+	def cleanupSpec() {
 		standalone.close();
 	}
 }

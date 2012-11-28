@@ -2,67 +2,36 @@ package com.ee.beaver.domain.operation
 
 import static org.hamcrest.MatcherAssert.*
 import static org.hamcrest.Matchers.*
-
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
-
 import com.mongodb.Mongo
-import com.mongodb.MongoException
 
 public class OperationsSpecs extends RequiresMongoConnection {
 	
 	def operations
 
-	@Before
-	public void given() {
+	def setup() {
 		operations = new Operations(standalone)
 	}
 	
-	@Test
-	public void producesCreateCollectionOperation() throws Exception {
-		//When
-		Operation operation = operations.get('c')
+	def producesCorrectOperationInstances() {
 		
-		//Then 
-		assertThat operation, instanceOf(DefaultSchemaOperation.class)
+		expect: 'operations to be creating appropriate instances'
+			assert operations.get(opCode), instanceOf(klass)
+			
+		where: 'create, insert, update and delete opcodes are provided'
+				opCode | klass
+				'c'    | DefaultSchemaOperation
+				'i'    | InsertDocument
+				'u'    | UpdateDocument
+				'd'    | DeleteDocument
 	}
-	
-	@Test
-	public void producesInsertDocumentOperation() throws Exception {
-		//When
-		Operation operation = operations.get('i')
-		
-		//Then 
-		assertThat operation, instanceOf(InsertDocument.class)
-	}
-	
-	@Test
-	public void producesaNoOperationWhenItCannotIdentifyOperationCode() throws Exception {
-		//When
-		Operation operation = operations.get('unindentifiableOpcode')
+
+	def producesaNoOperationWhenItCannotIdentifyOperationCode() throws Exception {
+		when: 'unidentifiable opcode is provided'
+			Operation operation = operations.get('unindentifiableOpcode')
 				
-		//Then 
-		assertThat operation, sameInstance(Operation.NO_OP)
+		then: 'No operation is performed'
+			operation == Operation.NO_OP
 	}
 	
-	@Test
-	public void producesDeleteDocumentOperation() throws Exception {
-		//When
-		Operation operation = operations.get('d')
-		
-		//Then
-		assertThat operation, instanceOf(DeleteDocument.class)
-	}
-	
-	@Test
-	public void producesUpdateDocumentOperation() throws Exception {
-		//When
-		Operation operation = operations.get('u')
-				
-		//Then
-		assertThat operation, instanceOf(UpdateDocument.class)
-	}
 
 }

@@ -1,15 +1,8 @@
 package com.ee.beaver.domain.operation
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.fail
-
 import org.bson.types.ObjectId
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 
-import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 
@@ -26,8 +19,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 	def documentToBeUpdated
 	def nestedDocumentToBeUpdated
 	
-	@Before
-	public void givenDocumentToBeUpdatedExistsInTargetDB() {
+	def setup() {
 		documentToBeUpdated = new BasicDBObjectBuilder()
 								.start()
 									.add('_id', objId)
@@ -56,159 +48,156 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 		standalone.getDB(db).getCollection(collectionName).insert(documentToBeUpdated)
 	}
 	
-	@After
-	public void cleanUp() {
+	def cleanup() {
 		standalone.getDB(dbName).getCollection(collectionName).drop()
 		standalone.getDB(dbName).getCollection(prefixedCollectionName).drop()
 		standalone.getDB(anotherDb).dropDatabase()
 	}
 	
 	private void assertThatDocumentIsPresentInCollection(String db, String collection, DBObject document) {
-		assertThat standalone.getDB(db).getCollection(collection).findOne(document), is(document)
+		standalone.getDB(db).getCollection(collection).findOne(document) == document
 	}
 	
-	@Test
-	public void updatesDocument() throws Exception {
-		//Given
-		def o2 = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-					.get()
-					
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('name', updatedName)
-					.get()
-		
-		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
-		
-		//When
-		operation.execute(document)
-
-		//Then
-		def expectedDocument = new BasicDBObjectBuilder()
-									.start()
-										.add('_id', objId)
-										.add('name', updatedName)
-									.get()
-		assertThatDocumentIsPresentInCollection(dbName, collectionName, expectedDocument)
-	}
 	
-	@Test
-	public void updatesDocumentInAPrefixedCollection() throws Exception {
-		//Given
-		def o2 = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-					.get()
-					
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('name', updatedName)
-					.get()
-		
-		def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as DBObject
-		
-		//When
-		operation.execute(document)
-
-		//Then
-		def expectedDocument = new BasicDBObjectBuilder()
-									.start()
-										.add('_id', objId)
-										.add('name', updatedName)
-									.get()
-		assertThatDocumentIsPresentInCollection(dbName, prefixedCollectionName, expectedDocument)
-	}
-	
-	@Test
-	public void updatesDocumentInAnotherDatabase() throws Exception {
-		//Given
-		def o2 = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-					.get()
-					
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('name', updatedName)
-					.get()
-		
-		def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as DBObject
-
-		//When
-		operation.execute(document)
-
-		//Then
-		def expectedDocument = new BasicDBObjectBuilder()
-									.start()
-										.add('_id', objId)
-										.add('name', updatedName)
-									.get()
-		assertThatDocumentIsPresentInCollection(anotherDb, collectionName, expectedDocument)
-	}
-	
-	@Test
-	public void updatesNestedDocument() {
-		//Given
-		def o2 = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', nestedObjId)
-					.get()
-		
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', nestedObjId)
-						.add('name', updatedName)
-						.push('address')
-							.add('street', '[Any Street]')
-							.add('city', '[Any City]')
-							.add('country', '[COUNT]')
-						.pop()
-					.get()
-					
-		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
-
-		//When
-		operation.execute(document)
-
-		//Then
-		def expectedDocument = new BasicDBObjectBuilder()
-								.start()
-									.add('_id', nestedObjId)
-									.add('name', updatedName)
-									.push('address')
-										.add('street', '[Any Street]')
-										.add('city', '[Any City]')
-										.add('country', '[COUNT]')
-									.pop()
-								.get()
-		assertThatDocumentIsPresentInCollection(dbName, collectionName, expectedDocument)
-	}
-	
-	@Test
-	public void shoutsWhenDocumentToUpdateDoesNotExistInTarget() throws Exception {
-		//Given
-		def objId = new ObjectId('509e8839f91e1d01ec6dfb50')
-		def o2 = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-					.get()
-					
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('name', updatedName)
-					.get()
-		
-		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
-
-		//When
-		try {
+	def updatesDocument() throws Exception {
+		given: 'an update document oplog entry'
+			def o2 = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+						.get()
+						
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('name', updatedName)
+						.get()
+			
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+			
+		when: 'the operation runs'
 			operation.execute(document)
-			fail("Should not update document that does not exist")
-		} catch (UpdateFailed problem) {
-		  //Then
-		  assertThat problem.message, is('Document does not exist { \"_id\" : { \"$oid\" : \"'+ objId +'\"}}')
-		}
+
+		then: 'updated document should exist'
+			def expectedDocument = new BasicDBObjectBuilder()
+										.start()
+											.add('_id', objId)
+											.add('name', updatedName)
+										.get()
+			assertThatDocumentIsPresentInCollection(dbName, collectionName, expectedDocument)
+	}
+	
+	
+	def updatesDocumentInAPrefixedCollection() throws Exception {
+		given: 'an update document oplog entry on a prefixed collection'
+			def o2 = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+						.get()
+						
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('name', updatedName)
+						.get()
+			
+			def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as DBObject
+		
+		when: 'the operation runs'
+			operation.execute(document)
+
+		then: 'updated document should exist'
+			def expectedDocument = new BasicDBObjectBuilder()
+										.start()
+											.add('_id', objId)
+											.add('name', updatedName)
+										.get()
+			assertThatDocumentIsPresentInCollection(dbName, prefixedCollectionName, expectedDocument)
+	}
+	
+	
+	def updatesDocumentInAnotherDatabase() throws Exception {
+		given: 'an update document oplog entry on another database'
+			def o2 = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+						.get()
+						
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('name', updatedName)
+						.get()
+			
+			def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as DBObject
+
+		when: 'the operation runs'
+			operation.execute(document)
+
+		then: 'updated document should exist'
+			def expectedDocument = new BasicDBObjectBuilder()
+										.start()
+											.add('_id', objId)
+											.add('name', updatedName)
+										.get()
+			assertThatDocumentIsPresentInCollection(anotherDb, collectionName, expectedDocument)
+	}
+	
+	
+	def updatesNestedDocument() {
+		given: 'an update document oplog entry for a nested document'
+			def o2 = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', nestedObjId)
+						.get()
+			
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', nestedObjId)
+							.add('name', updatedName)
+							.push('address')
+								.add('street', '[Any Street]')
+								.add('city', '[Any City]')
+								.add('country', '[COUNT]')
+							.pop()
+						.get()
+						
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+
+		when: 'the operation runs'
+			operation.execute(document)
+
+		then: 'updated document should exist'
+			def expectedDocument = new BasicDBObjectBuilder()
+									.start()
+										.add('_id', nestedObjId)
+										.add('name', updatedName)
+										.push('address')
+											.add('street', '[Any Street]')
+											.add('city', '[Any City]')
+											.add('country', '[COUNT]')
+										.pop()
+									.get()
+			assertThatDocumentIsPresentInCollection(dbName, collectionName, expectedDocument)
+	}
+	
+	
+	def shoutsWhenDocumentToUpdateDoesNotExistInTarget() throws Exception {
+		given: 'an update document oplog entry for a non-existing document'
+			def objId = new ObjectId('509e8839f91e1d01ec6dfb50')
+			def o2 = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+						.get()
+						
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('name', updatedName)
+						.get()
+			
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+
+		when: 'the operation runs'
+			operation.execute(document)
+			
+		then: 'it complains that document to be updated does not exist'
+			def problem = thrown(UpdateFailed)
+			problem.message == 'Document does not exist { \"_id\" : { \"$oid\" : \"'+ objId +'\"}}'
 	}
 }

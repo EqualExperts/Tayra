@@ -1,12 +1,5 @@
 package com.ee.beaver.domain.operation
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.fail
-
-import org.junit.Before
-import org.junit.Test
-
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBCollection
@@ -16,26 +9,25 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 	
 	def operation
 	
-	@Before
-	public void given() {
+	def setup() {
 		operation = new DropDatabase(standalone)
 	}
 	
-	@Test
-	public void dropsDatabase() throws Exception {
-		//Given
-		String dbName = 'databaseToBeDropped'
-		givenADatabase(dbName, 'home')
+	def dropsDatabase() throws Exception {
+		given: 'a database exists'
+			String dbName = 'databaseToBeDropped'
+			givenADatabase(dbName, 'home')
 		
-		def builder = MongoUtils.dropDatabase(dbName)
-		DBObject spec = builder.o
+		and: 'a drop database oplog entry payload'
+			def builder = MongoUtils.dropDatabase(dbName)
+			DBObject spec = builder.o
 
-		//When
-		operation.execute(standalone.getDB(dbName), spec)
+		when: 'the operation runs'
+			operation.execute(standalone.getDB(dbName), spec)
 
-		//Then
-		List<String> databases = standalone.getDatabaseNames()
-		assertThat databases, not(hasItem(dbName))
+		then: 'the database should not exist'
+			List<String> databases = standalone.getDatabaseNames()
+			!databases.contains(dbName)
 	}
 	
 	private void givenADatabase(dbName, collectionName) {
@@ -44,21 +36,19 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		collection.insert(new BasicDBObjectBuilder().start().get())
 	}
 	
-	@Test
-	public void shoutsWhenDatabaseToBeDroppedDoesNotExist() throws Exception {
-		//Given
-		def nonExistentDB = 'nonExistentDB'
+	
+	def shoutsWhenDatabaseToBeDroppedDoesNotExist() throws Exception {
+		given: 'a drop database oplog entry payload for a non-existent database'
+			def nonExistentDB = 'nonExistentDB'
+			
+			def builder = MongoUtils.dropDatabase(nonExistentDB)
+			DBObject spec = builder.o
 		
-		def builder = MongoUtils.dropDatabase(nonExistentDB)
-		DBObject spec = builder.o
-		
-		//When
-		try {
+		when: 'the operation runs'
 			operation.execute(standalone.getDB(nonExistentDB), spec)
-			fail('Should not drop database that does not exist')
-		} catch (DropDatabaseFailed problem) {
-		  //Then
-		  assertThat problem.message, containsString("Could Not Drop Database $nonExistentDB")
-		}
+			
+		then: 'it complains that database to be dropped does not exist'
+			def problem = thrown(DropDatabaseFailed)
+			 problem.message == "Could Not Drop Database $nonExistentDB"
 	}
 }
