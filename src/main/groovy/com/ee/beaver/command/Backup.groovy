@@ -24,6 +24,7 @@ if(!options) {
 sourceMongoDB = options.s
 recordToFile = options.f
 timestampFile = 'timestamp.out'
+fromTimestamp = null
 
 def getWriter() {
   binding.hasVariable('writer') ? binding.getVariable('writer')
@@ -50,7 +51,7 @@ try {
   mongo = new Mongo(server)
   DB local = mongo.getDB("local")
   oplog = new Oplog(local)
-  reader = new OplogReader(oplog, isContinuous)
+  reader = new OplogReader(oplog, fromTimestamp, isContinuous)
 
   console.println "Backup Started On: ${new Date()}"
   new Copier().copy(reader, writer, listener)

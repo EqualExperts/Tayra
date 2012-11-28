@@ -1,15 +1,16 @@
 package com.ee.beaver.io
 
 import spock.lang.*
-
 import com.ee.beaver.domain.NotAReplicaSetNode
 import com.ee.beaver.domain.Oplog
+import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
+import com.mongodb.DBObject
 import com.mongodb.Mongo
 import com.mongodb.MongoException
 
 public class CopierSpecs extends Specification {
-	
+
 	private static Mongo replicaSet
 	private static final String HOST = "localhost"
 	private static final int PORT = 27017
@@ -19,7 +20,7 @@ public class CopierSpecs extends Specification {
 	private final String document = "\"ts\""
 	private OplogReplayer mockOplogReplayer
 	private CopyListener mockCopyListener
-	
+
 	def setupSpec() throws UnknownHostException, MongoException {
 		replicaSet = new Mongo(HOST, PORT)
 	}
@@ -41,7 +42,12 @@ public class CopierSpecs extends Specification {
 	def writesOplogToDestination() throws Exception {
 		given:'a writer and an oplog reader'
 			Writer writer = new StringWriter()
-			OplogReader reader = new OplogReader(new Oplog(local), false)
+			DBObject dbObject = local.getCollection("oplog.rs").find().next();
+			DBObject query = new BasicDBObjectBuilder()
+							.start()
+								.add("ts", dbObject.get("ts"))
+							.get();
+			OplogReader reader = new OplogReader(new Oplog(local), query.toString(), false)
 
 		when: 'document is copied'
 			copier.copy(reader, writer)
@@ -50,7 +56,7 @@ public class CopierSpecs extends Specification {
 			writer.toString().contains("ts")
 	}
 
-	
+
 	def replaysOplog() throws Exception {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
@@ -64,13 +70,13 @@ public class CopierSpecs extends Specification {
 			1 * mockOplogReplayer.replayDocument(document)
 	}
 
-	
+
 	def notifiesWhenReadingADocumentFromReaderIsSuccessful()
 			throws Exception {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
 			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
-			
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
 
@@ -81,13 +87,13 @@ public class CopierSpecs extends Specification {
 			1 * mockCopyListener.onReadSuccess(document)
 	}
 
-	
+
 	def notifiesWhenWritingADocumentToReplayerIsSuccessful()
 			throws Exception {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
 			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
-			
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
 
@@ -98,15 +104,15 @@ public class CopierSpecs extends Specification {
 			1 * mockCopyListener.onWriteSuccess(document)
 	}
 
-	
+
 	def notifiesWhenReplayerOperationFails() throws Exception {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
 			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
-			
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
-			
+
 		and: 'a problem occurs when the replay fails'
 			final RuntimeException problem = new RuntimeException(
 					"Document to update does not exist")
@@ -118,24 +124,24 @@ public class CopierSpecs extends Specification {
 		then: 'notifies a successful read'
 			0 * mockCopyListener.onReadFailure(document, problem)
 			1 * mockCopyListener.onReadSuccess(document)
-			
+
 		and: 'a failed write'
 			1 * mockCopyListener.onWriteFailure(document, problem)
 			0 * mockCopyListener.onWriteSuccess(document)
 	}
 
-	
+
 	def notifiesWhenReadingFromReaderFails() throws Exception {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
 			BufferedReader mockReader = Mock(BufferedReader)
-			
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
-			
+
 		and: 'a problem occurs while reading'
 			final IOException problem = new IOException()
-			mockReader.readLine() >> {throw problem}	
+			mockReader.readLine() >> {throw problem}
 
 		when: 'the document is copied'
 			copier.copy(mockReader, mockOplogReplayer, mockCopyListener)
@@ -147,20 +153,20 @@ public class CopierSpecs extends Specification {
 			0 * mockCopyListener.onWriteFailure(document, problem)
 	}
 
-	
+
 	def notifiesWhenReadingADocumentFromOplogIsSuccessful()
 			throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
 			Writer mockWriter = Mock(Writer)
-			
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
-			
+
 		and: 'reader reads a document'
 			mockReader.hasDocument() >>true >> false
 			mockReader.readDocument() >> document
-			
+
 
 		when: 'the document is copied'
 			copier.copy(mockReader, mockWriter, mockCopyListener)
@@ -169,16 +175,16 @@ public class CopierSpecs extends Specification {
 			1 * mockCopyListener.onReadSuccess(document)
 	}
 
-	
+
 	def notifiesWhenWritingADocumentToWriterIsSuccessful()
 			throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
 			Writer mockWriter = Mock(Writer)
-		
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener.class)
-			
+
 		and: 'reader reads a document'
 			mockReader.hasDocument() >>true >> false
 			mockReader.readDocument() >> document
@@ -190,19 +196,19 @@ public class CopierSpecs extends Specification {
 			1 * mockCopyListener.onWriteSuccess(document)
 	}
 
-	
+
 	def notifiesWhenWriterFailsToWrite() throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
 			Writer mockWriter = Mock(Writer)
-			
-		and: 'a copy listener'	
+
+		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
-			
-		and: 'reader reads a document'	
+
+		and: 'reader reads a document'
 			mockReader.hasDocument() >> true >> false
 			mockReader.readDocument() >> document
-			
+
 		and: 'a problem occurs while writing'
 			final IOException problem = new IOException("Disk Full")
 			mockWriter.append(document) >> {throw problem}
@@ -213,26 +219,26 @@ public class CopierSpecs extends Specification {
 		then: 'it notifies a successful read'
 			0 * mockCopyListener.onReadFailure(document, problem)
 			1 * mockCopyListener.onReadSuccess(document)
-		
+
 		and: 'a failed write'
 			1 * mockCopyListener.onWriteFailure(document, problem)
 			0 * mockCopyListener.onWriteSuccess(document)
 	}
 
-	
+
 	def notifiesWhenReadingDocumentFromOplogFails() throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
 			Writer mockWriter = Mock(Writer)
-		
+
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
-		
+
 		and: 'problem occurs while reading the document'
-			mockReader.hasDocument() >> true 
+			mockReader.hasDocument() >> true
 			RuntimeException problem = new MongoException("Connection Lost!")
 			mockReader.readDocument() >> { throw problem }
-			
+
 		when: 'the document is copied'
 			copier.copy(mockReader, mockWriter, mockCopyListener)
 

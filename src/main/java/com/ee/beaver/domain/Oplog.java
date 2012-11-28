@@ -26,12 +26,18 @@ public class Oplog implements MongoCollection {
 
   @Override
   public final MongoCollectionIterator<DBObject> find() {
-    return find(false);
+    return find(null, false);
   }
 
   @Override
-  public final MongoCollectionIterator<DBObject> find(final boolean tailable) {
-    return new OplogIterator(oplog, tailable);
+  public final MongoCollectionIterator<DBObject> find(final DBObject query) {
+    return find(query, false);
+  }
+
+  @Override
+  public final MongoCollectionIterator<DBObject> find(final DBObject
+    query, final boolean tailable) {
+      return new OplogIterator(oplog, query, tailable);
   }
 
   private static class OplogIterator implements
@@ -39,13 +45,13 @@ public class Oplog implements MongoCollection {
 
     private DBCursor cursor;
 
-    public OplogIterator(final DBCollection collection,
-        final boolean tailable) {
-      cursor = collection.find();
+    public OplogIterator(final DBCollection collection, final DBObject
+    query, final boolean tailable) {
+      cursor = collection.find(query);
       if (tailable) {
-        cursor.addOption(Bytes.QUERYOPTION_TAILABLE);
-        cursor.addOption(Bytes.QUERYOPTION_AWAITDATA);
-      }
+          cursor.addOption(Bytes.QUERYOPTION_TAILABLE);
+          cursor.addOption(Bytes.QUERYOPTION_AWAITDATA);
+        }
     }
 
     @Override
@@ -77,4 +83,6 @@ public class Oplog implements MongoCollection {
       cursor = null;
     }
   }
+
+
 }
