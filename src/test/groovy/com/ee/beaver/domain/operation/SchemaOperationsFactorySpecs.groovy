@@ -16,7 +16,6 @@ import com.mongodb.MongoException
 class SchemaOperationsFactorySpecs extends RequiresMongoConnection {
 
 	private String collectionName = 'home'
-	private MongoUtils mongoUtils = new MongoUtils()
 	def schemaOperationsFactory
 
 	@Before
@@ -27,7 +26,7 @@ class SchemaOperationsFactorySpecs extends RequiresMongoConnection {
 	@Test
 	public void producesCreateCollectionOperation() throws Exception {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName)
+		def builder = MongoUtils.createCollection(dbName, collectionName)
 		DBObject spec = builder.o
 
 		//When
@@ -40,7 +39,7 @@ class SchemaOperationsFactorySpecs extends RequiresMongoConnection {
 	@Test
 	public void producesDropCollectionOperation() throws Exception {
 		//Given
-		def builder = mongoUtils.dropCollection(dbName, collectionName)
+		def builder = MongoUtils.dropCollection(dbName, collectionName)
 		DBObject spec = builder.o
 		
 		//When
@@ -53,7 +52,7 @@ class SchemaOperationsFactorySpecs extends RequiresMongoConnection {
 	@Test
 	public void producesDropDatabaseOperation() throws Exception {
 		//Given
-		def builder = mongoUtils.dropDatabase("SomeDbName")
+		def builder = MongoUtils.dropDatabase("SomeDbName")
 		DBObject spec = builder.o
 		
 		//When

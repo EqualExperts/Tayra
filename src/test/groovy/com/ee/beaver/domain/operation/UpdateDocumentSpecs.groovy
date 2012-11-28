@@ -18,7 +18,6 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 	private String collectionName = 'home'
 	private String prefixedCollectionName = 'home.test'
 	private String anotherDb = 'mongoose'
-	private MongoUtils mongoUtils = new MongoUtils()
 	def operation
 	def objId = new ObjectId('509754dd2862862d511f6b57')
 	def nestedObjId = new ObjectId('509754dd2862862d511f6b58')
@@ -81,7 +80,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 						.add('name', updatedName)
 					.get()
 		
-		def document = mongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -108,7 +107,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 						.add('name', updatedName)
 					.get()
 		
-		def document = mongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as DBObject
+		def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -135,7 +134,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 						.add('name', updatedName)
 					.get()
 		
-		def document = mongoUtils.updateDocument(anotherDb, collectionName, o2, o) as DBObject
+		def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as DBObject
 
 		//When
 		operation.execute(document)
@@ -168,7 +167,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 						.pop()
 					.get()
 					
-		def document = mongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 
 		//When
 		operation.execute(document)
@@ -201,7 +200,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 						.add('name', updatedName)
 					.get()
 		
-		def document = mongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 
 		//When
 		try {

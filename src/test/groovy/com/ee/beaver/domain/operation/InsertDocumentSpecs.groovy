@@ -17,7 +17,6 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	private String collectionName = 'home'
 	private String prefixedCollectionName = 'home.test'
 	private String anotherDb = 'mongoose'
-	private MongoUtils mongoUtils = new MongoUtils()
 	def operation
 	def objId = new ObjectId('509754dd2862862d511f6b57')
 	def name = '[Test Name]'
@@ -46,7 +45,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 						.add('_id', objId)
 						.add('name', name)
 					.get()
-		def document = mongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+		def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -63,7 +62,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 						.add('_id', objId)
 						.add('name', name)
 					.get()
-		def document = mongoUtils.insertDocument(dbName, prefixedCollectionName, o) as DBObject
+		def document = MongoUtils.insertDocument(dbName, prefixedCollectionName, o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -80,7 +79,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 						.add('_id', objId)
 						.add('name', name)
 					.get()
-		def document = mongoUtils.insertDocument(anotherDb, collectionName, o) as DBObject
+		def document = MongoUtils.insertDocument(anotherDb, collectionName, o) as DBObject
 
 		//When
 		operation.execute(document)
@@ -102,7 +101,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 							.add('country', '[CN]')
 						.pop()
 					.get()
-		def document = mongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+		def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
 
 		//When
 		operation.execute(document)
@@ -128,7 +127,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 							.pop()
 						.pop()
 					.get()
-		def document = mongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+		def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
 
 		//When
 		operation.execute(document)
@@ -145,7 +144,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 						.add('_id', objId)
 						.add('name', name)
 					.get()
-		def document = mongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+		def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
 
 		operation.execute(document)
 

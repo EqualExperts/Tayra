@@ -1,19 +1,11 @@
 package com.ee.beaver.io
 
 import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
-import static org.hamcrest.Matchers.is
 import static org.junit.Assert.fail
 import static org.mockito.Mockito.doThrow
 import static org.mockito.Mockito.verify
 
-import java.io.IOException
-import java.io.Writer
-import java.util.HashMap
-import java.util.Map
-
-import org.bson.types.BSONTimestamp
 import org.bson.types.ObjectId
 import org.junit.Before
 import org.junit.Test
@@ -21,61 +13,46 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.runners.MockitoJUnitRunner
 
-import com.ee.beaver.domain.operation.DocumentBuilder
+import com.ee.beaver.domain.operation.MongoUtils
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.DBObject
-import com.sun.xml.internal.txw2.Document
 
 @RunWith(MockitoJUnitRunner.class)
 public class TimestampWriterSpecs {
 
 	@Mock
 	private Writer mockTargetWriter
+	
 	private TimestampWriter timestampWriter
-	def objId
-
+	private String dbName = 'beaver'
+	private String collectionName = 'home'
+	private String name = '[Test Name]'
+	def objId = new ObjectId()
+	def anotherObjId = new ObjectId()
+	
 	@Before
 	public void givenThereExists() {
 		timestampWriter = new TimestampWriter(mockTargetWriter)
-		objId = new ObjectId()
 	}
 
-	private DocumentBuilder oplogDocumentOne(ObjectId objId) {
-		def oplogDocument = new DocumentBuilder(
-				ts: new BSONTimestamp(1352094941, 1),
-				h: '3493050463814977392',
-				op: 'i',
-				ns: 'person.things',
-				o:  new BasicDBObjectBuilder().start()
-				.add( "_id" , new BasicDBObject('$oid', objId))
-				.add( "name" , "[Test Name]").get()
-				)
-		return oplogDocument
-	}
-
-	private DocumentBuilder oplogDocumentTwo(ObjectId objId) {
-		def oplogDocument = new DocumentBuilder(
-				ts: new BSONTimestamp(1352094942, 1),
-				h: '3493050463814977392',
-				op: 'i',
-				ns: 'person.things',
-				o:  new BasicDBObjectBuilder().start()
-				.add( "_id" , new BasicDBObject('$oid', objId))
-				.add( "name" , "[Test Name]").get()
-				)
-		return oplogDocument
+	def getDocumentString(ObjectId objId) {
+		def o = new BasicDBObjectBuilder()
+					.start()
+						.add( "_id" , new BasicDBObject('$oid', objId))
+						.add( "name" , name)
+					.get()
+		
+		MongoUtils.insertDocument(dbName,collectionName, o) as String
 	}
 
 	@Test
-	public void writesTimestamptoDestination() throws IOException {
+	public void writesTimestampToDestination() throws IOException {
 		// When
-		def oplogDocument = oplogDocumentOne(objId)
-		String document = oplogDocument as String
+		String document = getDocumentString(objId)
 		timestampWriter.write(document, 0, document.length())
 
 		// Then
-		String expectedTimestamp = ('"ts":"{ \\"$ts\\" : 1352094941 , \\"$inc\\" : 1}')
+		String expectedTimestamp = ('"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}')
 		assertThat timestampWriter.getTimestamp(), is(expectedTimestamp)
 	}
 
@@ -83,8 +60,7 @@ public class TimestampWriterSpecs {
 	@Test
 	public void delegatesWritesToTargetWriter() throws IOException {
 		// When
-		def oplogDocument = oplogDocumentOne(objId)
-		String document = oplogDocument as String
+		String document = getDocumentString(objId)
 		timestampWriter.write(document, 0, document.length())
 
 		// Then
@@ -92,20 +68,17 @@ public class TimestampWriterSpecs {
 	}
 
 	@Test
-	public void writesTimestampOfLastDocumentReadToDestination()
-	throws IOException {
+	public void writesTimestampOfLastDocumentReadToDestination() throws IOException {
 		// Given
-		def oplogDocumentOne = oplogDocumentOne(objId)
-		String documentOne = oplogDocumentOne as String
+		String documentOne = getDocumentString(objId)
 		timestampWriter.write(documentOne, 0, documentOne.length())
 
 		//When
-		def oplogDocumentTwo = oplogDocumentTwo(objId)
-		String documentTwo = oplogDocumentTwo as String
+		String documentTwo = getDocumentString(anotherObjId)
 		timestampWriter.write(documentTwo, 0, documentTwo.length())
 
 		// Then
-		String expectedTimestamp = ('"ts":"{ \\"$ts\\" : 1352094942 , \\"$inc\\" : 1}')
+		String expectedTimestamp = ('"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}')
 		assertThat(timestampWriter.getTimestamp(), is(expectedTimestamp))
 	}
 
@@ -113,13 +86,12 @@ public class TimestampWriterSpecs {
 	public void doesNotWriteTimestampWhenDelegateWriterFails()
 	throws IOException {
 		// Given
-		def oplogDocumentOne = oplogDocumentOne(objId)
-		String documentOne = oplogDocumentOne as String
+		String documentOne = getDocumentString(objId)
 		timestampWriter.write(documentOne, 0, documentOne.length())
+		
 		String lastRecordedTimestamp = timestampWriter.getTimestamp()
 
-		def oplogDocumentTwo = oplogDocumentTwo(objId)
-		String documentTwo = oplogDocumentTwo as String
+		String documentTwo = getDocumentString(anotherObjId)
 		doThrow(new IOException("Disk Full")).when(mockTargetWriter).append(documentTwo,
 				0, documentTwo.length())
 
@@ -137,9 +109,10 @@ public class TimestampWriterSpecs {
 	public void writesTimestampOnlyIfDocumentHasTimestampEntry() throws Exception {
 		//Given
 		String document = new BasicDBObjectBuilder()
-				.start().add("name", "test")
-				.get()
-				.toString()
+							.start()
+								.add("name", "test")
+							.get()
+							.toString()
 
 		//When
 		timestampWriter.write(document , 0, document.length())
@@ -147,6 +120,5 @@ public class TimestampWriterSpecs {
 		// Then
 		assertThat(timestampWriter.getTimestamp(), is(""))
 	}
-
-
+	
 }

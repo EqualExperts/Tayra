@@ -17,7 +17,6 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	def operation
 	DB database
 	private String collectionName = 'home'
-	private MongoUtils mongoUtils = new MongoUtils()
 	
 	@Before
 	public void givenADatabase() {
@@ -33,7 +32,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsACollection() throws Exception {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName)
+		def builder = MongoUtils.createCollection(dbName, collectionName)
 		DBObject spec = builder.o
 
 		//When
@@ -47,7 +46,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void shoutsWhenACollectionAlreadyExists() {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName)
+		def builder = MongoUtils.createCollection(dbName, collectionName)
 		DBObject spec = builder.o
 		
 		//When
@@ -63,7 +62,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsACappedCollection() throws Exception {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName,true,2048,1024)
+		def builder = MongoUtils.createCollection(dbName, collectionName,true,2048,1024)
 		DBObject spec = builder.o
 
 		//When
@@ -81,7 +80,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void createsCollectionWithSize() {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName,false,2048,null)
+		def builder = MongoUtils.createCollection(dbName, collectionName,false,2048,null)
 		DBObject spec = builder.o
 		
 		//When

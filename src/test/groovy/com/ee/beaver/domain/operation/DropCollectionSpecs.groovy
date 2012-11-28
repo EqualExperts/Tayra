@@ -20,7 +20,6 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 	private String cappedCollectionName = 'person'
 	private String absentCollectionName = 'people'
 	private DB db
-	private MongoUtils mongoUtils = new MongoUtils()
 	
 	@Before
 	public void givenADb() {
@@ -33,7 +32,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 		//Given
 		givenACollection()
 		
-		def builder = mongoUtils.dropCollection(dbName, collectionName)
+		def builder = MongoUtils.dropCollection(dbName, collectionName)
 		DBObject spec = builder.o
 
 		//When
@@ -56,7 +55,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 		//Given
 		givenACappedCollection(standalone, db)
 		
-		def builder = mongoUtils.dropCollection(dbName, cappedCollectionName)
+		def builder = MongoUtils.dropCollection(dbName, cappedCollectionName)
 		DBObject spec = builder.o
 		
 		//When
@@ -80,7 +79,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 	@Test
 	public void shoutsWhenCollectionToBeDroppedDoesNotExistInTarget() throws Exception {
 		//Given
-		def builder = mongoUtils.dropCollection(dbName, absentCollectionName)
+		def builder = MongoUtils.dropCollection(dbName, absentCollectionName)
 		DBObject spec = builder.o
 		
 		//When

@@ -21,7 +21,6 @@ public class OplogReplayerSpecs {
 	
 	private OplogReplayer replayer
 	private String collectionName = 'home'
-	private MongoUtils mongoUtils = new MongoUtils()
 	def objId = new ObjectId('509754dd2862862d511f6b57')
 	def dbName = 'beaver'
 	def name = '[Test Name]'
@@ -40,7 +39,7 @@ public class OplogReplayerSpecs {
 	@Test
 	public void replaysCreateCollectionOperation() throws Exception {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName)
+		def builder = MongoUtils.createCollection(dbName, collectionName)
 		DBObject spec = builder.o
 		
 		given(mockOperations.get('c')).willReturn(mockOperation)
@@ -60,7 +59,7 @@ public class OplogReplayerSpecs {
 						.add('_id', objId)
 						.add('name', name)
 					.get()
-		def builder = mongoUtils.insertDocument(dbName, collectionName, o)
+		def builder = MongoUtils.insertDocument(dbName, collectionName, o)
 		
 		given(mockOperations.get('i')).willReturn(mockOperation)
 		

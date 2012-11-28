@@ -15,7 +15,6 @@ import com.mongodb.DBObject
 class DropDatabaseSpecs extends RequiresMongoConnection {
 	
 	def operation
-	private MongoUtils mongoUtils = new MongoUtils()
 	
 	@Before
 	public void given() {
@@ -28,7 +27,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		String dbName = 'databaseToBeDropped'
 		givenADatabase(dbName, 'home')
 		
-		def builder = mongoUtils.dropDatabase(dbName)
+		def builder = MongoUtils.dropDatabase(dbName)
 		DBObject spec = builder.o
 
 		//When
@@ -50,7 +49,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 		//Given
 		def nonExistentDB = 'nonExistentDB'
 		
-		def builder = mongoUtils.dropDatabase(nonExistentDB)
+		def builder = MongoUtils.dropDatabase(nonExistentDB)
 		DBObject spec = builder.o
 		
 		//When

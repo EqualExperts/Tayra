@@ -19,7 +19,6 @@ class DefaultSchemaOperationSpecs extends RequiresMongoConnection {
 
 	DefaultSchemaOperation defaultSchemaOperation
 	private String collectionName = 'home'
-	private MongoUtils mongoUtils = new MongoUtils()
 	
 	@Mock
 	private SchemaOperation mockSchemaOperation
@@ -35,7 +34,7 @@ class DefaultSchemaOperationSpecs extends RequiresMongoConnection {
 	@Test
 	public void performsCorrectSchemaOperation() {
 		//Given
-		def builder = mongoUtils.createCollection(dbName, collectionName)
+		def builder = MongoUtils.createCollection(dbName, collectionName)
 		DBObject spec = builder.o
 
 		given(mockSchemaOperationsFactory.from(spec)).willReturn(mockSchemaOperation)

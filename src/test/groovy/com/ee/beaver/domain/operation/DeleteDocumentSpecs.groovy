@@ -18,7 +18,6 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 	private String collectionName = 'home'
 	private String prefixedCollectionName = 'home.test'
 	private String anotherDb = 'mongoose'
-	private MongoUtils mongoUtils = new MongoUtils()
 	def operation
 	def objId = new ObjectId('509754dd2862862d511f6b57')
 	def name = '[Test Name]'
@@ -60,7 +59,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 					.start()
 						.add('_id', objId)
 					.get()
-		def document = mongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
+		def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -76,7 +75,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 					.start()
 						.add('_id', objId)
 					.get()
-		def document = mongoUtils.deleteDocument(dbName, prefixedCollectionName,o) as DBObject
+		def document = MongoUtils.deleteDocument(dbName, prefixedCollectionName,o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -92,7 +91,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 					.start()
 						.add('_id', objId)
 					.get()
-		def document = mongoUtils.deleteDocument(anotherDb, collectionName,o) as DBObject
+		def document = MongoUtils.deleteDocument(anotherDb, collectionName,o) as DBObject
 		
 		//When
 		operation.execute(document)
@@ -118,7 +117,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 				
 		standalone.getDB(dbName).getCollection(collectionName).insert(documentToBeDeleted)
 		
-		def document = mongoUtils.deleteDocument(dbName, collectionName, documentToBeDeleted) as DBObject
+		def document = MongoUtils.deleteDocument(dbName, collectionName, documentToBeDeleted) as DBObject
 
 		//When
 		operation.execute(document)
@@ -135,7 +134,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 					.start()
 						.add('_id', absentObjId)
 					.get()
-		def document = mongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
+		def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
 		
 		//When
 		try {

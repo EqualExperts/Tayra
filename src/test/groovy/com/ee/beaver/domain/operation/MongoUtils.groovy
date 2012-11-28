@@ -5,7 +5,10 @@ import com.mongodb.BasicDBObjectBuilder
 
 class MongoUtils {
 	
-	def createCollection(db, collectionName, isCapped = false, size = null, max = null) {
+	private MongoUtils() {
+	}
+	
+	def static createCollection(db, collectionName, isCapped = false, size = null, max = null) {
 		new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
@@ -21,7 +24,7 @@ class MongoUtils {
 		)
 	}
 	
-	def dropCollection(db, collectionName) {
+	def static dropCollection(db, collectionName) {
 		new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
@@ -34,7 +37,7 @@ class MongoUtils {
 		    )
 	}
 	
-	def dropDatabase(db) {
+	def static dropDatabase(db) {
 		new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
@@ -47,7 +50,7 @@ class MongoUtils {
 			    )
 	}
 	
-	def deleteDocument(db, collectionName, o) {
+	def static deleteDocument(db, collectionName, o) {
 		new DeleteDocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
@@ -58,7 +61,7 @@ class MongoUtils {
 		)
 	}
 	
-	def insertDocument(db, collectionName, o) {
+	def static insertDocument(db, collectionName, o) {
 	    new DocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
@@ -68,7 +71,7 @@ class MongoUtils {
 		)
 	}	
 	
-	def updateDocument(db, collectionName, o2, o) {
+	def static updateDocument(db, collectionName, o2, o) {
 		new UpdateDocumentBuilder(
 			ts: new BSONTimestamp(1352105652, 1),
 			h :'3493050463814977392',
