@@ -1,22 +1,19 @@
 package com.ee.beaver.command
 
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
-import java.io.Reader
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.*
 import static org.mockito.Mockito.*
-import com.ee.beaver.io.OplogReplayer
-import com.mongodb.BasicDBObject
+import spock.lang.*
 
-class RestoreSpecs {
+import com.ee.beaver.io.OplogReplayer
+
+class RestoreSpecs extends Specification {
 
 	private static StringBuilder result;
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
-
-	@BeforeClass
-	public static void setupInterceptor() {
+	private OplogReplayer mockOplogReplayer
+	
+	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
 
 		PrintWriter.metaClass.println = { String data ->
@@ -24,86 +21,87 @@ class RestoreSpecs {
 		}
 	}
 
-	@Before
-	public void setupResultCollector() {
+	def setup() {
 		result = new StringBuilder()
+		mockOplogReplayer = Mock(OplogReplayer)
 	}
 
-	@Test
-	public void shoutsWhenNoMandatoryArgsAreSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', [])
-		def expected = 'error: Missing required options: df'
-		Script restore = new Restore(context)
+	def shoutsWhenNoMandatoryArgsAreSupplied() {
+		given: 'no arguments are supplied'
+			def context = new Binding()
+			context.setVariable('args', [])
+						
+		when: 'restore runs'
+			new Restore(context).run()
 
-		//When
-		restore.run()
+		then: 'error message should be shown as'
+			result.toString() == 'error: Missing required options: df'
+	}
+	
+	def shoutsWhenInvalidArgsAreSupplied() {
+		given: 'Invalid arguments are supplied'
+			def context = new Binding()
+			context.setVariable('args', ['-h', '-i'])
+						
+		when: 'restore runs'
+			new Restore(context).run()
 
-		//Then
-		assertThat result.toString(), is(expected)
+		then: 'error message should be shown as'
+			result.toString() == 'error: Missing required options: df'
 	}
 
-	@Test
-	public void shoutsWhenNoOutputFileIsSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-d', 'localhost'])
-		def expected = 'error: Missing required option: f'
-		Script restore = new Restore(context)
+	def shoutsWhenNoOutputFileIsSupplied() {
+		given: 'argument list does not contain output file option -f'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost'])
 
-		//When
-		restore.run()
+		when: 'restore runs'
+			new Restore(context).run()
 
-		//Then
-		assertThat result.toString(), is(expected)
+		then: 'error message should be displayed as'
+			result.toString() == 'error: Missing required option: f'
 	}
 
-	@Test
-	public void shoutsWhenNoDestinationMongoDBIsSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-f', 'test.out'])
-		def expected = 'error: Missing required option: d'
-		Script restore = new Restore(context)
+	def shoutsWhenNoDestinationMongoDBIsSupplied() {
+		given: 'argument list does not contain the destination option -d'
+			def context = new Binding()
+			context.setVariable('args', ['-f', 'test.out'])
 
-		//When
-		restore.run()
+		when: 'restore runs'
+			new Restore(context).run()
 
-		//Then
-		assertThat result.toString(), is(expected)
+		then: 'error message should be displayed as'
+			result.toString() == 'error: Missing required option: d'
 	}
 
-	@Test
-	public void invokesRestoreWhenAllMandatoryOptionsAreSupplied() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-d', 'localhost', '-f', 'test.out'])
-		def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
-		context.setVariable('reader', source)
-		def mockOplogReplayer = mock(OplogReplayer)
-		context.setVariable('writer', mockOplogReplayer)
-		Script restore = new Restore(context)
+	def invokesRestoreWhenAllMandatoryOptionsAreSupplied() {
+		given: 'argument list has both the necessary arguments -d and -f'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost', '-f', 'test.out'])
+			
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			context.setVariable('writer', mockOplogReplayer)
 
-		//When
-		restore.run()
+		when: 'restore runs'
+			new Restore(context).run()
 
-		//Then
-		verify(mockOplogReplayer).replayDocument('"ts"')
+		then: 'perform the restore operation'
+			1 * mockOplogReplayer.replayDocument('"ts"')
 	}
 
-	@Test
-	public void shoutsWhenMongoDBUrlIsIncorrect() {
-		//Given
-		def context = new Binding()
-		context.setVariable('args', ['-d', 'nonexistentHost', '-f', 'test.out'])
-		Script restore = new Restore(context)
+	def shoutsWhenMongoDBUrlIsIncorrect() {
+		given: 'the destination host is incorrect or does not exist'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'nonexistentHost', '-f', 'test.out'])
 
-		//When
-		restore.run()
+		when: 'restore runs'
+			new Restore(context).run()
 
-		//Then
-		String expected = "Oops!! Could not perform restore...nonexistentHost"
-		assertThat result.toString(), containsString(expected)
+		then:'error message should be displayed as'
+			result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
 	}
+	
+	
 }
