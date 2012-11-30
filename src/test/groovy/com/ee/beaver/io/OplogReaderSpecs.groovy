@@ -1,31 +1,17 @@
 package com.ee.beaver.io
 
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.is
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.fail
-import static org.mockito.BDDMockito.given
-
 import org.bson.types.ObjectId
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.runners.MockitoJUnitRunner
-
 import com.ee.beaver.domain.MongoCollection
 import com.ee.beaver.domain.MongoCollectionIterator
 import com.ee.beaver.domain.operation.MongoUtils
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
+import spock.lang.*
 
-@RunWith(MockitoJUnitRunner.class)
-public class OplogReaderSpecs {
+public class OplogReaderSpecs extends Specification{
 
-	@Mock
 	private MongoCollection mockOplogCollection
 
-	@Mock
 	private MongoCollectionIterator<DBObject> mockOplogCollectionIterator
 	
 	private CollectionReader reader
@@ -34,131 +20,136 @@ public class OplogReaderSpecs {
 	private String name = '[Test Name]'
 	def objId
 
-	@Before
-	public void givenAnOplogReader() {
-		given(mockOplogCollection.find(false)).willReturn(mockOplogCollectionIterator)
+	def setup() {
+		mockOplogCollection = Stub(MongoCollection)
+		mockOplogCollectionIterator = Stub(MongoCollectionIterator)
+		mockOplogCollection.find(false) >> mockOplogCollectionIterator
 		reader = new OplogReader(mockOplogCollection, false)
 		objId = new ObjectId()
 	}
 
-	@Test
-	public void readsACreateCollectionOperationDocument() {
-		// Given
-		def document = MongoUtils.createCollection(dbName, collectionName) as DBObject
+	
+	def readsACreateCollectionOperationDocument() {
+		given: 'a create collection oplog entry'
+			def document = MongoUtils.createCollection(dbName, collectionName) as DBObject
 		
-		given(mockOplogCollectionIterator.hasNext()).willReturn(true)
-		given(mockOplogCollectionIterator.next()).willReturn(document)
+		and: 'oplog iterator returns the document'
+			mockOplogCollectionIterator.hasNext() >> true
+			mockOplogCollectionIterator.next() >> document
 
-		// When
-		String oplogDocumentString = reader.readDocument()
+		when: 'reader reads that document'
+			String oplogDocumentString = reader.readDocument()
 		
-		// Then
-		assertThat oplogDocumentString, is('{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , \"h\" : \"3493050463814977392\" , \"op\" : \"c\" , \"ns\" : \"' + dbName + '.$cmd\" , \"o\" : \"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}')
+		then: 'it should read expected document'
+			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , \"h\" : \"3493050463814977392\" , \"op\" : \"c\" , \"ns\" : \"' + dbName + '.$cmd\" , \"o\" : \"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}'
 	}
 
-	@Test
-	public void readsAnInsertOperationDocument() {
-		// Given
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-					.get()
-		def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
-		
-		given(mockOplogCollectionIterator.hasNext()).willReturn(true)
-		given(mockOplogCollectionIterator.next()).willReturn(document)
+	
+	def readsAnInsertOperationDocument() {
+		given: 'an insert document oplog entry'
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+							.add('name', name)
+						.get()
+			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+			
+		and: 'oplog iterator returns the document'
+			mockOplogCollectionIterator.hasNext() >> true
+			mockOplogCollectionIterator.next() >> document
 
-		// When
-		String oplogDocumentString = reader.readDocument()
+		when: 'reader reads that document'
+			String oplogDocumentString = reader.readDocument()
 
-		// Then
-		assertThat oplogDocumentString, is('{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "i" , "ns" : "' + "$dbName.$collectionName" + '" , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}')
+		then: 'it should read the expected document'
+			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "i" , "ns" : "' + "$dbName.$collectionName" + '" , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}'
 	}
 
-	@Test
-	public void readsAnUpdateOperationDocument() {
-		// Given
-		def o2 = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-					.get()
-				
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('name', name)
-					.get()
+	
+	def readsAnUpdateOperationDocument() {
+		given: 'an update document oplog entry'
+			def o2 = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+						.get()
+					
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('name', name)
+						.get()
+	
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+			
+		and: 'oplog iterator returns the document'
+			mockOplogCollectionIterator.hasNext() >> true
+			mockOplogCollectionIterator.next() >> document
 
-		def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
-		
-		given(mockOplogCollectionIterator.hasNext()).willReturn(true)
-		given(mockOplogCollectionIterator.next()).willReturn(document)
+		when: 'reader reads that document'
+			String oplogDocumentString = reader.readDocument()
 
-		// When
-		String oplogDocumentString = reader.readDocument()
-
-		// Then
-		assertThat oplogDocumentString, is ('{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "u" , "ns" : "' + "$dbName.$collectionName" + '" , "o2" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}" , "o" : "{ \\"name\\" : \\"'+name+'\\"}"}')
+		then: 'it should read the expected document'
+			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "u" , "ns" : "' + "$dbName.$collectionName" + '" , "o2" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}" , "o" : "{ \\"name\\" : \\"'+name+'\\"}"}'
 	}
 
-	@Test
-	public void readsARemoveOperationDocument() {
-		// Given
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-					.get()
-		def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
-		
-		given(mockOplogCollectionIterator.hasNext()).willReturn(true)
-		given(mockOplogCollectionIterator.next()).willReturn(document)
+	
+	def readsARemoveOperationDocument() {
+		given: 'a delete document oplog entry'
+			def o = new BasicDBObjectBuilder()
+						.start()
+							.add('_id', objId)
+						.get()
+			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
+			
+		and: 'oplog iterator returns the document'
+			mockOplogCollectionIterator.hasNext() >> true
+			mockOplogCollectionIterator.next() >> document
 
-		// When
-		String oplogDocumentString = reader.readDocument()
+		when:'reader reads that document'
+			String oplogDocumentString = reader.readDocument()
 
-		// Then
-		assertThat oplogDocumentString, is('{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "d" , "ns" : "' + "$dbName.$collectionName" + '" , "b" : true , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}"}')
+		then:'it should read the expected document'
+			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "d" , "ns" : "' + "$dbName.$collectionName" + '" , "b" : true , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}"}'
 	}
 
-	@Test
-	public void readsADropCollectionOperationDocument() {
-		// Given
-		def document = MongoUtils.dropCollection(dbName, collectionName) as DBObject
+	
+	def readsADropCollectionOperationDocument() {
+		given: 'a drop collection oplog entry'
+			def document = MongoUtils.dropCollection(dbName, collectionName) as DBObject
+			
+		and: 'oplog iterator returns the document'
+			mockOplogCollectionIterator.hasNext() >> true
+			mockOplogCollectionIterator.next() >> document
 
-		given(mockOplogCollectionIterator.hasNext()).willReturn(true)
-		given(mockOplogCollectionIterator.next()).willReturn(document)
+		when: 'reader reads that document'
+			String oplogDocumentString = reader.readDocument()
 
-		// When
-		String oplogDocumentString = reader.readDocument()
-
-		// Then
-		assertThat	oplogDocumentString, is ('{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "c" , "ns" : "' + "$dbName" +'.$cmd" , "o" : "{ \\"drop\\" : \\"'+ collectionName +'\\"}"}')
-
+		then: 'it should read the expected document'
+			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "c" , "ns" : "' + "$dbName" +'.$cmd" , "o" : "{ \\"drop\\" : \\"'+ collectionName +'\\"}"}'
 	}
 
-	@Test
-	public void shoutsWhenQueryingForDocumentWithAClosedReader() {
-		// When
-		reader.close()
-
-		try {
+	
+	def shoutsWhenQueryingForDocumentWithAClosedReader() {
+		when: 'reader is closed'
+			reader.close()
+			
+		and: 'reader tries to query for a document'
 			reader.hasDocument()
-			fail("Should Not Allow To Work With A closed Reader")
-		} catch (ReaderAlreadyClosed rac) {
-			assertThat rac.getMessage(), is("Reader Already Closed")
-		}
+		
+		then: 'error message should be shown as'
+			def problem = thrown(ReaderAlreadyClosed)
+			problem.message == "Reader Already Closed"
 	}
 
-	@Test
-	public void shoutsWhenFetchingForDocumentWithAClosedReader() {
-		// When
-		reader.close()
-
-		try {
+	
+	def shoutsWhenFetchingForDocumentWithAClosedReader() {
+		when: 'reader is closed'
+			reader.close()
+			
+		and: 'reader tries to read a document'
 			reader.readDocument()
-			fail("Should Not Allow To Work With A closed Reader")
-		} catch (ReaderAlreadyClosed rac) {
-			assertThat rac.getMessage(), is("Reader Already Closed")
-		}
+		
+		then: 'error message should be shown as'
+			def problem = thrown(ReaderAlreadyClosed)
+			problem.message == "Reader Already Closed"
 	}
 }

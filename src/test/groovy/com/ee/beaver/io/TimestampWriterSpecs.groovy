@@ -1,26 +1,15 @@
 package com.ee.beaver.io
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.junit.Assert.fail
-import static org.mockito.Mockito.doThrow
-import static org.mockito.Mockito.verify
-
 import org.bson.types.ObjectId
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.runners.MockitoJUnitRunner
+
+import spock.lang.*
 
 import com.ee.beaver.domain.operation.MongoUtils
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 
-@RunWith(MockitoJUnitRunner.class)
-public class TimestampWriterSpecs {
+public class TimestampWriterSpecs extends Specification {
 
-	@Mock
 	private Writer mockTargetWriter
 	
 	private TimestampWriter timestampWriter
@@ -30,8 +19,8 @@ public class TimestampWriterSpecs {
 	def objId = new ObjectId()
 	def anotherObjId = new ObjectId()
 	
-	@Before
-	public void givenThereExists() {
+	def setup() {
+		mockTargetWriter = Mock(Writer)
 		timestampWriter = new TimestampWriter(mockTargetWriter)
 	}
 
@@ -45,80 +34,79 @@ public class TimestampWriterSpecs {
 		MongoUtils.insertDocument(dbName,collectionName, o) as String
 	}
 
-	@Test
-	public void writesTimestampToDestination() throws IOException {
-		// When
-		String document = getDocumentString(objId)
-		timestampWriter.write(document, 0, document.length())
-
-		// Then
-		String expectedTimestamp = ('"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}')
-		assertThat timestampWriter.getTimestamp(), is(expectedTimestamp)
+	def writesTimestampToDestination() throws IOException {
+		given: 'an insert document oplog entry'
+			String document = getDocumentString(objId)
+			
+		when: 'it writes the document'
+			timestampWriter.write(document, 0, document.length())
+			
+		then: 'destination should have the expected timestamp'
+			timestampWriter.getTimestamp() == ('"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}')
 	}
 
+	def delegatesWritesToTargetWriter() throws IOException {
+		given: 'an insert document oplog entry'
+			String document = getDocumentString(objId)
+			
+		when: 'it writes the document'
+			timestampWriter.write(document, 0, document.length())
 
-	@Test
-	public void delegatesWritesToTargetWriter() throws IOException {
-		// When
-		String document = getDocumentString(objId)
-		timestampWriter.write(document, 0, document.length())
-
-		// Then
-		verify(mockTargetWriter).append(document, 0, document.length())
+		then: 'the delegate writer should write the document'
+			1 * mockTargetWriter.append(document, 0, document.length())
 	}
 
-	@Test
-	public void writesTimestampOfLastDocumentReadToDestination() throws IOException {
-		// Given
-		String documentOne = getDocumentString(objId)
-		timestampWriter.write(documentOne, 0, documentOne.length())
-
-		//When
-		String documentTwo = getDocumentString(anotherObjId)
-		timestampWriter.write(documentTwo, 0, documentTwo.length())
-
-		// Then
-		String expectedTimestamp = ('"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}')
-		assertThat(timestampWriter.getTimestamp(), is(expectedTimestamp))
-	}
-
-	@Test
-	public void doesNotWriteTimestampWhenDelegateWriterFails()
-	throws IOException {
-		// Given
-		String documentOne = getDocumentString(objId)
-		timestampWriter.write(documentOne, 0, documentOne.length())
+	def writesTimestampOfLastDocumentReadToDestination() throws IOException {
+		given: 'two insert document oplog entries'
+			String documentOne = getDocumentString(objId)
+			String documentTwo = getDocumentString(anotherObjId)
 		
-		String lastRecordedTimestamp = timestampWriter.getTimestamp()
+		and: 'document one is already written'
+			timestampWriter.write(documentOne, 0, documentOne.length())
 
-		String documentTwo = getDocumentString(anotherObjId)
-		doThrow(new IOException("Disk Full")).when(mockTargetWriter).append(documentTwo,
-				0, documentTwo.length())
-
-		// When
-		try {
+		when: 'it writes document two'
 			timestampWriter.write(documentTwo, 0, documentTwo.length())
-			fail("Should not have written timestamp!")
-		} catch (IOException e) {
-			// Then
-			assertThat(timestampWriter.getTimestamp(), is(lastRecordedTimestamp))
-		}
+
+		then: 'destination should have timestamp of document two'
+			timestampWriter.getTimestamp() == ('"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}')
+			
 	}
 
-	@Test
-	public void writesTimestampOnlyIfDocumentHasTimestampEntry() throws Exception {
-		//Given
-		String document = new BasicDBObjectBuilder()
-							.start()
-								.add("name", "test")
-							.get()
-							.toString()
+	def doesNotWriteTimestampWhenDelegateWriterFails() throws IOException {
+		given: 'two insert document oplog entries'
+			String documentOne = getDocumentString(objId)
+			String documentTwo = getDocumentString(anotherObjId)
+			
+		and: 'document one is already written'	
+			timestampWriter.write(documentOne, 0, documentOne.length())
+			
+		and: 'destination holds its timestamp'	
+			String lastRecordedTimestamp = timestampWriter.getTimestamp()
+			
+		and: 'delegate writer fails to write document two'	
+			mockTargetWriter.append(documentTwo, 0, documentTwo.length()) >> {throw new IOException("Disk Full")}
 
-		//When
-		timestampWriter.write(document , 0, document.length())
+		when: 'it tries to write document two'
+			timestampWriter.write(documentTwo, 0, documentTwo.length())
+			
+		then: 'destination should have timestamp of latest successful write'
+			timestampWriter.getTimestamp() == lastRecordedTimestamp
+			thrown(IOException)
+	}
 
-		// Then
-		assertThat(timestampWriter.getTimestamp(), is(""))
+	def writesTimestampOnlyIfDocumentHasTimestampEntry() throws Exception {
+		given: 'a document without timestamp'
+			String document = new BasicDBObjectBuilder()
+								.start()
+									.add("name", "test")
+								.get()
+								.toString()
+
+		when: 'it writes the document'
+			timestampWriter.write(document , 0, document.length())
+
+		then: 'no timestamp should be written to destination'
+			timestampWriter.getTimestamp() == ""
 	}
 	
 }

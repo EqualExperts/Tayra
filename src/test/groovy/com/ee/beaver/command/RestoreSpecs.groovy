@@ -1,8 +1,5 @@
 package com.ee.beaver.command
 
-import static org.hamcrest.MatcherAssert.assertThat
-import static org.hamcrest.Matchers.*
-import static org.mockito.Mockito.*
 import spock.lang.*
 
 import com.ee.beaver.io.OplogReplayer

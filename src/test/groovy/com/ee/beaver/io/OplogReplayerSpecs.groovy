@@ -1,72 +1,60 @@
 package com.ee.beaver.io
 
-import static org.hamcrest.MatcherAssert.*
-import static org.hamcrest.Matchers.*
-import static org.mockito.BDDMockito.*
-import static org.mockito.Mockito.*
-
 import org.bson.types.ObjectId
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.runners.MockitoJUnitRunner
+
+import spock.lang.*
 
 import com.ee.beaver.domain.operation.*
+import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 
-@RunWith(MockitoJUnitRunner.class)
-public class OplogReplayerSpecs {
-	
+public class OplogReplayerSpecs extends Specification{
+
 	private OplogReplayer replayer
-	private String collectionName = 'home'
-	def objId = new ObjectId('509754dd2862862d511f6b57')
-	def dbName = 'beaver'
-	def name = '[Test Name]'
-	
-	@Mock
-	private OperationsFactory mockOperations
-	
-	@Mock
+	private OperationsFactory operations
 	private Operation mockOperation
-	
-	@Before
-	public void given() {
-		replayer = new OplogReplayer(mockOperations)
+
+	def setup() {
+		operations = Stub(OperationsFactory)
+		mockOperation = Mock(Operation)
+		replayer = new OplogReplayer(operations)
 	}
 
-	@Test
-	public void replaysCreateCollectionOperation() throws Exception {
-		//Given
-		def builder = MongoUtils.createCollection(dbName, collectionName)
-		DBObject spec = builder.o
-		
-		given(mockOperations.get('c')).willReturn(mockOperation)
-		
-		//When
-		replayer.replayDocument(builder as String)
-		
-		//Then
-		verify(mockOperation).execute(builder as DBObject)
+	def replaysCreateCollectionOperation() throws Exception {
+		given: 'an Oplog entry for Create Collection'
+			def builder = new MongoUtils().createCollection('person', 'testCollection')
+			def oplogDocument = builder as DBObject
+			def oplogDocString = builder as String
+
+		and: 'operations factory gets a Create Collection Operation'
+			operations.get('c') >> mockOperation
+
+		when: 'Replayer replays an Oplog Entry String'
+			replayer.replayDocument(oplogDocString)
+
+		then: 'Create Collection Operation executes the Oplog entry'
+			1 * mockOperation.execute(oplogDocument)
 	}
-	
-	@Test
-	public void replaysInsertDocumentOperation() throws Exception {
-		//Given
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-					.get()
-		def builder = MongoUtils.insertDocument(dbName, collectionName, o)
-		
-		given(mockOperations.get('i')).willReturn(mockOperation)
-		
-		//When
-		replayer.replayDocument(builder as String)
-		
-		//Then
-		verify(mockOperation).execute(builder as DBObject)
+
+	def replaysInsertDocumentOperation() throws Exception {
+		given: 'an Oplog entry for Insert Operation'
+			def o = new BasicDBObjectBuilder()
+				.start()
+					.add( '_id' , new BasicDBObject('$oid', new ObjectId()))
+					.add( 'name' , '[Test Name]')
+				.get()
+			def builder = new MongoUtils().insertDocument('person', 'things', o)
+			def oplogDocument = builder as DBObject
+			def oplogDocString = builder as String
+
+		and: 'operations factory gets a Insert Operation Operation'
+			operations.get('i') >> mockOperation
+
+		when: 'Replayer replays an Oplog Entry String'
+			replayer.replayDocument(oplogDocString)
+
+		then: 'Insert Operation executes the Oplog Entry'
+			1 * mockOperation.execute(oplogDocument)
 	}
 }
