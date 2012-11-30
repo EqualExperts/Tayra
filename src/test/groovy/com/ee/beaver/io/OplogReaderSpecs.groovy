@@ -24,10 +24,11 @@ public class OplogReaderSpecs extends Specification{
 	private DBObject query;
 
 	def setup() {
+		query = (DBObject) JSON.parse('{ "ts" : { "$gt" : { "$ts" : 1354096315 , "$inc" : 10}}}')
 		mockOplogCollection = Stub(MongoCollection)
 		mockOplogCollectionIterator = Stub(MongoCollectionIterator)
-		mockOplogCollection.find(false) >> mockOplogCollectionIterator
-		reader = new OplogReader(mockOplogCollection, false)
+		mockOplogCollection.find(query, false) >> mockOplogCollectionIterator
+		reader = new OplogReader(mockOplogCollection, fromTimestamp, false)
 		objId = new ObjectId()
 	}
 

@@ -1,10 +1,10 @@
 package com.ee.beaver.io;
 
+import com.ee.beaver.domain.MongoCollection;
+import com.ee.beaver.domain.MongoCollectionIterator;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 import com.mongodb.util.JSON;
-import com.ee.beaver.domain.MongoCollection;
-import com.ee.beaver.domain.MongoCollectionIterator;
 
 public class OplogReader implements CollectionReader {
 

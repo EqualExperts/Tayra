@@ -149,56 +149,27 @@ public class OplogSpecs extends Specification {
 			problem.message == "Iterator Already Closed"
 	}
 
-	def findsByQuery() throws Exception {
-		given: ''
-		 long currentTime = new Date().getTime();
-		 BSONTimestamp ts = new BSONTimestamp((int) currentTime, 1);
-		 DBObject query = BasicDBObjectBuilder
-			.start()
-			 .push('ts')
-			  .add('$gte' , ts)
-			 .pop()
-			.get();
-		 MongoCollectionIterator<DBObject> iterator = oplog.find(query);
-		 long totalDocuments = local.getCollection("oplog.rs").count();
-		 long documentsRead = 0;
-
-		 when: ''
-		 while (iterator.hasNext()) {
-		  iterator.next();
-		  documentsRead++;
-		  if (documentsRead == totalDocuments) {
-		   break;
-		  }
-		 }
-		 iterator.close();
-
-		 then: ''
-		 documentsRead == totalDocuments
-	}
-
 	def findsADocumentByQuery() throws Exception {
-		given: ''
-		DBObject id = new BasicDBObjectBuilder()
-				.start()
-				 .add("_id", -1)
-				.get();
-		DBCursor dbCursor = local.getCollection("oplog.rs").find()
-			   .sort((DBObject) id);
-		DBObject dbObject = dbCursor.next();
-		String data = dbObject.toString();
+		given: 'we fetch the first document from mongo db'
+			DBObject id = new BasicDBObjectBuilder()
+					.start()
+					 .add("_id", -1)
+					.get();
+			DBCursor dbCursor = local.getCollection("oplog.rs").find()
+				   .sort((DBObject) id);
+			DBObject document = dbCursor.next();
 
-		DBObject timestamp = (DBObject) JSON.parse(data);
-		DBObject query = new QueryBuilder()
-					 .start()
-					   .put("ts")
-					   .greaterThan(timestamp.get("ts"))
-					 .get();
+		and: 'create a query to search for documents with greater timestamp than just fetched'
+			DBObject query = new QueryBuilder()
+						 .start()
+						   .put("ts")
+						   .greaterThan(document.get("ts"))
+						 .get();
 
-		when: ''
-		MongoCollectionIterator<DBObject> iterator = oplog.find(query);
+		when: 'query executes, iterator points to second document'
+			MongoCollectionIterator<DBObject> iterator = oplog.find(query);
 
-		then: ''
-		iterator.next() == dbCursor.next();
+		then: 'iterator\'s current & cursor\'s current document should be same'
+			iterator.next() == dbCursor.next();
 	}
 }
