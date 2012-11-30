@@ -9,7 +9,7 @@ class RestoreSpecs extends Specification {
 	private static StringBuilder result;
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
 	private OplogReplayer mockOplogReplayer
-	
+
 	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
 
@@ -27,19 +27,19 @@ class RestoreSpecs extends Specification {
 		given: 'no arguments are supplied'
 			def context = new Binding()
 			context.setVariable('args', [])
-						
+
 		when: 'restore runs'
 			new Restore(context).run()
 
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required options: df'
 	}
-	
+
 	def shoutsWhenInvalidArgsAreSupplied() {
 		given: 'Invalid arguments are supplied'
 			def context = new Binding()
 			context.setVariable('args', ['-h', '-i'])
-						
+
 		when: 'restore runs'
 			new Restore(context).run()
 
@@ -75,7 +75,7 @@ class RestoreSpecs extends Specification {
 		given: 'argument list has both the necessary arguments -d and -f'
 			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '-f', 'test.out'])
-			
+
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
@@ -99,6 +99,6 @@ class RestoreSpecs extends Specification {
 		then:'error message should be displayed as'
 			result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
 	}
-	
-	
+
+
 }

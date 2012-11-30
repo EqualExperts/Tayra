@@ -19,8 +19,9 @@ public class OplogReaderSpecs extends Specification{
 	private String dbName = 'beaver'
 	private String collectionName = 'home'
 	private String name = '[Test Name]'
-	private String fromTimestamp = '{\'ts\' : { \'$ts\' : 1354096315 , \'$inc\' : 10}}'
+	private String fromTimestamp = '{\"ts\" : { \"$ts\" : 1354096315 , \"$inc\" : 10}}'
 	def objId
+	private DBObject query;
 
 	def setup() {
 		mockOplogCollection = Stub(MongoCollection)
@@ -111,8 +112,8 @@ public class OplogReaderSpecs extends Specification{
 
 		then:'it should read the expected document'
 			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "d" , "ns" : "' + "$dbName.$collectionName" + '" , "b" : true , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}"}'
-	}
 
+	}
 
 	def readsADropCollectionOperationDocument() {
 		given: 'a drop collection oplog entry'
@@ -153,5 +154,6 @@ public class OplogReaderSpecs extends Specification{
 		then: 'error message should be shown as'
 			def problem = thrown(ReaderAlreadyClosed)
 			problem.message == "Reader Already Closed"
+
 	}
 }

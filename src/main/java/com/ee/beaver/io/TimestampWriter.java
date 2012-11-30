@@ -27,7 +27,7 @@ public class TimestampWriter extends Writer {
   private void registerTimestampFrom(final String document) throws IOException {
     if (document.contains("\"ts\"")) {
       timestamp.delete(0, timestamp.length());
-      timestamp.append(timestampFrom(document));
+      timestamp.append("{ " + timestampFrom(document) + " }");
     }
 }
 

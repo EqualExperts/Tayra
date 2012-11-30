@@ -30,7 +30,7 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required options: sf'
 	}
-	
+
 	def shoutsWhenNoOutputFileIsSupplied() {
 		given: 'argument contains -s option only'
 			def context = new Binding()
@@ -39,7 +39,7 @@ public class BackupSpecs extends Specification {
 		when: 'backup runs with above args'
 			new Backup(context).run()
 
-			
+
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required option: f'
 	}
@@ -60,10 +60,13 @@ public class BackupSpecs extends Specification {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
-			
+
 		and: 'a result captor is injected'
 			def result = new StringWriter()
 			context.setVariable('writer', result)
+
+		and: 'timestampfile does not exist'
+			new File('timestamp.out').delete()
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -95,5 +98,6 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be shown as'
 			result.toString().contains('Oops!! Could not perform backup...localhost is not a part of ReplicaSet')
 	}
+
 }
 
