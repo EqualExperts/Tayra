@@ -29,7 +29,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 
 		when: 'the operation runs'
-			operation.execute(db, spec)
+			operation.doExecute(db, spec)
 		
 		then: 'the collection should not exist'
 			! db.collectionExists(collectionName)
@@ -52,7 +52,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 		
 		when: 'the operation runs'
-			operation.execute(db, spec)
+			operation.doExecute(db, spec)
 		
 		then: 'the collection should not exist'
 			! db.collectionExists(cappedCollectionName)
@@ -75,7 +75,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 		
 		when: 'the operation runs'
-			operation.execute(db, spec)
+			operation.doExecute(db, spec)
 			
 		then: 'it complains that collection to be dropped does not exist'
 			def problem = thrown(DropCollectionFailed)

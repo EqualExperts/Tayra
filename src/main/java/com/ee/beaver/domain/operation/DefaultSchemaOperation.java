@@ -6,7 +6,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.util.JSON;
 
-class DefaultSchemaOperation implements Operation {
+class DefaultSchemaOperation extends Operation {
 
   private final Mongo mongo;
   private final SchemaOperationsFactory schemaOperationsFactory;
@@ -18,7 +18,7 @@ class DefaultSchemaOperation implements Operation {
   }
 
   @Override
-  public final void execute(final DBObject document) {
+  protected final void doExecute(final DBObject document) {
     final String ns = (String) document.get("ns");
     String[] dbInfo = ns.split("\\.");
     String dbName = dbInfo[0];
@@ -27,7 +27,7 @@ class DefaultSchemaOperation implements Operation {
       DB db = mongo.getDB(dbName);
       DBObject spec = (DBObject) JSON.parse(document.get("o").toString());
       SchemaOperation schemaOperation = schemaOperationsFactory.from(spec);
-      schemaOperation.execute(db, spec);
+      schemaOperation.doExecute(db, spec);
     }
   }
 

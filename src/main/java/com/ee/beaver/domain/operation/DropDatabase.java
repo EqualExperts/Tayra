@@ -15,7 +15,7 @@ public class DropDatabase implements SchemaOperation {
   }
 
   @Override
-  public final void execute(final DB db, final DBObject spec) {
+  public final void doExecute(final DB db, final DBObject spec) {
     List<String> databases = mongo.getDatabaseNames();
     if (!databases.contains(db.getName())) {
       throw new DropDatabaseFailed("Could Not Drop Database " + db.getName());

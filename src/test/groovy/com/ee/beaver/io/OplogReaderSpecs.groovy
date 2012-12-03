@@ -1,33 +1,31 @@
 package com.ee.beaver.io
 
 import org.bson.types.ObjectId
+
+import spock.lang.*
+
 import com.ee.beaver.domain.MongoCollection
 import com.ee.beaver.domain.MongoCollectionIterator
 import com.ee.beaver.domain.operation.MongoUtils
 import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.DBObject
-import spock.lang.*
-import com.mongodb.util.JSON
 
 public class OplogReaderSpecs extends Specification{
 
 	private MongoCollection mockOplogCollection
 
-	private MongoCollectionIterator<DBObject> mockOplogCollectionIterator
-
+	private MongoCollectionIterator<String> mockOplogCollectionIterator
+	
 	private CollectionReader reader
 	private String dbName = 'beaver'
 	private String collectionName = 'home'
 	private String name = '[Test Name]'
 	private String fromTimestamp = '{\"ts\" : { \"$ts\" : 1354096315 , \"$inc\" : 10}}'
 	def objId
-	private DBObject query;
 
 	def setup() {
-		query = (DBObject) JSON.parse('{ "ts" : { "$gt" : { "$ts" : 1354096315 , "$inc" : 10}}}')
 		mockOplogCollection = Stub(MongoCollection)
 		mockOplogCollectionIterator = Stub(MongoCollectionIterator)
-		mockOplogCollection.find(query, false) >> mockOplogCollectionIterator
+		mockOplogCollection.find(fromTimestamp, false) >> mockOplogCollectionIterator
 		reader = new OplogReader(mockOplogCollection, fromTimestamp, false)
 		objId = new ObjectId()
 	}
@@ -35,8 +33,8 @@ public class OplogReaderSpecs extends Specification{
 
 	def readsACreateCollectionOperationDocument() {
 		given: 'a create collection oplog entry'
-			def document = MongoUtils.createCollection(dbName, collectionName) as DBObject
-
+			def document = MongoUtils.createCollection(dbName, collectionName) as String
+		
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -45,7 +43,7 @@ public class OplogReaderSpecs extends Specification{
 			String oplogDocumentString = reader.readDocument()
 
 		then: 'it should read expected document'
-			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , \"h\" : \"3493050463814977392\" , \"op\" : \"c\" , \"ns\" : \"' + dbName + '.$cmd\" , \"o\" : \"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}'
+			oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"c","ns":"' + dbName + '.$cmd","o":"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}'
 	}
 
 
@@ -56,8 +54,8 @@ public class OplogReaderSpecs extends Specification{
 							.add('_id', objId)
 							.add('name', name)
 						.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
-
+			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
+			
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -66,7 +64,7 @@ public class OplogReaderSpecs extends Specification{
 			String oplogDocumentString = reader.readDocument()
 
 		then: 'it should read the expected document'
-			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "i" , "ns" : "' + "$dbName.$collectionName" + '" , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}'
+			oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"i","ns":"' + "$dbName.$collectionName" + '","o":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}'
 	}
 
 
@@ -81,9 +79,8 @@ public class OplogReaderSpecs extends Specification{
 						.start()
 							.add('name', name)
 						.get()
-
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
-
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -92,7 +89,7 @@ public class OplogReaderSpecs extends Specification{
 			String oplogDocumentString = reader.readDocument()
 
 		then: 'it should read the expected document'
-			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "u" , "ns" : "' + "$dbName.$collectionName" + '" , "o2" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}" , "o" : "{ \\"name\\" : \\"'+name+'\\"}"}'
+			oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"u","ns":"' + "$dbName.$collectionName" + '","o2":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}","o":"{ \\"name\\" : \\"'+name+'\\"}"}'
 	}
 
 
@@ -102,8 +99,8 @@ public class OplogReaderSpecs extends Specification{
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
-
+			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as String
+			
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -112,14 +109,13 @@ public class OplogReaderSpecs extends Specification{
 			String oplogDocumentString = reader.readDocument()
 
 		then:'it should read the expected document'
-			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "d" , "ns" : "' + "$dbName.$collectionName" + '" , "b" : true , "o" : "{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}"}'
-
+			oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"d","ns":"' + "$dbName.$collectionName" + '","b":true,"o":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}"}'
 	}
 
 	def readsADropCollectionOperationDocument() {
 		given: 'a drop collection oplog entry'
-			def document = MongoUtils.dropCollection(dbName, collectionName) as DBObject
-
+			def document = MongoUtils.dropCollection(dbName, collectionName) as String
+			
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -128,7 +124,7 @@ public class OplogReaderSpecs extends Specification{
 			String oplogDocumentString = reader.readDocument()
 
 		then: 'it should read the expected document'
-			oplogDocumentString == '{ "ts" : "{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}" , "h" : "3493050463814977392" , "op" : "c" , "ns" : "' + "$dbName" +'.$cmd" , "o" : "{ \\"drop\\" : \\"'+ collectionName +'\\"}"}'
+			oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"c","ns":"' + "$dbName" +'.$cmd","o":"{ \\"drop\\" : \\"'+ collectionName +'\\"}"}'
 	}
 
 
@@ -155,6 +151,6 @@ public class OplogReaderSpecs extends Specification{
 		then: 'error message should be shown as'
 			def problem = thrown(ReaderAlreadyClosed)
 			problem.message == "Reader Already Closed"
-
 	}
+
 }

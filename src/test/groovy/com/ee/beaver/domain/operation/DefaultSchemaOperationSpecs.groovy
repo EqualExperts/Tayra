@@ -27,10 +27,10 @@ class DefaultSchemaOperationSpecs extends RequiresMongoConnection {
 			mockSchemaOperationsFactory.from(spec) >> mockSchemaOperation
 		
 		when: 'the operation runs'
-			defaultSchemaOperation.execute(builder as DBObject)
+			defaultSchemaOperation.doExecute(builder as DBObject)
 		
 		then: 'Create Collection Operation executes the oplog entry'
-			1 * mockSchemaOperation.execute(standalone.getDB(dbName), spec)
+			1 * mockSchemaOperation.doExecute(standalone.getDB(dbName), spec)
 	}
 	
 }

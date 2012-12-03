@@ -4,7 +4,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.util.JSON;
 
-class InsertDocument implements Operation {
+class InsertDocument extends Operation {
 
   private final Mongo mongo;
 
@@ -12,7 +12,7 @@ class InsertDocument implements Operation {
     this.mongo = mongo;
   }
   @Override
-  public final void execute(final DBObject document) {
+  protected final void doExecute(final DBObject document) {
     final String ns = (String) document.get("ns");
     int index = ns.indexOf(".");
     if (index != -1) {

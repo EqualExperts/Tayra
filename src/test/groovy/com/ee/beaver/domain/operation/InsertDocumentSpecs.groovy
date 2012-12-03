@@ -36,10 +36,10 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 							.add('_id', objId)
 							.add('name', name)
 						.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 		
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document as String)
 
 		then: 'the document should exist'
 			assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
@@ -53,7 +53,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 							.add('_id', objId)
 							.add('name', name)
 						.get()
-			def document = MongoUtils.insertDocument(dbName, prefixedCollectionName, o) as DBObject
+			def document = MongoUtils.insertDocument(dbName, prefixedCollectionName, o) as String
 		
 		when: 'the operation runs'
 			operation.execute(document)
@@ -70,7 +70,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 							.add('_id', objId)
 							.add('name', name)
 						.get()
-			def document = MongoUtils.insertDocument(anotherDb, collectionName, o) as DBObject
+			def document = MongoUtils.insertDocument(anotherDb, collectionName, o) as String
 
 		when: 'the operation runs'
 			operation.execute(document)
@@ -92,7 +92,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 								.add('country', '[CN]')
 							.pop()
 						.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 
 		when: 'the operation runs'
 			operation.execute(document)
@@ -118,7 +118,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 								.pop()
 							.pop()
 						.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 
 		when: 'the operation runs'
 			operation.execute(document)
@@ -135,7 +135,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 							.add('_id', objId)
 							.add('name', name)
 						.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 
 		and: 'the document already exists'
 			operation.execute(document)

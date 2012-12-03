@@ -71,7 +71,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
 			
 		when: 'the operation runs'
 			operation.execute(document)
@@ -98,7 +98,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as DBObject
+			def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as String
 		
 		when: 'the operation runs'
 			operation.execute(document)
@@ -125,7 +125,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as DBObject
+			def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as String
 
 		when: 'the operation runs'
 			operation.execute(document)
@@ -158,7 +158,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 						
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
 
 		when: 'the operation runs'
 			operation.execute(document)
@@ -191,7 +191,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
 
 		when: 'the operation runs'
 			operation.execute(document)

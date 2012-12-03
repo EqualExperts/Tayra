@@ -1,9 +1,8 @@
 package com.ee.beaver.command
 
 import com.ee.beaver.*
-import com.ee.beaver.io.*
 import com.ee.beaver.domain.*
-import com.mongodb.DB
+import com.ee.beaver.io.*
 import com.mongodb.Mongo
 import com.mongodb.ServerAddress
 
@@ -47,6 +46,7 @@ writer = new TimestampWriter(getWriter())
 listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 		: new ProgressReporter(null, console)
 
+
 timestampFile = new File(timestampFileName)
 if(timestampFile.isDirectory()) {
 	console.println("Expecting $timestampFile.name to be a File, but found Directory")
@@ -63,10 +63,8 @@ if(timestampFile.exists()) {
 try {
 	ServerAddress server = new ServerAddress(sourceMongoDB, port);
 	mongo = new Mongo(server)
-	DB local = mongo.getDB("local")
-	oplog = new Oplog(local)
-
-	reader = new OplogReader(oplog, timestamp, isContinuous)
+	oplog = new Oplog(mongo)
+	reader = new OplogReader(oplog, null, isContinuous)
 	console.println "Backup Started On: ${new Date()}"
 	new Copier().copy(reader, writer, listener)
 } catch (Throwable problem) {

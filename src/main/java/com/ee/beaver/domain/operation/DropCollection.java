@@ -5,7 +5,7 @@ import com.mongodb.DBObject;
 
 public class DropCollection implements SchemaOperation {
 
-  public final void execute(final DB db, final DBObject spec) {
+  public final void doExecute(final DB db, final DBObject spec) {
     final String dropCollectionName = (String) spec.get("drop");
     if (!db.collectionExists(dropCollectionName)) {
       throw new DropCollectionFailed("Could Not Drop Collection "

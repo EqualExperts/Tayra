@@ -50,7 +50,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
+			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as String
 		
 		when: 'the operation runs'
 			operation.execute(document)
@@ -66,7 +66,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, prefixedCollectionName,o) as DBObject
+			def document = MongoUtils.deleteDocument(dbName, prefixedCollectionName,o) as String
 		
 		when: 'the operation runs'
 			operation.execute(document)
@@ -82,7 +82,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(anotherDb, collectionName,o) as DBObject
+			def document = MongoUtils.deleteDocument(anotherDb, collectionName,o) as String
 			
 		when: 'the operation runs'
 			operation.execute(document)
@@ -108,10 +108,10 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 					
 			standalone.getDB(dbName).getCollection(collectionName).insert(documentToBeDeleted)
 		
-			def document = MongoUtils.deleteDocument(dbName, collectionName, documentToBeDeleted) as DBObject
+			def document = MongoUtils.deleteDocument(dbName, collectionName, documentToBeDeleted) as String
 
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document as String)
 
 		then: 'document should not be present'
 			assertThatDocumentIsNotPresentInCollection(dbName, collectionName, documentToBeDeleted)
@@ -125,7 +125,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', absentObjId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
+			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as String
 		
 		when: 'the operation runs'
 				operation.execute(document)

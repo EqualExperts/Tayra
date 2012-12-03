@@ -1,6 +1,7 @@
 package com.ee.beaver.io
 
 import spock.lang.*
+
 import com.ee.beaver.domain.NotAReplicaSetNode
 import com.ee.beaver.domain.Oplog
 import com.mongodb.BasicDBObjectBuilder
@@ -47,7 +48,7 @@ public class CopierSpecs extends Specification {
 							.start()
 								.add("ts", dbObject.get("ts"))
 							.get();
-			OplogReader reader = new OplogReader(new Oplog(local), query.toString(), false)
+			OplogReader reader = new OplogReader(new Oplog(replicaSet), query.toString(), false)
 
 		when: 'document is copied'
 			copier.copy(reader, writer)

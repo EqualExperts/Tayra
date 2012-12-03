@@ -10,7 +10,7 @@ public class CreateCollection implements SchemaOperation {
   private static final String SIZE = "size";
   private static final String CAPPED = "capped";
 
-  public final void execute(final DB db, final DBObject spec) {
+  public final void doExecute(final DB db, final DBObject spec) {
     final String createCollectionName = (String) spec.get("create");
     DBObject options = new BasicDBObjectBuilder()
       .start()

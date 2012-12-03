@@ -1,22 +1,15 @@
 package com.ee.beaver.domain
 
-import org.bson.types.BSONTimestamp
-import spock.lang.*
+import java.net.UnknownHostException;
 
-import com.ee.beaver.domain.IteratorAlreadyClosed;
-import com.ee.beaver.domain.MongoCollection;
-import com.ee.beaver.domain.MongoCollectionIterator;
-import com.ee.beaver.domain.NotALocalDB;
-import com.ee.beaver.domain.NotAReplicaSetNode;
-import com.ee.beaver.domain.Oplog;
+import spock.lang.Specification;
+
 import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.DB
+import com.mongodb.DB;
 import com.mongodb.DBCursor
 import com.mongodb.DBObject
-import com.mongodb.Mongo
-import com.mongodb.MongoException
-import com.mongodb.QueryBuilder
-import com.mongodb.util.JSON
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 public class OplogSpecs extends Specification {
 
@@ -36,8 +29,8 @@ public class OplogSpecs extends Specification {
 	}
 
 	def setup() {
+		oplog = new Oplog(replicaSet);
 		local = replicaSet.getDB("local");
-		oplog = new Oplog(local);
 	}
 
 	def doesNotConnectToStandaloneMongoInstance() throws Exception {
@@ -46,8 +39,8 @@ public class OplogSpecs extends Specification {
 			DB local = standalone.getDB("local");
 
 		when: 'oplog created on Db of standalone'
-			new Oplog(local);
-
+			new Oplog(standalone);
+			
 		then: 'error message should be shown as'
 			def problem = thrown(NotAReplicaSetNode)
 			problem.message == "localhost is not a part of ReplicaSet";
@@ -56,19 +49,18 @@ public class OplogSpecs extends Specification {
 
 	def readsFirstDocument() throws UnknownHostException, MongoException {
 		given: 'an iterator on the oplog'
-			Iterator<DBObject> iterator = oplog.find();
-
+			Iterator<String> iterator = oplog.find();
+			
 		when: 'document of oplog is fetched'
-			DBObject actualDBObject = iterator.next();
+			String actualDocument = iterator.next();
 
 		then: 'it should be an appropriate document'
-			actualDBObject instanceof DBObject
-	}
-
+			actualDocument instanceof String
+	}	
 
 	def doesNotAllowDocumentRemoval() {
 		given: 'an iterator on the oplog'
-			Iterator<DBObject> iterator = oplog.find();
+			Iterator<String> iterator = oplog.find();
 
 		when: 'it tries to remove oplog document'
 			iterator.remove();
@@ -78,25 +70,12 @@ public class OplogSpecs extends Specification {
 			problem.message == "remove document on oplog is not supported" ;
 	}
 
-
-	def permitsReadingFromLocalDBOnly() {
-		given: 'a non local database'
-			DB nonLocalDB = replicaSet.getDB("nonLocal");
-
-		when: 'when oplog is created on that database'
-			oplog = new Oplog(nonLocalDB);
-
-		then: 'error message should be shown as'
-			def problem = thrown(NotALocalDB)
-			problem.message == "Not a local DB"
-	}
-
-
+	
 	def itTailsOplog() {
 		given: 'a tailable oplog iterator'
 			boolean tailable = true;
-			MongoCollectionIterator<DBObject> iterator = oplog.find(null, tailable);
-
+			MongoCollectionIterator<String> iterator = oplog.find(null, tailable);
+		
 		and: 'total count of oplog documents'
 			long totalDocuments = local.getCollection("oplog.rs").count();
 			long documentsRead = 0;
@@ -119,8 +98,8 @@ public class OplogSpecs extends Specification {
 	def shoutsWhenQueryingWithAClosedIterator() {
 		given: 'a tailable oplog iterator'
 			boolean tailable = true;
-			MongoCollectionIterator<DBObject> iterator = oplog.find(null, tailable);
-
+			MongoCollectionIterator<String> iterator = oplog.find(null, tailable);
+			
 		and: 'the iterator is closed'
 			iterator.close();
 
@@ -136,8 +115,8 @@ public class OplogSpecs extends Specification {
 	def shoutsWhenFetchingWithAClosedIterator() {
 		given: 'a tailable oplog iterator'
 			boolean tailable = true;
-			MongoCollectionIterator<DBObject> iterator = oplog.find(null, tailable);
-
+			MongoCollectionIterator<String> iterator = oplog.find(null, tailable);
+			
 		and: 'the iterator is closed'
 			iterator.close();
 
@@ -149,27 +128,22 @@ public class OplogSpecs extends Specification {
 			problem.message == "Iterator Already Closed"
 	}
 
+
 	def findsADocumentByQuery() throws Exception {
 		given: 'we fetch the first document from mongo db'
 			DBObject id = new BasicDBObjectBuilder()
-					.start()
-					 .add("_id", -1)
-					.get();
-			DBCursor dbCursor = local.getCollection("oplog.rs").find()
-				   .sort((DBObject) id);
+							.start()
+							 .add("_id", -1)
+							.get();
+			DBCursor dbCursor = local.getCollection("oplog.rs")
+									 .find()
+									 .sort((DBObject) id);
 			DBObject document = dbCursor.next();
 
-		and: 'create a query to search for documents with greater timestamp than just fetched'
-			DBObject query = new QueryBuilder()
-						 .start()
-						   .put("ts")
-						   .greaterThan(document.get("ts"))
-						 .get();
-
 		when: 'query executes, iterator points to second document'
-			MongoCollectionIterator<DBObject> iterator = oplog.find(query);
+			MongoCollectionIterator<String> iterator = oplog.find(JSON.serialize(document));
 
 		then: 'iterator\'s current & cursor\'s current document should be same'
-			iterator.next() == dbCursor.next();
+			iterator.next() == JSON.serialize(dbCursor.next());
 	}
 }

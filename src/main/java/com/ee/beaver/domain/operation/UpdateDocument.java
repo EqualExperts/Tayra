@@ -5,7 +5,7 @@ import com.mongodb.Mongo;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
-class UpdateDocument implements Operation {
+class UpdateDocument extends Operation {
 
   private final Mongo mongo;
 
@@ -14,7 +14,7 @@ class UpdateDocument implements Operation {
   }
 
   @Override
-  public void execute(final DBObject document) {
+  protected void doExecute(final DBObject document) {
     final String ns = (String) document.get("ns");
     int index = ns.indexOf(".");
     if (index != -1) {

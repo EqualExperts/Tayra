@@ -1,8 +1,6 @@
 package com.ee.beaver.io;
 
 import com.ee.beaver.domain.operation.OperationsFactory;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 public class OplogReplayer {
 
@@ -13,8 +11,16 @@ public class OplogReplayer {
   }
 
   public void replayDocument(final String document) {
-    DBObject mongoDocument = (DBObject) JSON.parse(document);
-    final String operationCode = (String) mongoDocument.get("op");
-    operations.get(operationCode).execute(mongoDocument);
+    final String operationCode = extractOpcode(document);
+    operations.get(operationCode).execute(document);
   }
+
+  private String extractOpcode(final String document) {
+    int opcodeStartIndex = document.indexOf("op") - 1;
+    int opcodeEndIndex = document.indexOf(",", opcodeStartIndex);
+    String opcodeSpec = document.substring(opcodeStartIndex, opcodeEndIndex);
+    String quotedOpcode = opcodeSpec.split(":")[1];
+    return quotedOpcode.replaceAll("\"", "");
 }
+}
+

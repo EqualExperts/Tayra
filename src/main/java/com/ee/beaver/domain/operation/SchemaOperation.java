@@ -7,10 +7,10 @@ public interface SchemaOperation {
 
   SchemaOperation NO_OP = new SchemaOperation() {
     @Override
-    public void execute(final DB db, final DBObject spec) { }
+    public void doExecute(final DB db, final DBObject spec) { }
       public String toString() { return "NO OPERATION"; };
     };
 
-  void execute(final DB db, final DBObject spec);
+  void doExecute(final DB db, final DBObject spec);
 
 }

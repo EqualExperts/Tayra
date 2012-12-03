@@ -1,14 +1,20 @@
 package com.ee.beaver.domain.operation;
 
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
-public interface Operation {
+public abstract class Operation {
 
-  Operation NO_OP = new Operation() {
-  @Override
-  public void execute(final DBObject document) { }
+  public static final Operation NO_OP = new Operation() {
+    @Override
+    public void doExecute(final DBObject document) { }
     public String toString() { return "NO OPERATION"; };
   };
 
-  void execute(DBObject document);
+  public void execute(final String document) {
+    DBObject mongoDocument = (DBObject) JSON.parse(document);
+    doExecute(mongoDocument);
+  }
+
+  protected abstract void doExecute(DBObject document);
 }

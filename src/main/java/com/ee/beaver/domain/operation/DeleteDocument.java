@@ -5,7 +5,7 @@ import com.mongodb.Mongo;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
-class DeleteDocument implements Operation {
+class DeleteDocument extends Operation {
 
   private final Mongo mongo;
 
@@ -14,7 +14,7 @@ class DeleteDocument implements Operation {
   }
 
   @Override
-  public final void execute(final DBObject document) {
+  protected final void doExecute(final DBObject document) {
     final String ns = (String) document.get("ns");
     int index = ns.indexOf(".");
     if (index != -1) {

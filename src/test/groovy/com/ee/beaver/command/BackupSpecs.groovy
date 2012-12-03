@@ -1,6 +1,5 @@
 package com.ee.beaver.command
 
-import java.io.Writer
 import spock.lang.*
 
 public class BackupSpecs extends Specification {
@@ -38,7 +37,6 @@ public class BackupSpecs extends Specification {
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
-
 
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required option: f'

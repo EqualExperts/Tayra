@@ -39,7 +39,6 @@ mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
   mongo = new Mongo(server)
-  DB local = mongo.getDB("local")
   def reader = binding.hasVariable('reader') ? binding.getVariable('reader')
 	: new BufferedReader(new FileReader(restoreFromFile))
 

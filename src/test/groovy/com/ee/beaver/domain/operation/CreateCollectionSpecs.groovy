@@ -26,7 +26,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 
 		when: 'the operation runs'
-			operation.execute(database, spec)
+			operation.doExecute(database, spec)
 		
 		then: 'collection should exist'
 			standalone.getDB(dbName).collectionExists(collectionName)
@@ -39,10 +39,10 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 		
 		and: 'the collection already exists'
-			operation.execute(database, spec)
+			operation.doExecute(database, spec)
 		
 		when: 'the operation runs again'
-			operation.execute(database, spec)
+			operation.doExecute(database, spec)
 
 		then: 'it complains that the collection cannot be created again'
 			def problem = thrown(CreateCollectionFailed)
@@ -58,7 +58,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 
 		when: 'the operation runs'
-			operation.execute(database, spec)
+			operation.doExecute(database, spec)
 		
 		then: 'the capped collection with size should exist'
 			DB db = standalone.getDB(dbName)
@@ -77,7 +77,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 		
 		when: 'the operation runs'
-			operation.execute(database, spec)
+			operation.doExecute(database, spec)
 		
 		then: 'the collection should exist'
 			standalone.getDB(dbName).collectionExists(collectionName)

@@ -23,7 +23,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 
 		when: 'the operation runs'
-			operation.execute(standalone.getDB(dbName), spec)
+			operation.doExecute(standalone.getDB(dbName), spec)
 
 		then: 'the database should not exist'
 			List<String> databases = standalone.getDatabaseNames()
@@ -45,7 +45,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
 			DBObject spec = builder.o
 		
 		when: 'the operation runs'
-			operation.execute(standalone.getDB(nonExistentDB), spec)
+			operation.doExecute(standalone.getDB(nonExistentDB), spec)
 			
 		then: 'it complains that database to be dropped does not exist'
 			def problem = thrown(DropDatabaseFailed)
