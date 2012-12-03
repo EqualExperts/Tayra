@@ -42,7 +42,7 @@ public class Oplog implements MongoCollection {
     DBObject query = createQuery(fromDocument);
     return new OplogIterator(oplog, query, tailable);
   }
-  
+
   private DBObject createQuery(final String fromDocument) {
     if (fromDocument == null) {
       return null;

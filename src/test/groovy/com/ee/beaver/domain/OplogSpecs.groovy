@@ -10,6 +10,7 @@ import com.mongodb.DBCursor
 import com.mongodb.DBObject
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import com.mongodb.util.JSON;
 
 public class OplogSpecs extends Specification {
 
