@@ -47,7 +47,7 @@ bin
 .classpath
 cobertura.ser
 db
-test.out
+test.*
 a.out
 *.documents
 timestamp.out
