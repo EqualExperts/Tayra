@@ -1,6 +1,7 @@
 package usingio
 
 files = [
+	new Tuple(1, 'mb'),
 	new Tuple(2, 'mb'),
 	new Tuple(4, 'mb'),
 	new Tuple(8, 'mb'),
@@ -18,8 +19,7 @@ files.each { tuple ->
 	def fileSize = tuple[0]
 	def unit = tuple[1]
 	def binding = new Binding()
-	def args = "test.$fileSize$unit"
-	binding.setVariable('args', args)
-	new RegularReader().main(args)
+	def file = new File(System.getProperty('java.io.tmpdir'), "test.$fileSize$unit")
+	new RegularReader().main("$file.path")
 }
 

@@ -18,24 +18,16 @@ public class RegularReader {
 
 	public static void main(String[] args) throws Exception {
 		String name = args[0];
-		System.out.println("Reading File " + name);
-
-		FileInputStream file = new FileInputStream(name);
-		DataInputStream dis = new DataInputStream(file);
-		BufferedReader br = new BufferedReader(new InputStreamReader(dis));
+		File file = new File(name);
+		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		long startTime = new Date().getTime();
-		System.out.println("Start Time = " + startTime);
-
-		String strLine;
+		String strLine = null;
 		while ((strLine = br.readLine()) != null) {
 			// System.out.println (strLine);
 		}
 		long endTime = new Date().getTime();
-		System.out.println("End Time = " + endTime);
-		System.out.println("Time Taken = " + (endTime - startTime));
-		System.out.println();
-		System.out.println("Reading File is completed");
+		System.out.printf("%s, %d\n", file.getName(), (endTime - startTime));
 	}
 
 }

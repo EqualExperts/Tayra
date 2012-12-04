@@ -1,4 +1,13 @@
 package generator
+
+import static java.io.File.*
+
+import java.io.File;
+import java.io.FileSystem;
+import java.security.AccessController;
+
+import sun.security.action.GetPropertyAction;
+
 def cli = new CliBuilder(usage:'generate -f <file> -s <size> [-u <unit>]')
 
 cli.with {
@@ -19,10 +28,11 @@ unit = 'K'
 if(options.u) {
 	unit = options.u
 }
-
 NEW_LINE = System.getProperty('line.separator')
 println "Generating file $fileName with Size $fileSize $unit"
-new File(fileName).withWriter { writer ->
+File tmpdir = new File(System.getProperty('java.io.tmpdir'))
+def dataFile = new File(tmpdir, "$fileName")
+dataFile.withWriter { writer ->
 	def howMany = 1 * Integer.parseInt(fileSize)
 	if(unit.startsWith('m') || unit.startsWith('M')) {
 		howMany *= 1024
@@ -33,8 +43,8 @@ new File(fileName).withWriter { writer ->
 	howMany.times {
 		writeOneKB(writer)
 	}
-	println "Generated file $fileName"
 }
+println "Generated file $dataFile.name"
 
 
 def writeOneKB(writer) {

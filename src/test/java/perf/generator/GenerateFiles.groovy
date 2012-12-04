@@ -1,7 +1,7 @@
 package generator
-import Generate;
 
 fileSizes = [
+	new Tuple(1, 'mb'),
 	new Tuple(2, 'mb'),
 	new Tuple(4, 'mb'),
 	new Tuple(8, 'mb'),
@@ -15,6 +15,7 @@ fileSizes = [
 	new Tuple(2, 'gb'),
 	new Tuple(4, 'gb')
 ]
+
 fileSizes.each { tuple ->
 	def fileSize = tuple[0]
 	def unit = tuple[1]

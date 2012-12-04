@@ -12,8 +12,6 @@ import java.util.List;
 
 public class MemoryMappedWriter {
     private static int count = 1010241024; //10 MB
-//    static int length = 0x8FFFFFF; // 128 Mb
-    static int length = 0x8;
 
     public static void main(String[] args) throws Exception {
         String name = args[0];
@@ -21,6 +19,7 @@ public class MemoryMappedWriter {
 		RandomAccessFile memoryMappedFile = new RandomAccessFile(file, "rw");
 
         //Mapping a file into memory
+		long length = file.length();
         FileChannel channel = memoryMappedFile
         					.getChannel();
 		MappedByteBuffer out = channel
@@ -28,7 +27,6 @@ public class MemoryMappedWriter {
 
         //Writing to Memory Mapped File
         int counter = 0;
-        out.mark();
         List<String> data = Arrays.asList("A", "B", "C");
 		while(counter < length){
             byte[] character = data.get(counter++ % data.size()).getBytes();
