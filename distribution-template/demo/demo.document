@@ -8,7 +8,7 @@ db.createCollection("people.address")
 // creates an uncapped collection people of size 1 mb
 db.createCollection("people.uncapped", { size: 1048576 })
 
-// creates a capped collection people of max size 1 mb and max 50 documents 
+// creates a capped collection people of max size 1 mb and max 50 documents
 db.createCollection("people.capped", { capped : true, size : 1048576, max : 50 } )
 
 //--------------------------< Insert Documents >-----------------------------------
@@ -21,10 +21,13 @@ db.people.update( { name: "testUser1" }, { name: "testUser1", age: 20 } )
 db.people.address.update( { name: "testUser3" }, { name: "testUser3", age: 22, address: { street: "xyz", city: "abc" } } )
 
 //--------------------------< Volume Insert Documents >-----------------------------------
-for (var i=4; i<=200000; i++) { db.people.insert( { name: "testUser"+i } ); }
+for (var i=4; i<=20000; i++) { db.people.insert( { name: "testUser"+i } ); }
+
+//--------------------------< Incremental Volume Insert >-----------------------------------
+for (var i=40000; i<=60000; i++) { db.people.insert( { name: "testUser"+i } ); }
 
 //--------------------------< Delete Documents >-----------------------------------
-db.people.remove( { name: "testUser1" } ) 
+db.people.remove( { name: "testUser1" } )
 db.people.address.remove( { address: { street: "xyz" } } )
 db.people.remove()
 

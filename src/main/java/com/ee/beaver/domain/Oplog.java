@@ -52,7 +52,7 @@ public class Oplog implements MongoCollection {
     return new QueryBuilder()
             .start()
               .put("ts")
-              .greaterThan(timestamp.get("ts"))
+              .greaterThanEquals(timestamp.get("ts"))
             .get();
     }
 

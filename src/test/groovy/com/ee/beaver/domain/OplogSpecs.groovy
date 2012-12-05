@@ -41,7 +41,7 @@ public class OplogSpecs extends Specification {
 
 		when: 'oplog created on Db of standalone'
 			new Oplog(standalone);
-			
+
 		then: 'error message should be shown as'
 			def problem = thrown(NotAReplicaSetNode)
 			problem.message == "localhost is not a part of ReplicaSet";
@@ -51,13 +51,13 @@ public class OplogSpecs extends Specification {
 	def readsFirstDocument() throws UnknownHostException, MongoException {
 		given: 'an iterator on the oplog'
 			Iterator<String> iterator = oplog.find();
-			
+
 		when: 'document of oplog is fetched'
 			String actualDocument = iterator.next();
 
 		then: 'it should be an appropriate document'
 			actualDocument instanceof String
-	}	
+	}
 
 	def doesNotAllowDocumentRemoval() {
 		given: 'an iterator on the oplog'
@@ -71,12 +71,12 @@ public class OplogSpecs extends Specification {
 			problem.message == "remove document on oplog is not supported" ;
 	}
 
-	
+
 	def itTailsOplog() {
 		given: 'a tailable oplog iterator'
 			boolean tailable = true;
 			MongoCollectionIterator<String> iterator = oplog.find(null, tailable);
-		
+
 		and: 'total count of oplog documents'
 			long totalDocuments = local.getCollection("oplog.rs").count();
 			long documentsRead = 0;
@@ -100,7 +100,7 @@ public class OplogSpecs extends Specification {
 		given: 'a tailable oplog iterator'
 			boolean tailable = true;
 			MongoCollectionIterator<String> iterator = oplog.find(null, tailable);
-			
+
 		and: 'the iterator is closed'
 			iterator.close();
 
@@ -117,7 +117,7 @@ public class OplogSpecs extends Specification {
 		given: 'a tailable oplog iterator'
 			boolean tailable = true;
 			MongoCollectionIterator<String> iterator = oplog.find(null, tailable);
-			
+
 		and: 'the iterator is closed'
 			iterator.close();
 
@@ -144,7 +144,7 @@ public class OplogSpecs extends Specification {
 		when: 'query executes, iterator points to second document'
 			MongoCollectionIterator<String> iterator = oplog.find(JSON.serialize(document));
 
-		then: 'iterator\'s current & cursor\'s current document should be same'
-			iterator.next() == JSON.serialize(dbCursor.next());
+		then: "iterator's current & cursor's current document should be same"
+			iterator.next() == JSON.serialize(document);
 	}
 }

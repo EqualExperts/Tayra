@@ -64,7 +64,7 @@ try {
 	ServerAddress server = new ServerAddress(sourceMongoDB, port);
 	mongo = new Mongo(server)
 	oplog = new Oplog(mongo)
-	reader = new OplogReader(oplog, null, isContinuous)
+	reader = new OplogReader(oplog, timestamp, isContinuous)
 	console.println "Backup Started On: ${new Date()}"
 	new Copier().copy(reader, writer, listener)
 } catch (Throwable problem) {
