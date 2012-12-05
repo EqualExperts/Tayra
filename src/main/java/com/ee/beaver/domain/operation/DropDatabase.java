@@ -6,7 +6,7 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
-public class DropDatabase implements SchemaOperation {
+class DropDatabase implements SchemaOperation {
 
   private final Mongo mongo;
 

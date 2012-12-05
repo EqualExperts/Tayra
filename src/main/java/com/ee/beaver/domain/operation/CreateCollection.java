@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 
-public class CreateCollection implements SchemaOperation {
+class CreateCollection implements SchemaOperation {
 
   private static final String MAX = "max";
   private static final String SIZE = "size";

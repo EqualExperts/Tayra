@@ -3,7 +3,7 @@ package com.ee.beaver.domain.operation;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 
-public class DropCollection implements SchemaOperation {
+class DropCollection implements SchemaOperation {
 
   public final void doExecute(final DB db, final DBObject spec) {
     final String dropCollectionName = (String) spec.get("drop");
