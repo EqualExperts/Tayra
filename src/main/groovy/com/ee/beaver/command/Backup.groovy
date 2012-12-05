@@ -42,7 +42,7 @@ if(options.t) {
 
 mongo = null
 PrintWriter console = new PrintWriter(System.out, true)
-writer = new TimestampWriter(getWriter())
+writer = new TimestampRecorder(getWriter())
 listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 		: new ProgressReporter(null, console)
 

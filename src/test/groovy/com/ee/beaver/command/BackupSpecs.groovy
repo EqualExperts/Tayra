@@ -94,7 +94,7 @@ public class BackupSpecs extends Specification {
 			new Backup(context).run()
 
 		then: 'error message should be shown as'
-			result.toString().contains('Oops!! Could not perform backup...localhost is not a part of ReplicaSet')
+			result.toString().contains('Oops!! Could not perform backup...node is not a part of ReplicaSet')
 	}
 
 }

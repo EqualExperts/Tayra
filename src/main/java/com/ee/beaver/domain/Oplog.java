@@ -20,20 +20,10 @@ public class Oplog implements MongoCollection {
 
     boolean oplogExists = local.collectionExists(OPLOG_COLLECTIONNAME);
     if (!oplogExists) {
-      throw new NotAReplicaSetNode("localhost is not a part of ReplicaSet");
+      throw new NotAReplicaSetNode("node is not a part of ReplicaSet");
     }
 
     oplog = local.getCollection(OPLOG_COLLECTIONNAME);
-  }
-
-  @Override
-  public final MongoCollectionIterator<String> find() {
-    return find(null, false);
-  }
-
-  @Override
-  public final MongoCollectionIterator<String> find(final String query) {
-    return find(query, false);
   }
 
   @Override
@@ -49,7 +39,7 @@ public class Oplog implements MongoCollection {
     }
 
     DBObject timestamp = (DBObject) JSON.parse(fromDocument);
-    return new QueryBuilder()
+    return QueryBuilder
             .start()
               .put("ts")
               .greaterThanEquals(timestamp.get("ts"))

@@ -11,15 +11,15 @@ public class CreateCollection implements SchemaOperation {
   private static final String CAPPED = "capped";
 
   public final void doExecute(final DB db, final DBObject spec) {
-    final String createCollectionName = (String) spec.get("create");
-    DBObject options = new BasicDBObjectBuilder()
-      .start()
-      .add(CAPPED, spec.get(CAPPED))
-      .add(SIZE, spec.get(SIZE))
-      .add(MAX, spec.get(MAX))
-      .get();
+    final String collectionName = (String) spec.get("create");
+    DBObject options = BasicDBObjectBuilder
+                       .start()
+                         .add(CAPPED, spec.get(CAPPED))
+                         .add(SIZE, spec.get(SIZE))
+                         .add(MAX, spec.get(MAX))
+                       .get();
     try {
-      db.createCollection(createCollectionName, options);
+      db.createCollection(collectionName, options);
     } catch (Exception problem) {
       throw new CreateCollectionFailed(problem.getMessage());
     }

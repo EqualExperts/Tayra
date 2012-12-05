@@ -3,12 +3,12 @@ package com.ee.beaver.io;
 import java.io.IOException;
 import java.io.Writer;
 
-public class TimestampWriter extends Writer {
+public class TimestampRecorder extends Writer {
 
   private final StringBuilder timestamp;
   private final Writer delegate;
 
-  public TimestampWriter(final Writer delegate) {
+  public TimestampRecorder(final Writer delegate) {
     timestamp = new StringBuilder();
     this.delegate = delegate;
   }
