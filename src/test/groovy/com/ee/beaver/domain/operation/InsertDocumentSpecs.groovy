@@ -3,6 +3,7 @@ package com.ee.beaver.domain.operation
 import org.bson.types.ObjectId
 
 import com.mongodb.BasicDBObjectBuilder
+import com.mongodb.CommandResult;
 import com.mongodb.DBObject
 
 class InsertDocumentSpecs extends RequiresMongoConnection {
@@ -21,6 +22,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	def cleanup() {
 		standalone.getDB(dbName).getCollection(collectionName).drop()
 		standalone.getDB(dbName).getCollection(prefixedCollectionName).drop()
+		standalone.getDB(dbName).dropDatabase()
 		standalone.getDB(anotherDb).dropDatabase()
 	}
 	
@@ -31,11 +33,11 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	
 	def insertsDocument() throws Exception {
 		given: 'an insert document oplog entry'
-			def o = new BasicDBObjectBuilder()
-						.start()
-							.add('_id', objId)
-							.add('name', name)
-						.get()
+			def o = BasicDBObjectBuilder
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+					.get()
 			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 		
 		when: 'the operation runs'
@@ -48,11 +50,11 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	
 	def insertsDocumentInAPrefixedCollection() throws Exception {
 		given: 'an insert document oplog entry on a prefixed collection'
-			def o = new BasicDBObjectBuilder()
-						.start()
-							.add('_id', objId)
-							.add('name', name)
-						.get()
+			def o = BasicDBObjectBuilder
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+					.get()
 			def document = MongoUtils.insertDocument(dbName, prefixedCollectionName, o) as String
 		
 		when: 'the operation runs'
@@ -65,11 +67,11 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	
 	def insertsDocumentInAnotherDatabase() throws Exception {
 		given: 'an insert document oplog entry on another database'
-			def o = new BasicDBObjectBuilder()
-						.start()
-							.add('_id', objId)
-							.add('name', name)
-						.get()
+			def o = BasicDBObjectBuilder
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+					.get()
 			def document = MongoUtils.insertDocument(anotherDb, collectionName, o) as String
 
 		when: 'the operation runs'
@@ -82,16 +84,16 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	
 	def insertsNestedDocument() {
 		given: 'an insert document oplog entry for nested document'
-			def o = new BasicDBObjectBuilder()
-						.start()
-							.add('_id', objId)
-							.add('name', name)
-							.push('address')
-								.add('street', '[Some Street]')
-								.add('city', '[Some City]')
-								.add('country', '[CN]')
-							.pop()
-						.get()
+			def o = BasicDBObjectBuilder
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+						.push('address')
+							.add('street', '[Some Street]')
+							.add('city', '[Some City]')
+							.add('country', '[CN]')
+						.pop()
+					.get()
 			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 
 		when: 'the operation runs'
@@ -104,20 +106,20 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	
 	def insertsDeeplyNestedDocument() {
 		given: 'an insert document oplog entry for deeply nested document'
-			def o = new BasicDBObjectBuilder()
-						.start()
-							.add('_id', objId)
-							.add('name', name)
-							.push('address')
-								.add('street', '[Some Street]')
-								.add('city', '[Some City]')
-								.add('country', '[CN]')
-								.push('geocode')
-									.add('lat', '[Some Lat]')
-									.add('long', '[Some Long]')
-								.pop()
+			def o = BasicDBObjectBuilder
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+						.push('address')
+							.add('street', '[Some Street]')
+							.add('city', '[Some City]')
+							.add('country', '[CN]')
+							.push('geocode')
+								.add('lat', '[Some Lat]')
+								.add('long', '[Some Long]')
 							.pop()
-						.get()
+						.pop()
+					.get()
 			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 
 		when: 'the operation runs'
@@ -130,11 +132,11 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 	
 	def shoutsWhenDuplicateDocumentIsInserted() throws Exception {
 		given: 'an insert document oplog entry'
-			def o = new BasicDBObjectBuilder()
-						.start()
-							.add('_id', objId)
-							.add('name', name)
-						.get()
+			def o = BasicDBObjectBuilder
+					.start()
+						.add('_id', objId)
+						.add('name', name)
+					.get()
 			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
 
 		and: 'the document already exists'
