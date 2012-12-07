@@ -1,5 +1,6 @@
 package com.ee.beaver.io
 
+import org.bson.types.BSONTimestamp
 import org.bson.types.ObjectId
 
 import spock.lang.*
@@ -9,16 +10,16 @@ import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 
-public class OplogReplayerSpecs extends Specification{
-
+public class OplogReplayerSpecs extends Specification {
+	
 	private OplogReplayer replayer
-	private OperationsFactory operations
+	private OperationsFactory mockOperations
 	private Operation mockOperation
 	
 	def setup() {
-		operations = Stub(OperationsFactory)
-		mockOperation = Mock (Operation)
-		replayer = new OplogReplayer(operations)
+		mockOperations = Mock(OperationsFactory)
+		mockOperation = Mock(Operation)
+		replayer = new OplogReplayer(mockOperations)
 	}
 
 	def replaysCreateCollectionOperation() throws Exception {
@@ -27,7 +28,7 @@ public class OplogReplayerSpecs extends Specification{
 			def oplogDocString = builder as String
 			
 		and: 'operations factory gets a Create Collection Operation'
-			operations.get('c') >> mockOperation
+			mockOperations.get('c') >> mockOperation
 
 		when: 'Replayer replays an Oplog Entry String'
 			replayer.replayDocument(oplogDocString)
@@ -47,12 +48,38 @@ public class OplogReplayerSpecs extends Specification{
 			def oplogDocString = builder as String
 
 		and: 'operations factory gets a Insert Operation Operation'
-			operations.get('i') >> mockOperation
+			mockOperations.get('i') >> mockOperation
 
 		when: 'Replayer replays an Oplog Entry String'
 			replayer.replayDocument(oplogDocString)
 
 		then: 'Insert Operation executes the Oplog Entry'
 			1 * mockOperation.execute(oplogDocString)
+	}
+	
+	def extractsCorrectOpcode() {
+		given: 'an Oplog entry for Create Collection with trailing spaces for opcode'
+			def builder = new DocumentBuilder(
+				ts: new BSONTimestamp(1352105652, 1),
+				h :'3493050463814977392',
+				op :'   c ',
+				ns : 'person' + '.$cmd',
+				o : new BasicDBObjectBuilder()
+						.start()
+							.add('create', 'testCollection')
+							.add('capped', false)
+							.add('size', null)
+							.add('max', null)
+						.get()
+			)		
+			def oplogDocString = builder as String
+			
+		when: 'Replayer replays an Oplog Entry String'
+			replayer.replayDocument(oplogDocString)
+	
+		then: 'Operation is called with correct opcode parameter'
+			mockOperations.get('c') >> mockOperation
+			0 * mockOperations.get('   c ')
+			mockOperation.execute(oplogDocString)
 	}
 }

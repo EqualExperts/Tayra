@@ -23,6 +23,6 @@ public class OplogReplayer {
     String opcodeSpec = document.substring(opcodeStartIndex, opcodeEndIndex);
     String quotedOpcode = opcodeSpec.split(":")[1];
     return quotedOpcode.replaceAll("\"", "").trim();
-}
+  }
 }
 
