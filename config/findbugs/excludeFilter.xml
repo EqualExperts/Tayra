@@ -1,49 +1,71 @@
 <FindBugsFilter>
-	<Match>
-		<Class name="com.ee.beaver.io.Copier" />
-		<Not>
-			<Bug code="EC_UNRELATED_CLASS_AND_INTERFACE" />
-		</Not>
-	</Match>
-
   <Match>
-		<Class name="com.ee.beaver.command.Restore$_run_closure1" />
-		<Not>
-			<Bug code="SE_NO_SERIALVERSIONID" />
-		</Not>
-	</Match>
-
+    <Class name="usingio.RegularIOReader" />
+    <Not>
+      <Bug code="DM_DEFAULT_ENCODING" />
+    </Not>
+    <Not>
+      <Bug code="VA_FORMAT_STRING_USES_NEWLINE" />
+    </Not>
+    <Not>
+      <Bug code="STRING_FORMAT_STRING" />
+    </Not>
+  </Match>
   <Match>
-		<Class name="com.ee.beaver.domain.operation.DocumentBuilder$_asType_closure1" />
-		<Not>
-			<Bug code="SE_NO_SERIALVERSIONID" />
-		</Not>
-	</Match>
-
+    <Class name="usingnio.MemoryMappedReader" />
+    <Not>
+      <Bug code="VA_FORMAT_STRING_USES_NEWLINE" />
+    </Not>
+    <Not>
+      <Bug code="STRING_FORMAT_STRING" />
+    </Not>
+  </Match>
   <Match>
-		<Class name="com.ee.beaver.domain.operation.DeleteDocumentBuilder$_asType_closure1" />
-		<Not>
-			<Bug code="SE_NO_SERIALVERSIONID" />
-		</Not>
-	</Match>
-
+    <Class name="usingnio.MemoryMappedWriter" />
+    <Not>
+      <Bug code="DM_DEFAULT_ENCODING" />
+    </Not>
+  </Match>
   <Match>
-		<Class name="~.*\.*Specs.*" />
-		<Not>
-			<Bug code="SE_NO_SERIALVERSIONID" />
-		</Not>
-	</Match>
-
-	<Match>
-		<Class name="com.ee.beaver.domain.operation.UpdateDocumentBuilder$_asType_closure1" />
-		<Not>
-			<Bug code="SE_NO_SERIALVERSIONID" />
-		</Not>
-	</Match>
+    <Class name="com.ee.beaver.io.Copier" />
+    <Not>
+      <Bug code="EC_UNRELATED_CLASS_AND_INTERFACE" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.command.Restore$_run_closure1" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.domain.operation.DocumentBuilder$_asType_closure1" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.domain.operation.DeleteDocumentBuilder$_asType_closure1" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="~.*\.*Specs.*" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.domain.operation.UpdateDocumentBuilder$_asType_closure1" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
   <Match>
     <Class name="com.ee.beaver.command.Backup$_run_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
- </FindBugsFilter>
+</FindBugsFilter>

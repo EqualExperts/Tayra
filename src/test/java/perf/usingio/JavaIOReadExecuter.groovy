@@ -20,6 +20,6 @@ files.each { tuple ->
 	def unit = tuple[1]
 	def binding = new Binding()
 	def file = new File(System.getProperty('java.io.tmpdir'), "test.$fileSize$unit")
-	new RegularReader().main("$file.path")
+	RegularIOReader.main("$file.path")
 }
 
