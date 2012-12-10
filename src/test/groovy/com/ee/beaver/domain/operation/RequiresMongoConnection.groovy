@@ -21,9 +21,13 @@ abstract class RequiresMongoConnection extends Specification {
 		options.safe = true
 		ServerAddress server = new ServerAddress(HOST, PORT)
 		standalone = new Mongo(server, options);
+		standalone.getDB('admin').addUser('admin', 'admin'.toCharArray())
+		standalone.getDB('admin').authenticateCommand('admin', 'admin'.toCharArray())
 	}
 
 	def cleanupSpec() {
+		standalone.getDB('admin').removeUser('admin')
+		standalone.getDB('admin').dropDatabase()
 		standalone.close();
 	}
 }

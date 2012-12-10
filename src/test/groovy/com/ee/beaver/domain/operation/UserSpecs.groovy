@@ -6,33 +6,23 @@ import org.bson.types.ObjectId
 
 import spock.lang.*
 
-class UserSpecs extends Specification {
+class UserSpecs extends RequiresMongoConnection {
 
-	def HOST = 'localhost'
-	def PORT = 27023
 	def objId = new ObjectId()
 	def adminDBName = 'admin'
 	def userCollection = 'system.users'
-	def authStandalone
-	
-	def setup() {
-		authStandalone = new Mongo("localhost",PORT )
-	}
-	
-	def cleanup() {
-		authStandalone.getDB(adminDBName).dropDatabase()
-		authStandalone.close();
-	}
+	def username = 'test'
+	def password = '123'
 	
 	def insertsAddUserDocument() {
 		given: 'an insert document operation'
-			def operation = new InsertDocument(authStandalone)
+			def operation = new InsertDocument(standalone)
 			
 		and: 'an add user insert document oplog entry'
 			def o = BasicDBObjectBuilder
 					.start()
 						.add('_id', objId)
-						.add('user', 'test')
+						.add('user', username)
 						.add('readOnly', false)
 						.add('pwd', 'e78333b96cbdc20a67432095f4741222')
 					.get()
@@ -42,50 +32,39 @@ class UserSpecs extends Specification {
 			operation.execute(document)
 			
 		and: 'a new connection to mongo is opened'
-			def authStandaloneTwo = new Mongo("localhost",PORT )
+			def authStandaloneTwo = new Mongo(HOST,PORT )
 
 		then: 'the user should be able to login'
 			authStandaloneTwo.getDB(adminDBName).isAuthenticated() == false
-			authStandaloneTwo.getDB(adminDBName).authenticate('test', "123".toCharArray())
+			authStandaloneTwo.getDB(adminDBName).authenticate(username, password.toCharArray())
 			authStandaloneTwo.getDB(adminDBName).isAuthenticated()
 		
 		and: 'the document should exist'
 			authStandaloneTwo.getDB(adminDBName).getCollection(userCollection).findOne(o) == o
 			
 		cleanup: 'close connections'
-			authStandaloneTwo.getDB(adminDBName).dropDatabase()
+			authStandaloneTwo.getDB(adminDBName).removeUser(username)
 			authStandaloneTwo.close();
 	}
 	
 	def deletesAUser() {
 		given: 'an delete document operation'
-			def operation = new DeleteDocument(authStandalone)
+			def operation = new DeleteDocument(standalone)
 			
 		and: 'a delete document oplog entry for deleting user'
 			def o = new BasicDBObjectBuilder()
 						.start()
-							.add('user', 'test')
+							.add('user', username)
 						.get()
 			def document = MongoUtils.deleteDocument(adminDBName, userCollection,o) as String
 			
 		and: 'a user already exists'
-			def documentToBeDeleted = BasicDBObjectBuilder
-										.start()
-											.add('_id', objId)
-											.add('user', 'test')
-											.add('readOnly', false)
-											.add('pwd', 'e78333b96cbdc20a67432095f4741222')
-										.get()
-			authStandalone.getDB(adminDBName).getCollection(userCollection).insert(documentToBeDeleted)
+			standalone.getDB(adminDBName).addUser(username,password.toCharArray())
 	
-		when: 'user is authorised'
-			authStandalone.getDB(adminDBName).authenticate('test', "123".toCharArray())
-			
-		and: 'the operation runs'
+		when: 'the operation runs'
 			operation.execute(document)
 	
 		then: 'user document should not be present'
-			authStandalone.getDB(adminDBName).getCollection(userCollection).findOne(o) == null
+			standalone.getDB(adminDBName).getCollection(userCollection).findOne(o) == null
 	}
 }
-
