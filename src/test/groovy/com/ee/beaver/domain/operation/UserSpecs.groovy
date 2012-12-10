@@ -14,25 +14,25 @@ class UserSpecs extends RequiresMongoConnection {
 	def username = 'test'
 	def password = '123'
 	
-	def insertsAddUserDocument() {
-		given: 'an insert document operation'
-			def operation = new InsertDocument(standalone)
-			
-		and: 'an add user insert document oplog entry'
+	def insertsAUser() {
+		given: 'an add user insert document oplog entry'
 			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('user', username)
-						.add('readOnly', false)
-						.add('pwd', 'e78333b96cbdc20a67432095f4741222')
-					.get()
+				.start()
+					.add('_id', objId)
+					.add('user', username)
+					.add('readOnly', false)
+					.add('pwd', 'e78333b96cbdc20a67432095f4741222')
+				.get()
 			def document = MongoUtils.insertDocument(adminDBName, userCollection, o) as String
+
+		and: 'an insert document operation for adding a user'
+			def operation = new InsertDocument(standalone)
 
 		when: 'the operation runs'
 			operation.execute(document)
 			
 		and: 'a new connection to mongo is opened'
-			def authStandaloneTwo = new Mongo(HOST,PORT )
+			def authStandaloneTwo = new Mongo(HOST, PORT)
 
 		then: 'the user should be able to login'
 			authStandaloneTwo.getDB(adminDBName).isAuthenticated() == false
@@ -48,18 +48,18 @@ class UserSpecs extends RequiresMongoConnection {
 	}
 	
 	def deletesAUser() {
-		given: 'an delete document operation'
-			def operation = new DeleteDocument(standalone)
-			
-		and: 'a delete document oplog entry for deleting user'
+		given: 'a delete document oplog entry for deleting user'
 			def o = new BasicDBObjectBuilder()
 						.start()
 							.add('user', username)
 						.get()
 			def document = MongoUtils.deleteDocument(adminDBName, userCollection,o) as String
 			
+		and: 'an delete document operation for deleting a user'
+			def operation = new DeleteDocument(standalone)
+		
 		and: 'a user already exists'
-			standalone.getDB(adminDBName).addUser(username,password.toCharArray())
+			standalone.getDB(adminDBName).addUser(username, password.toCharArray())
 	
 		when: 'the operation runs'
 			operation.execute(document)
