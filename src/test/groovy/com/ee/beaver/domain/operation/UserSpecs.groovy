@@ -15,14 +15,17 @@ class UserSpecs extends RequiresMongoConnection {
 	def password = '123'
 	
 	def insertsAUser() {
+		'a new connection to mongo is opened'
+			def authStandaloneTwo = new Mongo(HOST, PORT)
+
 		given: 'an add user insert document oplog entry'
 			def o = BasicDBObjectBuilder
-				.start()
-					.add('_id', objId)
-					.add('user', username)
-					.add('readOnly', false)
-					.add('pwd', 'e78333b96cbdc20a67432095f4741222')
-				.get()
+					.start()
+						.add('_id', objId)
+						.add('user', username)
+						.add('readOnly', false)
+						.add('pwd', 'e78333b96cbdc20a67432095f4741222')
+					.get()
 			def document = MongoUtils.insertDocument(adminDBName, userCollection, o) as String
 
 		and: 'an insert document operation for adding a user'
@@ -31,9 +34,6 @@ class UserSpecs extends RequiresMongoConnection {
 		when: 'the operation runs'
 			operation.execute(document)
 			
-		and: 'a new connection to mongo is opened'
-			def authStandaloneTwo = new Mongo(HOST, PORT)
-
 		then: 'the user should be able to login'
 			authStandaloneTwo.getDB(adminDBName).isAuthenticated() == false
 			authStandaloneTwo.getDB(adminDBName).authenticate(username, password.toCharArray())
@@ -41,7 +41,7 @@ class UserSpecs extends RequiresMongoConnection {
 		
 		and: 'the document should exist'
 			authStandaloneTwo.getDB(adminDBName).getCollection(userCollection).findOne(o) == o
-			
+
 		cleanup: 'close connections'
 			authStandaloneTwo.getDB(adminDBName).removeUser(username)
 			authStandaloneTwo.close();
