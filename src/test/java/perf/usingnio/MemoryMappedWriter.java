@@ -9,7 +9,7 @@ import java.util.Date;
 import com.sun.corba.se.impl.ior.ByteBuffer;
 
 public final class MemoryMappedWriter {
-	private static final int BUFFER_SIZE = 67108864;
+	private static final int BUFFER_SIZE = 4194304;
 
 	private MemoryMappedWriter() {
 

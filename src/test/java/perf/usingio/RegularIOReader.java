@@ -7,7 +7,7 @@ import java.util.Date;
 
 public final class RegularIOReader {
 
-  private static final int TIMES = 8;
+  private static final int TIMES = 512;
   private static final int ONE_KB = 1024;
 
   private RegularIOReader() {
@@ -15,7 +15,7 @@ public final class RegularIOReader {
 
   public static void main(final String[] args) throws Exception {
 
-    int bufferSize = (TIMES * ONE_KB * ONE_KB);
+    int bufferSize = (TIMES * ONE_KB);
     String name = args[0];
     File file = new File(name);
     BufferedReader br = new BufferedReader(new FileReader(file), bufferSize);

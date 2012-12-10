@@ -9,7 +9,7 @@ import java.util.Date;
 
 public final class MemoryMappedReader {
 
-  private static final int BUFFER_SIZE = 67108864;
+  private static final int BUFFER_SIZE = 4194304;
 
   private MemoryMappedReader() {
   }
