@@ -2,6 +2,7 @@ package com.ee.beaver.domain
 
 import spock.lang.Specification
 
+import com.ee.beaver.domain.operation.RequiresMongoConnection
 import com.mongodb.DB
 import com.mongodb.DBCursor
 import com.mongodb.DBObject
@@ -9,7 +10,7 @@ import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.util.JSON
 
-public class OplogSpecs extends Specification {
+public class OplogSpecs extends RequiresMongoConnection {
 
 	private static Mongo replicaSet
 	private static final String HOST = "localhost"
@@ -35,7 +36,7 @@ public class OplogSpecs extends Specification {
 
 	def doesNotConnectToStandaloneMongoInstance() throws Exception {
 		given: 'a standalone node'
-			Mongo standalone = new Mongo(HOST, 27020)
+			standalone.getDB('admin').authenticate('admin', 'admin'.toCharArray())
 			DB local = standalone.getDB("local")
 
 		when: 'oplog created on Db of standalone'

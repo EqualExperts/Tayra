@@ -88,7 +88,7 @@ public class BackupSpecs extends Specification {
 	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
 		given: 'localhost not belonging to replica set'
 			def context = new Binding()
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27020'])
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27021'])
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
