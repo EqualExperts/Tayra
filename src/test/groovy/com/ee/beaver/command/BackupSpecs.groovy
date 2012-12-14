@@ -5,6 +5,8 @@ import spock.lang.*
 public class BackupSpecs extends Specification {
 
 	private static StringBuilder result;
+	private String username = 'admin'
+	private String password = 'admin'
 
 	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
@@ -16,6 +18,10 @@ public class BackupSpecs extends Specification {
 
 	public void setup() {
 		result = new StringBuilder()
+	}
+
+	public void cleanup() {
+		new File('timestamp.out').delete()
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
@@ -54,25 +60,6 @@ public class BackupSpecs extends Specification {
 			result.toString() == 'error: Missing required option: s'
 	}
 
-	def invokesBackupWhenAllMandatoryOptionsAreSupplied() {
-		given:'arguments contains -s and -f option'
-			def context = new Binding()
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
-
-		and: 'a result captor is injected'
-			def result = new StringWriter()
-			context.setVariable('writer', result)
-
-		and: 'timestampfile does not exist'
-			new File('timestamp.out').delete()
-
-		when: 'backup runs with above args'
-			new Backup(context).run()
-
-		then: 'the output should contain "ts"'
-			result.toString().contains('ts')
-	}
-
 	def shoutsWhenMongoDBUrlIsIncorrect() {
 		given:'arguments containing non-existent source'
 			def context = new Binding()
@@ -88,7 +75,7 @@ public class BackupSpecs extends Specification {
 	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
 		given: 'localhost not belonging to replica set'
 			def context = new Binding()
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-p', '27021'])
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=27021'])
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -96,6 +83,96 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be shown as'
 			result.toString().contains('Oops!! Could not perform backup...node is not a part of ReplicaSet')
 	}
-
+	
+	def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecuredConnection() {
+		given:'arguments contains -s, -f, -u and -p options'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', password])
+			
+		and: 'a result captor is injected'
+			def writer = new StringWriter()
+			context.setVariable('writer', writer)
+		
+		when: 'backup runs with above args'
+			new Backup(context).run()
+			
+		then: 'the output should contain "ts"'
+			writer.toString().contains('ts')
+	}
+	
+	def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
+		given:'arguments contains -s, -f options'
+			def context = new Binding()
+			context.setVariable('args', ['-s', '192.168.3.106', '-f', 'test.out', '--port=27017'])
+		
+		and: 'a result captor is injected'
+			def writer = new StringWriter()
+			context.setVariable('writer', writer)
+		
+		when: 'backup runs with above args'
+			new Backup(context).run()
+		
+		then: 'the output should contain "ts"'
+			writer.toString().contains('ts')
+	}
+		
+	def shoutsWhenNoCredentialsAreGivenForSecuredReplicaSet() {
+		given:'arguments contains -s, -f options but not -u, -p'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
+			
+		and: 'timestampfile does not exist'
+			new File('timestamp.out').delete()
+			
+		when: 'backup runs with above args'
+			new Backup(context).run()
+		
+		then: 'error message should be thrown as'
+			result.toString().contains('Required correct username or password')
+	}
+	
+	def shoutsWhenIncorrectPasswordIsSupplied() {
+		given:'arguments contains -s and -f option'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
+	
+		when: 'backup runs with above args'
+			new Backup(context).run()
+	
+		then: 'error message should be thrown as'
+			result.toString().contains('Authentication Failed to localhost')
+	}
+	
+	def shoutsWhenIncorrectUsernameIsSupplied() {
+		given:'arguments contains -s and -f option'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', 'incorrect', '-p', password])
+	
+		when: 'backup runs with above args'
+			new Backup(context).run()
+	
+		then: 'error message should be thrown as'
+			result.toString().contains('Authentication Failed to localhost')
+	}
+	
+//	def promptsForPasswordWhenNotGiven() {
+//		given:'arguments contains -s, -f, -u options but not -p'
+//			def context = new Binding()
+//			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username])
+//	
+//		and: 'a result captor is injected'
+//			def result = new StringWriter()
+//			context.setVariable('writer', result)
+//	
+//		and: 'timestampfile does not exist'
+//			new File('timestamp.out').delete()
+//	
+//		when: 'backup runs with above args'
+//			new Backup(context).run()
+//	
+//		then: 'it should prompt for password'
+//			println "Result: " + result.toString()
+//	}
+	
 }
 

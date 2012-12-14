@@ -32,6 +32,7 @@ public class CopierSpecs extends Specification {
 
 	def setup() {
 		copier = new Copier()
+		replicaSet.getDB("admin").authenticate("admin", "admin".toCharArray())
 		local = replicaSet.getDB("local")
 		boolean oplogExists = local.collectionExists("oplog.rs")
 		if (!oplogExists) {

@@ -4,14 +4,17 @@ import com.ee.beaver.*
 import com.ee.beaver.domain.*
 import com.ee.beaver.io.*
 import com.mongodb.Mongo
+import com.mongodb.MongoException;
 import com.mongodb.ServerAddress
 
-def cli = new CliBuilder(usage:'backup -s <MongoDB> [-p port] -f <file> [-t]')
+def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [-t] [-u username] [-p password]')
 cli.with {
-	s args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
-	p args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
-	f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
-	t args:1, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
+	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
+	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
+	f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
+	t  args:1, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
+	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
+	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -31,13 +34,30 @@ def getWriter() {
 }
 
 int port = 27017
-if(options.p) {
-	port = Integer.parseInt(options.p)
+if(options.port) {
+	port = Integer.parseInt(options.port)
 }
 
 boolean isContinuous = false
 if(options.t) {
 	isContinuous = true
+}
+
+username = ""
+if(options.u) {
+	username = options.u
+	if(!options.p) {
+		StringReader reader = new StringReader()
+		println "Enter password: "
+		System.in.withReader { 
+			println (it.read())
+		}
+	}
+}
+
+password = ""
+if(options.p) {
+	password = options.p
 }
 
 mongo = null
@@ -61,8 +81,21 @@ if(timestampFile.exists()) {
 }
 
 try {
-	ServerAddress server = new ServerAddress(sourceMongoDB, port);
+	ServerAddress server = new ServerAddress(sourceMongoDB, port)
 	mongo = new Mongo(server)
+	
+	if(isRunningInAuthMode(mongo)) {
+		if(username && password) {
+			if(mongo.getDB('admin').authenticate(username, password.toCharArray())) {
+				console.println 'Authenticated Successfully...'
+			} else {
+				throw new MongoException("Authentication Failed to $mongo.address.host")
+			}
+		} else {
+			console.println 'Required correct username or password'
+			cli.usage()
+		}
+	}
 	oplog = new Oplog(mongo)
 	reader = new OplogReader(oplog, timestamp, isContinuous)
 	console.println "Backup Started On: ${new Date()}"
@@ -90,3 +123,13 @@ def printSummaryTo(console, listener) {
 	console.println "Total Documents Read: $listener.documentsRead"
 	console.println "Documents Written: $listener.documentsWritten"
 }
+
+private boolean isRunningInAuthMode(Mongo mongo) {
+	try {
+		mongo.databaseNames
+		return false
+	} catch (MongoException e) {
+		return true
+	}
+}
+

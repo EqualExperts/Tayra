@@ -12,6 +12,13 @@
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
+	
+  <Match>
+    <Class name="com.ee.beaver.command.Backup$_run_closure2" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
 
   <Match>
 		<Class name="com.ee.beaver.domain.operation.DocumentBuilder$_asType_closure1" />

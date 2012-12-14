@@ -7,10 +7,10 @@ import com.ee.beaver.domain.*
 import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [-p port] -f <file> [-e exceptionFile]')
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile]')
 cli.with {
   d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: true
-  p args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
+  _ args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
   f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
 }

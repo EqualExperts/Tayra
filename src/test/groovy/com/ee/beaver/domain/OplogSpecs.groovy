@@ -30,6 +30,7 @@ public class OplogSpecs extends RequiresMongoConnection {
 	}
 
 	def setup() {
+		replicaSet.getDB("admin").authenticate("admin", "admin".toCharArray())
 		oplog = new Oplog(replicaSet)
 		local = replicaSet.getDB("local")
 	}
