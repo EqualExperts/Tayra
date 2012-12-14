@@ -6,4 +6,4 @@ START mongod --dbpath ./rs-1 --port 27018 --replSet rs
 START mongod --dbpath ./rs-2 --port 27019 --replSet rs
 
 sleep 3
-START mongo --eval "rs.initiate({ _id:'rs', members:[{_id: 0, host:'localhost:27017'}]})"
+START mongo --eval "rs.initiate({ _id:'rs', members:[{_id: 0, host:'localhost:27017', priority : 100}, {_id: 1, host:'localhost:27018', priority : 10}, {_id: 2, host:'localhost:27019', priority : 20}]})"
