@@ -43,29 +43,31 @@ if(options.t) {
 	isContinuous = true
 }
 
-username = ""
-if(options.u) {
-	username = options.u
-	if(!options.p) {
-		StringReader reader = new StringReader()
-		println "Enter password: "
-		System.in.withReader { 
-			println (it.read())
-		}
+PrintWriter console = new PrintWriter(System.out, true)
+
+def readPassword(output) {
+	def input = System.console()
+	if(!input) {
+		output.println("Cannot Read Password Input, please use -p command line option")
+		return ''
 	}
+	
+	print "Enter password: "
+	return new String(System.console().readPassword())
 }
 
-password = ""
-if(options.p) {
-	password = options.p
+
+String username = ''
+String password = ''
+if(options.u) {
+	username = options.u
+	password = options.p ?: readPassword(console)
 }
 
 mongo = null
-PrintWriter console = new PrintWriter(System.out, true)
 writer = new TimestampRecorder(getWriter())
 listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 		: new ProgressReporter(null, console)
-
 
 timestampFile = new File(timestampFileName)
 if(timestampFile.isDirectory()) {
@@ -83,19 +85,7 @@ if(timestampFile.exists()) {
 try {
 	ServerAddress server = new ServerAddress(sourceMongoDB, port)
 	mongo = new Mongo(server)
-	
-	if(isRunningInAuthMode(mongo)) {
-		if(username && password) {
-			if(mongo.getDB('admin').authenticate(username, password.toCharArray())) {
-				console.println 'Authenticated Successfully...'
-			} else {
-				throw new MongoException("Authentication Failed to $mongo.address.host")
-			}
-		} else {
-			console.println 'Required correct username or password'
-			cli.usage()
-		}
-	}
+	getAuthenticator(mongo).authenticate(username, password)
 	oplog = new Oplog(mongo)
 	reader = new OplogReader(oplog, timestamp, isContinuous)
 	console.println "Backup Started On: ${new Date()}"
@@ -114,6 +104,11 @@ try {
 	}
 }
 
+def getAuthenticator(mongo) {
+	binding.hasVariable('authenticator') ?
+	binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
+}
+
 def printSummaryTo(console, listener) {
 	console.printf '%s\r', ''.padRight(79, ' ')
 	console.println ''
@@ -123,13 +118,3 @@ def printSummaryTo(console, listener) {
 	console.println "Total Documents Read: $listener.documentsRead"
 	console.println "Documents Written: $listener.documentsWritten"
 }
-
-private boolean isRunningInAuthMode(Mongo mongo) {
-	try {
-		mongo.databaseNames
-		return false
-	} catch (MongoException e) {
-		return true
-	}
-}
-

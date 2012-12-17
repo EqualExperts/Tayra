@@ -1,5 +1,6 @@
 package com.ee.beaver.command
 
+import com.mongodb.MongoException
 import spock.lang.*
 
 public class BackupSpecs extends Specification {
@@ -17,11 +18,8 @@ public class BackupSpecs extends Specification {
 	}
 
 	public void setup() {
-		result = new StringBuilder()
-	}
-
-	public void cleanup() {
 		new File('timestamp.out').delete()
+		result = new StringBuilder()
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
@@ -100,6 +98,7 @@ public class BackupSpecs extends Specification {
 			writer.toString().contains('ts')
 	}
 	
+	@Ignore
 	def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
 		given:'arguments contains -s, -f options'
 			def context = new Binding()
@@ -116,19 +115,21 @@ public class BackupSpecs extends Specification {
 			writer.toString().contains('ts')
 	}
 		
-	def shoutsWhenNoCredentialsAreGivenForSecuredReplicaSet() {
-		given:'arguments contains -s, -f options but not -u, -p'
+	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
+		given:'arguments contains -s, -f options but not --username'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
 			
-		and: 'timestampfile does not exist'
-			new File('timestamp.out').delete()
+		and: 'have a authenticator that does not authenticate'
+			def mockAuthenticator = Mock(Authenticator)
+			context.setVariable('authenticator', mockAuthenticator)
+			mockAuthenticator.authenticate('', '') >> { throw new MongoException('Username cannot be empty') }
 			
 		when: 'backup runs with above args'
 			new Backup(context).run()
 		
 		then: 'error message should be thrown as'
-			result.toString().contains('Required correct username or password')
+			result.toString().contains('Username cannot be empty')
 	}
 	
 	def shoutsWhenIncorrectPasswordIsSupplied() {
@@ -136,6 +137,11 @@ public class BackupSpecs extends Specification {
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
 	
+		and: 'have a authenticator that does not authenticate'
+			def mockAuthenticator = Mock(Authenticator)
+			context.setVariable('authenticator', mockAuthenticator)
+			mockAuthenticator.authenticate(username, 'incorrect') >> { throw new MongoException('Authentication Failed to localhost') }
+			
 		when: 'backup runs with above args'
 			new Backup(context).run()
 	
@@ -147,32 +153,17 @@ public class BackupSpecs extends Specification {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', 'incorrect', '-p', password])
-	
+
+		and: 'have a authenticator that does not authenticate'
+			def mockAuthenticator = Mock(Authenticator)
+			context.setVariable('authenticator', mockAuthenticator)
+			mockAuthenticator.authenticate('incorrect', password) >> { throw new MongoException('Authentication Failed to localhost') }
+			
 		when: 'backup runs with above args'
 			new Backup(context).run()
 	
 		then: 'error message should be thrown as'
 			result.toString().contains('Authentication Failed to localhost')
 	}
-	
-//	def promptsForPasswordWhenNotGiven() {
-//		given:'arguments contains -s, -f, -u options but not -p'
-//			def context = new Binding()
-//			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username])
-//	
-//		and: 'a result captor is injected'
-//			def result = new StringWriter()
-//			context.setVariable('writer', result)
-//	
-//		and: 'timestampfile does not exist'
-//			new File('timestamp.out').delete()
-//	
-//		when: 'backup runs with above args'
-//			new Backup(context).run()
-//	
-//		then: 'it should prompt for password'
-//			println "Result: " + result.toString()
-//	}
-	
 }
 
