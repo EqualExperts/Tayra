@@ -34,7 +34,7 @@ class MongoUtils {
 					.start()
 			        	.add('drop', collectionName)
 					.get()
-		    )
+		)
 	}
 	
 	def static dropDatabase(db) {
