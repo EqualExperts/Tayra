@@ -9,7 +9,7 @@ import com.ee.beaver.domain.MongoCollectionIterator
 import com.ee.beaver.domain.operation.MongoUtils
 import com.mongodb.BasicDBObjectBuilder
 
-public class OplogReaderSpecs extends Specification{
+public class OplogReaderSpecs extends Specification {
 
 	private MongoCollection mockOplogCollection
 

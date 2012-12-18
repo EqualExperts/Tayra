@@ -92,7 +92,7 @@ public class OplogSpecs extends RequiresMongoConnection {
 			iterator.close()
 
 		then: 'documents read must be equal to total oplog documents'
-		documentsRead == totalDocuments
+			documentsRead == totalDocuments
 	}
 
 

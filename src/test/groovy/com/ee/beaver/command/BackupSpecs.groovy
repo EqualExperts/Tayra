@@ -98,20 +98,21 @@ public class BackupSpecs extends Specification {
 			writer.toString().contains('ts')
 	}
 	
-	@Ignore
 	def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
 		given:'arguments contains -s, -f options'
 			def context = new Binding()
-			context.setVariable('args', ['-s', '192.168.3.106', '-f', 'test.out', '--port=27017'])
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=17017'])
 		
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
 			context.setVariable('writer', writer)
+			new File('timestamp.out').delete()
 		
 		when: 'backup runs with above args'
 			new Backup(context).run()
 		
 		then: 'the output should contain "ts"'
+			println writer.toString()
 			writer.toString().contains('ts')
 	}
 		
