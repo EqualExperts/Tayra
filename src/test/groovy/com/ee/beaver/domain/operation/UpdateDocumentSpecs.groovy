@@ -11,6 +11,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 	private String collectionName = 'home'
 	private String prefixedCollectionName = 'home.test'
 	private String anotherDb = 'mongoose'
+	private List categories;
 	def operation
 	def objId = new ObjectId('509754dd2862862d511f6b57')
 	def nestedObjId = new ObjectId('509754dd2862862d511f6b58')
@@ -18,12 +19,12 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 	def updatedName = '[Test Name 2]'
 	def documentToBeUpdated
 	def nestedDocumentToBeUpdated
-	
 	def setup() {
 		documentToBeUpdated = new BasicDBObjectBuilder()
 								.start()
 									.add('_id', objId)
 									.add('name', name)
+									.add('city', 'test city')
 								.get()
 			
 		nestedDocumentToBeUpdated = new BasicDBObjectBuilder()
@@ -54,13 +55,13 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 		standalone.getDB(anotherDb).dropDatabase()
 	}
 	
-	private void assertThatDocumentIsPresentInCollection(String db, String collection, DBObject document) {
+	def assertThatDocumentIsPresentInCollection(String db, String collection, DBObject document) {
 		standalone.getDB(db).getCollection(collection).findOne(document) == document
 	}
 	
 	
 	def updatesDocument() throws Exception {
-		given: 'an update document oplog entry'
+		given: 'an oplog entry for update'
 			def o2 = new BasicDBObjectBuilder()
 						.start()
 							.add('_id', objId)
@@ -167,12 +168,12 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 			def expectedDocument = new BasicDBObjectBuilder()
 									.start()
 										.add('_id', nestedObjId)
-										.add('name', updatedName)
 										.push('address')
 											.add('street', '[Any Street]')
 											.add('city', '[Any City]')
 											.add('country', '[COUNT]')
 										.pop()
+										.add('name', updatedName)
 									.get()
 			assertThatDocumentIsPresentInCollection(dbName, collectionName, expectedDocument)
 	}
@@ -200,4 +201,5 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 			def problem = thrown(UpdateFailed)
 			problem.message == 'Document does not exist { \"_id\" : { \"$oid\" : \"'+ objId +'\"}}'
 	}
+	
 }

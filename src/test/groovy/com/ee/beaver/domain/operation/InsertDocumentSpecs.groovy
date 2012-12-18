@@ -32,7 +32,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 
 	
 	def insertsDocument() throws Exception {
-		given: 'an insert document oplog entry'
+		given: 'an oplog entry for insert, upsert'
 			def o = BasicDBObjectBuilder
 					.start()
 						.add('_id', objId)
