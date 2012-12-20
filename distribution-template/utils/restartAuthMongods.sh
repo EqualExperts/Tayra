@@ -1,5 +1,5 @@
 #!/bin/sh
-sudo service mongodb stop
+#sudo service mongodb stop
 
 basePath=~/Desktop/data
 basePathSt=~/Desktop/spike
