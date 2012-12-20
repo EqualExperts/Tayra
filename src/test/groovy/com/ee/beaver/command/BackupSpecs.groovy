@@ -1,7 +1,11 @@
 package com.ee.beaver.command
 
-import com.mongodb.MongoException
 import spock.lang.*
+
+import com.mongodb.Mongo
+import com.mongodb.MongoException
+import com.mongodb.MongoOptions
+import com.mongodb.ServerAddress
 
 public class BackupSpecs extends Specification {
 
@@ -107,15 +111,25 @@ public class BackupSpecs extends Specification {
 			def writer = new StringWriter()
 			context.setVariable('writer', writer)
 			new File('timestamp.out').delete()
+			
+		and: 'any entry is present in the replicaSet for windows'
+			forceTheTestToWorkOnWindows()
 		
 		when: 'backup runs with above args'
 			new Backup(context).run()
 		
 		then: 'the output should contain "ts"'
-			println writer.toString()
 			writer.toString().contains('ts')
 	}
-		
+	
+	def forceTheTestToWorkOnWindows() {
+		def options = new MongoOptions()
+		options.safe = true
+		ServerAddress server = new ServerAddress("localhost", 17017)
+		def UnsecuredReplicaset = new Mongo(server, options);
+		UnsecuredReplicaset.getDB('admin').addUser('admin', 'admin'.toCharArray())
+	}
+	
 	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
 		given:'arguments contains -s, -f options but not --username'
 			def context = new Binding()
