@@ -1,5 +1,5 @@
 #!/bin/sh
-sudo service mongodb stop
+#sudo service mongodb stop
 
 basePath=~/Desktop/data
 basePathSt=~/Desktop/spike
@@ -21,9 +21,9 @@ gnome-terminal -t Unsecure@17017 -x mongod --port 17017 --dbpath $basePath/unsec
 gnome-terminal -t Unsecure@17018 -x mongod --port 17018 --dbpath $basePath/unsec2 --replSet rs1 --smallfiles &
 
 sleep 300
-gnome-terminal -t mongo-17 -x mongo --eval "rs.initiate({ _id:'rs0', members:[{_id: 0, host:'Bhagyashree:27017', priority:10}, {_id: 1, host:'Bhagyashree:27018', priority:3}, {_id: 2, host:'Bhagyashree:27019', priority:3}]})" &
+gnome-terminal -t mongo-17 -x mongo --eval "rs.initiate({ _id:'rs0', members:[{_id: 0, host:'localhost:27017', priority:10}, {_id: 1, host:'localhost:27018', priority:3}, {_id: 2, host:'localhost:27019', priority:3}]})" &
 
-gnome-terminal -t unsec-17 -x mongo --port 17017 --eval "rs.initiate({ _id:'rs1', members:[{_id: 0, host:'Bhagyashree:17017', priority:10}, {_id: 1, host:'Bhagyashree:17018', priority:3}]})" &
+gnome-terminal -t unsec-17 -x mongo --port 17017 --eval "rs.initiate({ _id:'rs1', members:[{_id: 0, host:'localhost:17017', priority:10}, {_id: 1, host:'localhost:17018', priority:3}]})" &
 
 sleep 60
 
