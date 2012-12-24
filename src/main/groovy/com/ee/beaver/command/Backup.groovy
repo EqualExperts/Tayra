@@ -4,7 +4,7 @@ import com.ee.beaver.*
 import com.ee.beaver.domain.*
 import com.ee.beaver.io.*
 import com.mongodb.Mongo
-import com.mongodb.MongoException;
+import com.mongodb.MongoException
 import com.mongodb.ServerAddress
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [-t] [-u username] [-p password]')
@@ -27,10 +27,12 @@ sourceMongoDB = options.s
 recordToFile = options.f
 timestampFileName = 'timestamp.out'
 timestamp = null
+fSize = '1MB'
+fMax = 3
 
 def getWriter() {
 	binding.hasVariable('writer') ? binding.getVariable('writer')
-			: new FileWriter(recordToFile)
+			: new RotatingFileWriter(recordToFile, fSize, fMax)
 }
 
 int port = 27017
@@ -51,7 +53,7 @@ def readPassword(output) {
 		output.println("Cannot Read Password Input, please use -p command line option")
 		return ''
 	}
-	
+
 	print "Enter password: "
 	return new String(System.console().readPassword())
 }
