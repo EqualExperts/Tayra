@@ -7,12 +7,20 @@
 	</Match>
 
   <Match>
+    <Class name="com.ee.beaver.io.RotatingFileWriter" />
+    <Not>
+      <Bug code="IL_INFINITE_RECURSIVE_LOOP" />
+    </Not>
+  </Match>
+
+
+  <Match>
 		<Class name="com.ee.beaver.command.Restore$_run_closure1" />
 		<Not>
 			<Bug code="SE_NO_SERIALVERSIONID" />
 		</Not>
 	</Match>
-	
+
   <Match>
     <Class name="com.ee.beaver.command.Backup$_run_closure2" />
     <Not>

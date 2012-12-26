@@ -10,48 +10,63 @@ import org.apache.log4j.RollingFileAppender;
 
 public class RotatingFileWriter extends Writer {
 
-	private PatternLayout layout;
-	private RollingFileAppender appender;
-	private Logger logger;
+  private static final String DEFAULT_FILESIZE = "512MB";
+  private static final int DEFAULT_FILEMAX = 20;
 
-	public RotatingFileWriter(String recordToFile, String fSize, int fMax)
-			throws IOException {
-		super();
-		layout = new PatternLayout();
-		appender = new RollingFileAppender(layout, recordToFile, false);
-		if (fSize != null) {
-			appender.setMaxFileSize(fSize);
-		}
-		if (fMax >= 0) {
-			appender.setMaxBackupIndex(fMax);
-		}
-		appender.setImmediateFlush(true);
-//		appender.rollOver();
-		logger = Logger.getLogger(recordToFile);
-		logger.removeAllAppenders();
-		logger.setAdditivity(false);
-		logger.setLevel(Level.INFO);
-		logger.addAppender(appender);
+  private String fileSize = DEFAULT_FILESIZE;
+  private int fileMax = DEFAULT_FILEMAX;
 
-	}
+  private PatternLayout layout;
+  private RollingFileAppender appender;
+  private Logger logger;
 
-	@Override
-	public void write(String document, int off, int len) throws IOException {
-		logger.info(document);
-	}
+  public RotatingFileWriter(final String recordToFile, final String fSize,
+      final int fMax)  throws IOException {
+    super();
+    if (fSize != null) {
+      fileSize = fSize;
+    }
+    if (fMax > 0) {
+      fileMax = fMax;
+    }
+    if (fSize == null && fMax == 0) {
+      fileMax = 0;
+    }
+    setupLoggingProperties(recordToFile);
+  }
 
-	@Override
-	public void flush() throws IOException {
-	}
+  private void setupLoggingProperties(final String recordToFile)
+    throws IOException {
+      layout = new PatternLayout();
+      appender = new RollingFileAppender(layout, recordToFile, false);
+      appender.setMaxFileSize(fileSize);
+      appender.setMaxBackupIndex(fileMax);
+      appender.setImmediateFlush(true);
+      logger = Logger.getLogger(recordToFile);
+      logger.removeAllAppenders();
+      logger.setAdditivity(false);
+      logger.setLevel(Level.INFO);
+      logger.addAppender(appender);
+  }
 
-	@Override
-	public void close() throws IOException {
-		appender.close();
-	}
+  @Override
+  public final void write(final String document, final int off, final int len)
+    throws IOException {
+      logger.info(document);
+  }
 
-	@Override
-	public void write(char[] document, int off, int len) throws IOException {
-		write(document, off, len);
-	}
+  @Override
+  public final void flush() throws IOException {
+  }
 
+  @Override
+  public final void close() throws IOException {
+    appender.close();
+  }
+
+  @Override
+  public final void write(final char[] document, final int off, final int len)
+    throws IOException {
+      write(document, off, len);
+  }
 }

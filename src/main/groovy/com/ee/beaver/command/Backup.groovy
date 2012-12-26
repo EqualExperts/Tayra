@@ -7,11 +7,13 @@ import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
 
-def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [-t] [-u username] [-p password]')
+def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password]')
 cli.with {
 	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
 	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
 	f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
+	fSize  args:1, argName: 'fileSize', longOpt:'fileSize', 'OPTIONAL, Default is 512MB', optionalArg:true
+	fMax  args:1, argName: 'fileMax', longOpt:'fileMax', 'OPTIONAL, Default is 1', optionalArg:true
 	t  args:1, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
 	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
 	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
@@ -27,8 +29,16 @@ sourceMongoDB = options.s
 recordToFile = options.f
 timestampFileName = 'timestamp.out'
 timestamp = null
-fSize = '1MB'
-fMax = 3
+
+fSize = null
+if(options.fSize) {
+	fSize = options.fSize
+}
+
+fMax = 0
+if(options.fMax) {
+	fMax = Integer.parseInt(options.fMax)
+}
 
 def getWriter() {
 	binding.hasVariable('writer') ? binding.getVariable('writer')

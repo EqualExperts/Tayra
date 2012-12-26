@@ -6,8 +6,8 @@ import java.io.Writer;
 
 public class Copier {
 
-  private static final CharSequence NEW_LINE =
-    System.getProperty("line.separator");
+//  private static final CharSequence NEW_LINE =
+//    System.getProperty("line.separator");
 
   public final void copy(final CollectionReader from, final Writer to,
     final CopyListener... listeners) {
@@ -18,7 +18,7 @@ public class Copier {
         notifier.notifyReadSuccess(document);
         try {
           to.append(document);
-          to.append(NEW_LINE);
+//          to.append(NEW_LINE);
           to.flush();
           notifier.notifyWriteSuccess(document);
         } catch (IOException problem) {

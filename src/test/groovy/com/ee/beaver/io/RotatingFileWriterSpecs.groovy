@@ -17,7 +17,7 @@ public class RotatingFileWriterSpecs extends Specification{
 	def nameOfFile
 	def objId = new ObjectId()
 
-	def getDocumentString(ObjectId objId) {
+	private getDocumentString(ObjectId objId) {
 		def o = new BasicDBObjectBuilder()
 					.start()
 						.add( "_id" , new BasicDBObject('$oid', objId))
@@ -75,18 +75,58 @@ public class RotatingFileWriterSpecs extends Specification{
 			backupFile.exists()
 	}
 
-	def generatesMultipleBackupFileOfSpecifiedSize() {
+	def generatesSpecifiedNumberOfBackupFileOfDefaultSize() {
 		given: 'file name, Size and Rotation Limit of Backup Files'
 			nameOfFile = 'test.log'
-			String fileSize = '128KB'
-			int fileMax = 10
+			String fileSize = null
+			int fileMax = 3
 			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
 
 		and: 'an oplog entry'
 			String document = getDocumentString(objId)
 
 		when: 'it writes multiple document'
-			3600.times {
+			200.times {
+				rotatingFileWriter.write(document)
+			}
+
+		then: 'destination should have the document'
+			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
+			backupFile.exists()
+	}
+
+	def generatesMultipleBackupFileOfSpecifiedSize() {
+		given: 'file name, Size and Rotation Limit of Backup Files'
+			nameOfFile = 'test.log'
+			String fileSize = '2KB'
+			int fileMax = 0
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
+
+		and: 'an oplog entry'
+			String document = getDocumentString(objId)
+
+		when: 'it writes multiple document'
+			200.times {
+				rotatingFileWriter.write(document)
+			}
+
+		then: 'destination should have the document'
+			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
+			backupFile.exists()
+	}
+
+	def generatesBackupInASingleFileOnly() {
+		given: 'file name, Size and Rotation Limit of Backup Files'
+			nameOfFile = 'test.log'
+			String fileSize = null
+			int fileMax = 0
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
+
+		and: 'an oplog entry'
+			String document = getDocumentString(objId)
+
+		when: 'it writes multiple document'
+			200.times {
 				rotatingFileWriter.write(document)
 			}
 
