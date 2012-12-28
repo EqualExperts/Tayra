@@ -14,45 +14,49 @@ public class RotatingFileWriter extends Writer {
   private static final int DEFAULT_FILEMAX = 20;
 
   private String fileSize = DEFAULT_FILESIZE;
-  private int fileMax = DEFAULT_FILEMAX;
+  private int fileMax = 0;
 
-  private PatternLayout layout;
+  private final PatternLayout layout;
   private RollingFileAppender appender;
   private Logger logger;
+  private final String recordToFile;
 
-  public RotatingFileWriter(final String recordToFile, final String fSize,
-      final int fMax)  throws IOException {
+  public RotatingFileWriter(final String recordToFile) throws IOException {
     super();
-    if (fSize != null) {
-      fileSize = fSize;
-    }
-    if (fMax > 0) {
-      fileMax = fMax;
-    }
-    if (fSize == null && fMax == 0) {
-      fileMax = 0;
-    }
-    setupLoggingProperties(recordToFile);
+    this.recordToFile = recordToFile;
+    layout = new PatternLayout();
+    configure();
   }
 
-  private void setupLoggingProperties(final String recordToFile)
-    throws IOException {
-      layout = new PatternLayout();
-      appender = new RollingFileAppender(layout, recordToFile, false);
-      appender.setMaxFileSize(fileSize);
-      appender.setMaxBackupIndex(fileMax);
-      appender.setImmediateFlush(true);
-      logger = Logger.getLogger(recordToFile);
-      logger.removeAllAppenders();
-      logger.setAdditivity(false);
-      logger.setLevel(Level.INFO);
-      logger.addAppender(appender);
+  public final void setFileSize(final String fileSize) throws IOException {
+    this.fileSize = fileSize;
+    if (fileMax == 0) {
+      fileMax = DEFAULT_FILEMAX;
+    }
+    configure();
+  }
+
+  public final void setFileMax(final int fileMax) throws IOException {
+    this.fileMax = fileMax;
+    configure();
+  }
+
+  private void configure() throws IOException {
+    appender = new RollingFileAppender(layout, recordToFile, false);
+    logger = Logger.getLogger(recordToFile);
+    appender.setMaxFileSize(fileSize);
+    appender.setMaxBackupIndex(fileMax);
+    appender.setImmediateFlush(true);
+    logger.removeAllAppenders();
+    logger.setAdditivity(false);
+    logger.setLevel(Level.INFO);
+    logger.addAppender(appender);
   }
 
   @Override
   public final void write(final String document, final int off, final int len)
-    throws IOException {
-      logger.info(document);
+      throws IOException {
+    logger.info(document);
   }
 
   @Override
@@ -66,7 +70,7 @@ public class RotatingFileWriter extends Writer {
 
   @Override
   public final void write(final char[] document, final int off, final int len)
-    throws IOException {
-      write(document, off, len);
+      throws IOException {
+    write(document, off, len);
   }
 }

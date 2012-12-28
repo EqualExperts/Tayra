@@ -1,136 +1,114 @@
 package com.ee.beaver.io
 
-import org.bson.types.ObjectId
-
 import spock.lang.Specification
-
-import com.ee.beaver.domain.operation.MongoUtils
-import com.mongodb.BasicDBObject
-import com.mongodb.BasicDBObjectBuilder
 
 public class RotatingFileWriterSpecs extends Specification{
 
 	private RotatingFileWriter rotatingFileWriter
-	private String dbName = 'beaver'
-	private String collectionName = 'home'
-	private String name = '[Test Name]'
-	def nameOfFile
-	def objId = new ObjectId()
-
-	private getDocumentString(ObjectId objId) {
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add( "_id" , new BasicDBObject('$oid', objId))
-						.add( "name" , name)
-					.get()
-		MongoUtils.insertDocument(dbName,collectionName, o) as String
-	}
+	private String data = '1234567890'
+	private String nameOfFile
 
 	def itCreatesAFileUsingRotatingFileWriter() {
 		given: 'name of file'
 			nameOfFile = 'test.log'
 
 		when: 'I invoke Writer with file name'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile, '2KB', 1)
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
 			File file = new File(nameOfFile)
 
-		then: 'file should exist'
+		then: 'file should be created'
 			file.exists()
 	}
 
-	def writesDocumentToDestination() throws IOException {
-		given: 'an oplog entry'
-			String document = getDocumentString(objId)
+	def writesDataToDestination() throws IOException {
+		given: 'some data'
+			String data = data
 
-		and: 'file to record to and rotating File Writer'
+		and: 'filename of file to record'
 			nameOfFile = 'test.log'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile, '2KB', 1)
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
 
-		when: 'it writes the document'
-			rotatingFileWriter.write(document)
+		when: 'it writes the data'
+			rotatingFileWriter.write(data)
 
 		then: 'destination should have the document'
 			FileReader fileReader = new FileReader(new File(nameOfFile))
-			document == fileReader.find {document}
+			data == fileReader.find {data}
 			fileReader.close()
 	}
 
-	def generatesBackupOfSpecifiedSizeAndSpecifiedRotationLimit() {
-		given: 'file name, Size and Rotation Limit of Backup Files'
+	def writesDataToASingleFileOnly() {
+		given: 'file name, Size and Rotation Limit of Files'
 			nameOfFile = 'test.log'
-			String fileSize = '16KB'
-			int fileMax = 4
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
 
-		and: 'an oplog entry'
-			String document = getDocumentString(objId)
+		and: 'some data'
+			String data = data
 
-		when: 'it writes multiple document'
-			1000.times {
-				rotatingFileWriter.write(document)
+		when: 'it writes data'
+			200.times {
+				rotatingFileWriter.write(data)
 			}
 
-		then: 'destination should have the document'
+		then: 'the file containing data should exist'
 			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
-	def generatesSpecifiedNumberOfBackupFileOfDefaultSize() {
-		given: 'file name, Size and Rotation Limit of Backup Files'
+	def writesDataInSpecifiedNumberOfFilesOfDefaultSize() {
+		given: 'file name, Size and Rotation Limit of Files'
 			nameOfFile = 'test.log'
-			String fileSize = null
-			int fileMax = 3
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+			rotatingFileWriter.setFileMax(3)
 
-		and: 'an oplog entry'
-			String document = getDocumentString(objId)
+		and: 'some data'
+			String data = data
 
-		when: 'it writes multiple document'
+		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(document)
+				rotatingFileWriter.write(data)
 			}
 
-		then: 'destination should have the document'
+		then: 'the file containing data should exist'
 			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
-	def generatesMultipleBackupFileOfSpecifiedSize() {
-		given: 'file name, Size and Rotation Limit of Backup Files'
+	def writesDataToMultipleFilesOfSpecifiedSize() {
+		given: 'file name, Size and Rotation Limit of Files'
 			nameOfFile = 'test.log'
-			String fileSize = '2KB'
-			int fileMax = 0
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+			rotatingFileWriter.setFileSize('2KB')
 
-		and: 'an oplog entry'
-			String document = getDocumentString(objId)
+		and: 'some data'
+			String data = data
 
-		when: 'it writes multiple document'
+		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(document)
+				rotatingFileWriter.write(data)
 			}
 
-		then: 'destination should have the document'
+		then: 'the file containing data should exist'
 			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
-	def generatesBackupInASingleFileOnly() {
-		given: 'file name, Size and Rotation Limit of Backup Files'
+	def writesDataToFileOfSpecifiedSizeAndSpecifiedRotationLimit() {
+		given: 'file name, Size and Rotation Limit of Files'
 			nameOfFile = 'test.log'
-			String fileSize = null
-			int fileMax = 0
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile, fileSize, fileMax)
+			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+			rotatingFileWriter.setFileSize('16KB')
+			rotatingFileWriter.setFileMax(4)
 
-		and: 'an oplog entry'
-			String document = getDocumentString(objId)
+		and: 'some data'
+			String data = data
 
-		when: 'it writes multiple document'
+		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(document)
+				rotatingFileWriter.write(data)
 			}
 
-		then: 'destination should have the document'
+		then: 'the file containing data should exist'
 			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
 			backupFile.exists()
 	}
@@ -144,5 +122,4 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 		}
 	}
-
 }
