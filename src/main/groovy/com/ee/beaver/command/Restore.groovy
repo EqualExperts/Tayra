@@ -13,6 +13,8 @@ cli.with {
   _ args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
   f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
+  u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
+  p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -25,8 +27,28 @@ destMongoDB = options.d
 restoreFromFile = options.f
 
 int port = 27017
-if(options.p) {
-  port = Integer.parseInt(options.p)
+if(options.port) {
+  port = Integer.parseInt(options.port)
+}
+
+PrintWriter console = new PrintWriter(System.out, true)
+
+def readPassword(output) {
+	def input = System.console()
+	if(!input) {
+		output.println("Cannot Read Password Input, please use -p command line option")
+		return ''
+	}
+
+	print "Enter password: "
+	return new String(System.console().readPassword())
+}
+
+String username = ''
+String password = ''
+if(options.u) {
+	username = options.u
+	password = options.p ?: readPassword(console)
 }
 
 exceptionFile = 'exception.documents'
@@ -34,11 +56,11 @@ if(options.e) {
   exceptionFile = options.e
 }
 
-PrintWriter console = new PrintWriter(System.out, true)
 mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
   mongo = new Mongo(server)
+  getAuthenticator(mongo).authenticate(username, password)
   def reader = binding.hasVariable('reader') ? binding.getVariable('reader')
 	: new BufferedReader(new FileReader(restoreFromFile))
 
@@ -54,7 +76,7 @@ try {
   def endTime = new Date().time
   console.println "Completed in ${(endTime - startTime)/1000} secs"
   printSummaryTo console, listener
-  
+
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)
@@ -62,6 +84,11 @@ try {
 	if(mongo) {
 		mongo.close()
 	}
+}
+
+def getAuthenticator(mongo) {
+	binding.hasVariable('authenticator') ?
+	binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
 }
 
 def printSummaryTo(console, listener) {
