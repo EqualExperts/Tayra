@@ -4,6 +4,7 @@ import spock.lang.Specification
 
 public class RotatingFileWriterSpecs extends Specification{
 
+	private String workingDirectory = System.getProperty("user.dir")
 	private RotatingFileWriter rotatingFileWriter
 	private String data = '1234567890'
 	private String nameOfFile
@@ -51,7 +52,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
@@ -70,7 +71,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
@@ -89,7 +90,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
@@ -109,13 +110,13 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(System.getProperty("user.dir") + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
 			backupFile.exists()
 	}
 
 	def cleanup() {
 		rotatingFileWriter.close()
-		def directory = new File(System.getProperty("user.dir"))
+		def directory = new File(workingDirectory)
 		for(File f : directory.listFiles()) {
 			if(f.getName().startsWith(nameOfFile)) {
 				f.delete()
