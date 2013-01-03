@@ -2,6 +2,7 @@ package com.ee.beaver.io;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 
 public class Copier {
@@ -26,9 +27,10 @@ public class Copier {
     }
   }
 
-  public final void copy(final BufferedReader from, final OplogReplayer to,
+  public final void copy(final Reader reader, final OplogReplayer to,
     final CopyListener... listeners) {
     Notifier notifier = new Notifier(listeners);
+    BufferedReader from = createBufferedReader(reader);
     String document = null;
     try {
       while ((document = from.readLine()) != null) {
@@ -43,5 +45,9 @@ public class Copier {
     } catch (IOException ioe) {
       notifier.notifyReadFailure(null, ioe);
     }
+  }
+
+  BufferedReader createBufferedReader(final Reader reader) {
+    return new BufferedReader(reader);
   }
 }

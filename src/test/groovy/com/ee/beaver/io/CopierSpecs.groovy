@@ -137,6 +137,12 @@ public class CopierSpecs extends Specification {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
 			BufferedReader mockReader = Mock(BufferedReader)
+			copier = new Copier() {
+				@Override
+				BufferedReader createBufferedReader(Reader reader) {
+					mockReader
+				}
+			}
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
