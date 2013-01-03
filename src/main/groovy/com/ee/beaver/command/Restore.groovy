@@ -57,18 +57,17 @@ if(options.e) {
   exceptionFile = options.e
 }
 
+isMultiple = false
+if(options.fAll) {
+  isMultiple = true
+}
+
 mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
   mongo = new Mongo(server)
   getAuthenticator(mongo).authenticate(username, password)
-  def reader = binding.hasVariable('reader') ? binding.getVariable('reader')
-      : new BufferedReader(new FileReader(restoreFromFile))
-
-  if(options.fAll) {
-    console.println "Restoring from All Files"
-    reader = new RotatingFileReader(restoreFromFile, new FileReader(restoreFromFile))
-  }
+  def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer')
       : new OplogReplayer(new Operations(mongo))
@@ -76,9 +75,16 @@ try {
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
       : new ProgressReporter(new FileWriter(exceptionFile), console)
 
+  def copier = new Copier()
+
   def startTime = new Date().time
   console.println "Restore Started On: ${new Date(startTime)}"
-  new Copier().copy(reader, writer, listener)
+
+  files.withFile {
+    def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
+    copier.copy(reader, writer, listener)
+  }
+
   def endTime = new Date().time
   console.println "Completed in ${(endTime - startTime)/1000} secs"
   printSummaryTo console, listener
