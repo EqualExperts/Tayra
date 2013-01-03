@@ -52,7 +52,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + File.separator + nameOfFile)
 			backupFile.exists()
 	}
 
@@ -71,7 +71,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + File.separator + nameOfFile)
 			backupFile.exists()
 	}
 
@@ -90,7 +90,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(workingDirectory + '\\' + nameOfFile)
+			def backupFile = new File(workingDirectory + File.separator + nameOfFile)
 			backupFile.exists()
 	}
 
@@ -110,7 +110,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			}
 
 		then: 'the file containing data should exist'
-			def backupFile = new File(workingDirectory + System.getProperty("file.separator") + nameOfFile)
+			def backupFile = new File(workingDirectory + File.separator + nameOfFile)
 			backupFile.exists()
 	}
 
