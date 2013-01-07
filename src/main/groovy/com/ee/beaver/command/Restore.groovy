@@ -16,6 +16,7 @@ cli.with {
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
+  sDb args:1, argName:'DbFilter',longOpt:'-sDb', 'OPTIONAL, Dbname for selective restore, default is none', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -61,6 +62,10 @@ isMultiple = false
 if(options.fAll) {
   isMultiple = true
 }
+def filter = null
+if(options.sDb) {
+ filter = '-sDb=' + options.sDb
+}
 
 mongo = null
 try {
@@ -75,6 +80,9 @@ try {
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
       : new ProgressReporter(new FileWriter(exceptionFile), console)
 
+  def selectiveWriter = binding.hasVariable('selectiveWriter') ? binding.getVariable('selectiveWriter')
+      : new SelectiveOplogReplayer(new DbCriteria(filter), writer)
+  
   def copier = new Copier()
 
   def startTime = new Date().time
@@ -82,7 +90,7 @@ try {
 
   files.withFile {
     def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-    copier.copy(reader, writer, listener)
+    copier.copy(reader, selectiveWriter, listener)
   }
 
   def endTime = new Date().time

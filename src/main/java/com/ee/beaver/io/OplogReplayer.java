@@ -3,7 +3,7 @@ package com.ee.beaver.io;
 import com.ee.beaver.domain.operation.Operation;
 import com.ee.beaver.domain.operation.OperationsFactory;
 
-public class OplogReplayer {
+public class OplogReplayer implements Replayer {
 
   private final OperationsFactory operations;
 
@@ -11,10 +11,11 @@ public class OplogReplayer {
     this.operations = operations;
   }
 
-  public void replayDocument(final String document) {
+  public boolean replayDocument(final String document) {
     final String operationCode = extractOpcode(document);
     Operation operation = operations.get(operationCode);
     operation.execute(document);
+    return true;
   }
 
   private String extractOpcode(final String document) {

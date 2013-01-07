@@ -27,7 +27,7 @@ public class Copier {
     }
   }
 
-  public final void copy(final Reader reader, final OplogReplayer to,
+  public final void copy(final Reader reader, final Replayer to,
     final CopyListener... listeners) {
     Notifier notifier = new Notifier(listeners);
     BufferedReader from = createBufferedReader(reader);
@@ -36,8 +36,9 @@ public class Copier {
       while ((document = from.readLine()) != null) {
         notifier.notifyReadSuccess(document);
         try {
-          to.replayDocument(document);
-          notifier.notifyWriteSuccess(document);
+          if (to.replayDocument(document)) {
+            notifier.notifyWriteSuccess(document);
+          }
         } catch (RuntimeException problem) {
           notifier.notifyWriteFailure(document, problem);
         }

@@ -1,5 +1,10 @@
 <FindBugsFilter>
-
+  <Match>
+    <Class name="com.ee.beaver.io.DbCriteria" />
+    <Not>
+      <Bug code="EC_NULL_ARG" />
+    </Not>
+  </Match>
   <Match>
     <Class name="com.ee.beaver.io.RotatingFileReader" />
     <Not>

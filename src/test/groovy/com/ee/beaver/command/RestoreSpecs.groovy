@@ -2,14 +2,15 @@ package com.ee.beaver.command
 
 import spock.lang.*
 
-import com.ee.beaver.io.OplogReplayer
+import com.ee.beaver.io.Replayer
+import com.ee.beaver.io.SelectiveOplogReplayer
 import com.mongodb.MongoException
 
 class RestoreSpecs extends Specification {
 
 	private static StringBuilder result;
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
-	private OplogReplayer mockOplogReplayer
+	private Replayer mockReplayer
 	private String username = 'admin'
 	private String password = 'admin'
 
@@ -24,7 +25,7 @@ class RestoreSpecs extends Specification {
 
 	def setup() {
 		result = new StringBuilder()
-		mockOplogReplayer = Mock(OplogReplayer)
+		mockReplayer = Mock(Replayer)
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
@@ -83,13 +84,13 @@ class RestoreSpecs extends Specification {
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockOplogReplayer)
+			context.setVariable('selectiveWriter', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
-
+			
 		then: 'perform the restore operation'
-			1 * mockOplogReplayer.replayDocument('"ts"')
+			1 * mockReplayer.replayDocument('"ts"')
 	}
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
@@ -100,13 +101,13 @@ class RestoreSpecs extends Specification {
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockOplogReplayer)
+			context.setVariable('selectiveWriter', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
 
 		then: 'perform the restore operation'
-			1 * mockOplogReplayer.replayDocument('"ts"')
+			1 * mockReplayer.replayDocument('"ts"')
 	}
 
 	def shoutsWhenNoUsernameIsGivenForSecuredStandalone() {

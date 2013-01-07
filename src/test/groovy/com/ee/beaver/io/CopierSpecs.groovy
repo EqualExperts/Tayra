@@ -21,6 +21,7 @@ public class CopierSpecs extends Specification {
 	private final String document = "\"ts\""
 	private OplogReplayer mockOplogReplayer
 	private CopyListener mockCopyListener
+	private Replayer mockReplayer
 
 	def setupSpec() throws UnknownHostException, MongoException {
 		replicaSet = new Mongo(HOST, PORT)
@@ -50,7 +51,7 @@ public class CopierSpecs extends Specification {
 								.add("ts", dbObject.get("ts"))
 							.get();
 			OplogReader reader = new OplogReader(new Oplog(replicaSet), query.toString(), false)
-
+			
 		when: 'document is copied'
 			copier.copy(reader, writer)
 
@@ -93,14 +94,17 @@ public class CopierSpecs extends Specification {
 	def notifiesWhenWritingADocumentToReplayerIsSuccessful()
 			throws Exception {
 		given: 'a reader and an oplog replayer'
-			mockOplogReplayer = Mock(OplogReplayer)
+			mockReplayer = Stub(Replayer)
 			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
+			
+		and: 'the replayer replays the document'
+			mockReplayer.replayDocument (document) >> true
 
 		when: ' document is copied'
-			copier.copy(from, mockOplogReplayer, mockCopyListener)
+			copier.copy(from, mockReplayer, mockCopyListener)
 
 		then: 'a notification of successful write is given'
 			1 * mockCopyListener.onWriteSuccess(document)
