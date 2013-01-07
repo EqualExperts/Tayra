@@ -3,6 +3,7 @@ package com.ee.beaver.command
 import spock.lang.*
 
 import com.ee.beaver.io.Replayer
+import com.ee.beaver.io.OplogReplayer
 import com.ee.beaver.io.SelectiveOplogReplayer
 import com.mongodb.MongoException
 
@@ -13,7 +14,7 @@ class RestoreSpecs extends Specification {
 	private Replayer mockReplayer
 	private String username = 'admin'
 	private String password = 'admin'
-
+	private Replayer mockSelectiveOplogReplayer
 
 	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
@@ -25,7 +26,8 @@ class RestoreSpecs extends Specification {
 
 	def setup() {
 		result = new StringBuilder()
-		mockReplayer = Mock(Replayer)
+		mockReplayer = Mock(OplogReplayer)
+		mockSelectiveOplogReplayer = Mock(SelectiveOplogReplayer)
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
@@ -84,7 +86,7 @@ class RestoreSpecs extends Specification {
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('selectiveWriter', mockReplayer)
+			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -101,7 +103,7 @@ class RestoreSpecs extends Specification {
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('selectiveWriter', mockReplayer)
+			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -173,5 +175,22 @@ class RestoreSpecs extends Specification {
 			result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
 	}
 
+	def invokesSelectiveRestore() {
+	given:'arguments contains -d, -port and -f and --sDb options'
+		def context = new Binding()
+		context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sDb="test"'])
+
+	and: 'the reader and writer is injected'
+		def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+		context.setVariable('reader', source)
+		context.setVariable('writer', mockReplayer)
+		context.setVariable('selectiveWriter', mockSelectiveOplogReplayer)
+
+	when: 'restore runs'
+		new Restore(context).run()
+
+	then: 'perform the restore operation'
+		1 * mockSelectiveOplogReplayer.replayDocument('"ts"')
+	}
 
 }

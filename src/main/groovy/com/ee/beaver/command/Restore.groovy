@@ -16,7 +16,7 @@ cli.with {
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
-  sDb args:1, argName:'DbFilter',longOpt:'-sDb', 'OPTIONAL, Dbname for selective restore, default is none', optionalArg:true
+  sDb args:1, argName:'DbFilter',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -63,7 +63,9 @@ if(options.fAll) {
   isMultiple = true
 }
 def filter = null
+def toFilter = false
 if(options.sDb) {
+ toFilter = true
  filter = '-sDb=' + options.sDb
 }
 
@@ -90,7 +92,7 @@ try {
 
   files.withFile {
     def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-    copier.copy(reader, selectiveWriter, listener)
+    toFilter ? copier.copy(reader, selectiveWriter, listener) : copier.copy(reader, writer, listener) 
   }
 
   def endTime = new Date().time

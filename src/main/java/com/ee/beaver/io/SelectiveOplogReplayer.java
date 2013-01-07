@@ -10,8 +10,8 @@ public class SelectiveOplogReplayer implements Replayer {
     this.selectCriteria = criteria;
   }
 
-  @Override
-  public final boolean replayDocument(final String document) {
+@Override
+  public boolean replayDocument(final String document) {
     if (selectCriteria.isSatisfiedBy(document)) {
       target.replayDocument(document);
       return true;
