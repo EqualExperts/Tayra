@@ -9,7 +9,7 @@ class DbCriteriaSpecs extends Specification{
 	def filter = '-sDb=test'
 	def returnsTrueIfCriteriaForASpecificDbIsSatisfied () {
 		when:
-			criteria = new DbCriteria (filter)
+			criteria = new Criteria (filter)
 			
 		then:
 			criteria.isSatisfiedBy(documentOne)
@@ -17,7 +17,7 @@ class DbCriteriaSpecs extends Specification{
 	
 	def returnsFalseIfCriteriaForASpecificDbisNotSatisfied () {
 		when:
-			criteria = new DbCriteria (filter)
+			criteria = new Criteria (filter)
 		
 		then:
 			! criteria.isSatisfiedBy(documentTwo)

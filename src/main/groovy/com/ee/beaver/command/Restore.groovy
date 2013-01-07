@@ -83,7 +83,7 @@ try {
       : new ProgressReporter(new FileWriter(exceptionFile), console)
 
   def selectiveWriter = binding.hasVariable('selectiveWriter') ? binding.getVariable('selectiveWriter')
-      : new SelectiveOplogReplayer(new DbCriteria(filter), writer)
+      : new SelectiveOplogReplayer(new Criteria(filter), writer)
   
   def copier = new Copier()
 
