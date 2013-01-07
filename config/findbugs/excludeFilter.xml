@@ -90,4 +90,28 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+  <Match>
+    <Class name="com.ee.beaver.command.Backup$_run_closure2" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.command.Backup$_run_closure3" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.command.MongoReplSetConnection$_closure1" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.beaver.command.MongoReplSetConnection$_using_closure2" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
 </FindBugsFilter>

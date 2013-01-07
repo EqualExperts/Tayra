@@ -76,7 +76,6 @@ if(options.u) {
 	password = options.p ?: readPassword(console)
 }
 
-mongo = null
 writer = new TimestampRecorder(getWriter())
 listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 		: new ProgressReporter(null, console)
@@ -95,21 +94,33 @@ if(timestampFile.exists()) {
 }
 
 try {
-	ServerAddress server = new ServerAddress(sourceMongoDB, port)
-	mongo = new Mongo(server)
-	getAuthenticator(mongo).authenticate(username, password)
-	oplog = new Oplog(mongo)
-	reader = new OplogReader(oplog, timestamp, isContinuous)
 	console.println "Backup Started On: ${new Date()}"
-	new Copier().copy(reader, writer, listener)
+	new MongoReplSetConnection(sourceMongoDB, port).using { mongo ->
+		getAuthenticator(mongo).authenticate(username, password)
+		def oplog = new Oplog(mongo)
+		def reader = new OplogReader(oplog, timestamp, isContinuous)
+		new Copier().copy(reader, writer, listener, new CopyListener() {
+			void onReadSuccess(String document){}
+			void onWriteSuccess(String document){}
+			void onWriteFailure(String document, Throwable problem){}
+			void onReadFailure(String document, Throwable problem){
+				if(problem instanceof MongoException)
+					throw problem
+			}
+		})
+	}
+	{
+		if (writer){
+			new FileWriter(timestampFileName).append(writer.timestamp).flush()
+			timestamp=writer.timestamp
+		}
+		console.println "Attempting to resume Backup On: ${new Date()}"
+	}
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {
 	if (writer){
 		new FileWriter(timestampFileName).append(writer.timestamp).flush()
-	}
-	if(mongo) {
-		mongo.close()
 	}
 	if (listener) {
 		printSummaryTo console, listener

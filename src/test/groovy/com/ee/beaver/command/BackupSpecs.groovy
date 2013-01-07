@@ -85,43 +85,43 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be shown as'
 			result.toString().contains('Oops!! Could not perform backup...node is not a part of ReplicaSet')
 	}
-	
+
 	def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecuredConnection() {
 		given:'arguments contains -s, -f, -u and -p options'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', password])
-			
+
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
 			context.setVariable('writer', writer)
-		
+
 		when: 'backup runs with above args'
 			new Backup(context).run()
-			
+
 		then: 'the output should contain "ts"'
 			writer.toString().contains('ts')
 	}
-	
+
 	def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
 		given:'arguments contains -s, -f options'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=17017'])
-		
+
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
 			context.setVariable('writer', writer)
 			new File('timestamp.out').delete()
-			
+
 		and: 'any entry is present in the replicaSet for windows'
 			forceTheTestToWorkOnWindows()
-		
+
 		when: 'backup runs with above args'
 			new Backup(context).run()
-		
+
 		then: 'the output should contain "ts"'
 			writer.toString().contains('ts')
 	}
-	
+
 	def forceTheTestToWorkOnWindows() {
 		def options = new MongoOptions()
 		options.safe = true
@@ -129,41 +129,41 @@ public class BackupSpecs extends Specification {
 		def UnsecuredReplicaset = new Mongo(server, options);
 		UnsecuredReplicaset.getDB('admin').addUser('admin', 'admin'.toCharArray())
 	}
-	
+	@Ignore
 	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
 		given:'arguments contains -s, -f options but not --username'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
-			
+
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
 			context.setVariable('authenticator', mockAuthenticator)
 			mockAuthenticator.authenticate('', '') >> { throw new MongoException('Username cannot be empty') }
-			
+
 		when: 'backup runs with above args'
 			new Backup(context).run()
-		
+
 		then: 'error message should be thrown as'
 			result.toString().contains('Username cannot be empty')
 	}
-	
+	@Ignore
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
-	
+
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
 			context.setVariable('authenticator', mockAuthenticator)
 			mockAuthenticator.authenticate(username, 'incorrect') >> { throw new MongoException('Authentication Failed to localhost') }
-			
+
 		when: 'backup runs with above args'
 			new Backup(context).run()
-	
+
 		then: 'error message should be thrown as'
 			result.toString().contains('Authentication Failed to localhost')
 	}
-	
+	@Ignore
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
@@ -173,10 +173,10 @@ public class BackupSpecs extends Specification {
 			def mockAuthenticator = Mock(Authenticator)
 			context.setVariable('authenticator', mockAuthenticator)
 			mockAuthenticator.authenticate('incorrect', password) >> { throw new MongoException('Authentication Failed to localhost') }
-			
+
 		when: 'backup runs with above args'
 			new Backup(context).run()
-	
+
 		then: 'error message should be thrown as'
 			result.toString().contains('Authentication Failed to localhost')
 	}
