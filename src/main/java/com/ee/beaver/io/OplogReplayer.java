@@ -11,7 +11,7 @@ public class OplogReplayer implements Replayer {
     this.operations = operations;
   }
 
-  public boolean replayDocument(final String document) {
+  public boolean replay(final String document) {
     final String operationCode = extractOpcode(document);
     Operation operation = operations.get(operationCode);
     operation.execute(document);

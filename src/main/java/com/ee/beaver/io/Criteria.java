@@ -3,22 +3,27 @@ package com.ee.beaver.io;
 
 public class Criteria {
 
-  private String filter;
+  private final String filter;
+  private final String filterValue;
 
   public Criteria(final String filter) {
     this.filter = filter;
+    this.filterValue = getFilterValue(filter);
   }
 
-public boolean isSatisfiedBy(final String document) {
-  if (filter.equals(null)) {
-    return true;
-  }
-  if (filter.contains("-sDb")) {
-    String filterValue = getFilterValue(filter);
-    String dbName = getDbName(document);
-    if (dbName.equals(filterValue)) {
+  public boolean notGiven() {
+    if ("".equals(filter)) {
       return true;
     }
+  return false;
+}
+
+  public boolean isSatisfiedBy(final String document) {
+    if (filter.contains("-sDb")) {
+      String dbName = getDbName(document);
+      if (dbName.equals(filterValue)) {
+        return true;
+      }
   }
   return false;
 }
@@ -33,4 +38,5 @@ public boolean isSatisfiedBy(final String document) {
   private String getFilterValue(final String dbfilter) {
     return dbfilter.substring(dbfilter.indexOf("=") + 1);
   }
+
 }

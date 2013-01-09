@@ -70,7 +70,7 @@ public class CopierSpecs extends Specification {
 			copier.copy(from, mockOplogReplayer)
 
 		then: 'oplog replayer should replay the document'
-			1 * mockOplogReplayer.replayDocument(document)
+			1 * mockOplogReplayer.replay(document)
 	}
 
 
@@ -101,7 +101,7 @@ public class CopierSpecs extends Specification {
 			mockCopyListener = Mock(CopyListener)
 			
 		and: 'the replayer replays the document'
-			mockReplayer.replayDocument (document) >> true
+			mockReplayer.replay (document) >> true
 
 		when: ' document is copied'
 			copier.copy(from, mockReplayer, mockCopyListener)
@@ -122,7 +122,7 @@ public class CopierSpecs extends Specification {
 		and: 'a problem occurs when the replay fails'
 			final RuntimeException problem = new RuntimeException(
 					"Document to update does not exist")
-			mockOplogReplayer.replayDocument(document) >> {throw problem}
+			mockOplogReplayer.replay(document) >> {throw problem}
 
 		when: 'document is copied'
 			copier.copy(from, mockOplogReplayer, mockCopyListener)

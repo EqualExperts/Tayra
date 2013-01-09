@@ -36,7 +36,7 @@ public class Copier {
       while ((document = from.readLine()) != null) {
         notifier.notifyReadSuccess(document);
         try {
-          if (to.replayDocument(document)) {
+          if (to.replay(document)) {
             notifier.notifyWriteSuccess(document);
           }
         } catch (RuntimeException problem) {

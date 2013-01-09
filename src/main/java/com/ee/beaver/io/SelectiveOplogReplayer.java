@@ -1,20 +1,19 @@
 package com.ee.beaver.io;
 
 public class SelectiveOplogReplayer implements Replayer {
-  private OplogReplayer target;
-  private Criteria selectCriteria;
+  private Replayer target;
+  private Criteria criteria;
 
   public SelectiveOplogReplayer(final Criteria criteria,
-    final OplogReplayer target) {
+    final Replayer target) {
     this.target = target;
-    this.selectCriteria = criteria;
+    this.criteria = criteria;
   }
 
 @Override
-  public boolean replayDocument(final String document) {
-    if (selectCriteria.isSatisfiedBy(document)) {
-      target.replayDocument(document);
-      return true;
+  public boolean replay(final String document) {
+    if (criteria.isSatisfiedBy(document) || criteria.notGiven()) {
+      return target.replay(document);
     }
     return false;
   }

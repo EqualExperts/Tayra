@@ -92,7 +92,7 @@ class RestoreSpecs extends Specification {
 			new Restore(context).run()
 			
 		then: 'perform the restore operation'
-			1 * mockReplayer.replayDocument('"ts"')
+			1 * mockReplayer.replay('"ts"')
 	}
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
@@ -109,7 +109,7 @@ class RestoreSpecs extends Specification {
 			new Restore(context).run()
 
 		then: 'perform the restore operation'
-			1 * mockReplayer.replayDocument('"ts"')
+			1 * mockReplayer.replay('"ts"')
 	}
 
 	def shoutsWhenNoUsernameIsGivenForSecuredStandalone() {
@@ -176,21 +176,20 @@ class RestoreSpecs extends Specification {
 	}
 
 	def invokesSelectiveRestore() {
-	given:'arguments contains -d, -port and -f and --sDb options'
+	given:'arguments contains -d, -port and -f and -sDb options'
 		def context = new Binding()
-		context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sDb="test"'])
+		context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','-sDb="test"'])
 
 	and: 'the reader and writer is injected'
 		def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 		context.setVariable('reader', source)
-		context.setVariable('writer', mockReplayer)
-		context.setVariable('selectiveWriter', mockSelectiveOplogReplayer)
+		context.setVariable('writer', mockSelectiveOplogReplayer)
 
 	when: 'restore runs'
 		new Restore(context).run()
 
 	then: 'perform the restore operation'
-		1 * mockSelectiveOplogReplayer.replayDocument('"ts"')
+		1 * mockSelectiveOplogReplayer.replay('"ts"')
 	}
 
 }
