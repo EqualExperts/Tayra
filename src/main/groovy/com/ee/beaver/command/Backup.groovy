@@ -68,7 +68,6 @@ def readPassword(output) {
 	return new String(System.console().readPassword())
 }
 
-
 String username = ''
 String password = ''
 if(options.u) {

@@ -129,7 +129,7 @@ public class BackupSpecs extends Specification {
 		def UnsecuredReplicaset = new Mongo(server, options);
 		UnsecuredReplicaset.getDB('admin').addUser('admin', 'admin'.toCharArray())
 	}
-	@Ignore
+
 	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
 		given:'arguments contains -s, -f options but not --username'
 			def context = new Binding()
@@ -146,7 +146,7 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be thrown as'
 			result.toString().contains('Username cannot be empty')
 	}
-	@Ignore
+
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
@@ -163,7 +163,7 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be thrown as'
 			result.toString().contains('Authentication Failed to localhost')
 	}
-	@Ignore
+
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()

@@ -114,4 +114,10 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+  <Match>
+    <Class name="com.ee.beaver.command.MongoReplSetConnection$_getNodesWithinReplicaSet_closure1" />
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
 </FindBugsFilter>
