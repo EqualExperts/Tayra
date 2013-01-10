@@ -31,7 +31,7 @@ public class OplogReplayerSpecs extends Specification {
 			mockOperations.get('c') >> mockOperation
 
 		when: 'Replayer replays an Oplog Entry String'
-			replayer.replayDocument(oplogDocString)
+			replayer.replay(oplogDocString)
 
 		then: 'Create Collection Operation executes the Oplog entry'
 			1 * mockOperation.execute(oplogDocString)
@@ -51,7 +51,7 @@ public class OplogReplayerSpecs extends Specification {
 			mockOperations.get('i') >> mockOperation
 
 		when: 'Replayer replays an Oplog Entry String'
-			replayer.replayDocument(oplogDocString)
+			replayer.replay(oplogDocString)
 
 		then: 'Insert Operation executes the Oplog Entry'
 			1 * mockOperation.execute(oplogDocString)
@@ -75,7 +75,7 @@ public class OplogReplayerSpecs extends Specification {
 			def oplogDocString = builder as String
 			
 		when: 'Replayer replays an Oplog Entry String'
-			replayer.replayDocument(oplogDocString)
+			replayer.replay(oplogDocString)
 	
 		then: 'Operation is called with correct opcode parameter'
 			mockOperations.get('c') >> mockOperation

@@ -7,7 +7,7 @@ import com.ee.beaver.domain.*
 import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll]')
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll] [-sDb=<dbName>]')
 cli.with {
   d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: true
   _ args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
@@ -16,6 +16,7 @@ cli.with {
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
+  sDb args:1, argName:'sDb',longOpt:'selectDb', 'OPTIONAL, Dbname for selective restore, default is none', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -61,6 +62,10 @@ isMultiple = false
 if(options.fAll) {
   isMultiple = true
 }
+def filter = ''
+if(options.sDb) {
+ filter = '-sDb=' + options.sDb
+}
 
 mongo = null
 try {
@@ -70,11 +75,11 @@ try {
   def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-      : new OplogReplayer(new Operations(mongo))
+      : new SelectiveOplogReplayer(new Criteria(filter), new OplogReplayer (new Operations(mongo)))
 
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
       : new ProgressReporter(new FileWriter(exceptionFile), console)
-
+  
   def copier = new Copier()
 
   def startTime = new Date().time
@@ -82,7 +87,7 @@ try {
 
   files.withFile {
     def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-    copier.copy(reader, writer, listener)
+    copier.copy(reader, writer, listener) 
   }
 
   def endTime = new Date().time

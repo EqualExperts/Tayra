@@ -21,7 +21,7 @@ class DropIndexSpecs extends RequiresMongoConnection{
 			}
 		return dropped
 	}
-	
+
 	def dropsASimpleIndex() {
 		def key = new BasicDBObjectBuilder()
 					.start()
@@ -55,7 +55,7 @@ class DropIndexSpecs extends RequiresMongoConnection{
 			DBObject spec = new BasicDBObjectBuilder()
 						.start()
 							.add('deleteIndexes', collectionName)
-							.add('index', 'roll_1_name_1')						
+							 	.add('index', 'roll_1_name_1')
 						.get()
 						
 		when: 'Operation runs'
@@ -93,7 +93,7 @@ class DropIndexSpecs extends RequiresMongoConnection{
 			DBObject spec = new BasicDBObjectBuilder()
 						.start()
 							.add('deleteIndexes', collectionName)
-							.add('index', indexName)
+							.add('index', 'roll_1')
 						.get()
 		
 		when: 'the operation runs'
