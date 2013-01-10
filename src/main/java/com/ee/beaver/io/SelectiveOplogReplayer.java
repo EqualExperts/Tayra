@@ -1,8 +1,9 @@
 package com.ee.beaver.io;
 
+
 public class SelectiveOplogReplayer implements Replayer {
-  private Replayer target;
-  private Criteria criteria;
+  private final Replayer target;
+  private final Criteria criteria;
 
   public SelectiveOplogReplayer(final Criteria criteria,
     final Replayer target) {
@@ -12,9 +13,10 @@ public class SelectiveOplogReplayer implements Replayer {
 
 @Override
   public boolean replay(final String document) {
-    if (criteria.isSatisfiedBy(document) || criteria.notGiven()) {
+  Criterion criterion = criteria.getCriterion();
+    if (criterion.isSatisfiedBy(document)) {
       return target.replay(document);
     }
     return false;
-  }
+}
 }
