@@ -8,21 +8,12 @@ public class DbCriteria implements Criterion {
   public DbCriteria(final String filter) {
     this.filterValue = getFilterValue(filter);
   }
-//
-//  public boolean notGiven() {
-//    if ("".equals(filter)) {
-//      return true;
-//    }
-//  return false;
-//}
 
   public boolean isSatisfiedBy(final String document) {
-//    if (filter.contains("-sDb")) {
       String dbName = getDbName(document);
       if (dbName.equals(filterValue)) {
         return true;
       }
-//  }
   return false;
 }
 

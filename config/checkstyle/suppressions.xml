@@ -55,5 +55,5 @@
     <suppress checks="DesignForExtension" files="[\\/]SelectiveOplogReplayer.java" />
     <suppress checks="DesignForExtension" files="[\\/]Criteria.java" />
     <suppress checks="DesignForExtension" files="[\\/]DbCriteria.java" />
-    <suppress checks="DesignForExtension" files="[\\/]DbCriteria.java" />
+    <suppress checks="DesignForExtension" files="[\\/]TimestampCriteria.java" />
 </suppressions>

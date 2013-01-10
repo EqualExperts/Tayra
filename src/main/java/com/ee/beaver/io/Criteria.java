@@ -11,6 +11,9 @@ public Criteria(final String filter) {
       if (filter.contains("-sDb")) {
         return new DbCriteria(filter);
       }
+      if (filter.contains("-sUntil")) {
+        return new TimestampCriteria(filter);
+      }
       return Criterion.ALL;
     }
 }

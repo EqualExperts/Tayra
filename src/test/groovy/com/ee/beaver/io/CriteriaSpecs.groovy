@@ -30,5 +30,19 @@ class CriteriaSpecs extends Specification{
 				 
 		then:'Criterion should be an instance of All'
 				criterion == Criterion.ALL
-	} 
+	}
+	
+	def producesTimestampCriteria() {
+		given: 'time stamp filter'
+				def filter='-sUntil={ts:{$ts:1357537752,$inc:1}}'
+				
+		and: 'Criteria is formed with the above filter'
+				def criteria = new Criteria(filter)
+				
+		when: 'Criteria gets the criterion'
+				def criterion = criteria.getCriterion()
+				
+		then: 'Criterion should be an instance of DbCriteria'
+				criterion instanceof TimestampCriteria
+	}
 }

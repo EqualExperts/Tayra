@@ -7,7 +7,7 @@ import com.ee.beaver.domain.*
 import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll] [-sDb=<dbName>]')
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll] [--sDb=<dbName>] [--sUntil=<timestamp>]')
 cli.with {
   d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: true
   _ args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
@@ -17,6 +17,7 @@ cli.with {
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
   sDb args:1, argName:'sDb',longOpt:'selectDb', 'OPTIONAL, Dbname for selective restore, default is none', optionalArg:true
+  sUntil args:1, argName:'sUntil',longOpt:'selectUntil', 'OPTIONAL, timestamp for selective restore, default is none', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -64,9 +65,13 @@ if(options.fAll) {
 }
 def filter = ''
 if(options.sDb) {
- filter = '-sDb=' + options.sDb
+  filter = '-sDb=' + options.sDb
+}
+if(options.sUntil) {
+  filter = '-sUntil=' + options.sUntil
 }
 
+console.println(filter)
 mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);

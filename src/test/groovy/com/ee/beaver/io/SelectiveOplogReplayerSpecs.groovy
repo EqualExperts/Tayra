@@ -11,18 +11,17 @@ class SelectiveOplogReplayerSpecs extends Specification{
 	def setup() {
 		mockTarget = Mock(OplogReplayer)
 		mockCriteria = Stub(Criteria)
-		selectiveOplogReplayer = new SelectiveOplogReplayer(mockCriteria, mockTarget)
 	}
 	
 	def replaysDocumentIfCriteriaIsSatisfied() {
 				
 		given: 'Criteria gets the criterion'
-		
 			mockCriteria.getCriterion () >> {
 				mockCriterion = Mock(Criterion)
 				mockCriterion.isSatisfiedBy(document) >> true
 				mockCriterion
 			}
+			selectiveOplogReplayer = new SelectiveOplogReplayer(mockCriteria, mockTarget)
 			
 		when: 'Selective oplog replayer replays document'
 				selectiveOplogReplayer.replay(document)
@@ -34,12 +33,12 @@ class SelectiveOplogReplayerSpecs extends Specification{
 	def doesNotReplayDocumentIfCriteriaIsNotSatisfied() {
 		
 		given: 'Criteria gets the criterion'
-		
-			mockCriteria.getCriterion () >> {
+				mockCriteria.getCriterion () >> {
 				mockCriterion = Mock(Criterion)
 				mockCriterion.isSatisfiedBy(document) >> false
 				mockCriterion
 			}
+			selectiveOplogReplayer = new SelectiveOplogReplayer(mockCriteria, mockTarget)
 			
 		when: 'Selective oplog replayer replays document'
 				selectiveOplogReplayer.replay(document)
