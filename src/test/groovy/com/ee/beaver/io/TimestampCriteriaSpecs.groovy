@@ -34,19 +34,31 @@ class TimestampCriteriaSpecs extends Specification {
 		
 	}
 	
-	def returnsUTCTime() {
+	def returnsTrueIfDocumentIsEarlierThanISOTime() {
 		
-		given:
-			int timeStamp = 1357537752
-		when:
-			Date date = new Date(1356515380*1000L)
-			SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd,HH:mm:ss")
-			
-		then:
-			println format.parse('2013:01:07,11:19:12')
-			println date
-			println Long.MAX_VALUE
-			
+		given: 'A timestamp and an oplog document'
+			def timeStamp = '-sUntil=2012-12-26T15:19:40Z'
+			def document = '{ts:{$ts:1356515303,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+		
+		when: 'timestamp criteria is applied to the document'
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+								
+		then: 'it returns true if the document is older than the timestamp'
+			criteria.isSatisfiedBy(document)
+		
+	}
+	
+	def returnsFalseIfDocumentIsLaterThanISOTime() {
+		
+		given: 'A timestamp and an oplog document'
+			def timeStamp = '-sUntil=2012-12-26T15:19:40Z'
+			def document = '{ts:{$ts:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+		
+		when: 'timestamp criteria is applied to the document'
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+								
+		then: 'it returns true if the document is older than the timestamp'
+			!criteria.isSatisfiedBy(document)
 		
 	}
 
