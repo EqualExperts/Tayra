@@ -1,8 +1,13 @@
 package com.ee.beaver.io;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class TimestampCriteria implements Criterion {
 
-  private final long timeStampUntil;
+  private static final long MILLI_CONVERSION = 1000L;
+private final Date timeStampUntil;
   private final int increment;
   private static final String TS_IDENTIFIER = "$ts:";
   private static final String INC_IDENTIFIER = "$inc:";
@@ -13,28 +18,41 @@ public class TimestampCriteria implements Criterion {
   }
 
   private int getIncrementFrom(final String filter) {
-   int incStartIndex = filter.indexOf(INC_IDENTIFIER) + INC_IDENTIFIER.length();
-   int incEndIndex = filter.indexOf("}", incStartIndex);
-   return Integer.parseInt(filter.substring(incStartIndex, incEndIndex).trim());
+    if (filter.contains(INC_IDENTIFIER)) {
+      int incStartIndex = filter.indexOf(INC_IDENTIFIER)
+              + INC_IDENTIFIER.length();
+      int incEndIndex = filter.indexOf("}", incStartIndex);
+      return Integer.parseInt(filter
+              .substring(incStartIndex, incEndIndex).trim());
+     }
+    return Integer.MAX_VALUE;
   }
 
-  private long getTimestampFrom(final String filter) {
-   int tsStartIndex = filter.indexOf(TS_IDENTIFIER) + TS_IDENTIFIER.length();
-   int tsEndIndex = filter.indexOf(INC_IDENTIFIER);
-   return Long.parseLong(filter.substring(tsStartIndex, tsEndIndex)
-                              .replaceAll(",", "").trim());
+  private Date getTimestampFrom(final String filter) {
+   if (filter.contains(TS_IDENTIFIER)) {
+     int tsStartIndex = filter.indexOf(TS_IDENTIFIER) + TS_IDENTIFIER.length();
+     int tsEndIndex = filter.indexOf(INC_IDENTIFIER);
+     return new Date(Long.parseLong(filter.substring(tsStartIndex, tsEndIndex)
+                              .replaceAll(",", "").trim()) * MILLI_CONVERSION);
+   } else {
+     try {
+       SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd,HH:mm:ss");
+       return format.parse(filter.substring(filter.indexOf("=") + 1));
+     } catch (ParseException p) {
+       return new Date(0L);
+     }
+   }
   }
 
   @Override
   public boolean isSatisfiedBy(final String document) {
-   if (timeStampUntil > getTimestampFrom(document.replaceAll("\"", "")
-                                                 .replaceAll(" ", ""))) {
+    String tsDocument = document.replaceAll("\"", "")
+            .replaceAll(" ", "");
+   if (timeStampUntil.compareTo(getTimestampFrom(tsDocument)) > 0) {
      return true;
    }
-   if (timeStampUntil == getTimestampFrom(document.replaceAll("\"", "")
-                                                 .replaceAll(" ", ""))) {
-     return increment >= getIncrementFrom(document.replaceAll("\"", "")
-                                                 .replaceAll(" ", ""));
+   if (timeStampUntil.compareTo(getTimestampFrom(tsDocument)) == 0) {
+     return increment >= getIncrementFrom(tsDocument);
    }
    return false;
   }

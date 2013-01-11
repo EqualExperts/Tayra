@@ -1,5 +1,7 @@
 package com.ee.beaver.io
 
+import java.text.SimpleDateFormat
+
 import spock.lang.Specification
 
 class TimestampCriteriaSpecs extends Specification {
@@ -29,6 +31,22 @@ class TimestampCriteriaSpecs extends Specification {
 								
 		then: 'it returns true if the document is older than the timestamp'
 			! criteria.isSatisfiedBy(document)
+		
+	}
+	
+	def returnsUTCTime() {
+		
+		given:
+			int timeStamp = 1357537752
+		when:
+			Date date = new Date(1356515380*1000L)
+			SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd,HH:mm:ss")
+			
+		then:
+			println format.parse('2013:01:07,11:19:12')
+			println date
+			println Long.MAX_VALUE
+			
 		
 	}
 

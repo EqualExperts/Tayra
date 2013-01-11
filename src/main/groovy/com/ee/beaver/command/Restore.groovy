@@ -71,7 +71,6 @@ if(options.sUntil) {
   filter = '-sUntil=' + options.sUntil
 }
 
-console.println(filter)
 mongo = null
 try {
   ServerAddress server = new ServerAddress(destMongoDB, port);
