@@ -1,0 +1,26 @@
+STEPS:
+
+1] Create Directory Structure:
+ 
+D:\MongoBeaverDataFiles
+D:\MongoBeaverDataFiles\backup
+D:\MongoBeaverDataFiles\notRestored
+D:\MongoBeaverDataFiles\restored
+D:\MongoBeaverDataFiles\toBeRestored
+D:\MongoBeaverDataFiles\distributions
+
+2] Copy the following files in this D:\MongoBeaverDataFiles\distributions folder:
+- DataGenerator.groovy
+- FileWatcher.groovy
+- executeRestore.bat
+
+3] Execute the following commands from terminal in D:\MongoBeaverDataFiles\distributions directory
+
+- Invoke DataGenerator Script:
+>groovy -cp D:\MongoBeaverDataFiles\distributions\libs\* DataGenerator.groovy
+
+- Invoke FileWatcher Script:
+>groovy FileWatcher.groovy
+
+- Invoke Backup In Tailable Mode:
+>backup.bat -s localhost -f D:/MongoBeaverDataFiles/backup/test.out -u admin -p admin -t --fSize=1MB --fMax=1
