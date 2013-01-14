@@ -6,7 +6,7 @@ import com.mongodb.ServerAddress
 import com.ee.beaver.domain.*
 import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
-import com.ee.beaver.io.selective.CriteriaBuilder
+import com.ee.beaver.io.criteria.CriteriaBuilder
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll] [--sDb=<dbName>] [--sUntil=<timestamp>]')
 cli.with {
@@ -64,13 +64,14 @@ isMultiple = false
 if(options.fAll) {
   isMultiple = true
 }
-def filter = ''
-def criteriaBuilder = new CriteriaBuilder()
-if(options.sDb) {
-  criteriaBuilder.withDatabase(options.sDb)
-}
-if(options.sUntil) {
-  criteriaBuilder.withUntil(options.sUntil)
+
+def criteriaBuilder = new CriteriaBuilder().using {
+	if(options.sDb) {
+	  database options.sDb
+	}
+	if(options.sUntil) {
+	  until options.sUntil
+	}
 }
 
 mongo = null

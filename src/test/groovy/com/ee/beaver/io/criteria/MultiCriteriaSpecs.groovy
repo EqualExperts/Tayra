@@ -1,4 +1,7 @@
-package com.ee.beaver.io.selective
+package com.ee.beaver.io.criteria
+
+import com.ee.beaver.io.criteria.Criterion;
+import com.ee.beaver.io.criteria.MultiCriteria;
 
 import spock.lang.Specification;
 
@@ -18,27 +21,27 @@ class MultiCriteriaSpecs  extends Specification {
 		multiCriteria = new MultiCriteria(criteria)
 	}
 
-	def returnsFalseIfDocumentDoesNotSatisfyAtLeastOneCriteria() {
-		given:
+	def documentDoesNotSatisfyCriteria() {
+		given: 'one of the criteria is not satisfied'
 			criterion1.isSatisfiedBy(document) >> true
 			criterion2.isSatisfiedBy(document) >> false
 		
-		when:
+		when: 'it is queried'
 			def isSatisfied = multiCriteria.isSatisfiedBy(document)
 		
-		then:
+		then: 'the document does not satisfy any criteria'
 			! isSatisfied
 	}
 
-	def returnsTrueIfDocumentSatisfiesAllCriteria() {
-		given:
+	def documentSatisfiesAllCriteria() {
+		given: 'all criteria are satisfied'
 			criterion1.isSatisfiedBy(document) >> true
 			criterion2.isSatisfiedBy(document) >> true
 		
-		when:
+		when: 'it is queried'
 			def isSatisfied = multiCriteria.isSatisfiedBy(document)
 		
-		then:
+		then: 'the document satisfies all criteria'
 			isSatisfied
 	}
 }

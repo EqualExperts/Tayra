@@ -1,8 +1,8 @@
-package com.ee.beaver.io.selective
+package com.ee.beaver.io.criteria
 
 import java.text.SimpleDateFormat
 
-import com.ee.beaver.io.selective.TimestampCriteria;
+import com.ee.beaver.io.criteria.TimestampCriteria;
 
 import spock.lang.Specification
 

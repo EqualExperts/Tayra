@@ -1,6 +1,6 @@
 package com.ee.beaver.io;
 
-import com.ee.beaver.io.selective.Criterion;
+import com.ee.beaver.io.criteria.Criterion;
 
 public class SelectiveOplogReplayer implements Replayer {
   private final Replayer target;

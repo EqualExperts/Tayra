@@ -1,6 +1,7 @@
-package com.ee.beaver.io.selective;
+package com.ee.beaver.io.criteria;
 
 import java.util.List;
+import static java.util.Collections.unmodifiableList;
 
 public class MultiCriteria implements Criterion {
 
@@ -20,6 +21,10 @@ public class MultiCriteria implements Criterion {
       }
     }
     return isSatisfied;
+  }
+
+  public final List<Criterion> criteria() {
+    return unmodifiableList(criteria);
   }
 
 }

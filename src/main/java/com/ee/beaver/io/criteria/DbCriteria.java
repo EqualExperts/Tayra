@@ -1,4 +1,4 @@
-package com.ee.beaver.io.selective;
+package com.ee.beaver.io.criteria;
 
 
 public class DbCriteria implements Criterion {

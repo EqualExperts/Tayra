@@ -1,6 +1,6 @@
-package com.ee.beaver.io.selective
+package com.ee.beaver.io.criteria
 
-import com.ee.beaver.io.selective.DbCriteria;
+import com.ee.beaver.io.criteria.DbCriteria;
 
 import spock.lang.*
 class DbCriteriaSpecs extends Specification {
