@@ -42,7 +42,8 @@ try {
 			}
 
 			if(eventDir == targetDir) {
-				Runtime.getRuntime().exec("D:/MongoBeaverDataFiles/distributions/executeRestore.bat")
+				"D:/MongoBeaverDataFiles/distributions/executeRestore.bat".execute().text
+				sleep 3000
 				targetMover('restored')
 			}
 		}
