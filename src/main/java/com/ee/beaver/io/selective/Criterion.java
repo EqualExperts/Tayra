@@ -1,5 +1,4 @@
-package com.ee.beaver.io;
-
+package com.ee.beaver.io.selective;
 
 public interface Criterion {
 

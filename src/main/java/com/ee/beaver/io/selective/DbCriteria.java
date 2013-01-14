@@ -1,17 +1,17 @@
-package com.ee.beaver.io;
+package com.ee.beaver.io.selective;
 
 
 public class DbCriteria implements Criterion {
 
-  private final String filterValue;
+  private final String db;
 
-  public DbCriteria(final String filter) {
-    this.filterValue = getFilterValue(filter);
+  public DbCriteria(final String dbName) {
+    this.db = dbName;
   }
 
   public boolean isSatisfiedBy(final String document) {
       String dbName = getDbName(document);
-      if (dbName.equals(filterValue)) {
+      if (dbName.equals(db)) {
         return true;
       }
   return false;
@@ -22,10 +22,6 @@ public class DbCriteria implements Criterion {
     int endIndex = document.indexOf(",", startIndex);
     String namespace = document.substring(startIndex, endIndex).split(":") [1];
     return namespace.replaceAll("\"", "").trim().split("\\.")[0];
-  }
-
-  private String getFilterValue(final String dbfilter) {
-    return dbfilter.substring(dbfilter.indexOf("=") + 1);
   }
 
 }

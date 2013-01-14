@@ -6,6 +6,7 @@ import com.mongodb.ServerAddress
 import com.ee.beaver.domain.*
 import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
+import com.ee.beaver.io.selective.CriteriaBuilder
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll] [--sDb=<dbName>] [--sUntil=<timestamp>]')
 cli.with {
@@ -64,11 +65,12 @@ if(options.fAll) {
   isMultiple = true
 }
 def filter = ''
+def criteriaBuilder = new CriteriaBuilder()
 if(options.sDb) {
-  filter = '-sDb=' + options.sDb
+  criteriaBuilder.withDatabase(options.sDb)
 }
 if(options.sUntil) {
-  filter = '-sUntil=' + options.sUntil
+  criteriaBuilder.withUntil(options.sUntil)
 }
 
 mongo = null
@@ -79,7 +81,7 @@ try {
   def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-      : new SelectiveOplogReplayer(new Criteria(filter), new OplogReplayer (new Operations(mongo)))
+  : new SelectiveOplogReplayer(criteriaBuilder.build(), new OplogReplayer (new Operations(mongo)))
 
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
       : new ProgressReporter(new FileWriter(exceptionFile), console)
