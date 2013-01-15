@@ -1,2 +1,1 @@
-use admin
-db.addUser('admin', 'admin')
+db.addUser('admin','admin');

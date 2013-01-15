@@ -1,3 +1,5 @@
+//---------------<< BACKUP DEMO - INCREMENTAL AUTH FEATURE >>-----------------------------------------
+
 // switch to db
 use ee
 
@@ -20,19 +22,115 @@ db.people.address.insert( { name: "testUser3", age: 22, address: { street: "xyz"
 db.people.update( { name: "testUser1" }, { name: "testUser1", age: 20 } )
 db.people.address.update( { name: "testUser3" }, { name: "testUser3", age: 22, address: { street: "xyz", city: "abc" } } )
 
-//--------------------------< Volume Insert Documents >-----------------------------------
-for (var i=4; i<=20000; i++) { db.people.insert( { name: "testUser"+i } ); }
-
-//--------------------------< Incremental Volume Insert >-----------------------------------
-for (var i=40000; i<=60000; i++) { db.people.insert( { name: "testUser"+i } ); }
-
 //--------------------------< Delete Documents >-----------------------------------
 db.people.remove( { name: "testUser1" } )
 db.people.address.remove( { address: { street: "xyz" } } )
 db.people.remove()
+
+//--------------------------< Volume Insert Documents >-----------------------------------
+for (var i=4; i<=20000; i++) { db.people.insert( { name: "testUser"+i } ); }
+
+//--------------------------< Incremental Volume Insert >-----------------------------------
+for (var i=20001; i<=40000; i++) { db.people.insert( { name: "testUser"+i } ); }
+
 
 //--------------------------< Drops >-----------------------------------
 db.people.drop()
 db.people.address.drop()
 db.dropDatabase()
 
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~<< On cmd >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On cmd:
+
+backup -s localhost -f auth.log -t -u admin
+
+restore -d localhost -f auth.log --port=27022 -u admin
+
+//------------------------------------------------------------------------------
+
+
+
+//---------------<< ROTATING LOGS DEMO -- BACKUP & RESTORE >>-----------------------------------------
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~<< On cmd >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+backup -s localhost -u admin -p admin --port=27017 -f rotatingBackup.log --fMax=4 --fSize=1MB
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~<< On Mongo Shell >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+use rotationDB
+db.createCollection("entries")
+for(var i=1; i<=20000; i++) {db.entries.insert({rowId : "row" + i, entry: "entry" + i})}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~<< On cmd >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+restore -d localhost -u admin -p admin --port=27023 -f rotatingBackup.log --fAll
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~<< On Mongo Shell >>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+mongo --port 27023 admin -u admin -p admin
+use rotationDB
+db.entries.count()
+
+
+//------------------------------------------------------------------------------
+
+
+
+//--------------------------<< SELECTIVE RESTORE DEMO >>-----------------------------------
+
+--->mongo
+use selectA
+for(i=0;i<1000;i++){ db.collA.save({roll:i})}
+use selectB
+for(i=0;i<1000;i++){ db.collB.save({roll:i})}
+
+--->cmdline
+
+backup -f selective.out -u admin -p admin -s localhost -t
+
+restore -d localhost -f selective.out -u admin -p admin --port=27024 --sDb=selectA --sUntil=
+
+
+//------------------------------------------------------------------------------
+
+
+
+//--------------------------<< SURVIVE MASTER CRASH DEMO >>-----------------------------------
+
+--->cmdline
+backup.bat -s localhost --port=27017 -f survivemastercrash.out -u admin -p admin -t
+
+--->mongo
+show dbs
+use survive
+for(i=1;i<=5000;i++) { db.crash.insert( { SequenceId: "ID" + i } ) }
+db.crash.count()
+
+//Kill 27017
+//Election occurs, new primary comes up.
+
+--->mongo
+//Connect to that primary
+mongo --port 27018 admin -u admin -p admin
+show dbs
+use survive
+for(i=5001;i<=20000;i++) { db.crash.insert( { SequenceId: "ID" + i } ) }
+db.crash.count()
+
+//Bring up the Dead node ie 27017
+//Re-Election happens. New primary comes up.
+//Connect to the new primary and verify the count.
+
+--->mongo
+mongo --port 27017 admin -u admin -p admin
+show dbs
+use survive
+db.crash.count()
+
+//------------------------------------------------------------------------------
+
+//--------------------------< Usage Pattern >-----------------------------------
