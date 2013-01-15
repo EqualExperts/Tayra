@@ -149,5 +149,11 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+  <Match>
+    <Class name="com.ee.beaver.io.criteria.CriteriaBuilder$_build_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
 
 </FindBugsFilter>

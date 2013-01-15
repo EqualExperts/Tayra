@@ -65,13 +65,13 @@ if(options.fAll) {
   isMultiple = true
 }
 
-def criteriaBuilder = new CriteriaBuilder().using {
-	if(options.sDb) {
-	  database options.sDb
-	}
-	if(options.sUntil) {
-	  until options.sUntil
-	}
+def criteria = new CriteriaBuilder().build {
+  if(options.sDb) {
+    usingDatabase options.sDb
+  }
+  if(options.sUntil) {
+    usingUntil options.sUntil
+  }
 }
 
 mongo = null
@@ -82,11 +82,11 @@ try {
   def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-  : new SelectiveOplogReplayer(criteriaBuilder.build(), new OplogReplayer (new Operations(mongo)))
+      : new SelectiveOplogReplayer(criteria, new OplogReplayer (new Operations(mongo)))
 
   def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
       : new ProgressReporter(new FileWriter(exceptionFile), console)
-  
+
   def copier = new Copier()
 
   def startTime = new Date().time
@@ -94,7 +94,7 @@ try {
 
   files.withFile {
     def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-    copier.copy(reader, writer, listener) 
+    copier.copy(reader, writer, listener)
   }
 
   def endTime = new Date().time

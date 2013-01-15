@@ -10,28 +10,24 @@ import com.ee.beaver.io.criteria.TimestampCriteria;
 
 public class CriteriaBuilder {
 
-private List<Criterion> criteria = new ArrayList<Criterion>();
+  private List<Criterion> criteria = new ArrayList<Criterion>();
 
-  public void database(String db) {
+  public void usingDatabase(String db) {
     criteria.add(new DbCriteria(db));
   }
 
-  public void until(String timestamp) {
+  public void usingUntil(String timestamp) {
     criteria.add(new TimestampCriteria(timestamp));
   }
 
-  public void using(Closure closure) {
+  public Criterion build(Closure closure = {}) {
     def clonedClosure = closure.clone()
     clonedClosure.resolveStrategy = Closure.DELEGATE_FIRST
     clonedClosure.delegate = this
     clonedClosure()
-  }
-
-  public Criterion build() {
     if(criteria.isEmpty()) {
-      return Criterion.ALL;
+      return Criterion.ALL
     }
     return new MultiCriteria(criteria);
   }
-
 }
