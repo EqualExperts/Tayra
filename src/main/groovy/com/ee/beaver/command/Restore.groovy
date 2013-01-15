@@ -8,17 +8,17 @@ import com.ee.beaver.domain.operation.Operations
 import com.ee.beaver.io.*
 import com.ee.beaver.io.criteria.CriteriaBuilder
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [-fAll] [--sDb=<dbName>] [--sUntil=<timestamp>]')
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sDb=<dbName>] [--sUntil=<timestamp>]')
 cli.with {
   d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: true
   _ args:1, longOpt:'port', argName: 'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
   f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
-  fAll args:1, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
+  _ args:0, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
-  sDb args:1, argName:'sDb',longOpt:'selectDb', 'OPTIONAL, Dbname for selective restore, default is none', optionalArg:true
-  sUntil args:1, argName:'sUntil',longOpt:'selectUntil', 'OPTIONAL, timestamp for selective restore, default is none', optionalArg:true
+  _ args:1, argName:'sDb',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none, Eg: --sDb=test', optionalArg:true
+  _ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is none, Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or JSON Format --sUntil={"ts":{"$ts":1358245103,"$inc":100}}' , optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -72,7 +72,7 @@ def criteria = new CriteriaBuilder().build {
   if(options.sUntil) {
     usingUntil options.sUntil
   }
-}
+ }
 
 mongo = null
 try {

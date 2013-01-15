@@ -12,9 +12,9 @@ cli.with {
 	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
 	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
 	f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
-	fSize  args:1, argName: 'fileSize', longOpt:'fileSize', 'OPTIONAL, Size of Backup File, Default is 512MB', optionalArg:true
-	fMax  args:1, argName: 'fileMax', longOpt:'fileMax', 'OPTIONAL, Number of Backup Files to be generated, Default is 1', optionalArg:true
-	t  args:1, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
+	_  args:1, argName: 'fSize', longOpt:'fSize', 'OPTIONAL, Size of Backup File, Default is 512MB, Usage Eg: --fSize=4MB', optionalArg:true
+	_ args:1, argName: 'fMax', longOpt:'fMax', 'OPTIONAL, Number of Backup Files to be generated, Default is 1, Usage Eg: --fMax=4', optionalArg:true
+	t  args:0, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
 	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
 	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
 }
