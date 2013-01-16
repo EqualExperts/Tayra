@@ -13,24 +13,24 @@ def toCompleteVersion() {
 configuration {
 	product {
 		name = 'MongoBeaver'
-		
+
 		vendor {
 			name = 'Equal Experts Pvt. Ltd.'
 		}
         //JBoss Versioning Convention
 		version {
 			major = 0 //number related to production release
-			minor = 3 //changes or feature additions
+			minor = 7 //changes or feature additions
 			micro = 0 //patches and bug fixes
 			qualifier {
 				alphaNumeric = 'Alpha1' //Alpha# or Beta# or CR# or GA, or SP#
 			}
 			complete = toCompleteVersion()
 		}
-		
+
 		distribution {
 			name = product.name + '-' + toCompleteVersion()
-		
+
 			jar {
 				name = product.name
 				manifest {
