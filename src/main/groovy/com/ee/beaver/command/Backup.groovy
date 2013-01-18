@@ -100,7 +100,9 @@ addShutdownHook {
 		printSummaryTo console, listener
 	}
 }
-
+errorLog = 'output.err'
+def stderr = new PrintStream (new FileOutputStream(errorLog))
+System.setErr(stderr)
 try {
 	console.println "Backup Started On: ${new Date()}"
 	new MongoReplSetConnection(sourceMongoDB, port).using { mongo ->
