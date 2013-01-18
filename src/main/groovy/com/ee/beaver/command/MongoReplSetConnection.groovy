@@ -35,22 +35,26 @@ public class MongoReplSetConnection {
 
   def using(Closure runnable, Closure betweenRetry = {}) {
     def clonedRunnable = runnable.clone()
-    while(retryable) {
+    boolean shouldContinue = true
+    def mongoClient
+    while(shouldContinue) {
       try {
+        shouldContinue = retryable
         clonedRunnable(master)
-        retryable = false
+        shouldContinue = false
       } catch(MongoException.Network problem) {
-        println "Primary crashed. Re-establishing Connection"
-        betweenRetry.clone().call()
-        waitUntilElectionCompletes(nodes)
-        master = connectToNewMaster(nodes)
-        nodes = getNodesWithinReplicaSet(master)
+        if (retryable) {
+          println "Primary crashed. Re-establishing Connection"
+          betweenRetry.clone().call()
+          mongoClient = waitUntilElectionCompletes(nodes)
+          master = connectToNewMaster(mongoClient)
+          nodes = getNodesWithinReplicaSet(master)
+        }
       }
     }
   }
 
-  private connectToNewMaster(nodes) {
-    def mongoClient = new MongoClient(nodes)
+  private connectToNewMaster(mongoClient) {
     String primaryNode = mongoClient.getReplicaSetStatus().master
     println("The new master is: $primaryNode")
     ServerAddress serverAddress = getServerAddress(primaryNode)
@@ -61,5 +65,6 @@ public class MongoReplSetConnection {
     println "Re-electing master..."
     MongoClient mongoClient = new MongoClient(nodes)
     while(mongoClient.getReplicaSetStatus().master == null);
+    mongoClient
   }
 }

@@ -77,4 +77,26 @@ public class MongoReplSetConnectionSpecs extends Specification {
 			notCalled
 			thrown(MongoException)
 	}
+
+	def doesNotSurviveMasterCrashWhenRetryableIsFalse() {
+		given: 'Mongo replica set connection with retryable as false'
+			mongoReplsetConnection = new MongoReplSetConnection(source, port, false)
+		and: 'master crashes'
+			def called = false
+			def execute = {
+				if(!called) {
+					throw new MongoException.Network('Master Crashed', new IOException())
+				}
+			}
+		and: 'a retry closure'
+			def retry = {
+				called = true
+			}
+
+		when: 'using the connection'
+			mongoReplsetConnection.using(execute, retry)
+
+		then: 'ensure retry was not invoked'
+			!called
+	}
 }
