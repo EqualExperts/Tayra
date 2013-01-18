@@ -44,7 +44,7 @@ public class MongoReplSetConnection {
         shouldContinue = false
       } catch(MongoException.Network problem) {
         if (retryable) {
-          println "Primary crashed. Re-establishing Connection"
+          println "\nPrimary crashed. Re-establishing Connection"
           betweenRetry.clone().call()
           mongoClient = waitUntilElectionCompletes(nodes)
           master = connectToNewMaster(mongoClient)
