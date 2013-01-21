@@ -24,6 +24,10 @@ public class SchemaOperationsFactory {
       return new DropDatabase(mongo);
     }
 
+    if (spec.containsField("deleteIndexes")) {
+        return new DropIndex();
+      }
+
     return SchemaOperation.NO_OP;
   }
 
