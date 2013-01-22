@@ -1,78 +1,78 @@
 <FindBugsFilter>
   <Match>
-    <Class name="com.ee.beaver.io.Criteria" />
+    <Class name="com.ee.tayra.io.Criteria" />
     <Not>
       <Bug code="EC_NULL_ARG" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.RotatingFileReader" />
+    <Class name="com.ee.tayra.io.RotatingFileReader" />
     <Not>
       <Bug code="DM_DEFAULT_ENCODING" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.Copier" />
+    <Class name="com.ee.tayra.io.Copier" />
     <Not>
       <Bug code="EC_UNRELATED_CLASS_AND_INTERFACE" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.RotatingFileWriter" />
+    <Class name="com.ee.tayra.io.RotatingFileWriter" />
     <Not>
       <Bug code="IL_INFINITE_RECURSIVE_LOOP" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.RotatingFileCollection$_withFile_closure1" />
+    <Class name="com.ee.tayra.io.RotatingFileCollection$_withFile_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.RotatingFileCollection$_getAllRotatingFiles_closure3" />
+    <Class name="com.ee.tayra.io.RotatingFileCollection$_getAllRotatingFiles_closure3" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.RotatingFileCollection$_findFilesInDirectory_closure2" />
+    <Class name="com.ee.tayra.io.RotatingFileCollection$_findFilesInDirectory_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Restore$_run_closure2" />
+    <Class name="com.ee.tayra.command.Restore$_run_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.FileCollection$_each_closure1" />
+    <Class name="com.ee.tayra.io.FileCollection$_each_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Restore$_run_closure1" />
+    <Class name="com.ee.tayra.command.Restore$_run_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Backup$_run_closure2" />
+    <Class name="com.ee.tayra.command.Backup$_run_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.domain.operation.DocumentBuilder$_asType_closure1" />
+    <Class name="com.ee.tayra.domain.operation.DocumentBuilder$_asType_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.domain.operation.DeleteDocumentBuilder$_asType_closure1" />
+    <Class name="com.ee.tayra.domain.operation.DeleteDocumentBuilder$_asType_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
@@ -84,73 +84,73 @@
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.domain.operation.UpdateDocumentBuilder$_asType_closure1" />
+    <Class name="com.ee.tayra.domain.operation.UpdateDocumentBuilder$_asType_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Backup$_run_closure1" />
+    <Class name="com.ee.tayra.command.Backup$_run_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Backup$_run_closure2" />
+    <Class name="com.ee.tayra.command.Backup$_run_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Backup$_run_closure3" />
+    <Class name="com.ee.tayra.command.Backup$_run_closure3" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.MongoReplSetConnection$_closure1" />
+    <Class name="com.ee.tayra.command.MongoReplSetConnection$_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.MongoReplSetConnection$_using_closure2" />
+    <Class name="com.ee.tayra.command.MongoReplSetConnection$_using_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.MongoReplSetConnection$_getNodesWithinReplicaSet_closure1" />
+    <Class name="com.ee.tayra.command.MongoReplSetConnection$_getNodesWithinReplicaSet_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Backup$_run_closure4"/>
+    <Class name="com.ee.tayra.command.Backup$_run_closure4"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.MongoReplSetConnection$_using_closure3"/>
+    <Class name="com.ee.tayra.command.MongoReplSetConnection$_using_closure3"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Backup$_run_closure5"/>
+    <Class name="com.ee.tayra.command.Backup$_run_closure5"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.command.Restore$_run_closure3"/>
+    <Class name="com.ee.tayra.command.Restore$_run_closure3"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.beaver.io.criteria.CriteriaBuilder$_build_closure1"/>
+    <Class name="com.ee.tayra.io.criteria.CriteriaBuilder$_build_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
