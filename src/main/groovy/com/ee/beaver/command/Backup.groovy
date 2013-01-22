@@ -100,7 +100,7 @@ addShutdownHook {
 		printSummaryTo console, listener
 	}
 }
-errorLog = 'output.err'
+errorLog = 'error.log'
 def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
 try {

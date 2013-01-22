@@ -12,7 +12,7 @@ def toCompleteVersion() {
 
 configuration {
 	product {
-		name = 'MongoBeaver'
+		name = 'Tayra'
 
 		vendor {
 			name = 'Equal Experts Pvt. Ltd.'

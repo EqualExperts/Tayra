@@ -51,4 +51,4 @@ test.out
 a.out
 *.documents
 timestamp.out
-output.err
+error.log
