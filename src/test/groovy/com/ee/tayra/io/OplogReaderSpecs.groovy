@@ -19,7 +19,7 @@ public class OplogReaderSpecs extends Specification {
 	private MongoCollectionIterator<String> mockOplogCollectionIterator
 	
 	private CollectionReader reader
-	private String dbName = 'beaver'
+	private String dbName = 'tayra'
 	private String collectionName = 'home'
 	private String name = '[Test Name]'
 	private String fromTimestamp = '{\"ts\" : { \"$ts\" : 1354096315 , \"$inc\" : 10}}'

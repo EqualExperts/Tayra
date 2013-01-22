@@ -13,7 +13,7 @@ abstract class RequiresMongoConnection extends Specification {
 	static Mongo standalone;
 	static final String HOST = "localhost"
 	static final int PORT = 27020
-	String dbName = 'beaver'
+	String dbName = 'tayra'
 	
 	def setupSpec() throws UnknownHostException,
 			MongoException {

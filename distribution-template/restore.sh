@@ -1,2 +1,2 @@
 #!/bin/sh
-java -cp %%JAVA_CLASS_PATH%% com.ee.beaver.runner.Runner "restore" $@
+java -cp %%JAVA_CLASS_PATH%% com.ee.tayra.runner.Runner "restore" $@

@@ -149,6 +149,6 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 			
 		then: 'it complains that the document cannot be inserted again'
 			def problem = thrown(InsertFailed)
-			problem.message == '''E11000 duplicate key error index: beaver.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }'''
+			problem.message == '''E11000 duplicate key error index: tayra.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }'''
 	}
 }

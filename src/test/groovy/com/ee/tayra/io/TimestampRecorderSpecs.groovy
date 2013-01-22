@@ -14,7 +14,7 @@ public class TimestampRecorderSpecs extends Specification {
 	private Writer mockTargetWriter
 
 	private TimestampRecorder timestampRecorder
-	private String dbName = 'beaver'
+	private String dbName = 'tayra'
 	private String collectionName = 'home'
 	private String name = '[Test Name]'
 	def objId = new ObjectId()

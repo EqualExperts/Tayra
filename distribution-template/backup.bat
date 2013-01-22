@@ -1,2 +1,2 @@
 @echo off
-java -cp %%JAVA_CLASS_PATH%% com.ee.beaver.runner.Runner "backup" %*
+java -cp %%JAVA_CLASS_PATH%% com.ee.tayra.runner.Runner "backup" %*
