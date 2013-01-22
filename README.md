@@ -1,4 +1,4 @@
-# MongoBeaver
+# Tayra
 
 
 ##Incremental backup tool for MongoDB
