@@ -56,4 +56,5 @@
     <suppress checks="DesignForExtension" files="[\\/]Criteria.java" />
     <suppress checks="DesignForExtension" files="[\\/]DbCriteria.java" />
     <suppress checks="DesignForExtension" files="[\\/]TimestampCriteria.java" />
+    <suppress checks="MethodName" files="[\\/]DropIndex.java" />
 </suppressions>
