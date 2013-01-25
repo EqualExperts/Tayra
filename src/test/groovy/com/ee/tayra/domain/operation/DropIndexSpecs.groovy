@@ -136,7 +136,7 @@ class DropIndexSpecs extends RequiresMongoConnection{
 		 .add('roll', 1)
 		.get()
 	 standalone.getDB(dbName).getCollection(collectionName).ensureIndex(key)
-	 
+	 DBObject
 	 given: 'drop index oplog entry'
 	  DBObject spec = new BasicDBObjectBuilder()
 		 .start()

@@ -15,7 +15,7 @@ configuration {
 		name = 'Tayra'
 
 		vendor {
-			name = 'Equal Experts Pvt. Ltd.'
+			name = 'Equal Experts Labs'
 		}
         //JBoss Versioning Convention
 		version {
