@@ -62,8 +62,7 @@ Use Cases:
      Mechanics: The tool will refer to "timestamp.out" and resume backup from the last backed up oplog.
      
      Note: Here the user must ensure that the backup is restarted before the oplog tails off.
-     
-* Use Case 4: Restoring the 
+
   
 What will Future releases include?
 * Allow more granular control over restore (e.g a collection or few docs in a collections etc..)
