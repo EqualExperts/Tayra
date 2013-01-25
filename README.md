@@ -1,8 +1,5 @@
-# Tayra <img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right">
-
-
-
-
+# Tayra 
+<img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right">
 
 ##Incremental backup tool for MongoDB
 * Use Cases
