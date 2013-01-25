@@ -1,5 +1,7 @@
 # Tayra
 
+##Vendor
+http://www.equalexperts.com/asset/images/EE-Labs-Logo-395x241px.png
 
 ##Incremental backup tool for MongoDB
 * Use Cases
