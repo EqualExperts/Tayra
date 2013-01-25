@@ -63,6 +63,14 @@ Use Cases:
      
      Note: Here the user must ensure that the backup is restarted before the oplog tails off.
 
+* Use Case 4: Restoring a DB to a point earlier in time.
+  * Description:
+      As a mongoDB admin, I had taken backup of existing replica set using tayra into backup.log
+      I wish to restore a particular DB to an earlier point in time.
+  * Steps:
+   1. Start restore utility in tailable mode: restore -d localhost --port=27017 -f backup.log --sDb=testDB --sUntil={$ts:1234567890, $inc:1}
+     Mechanics: The tool will replay documents from the backup till the specified point in time.
+
   
 What will Future releases include?
 * Allow more granular control over restore (e.g a collection or few docs in a collections etc..)
