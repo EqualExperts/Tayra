@@ -33,56 +33,62 @@ Running Tayra
 
 Using Tayra:
     You could possibly be in one of the below scenarios. Choose the best applicable to you.
-    
-* Scenario 1: Taking backup from a "fresh" replica set and restoring to a fresh standAlone Mongo.
+
+* Scenario 1: Taking backup from a "fresh" replica set and restoring to a fresh Mongo.
   As a mongoDB admin,
     I have a fresh replica set (primary and a few secondaries),
     and I wish to back it up so that I can restore it at a later stage.
   * Mechanics:
-   Backup: Start backup utility on primary in tailable mode: backup -s localhost --port=27017 -f backup.log -t
+   Backup: Start backup utility on primary in tailable mode:
+     backup -s localhost --port=27017 -f backup.log -t
      The tool will tail the primary oplog and backup documents as operations are performed on primary.
      Should backup be aborted (using 'Ctrl + C'), the timestamp of last backed-up document is recorded and
      when backup resumes, it records only new documents.
-   Restore: Start restore on the target: restore -d localhost --port=27020 -f backup.log
+   Restore: Start restore utility on the target to replay the backup:
+     restore -d localhost --port=27020 -f backup.log
      The tool will replay the documents from the backup file "backup.log" into the target mongo.
 
-* Scenario 2: Taking backup from "existing" replica set and restoring to a fresh standAlone Mongo.
+* Scenario 2: Taking backup from an "existing" replica set and restoring to a fresh Mongo.
   As a mongoDB admin,
     I have an existing replica set (primary and a few secondaries),
     and I wish to back it up so that I can restore it at a later stage.
-    To achieve this, use 'mongodump' to preserve current database state. And then start 'backup' in tailable mode on existing replica set.
+    To achieve this, use 'mongodump' or snapshot the database soon after you start backup in tailable mode.
+    While restoring, make sure to seed the target with "mongorestore" or from the snapshot,
+    before starting the restore utility.
   * Mechanics:
-   Backup: Start backup utility on primary in tailable mode: backup -s localhost --port=27017 -f backup.log -t
-     The tool will backup from the start of oplog till the last oplog entry and tail the primary as and when operations are performed.
-     Meaning, the tool will automatically catch up and start tailing the primary.
-   --- Get the standAlone in consistent state before using the restore utility --- 
-   Seed: Take "mongodump" of the primary into file system: mongodump --host localhost --port 27017 --out dump/mongodump-2013-01-24
-     Perform "mongorestore" on the target mongo to get it in consistent state: mongorestore --host localhost --port 27021 dump/mongodump-2013-01-24
-   --- Perform restore on consistent standAlone ---
-   Restore: Start restore utility on target standAlone to replay the backup: restore -d "localhost" --port=27021 -f backup.log
-     Mechanics: The tool will replay the documents from the backup file "backup.log" into the target mongo.
+   Backup: Start backup utility on primary in tailable mode:
+     backup -s localhost --port=27017 -f backup.log -t
+     The tool will catch up with the primary oplog and tail it to backup documents as operations are performed.
+   Dump/Snapshot: Take "mongodump" or a snapshot of primary into the file system:
+     mongodump --host localhost --port 27017 --out dump/mongodump-2013-01-24
+   Seeding: Perform "mongorestore" or use snapshot on the target mongo to get it in consistent state:
+     mongorestore --host localhost --port 27021 dump/mongodump-2013-01-24
+   Restore: Start restore utility on the target to replay the backup:
+     restore -d "localhost" --port=27021 -f backup.log
+     The tool will replay the documents from the backup file "backup.log" into the target mongo.
 
-     Note: While using the restore utility, some of the documents may not get replayed and may be moved to "exception.documents".
-     This behavior might occur because Tayra prefers to rely on caution rather than cause corruption of data.
-     So, it might try to replay the operations on documents that might have been deleted or removed before taking mongodump.
+     Note: While using the restore utility, some of the documents may not get replayed and
+     may be moved to "exception.documents". This behavior might occur because Tayra prefers
+     to rely on caution rather than cause the corruption of data. So, it might try to replay
+     the operations on documents that might have been deleted or removed before taking mongodump.
+     However, it will maintain the consistency of data.
 
-* Use Case 3: Incremental Backup
-  * Description:
-      As a mongoDB admin, I had used backup utility earlier and stopped the backup.
-    I wish to restart the backup from where I had left last time.
-  * Steps:
-   1. Start backup utility on primary in tailable mode: backup -s localhost --port=27017 -f backup.log -t
-     Mechanics: The tool will refer to "timestamp.out" and resume backup from the last backed up oplog.
-     
-     Note: Here the user must ensure that the backup is restarted before the oplog tails off.
-
-* Use Case 4: Restoring a DB to a point earlier in time.
-  * Description:
-      As a mongoDB admin, I had taken backup of existing replica set using tayra into backup.log
-      I wish to restore a particular DB to an earlier point in time.
-  * Steps:
-   1. Start restore utility in tailable mode: restore -d localhost --port=27017 -f backup.log --sDb=testDB --sUntil={$ts:1234567890, $inc:1}
-     Mechanics: The tool will replay documents from the backup till the specified point in time.
+* Scenario 3: Taking backup across multiple files and then performing selective restore.
+  As a mongoDB admin,
+    I wish to take backup across multiple files
+    and restore only a selected database till a certain point in time
+  * Mechanics:
+   Backup: Start backup utility on primary in tailable mode:
+     backup -s localhost --port=27017 -f backup.log -t --fMax=4 --fSize=1MB
+     Unit of fSize can be KB or GB as well.
+     The tool will refer to "timestamp.out" and resume backup from the last backed up oplog.
+     It will backup a total of 4MB data into 4 files,
+     backup.log.1, backup.log.2, backup.log.3, backup.log.4.
+   Archive: As soon as backup.log.4 gets filled to its max capacity, move all 4 files to a separate directory.
+   Restore: Start restore utility in a new cmd to replay from the backup across multiple files:
+     restore -d localhost --port=27017 -f backup.log --fAll --sDb=testDB --sUntil=2012-12-26T15:15:00Z
+     The tool will replay documents belonging to testDB database from the backup files,
+     till the specified point in time.
 
   
 What will Future releases include?
