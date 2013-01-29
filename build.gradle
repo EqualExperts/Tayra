@@ -120,7 +120,7 @@ task distribute(type:Zip, dependsOn: 'assemble') {
 		prepareExecutables()
 	}
 	from "$project.ext.distsBinDir"
-	from ("$project.ext.distsTemplateDir") { include ('**/*.txt', '**/*.document') }
+	from ("$project.ext.distsTemplateDir") { include ('**/*.txt', '**/*.document', '**/*.rtf') }
 	from("$libsDir") { into('libs') }
 }
 

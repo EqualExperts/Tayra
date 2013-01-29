@@ -1,0 +1,73 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang16393{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}{\f1\froman\fprq2\fcharset0 Times New Roman;}{\f2\froman\fprq2\fcharset2 Symbol;}{\f3\fmodern\fprq1\fcharset0 Courier New;}{\f4\fnil\fcharset0 Calibri;}}
+{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\sl276\slmult1\b\f0\fs32 Using Tayra:\par
+\pard\fi720\sl276\slmult1\b0\fs24 You could possibly be in one of the below scenarios. Choose the best\b\fs32  \b0\fs24 applicable to you.\f1\par
+\pard\sl276\slmult1\b\par
+\par
+\pard\fi-360\li360\sa200\sl276\slmult1\b0\f2\fs28\'b7\tab\b\f0 Scenario 1:\b0  \fs24 Taking backup from a "fresh" replica set (containing no data) and restoring to a fresh Mongo.\par
+\pard\li360\sl276\slmult1\b As a\b0  mongoDB admin,\f1\par
+\pard\fi360\li360\sl276\slmult1\b\f0 I want\b0  to back up a fresh replica set,\f1\par
+\pard\li360\sl276\slmult1\b\f0 So that\f1 ,\b0\par
+\pard\fi360\sl276\slmult1\f0    I can restore it at a later stage.\f1\par
+\pard\sl276\slmult1\b\par
+\f0 Mechanics:\b0\f1\par
+\trowd\trgaph108\trrh1691\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Backup:\b0  Start backup utility on primary in tailable mode using the command:\par
+\f3   backup -s localhost --port=27017 -f backup.log \endash t\par
+\f0 The tool tails the primary oplog and backs up documents as operations are performed on primary. Should backup be aborted (using 'Ctrl + C'), the timestamp of last backed-up document is recorded and when backup resumes, it starts recording new documents.\f1\cell\row\trowd\trgaph108\trrh1134\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Restore:\b0  Start restore utility on the target to replay the backup using:\par
+  \f3 restore -d localhost --port=27020 -f backup.log\par
+\f0 The tool will replay the documents from the backup file "backup.log" into the target mongo.\f1\cell\row\pard\sl276\slmult1\par
+\b\f0 Caveat:\b0  In case the backup is aborted, in order to prevent loss of data due to oplog falling off make sure that it is restarted in time.\par
+\f1\par
+\f0 For sustained backups and restore, you may want to look at scenario 3.\par
+\f1\fs28\par
+\par
+\pard\fi-360\li360\sl276\slmult1\f2\'b7\tab\b\f0 Scenario 2:\b0\fs24  Taking backup from an "existing" replica set (having some data) and restoring to a fresh Mongo.\f1\par
+\pard\li357\sb120\sl276\slmult1\b\f0 As a \b0 mongoDB admin,\f1\par
+\pard\fi360\li360\sl276\slmult1\b\f0 I want\b0  to back up existing replica set having data\f1\par
+\pard\li360\sl276\slmult1\b\f0 So that,\f1\par
+\pard\fi360\li360\sl276\slmult1\b0\f0 I can restore it at a later stage.\b\f1\par
+\pard\li360\sl276\slmult1\b0\par
+\f0 For seeding purpose, take snapshot of the database using fsyncLock / fsyncUnlock.\b\f1\par
+\pard\sl276\slmult1\par
+\f0 Mechanics:\par
+\trowd\trgaph108\trrh1357\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1 Taking Snapshot:\b0  Take a snapshot of primary into the file system using:\par
+\pard\intbl\fi-360\li644 a.\tab db.fysncLock() on the source mongo\par
+b.\tab archive the dbpath files and\f1\par
+\f0 c.\tab db.fsyncUnlock() the source\f1\cell\row\trowd\trgaph108\trrh1545\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Backup:\b0  Start backup utility on primary in tailable mode using:\par
+\f3   backup -s localhost --port=27017 -f backup.log \endash t\par
+\f0 The tool will catch up with the primary oplog and tail it to backup documents as operations are performed.\f1\cell\row\trowd\trgaph108\trrh1193\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Seeding:\b0  Start the target mongod with archived files in its \b dbpath\b0  using:\par
+\f3   mongod --port 27021 --dbpath "location of archive/snapshot"\par
+\f0 The target mongo will be started in a consistent state.\f1\cell\row\trowd\trgaph108\trrh1269\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Restore:\b0  Start restore utility on the target to replay the backup using:\par
+\f3   restore -d "localhost" --port=27021 -f backup.log\par
+\f0 The tool will replay the documents from the backup file "backup.log" into the target mongo.\f1\cell\row\pard\sl276\slmult1\par
+\b\f0 Note\fs28 : \b0\fs24 Alternatively, seeding can also be done by using 'mongodump' and 'mongorestore' utility.\par
+For sustained backups and restore, you may want to look at scenario 3.\par
+\f1\fs28\par
+\par
+\pard\fi-360\li360\sl276\slmult1\f2\'b7\tab\b\f0 Scenario 3: \b0\fs24 Sustaining periodic backups and restore.\f1\par
+\pard\li357\sb120\sl276\slmult1\b\f0 As a\b0  mongoDB admin,\par
+\pard\fi360\li360\sl276\slmult1\b I want\b0  to streamline backup and restore process\par
+\pard\li360\sl276\slmult1\b So that,\par
+\pard\fi360\li360\sl276\slmult1\b0 It takes less effort to monitor the mongoDB.\f1\par
+\pard\li360\sl276\slmult1\par
+\pard\sl276\slmult1\b\f0 Mechanics:\par
+\trowd\trgaph108\trrh1607\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1 Backup:\b0  Start backup utility on primary in tailable mode using the command:\par
+\f3   backup -s localhost --port=27017 -f backup.log -t --fMax=4 --fSize=1MB\par
+\f0 The tool will refer to "timestamp.out" and resume backup from the last backed up document in oplog. It will back up a total of 4MB data into 4 files in the above case.\f1\cell\row\trowd\trgaph108\trrh1119\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Archive:\b0  The files generated are- 'backup.log', 'backup.log.1', 'backup.log.2', 'backup.log.3' and 'backup.log.4'. As soon as backup.log.4 is created, move all 4 files (except backup.log - which is the running backup file) to a separate directory for consumption by restore utility.\f1\cell\row\trowd\trgaph108\trrh1125\trbrdrl\brdrs\brdrw10 \trbrdrt\brdrs\brdrw10 \trbrdrr\brdrs\brdrw10 \trbrdrb\brdrs\brdrw10 \trpaddl108\trpaddr108\trpaddfl3\trpaddfr3
+\clvertalc\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs \cellx9468\pard\intbl\sa200\sl276\slmult1\b\f0 Restore:\b0  Start restore utility to replay from the backup across multiple files:\par
+\f3   restore -d localhost --port=27017 -f backup.log \endash fAll\par
+\f0 The tool will replay all the documents.\f1\cell\row\pard\sl276\slmult1\par
+\f0 Should you wish to perform selective restore, use the --sDb and/or \endash sUntil options.\par
+\f1\par
+\f0 Usage details can be obtained by running the \b restore\b0  command with no options.\par
+\pard\sa200\sl276\slmult1\f1\fs22\par
+\lang9\f4\par
+}
+ 
