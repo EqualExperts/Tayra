@@ -1,25 +1,29 @@
 package com.ee.tayra.command
 
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientOptions
 import com.mongodb.MongoException
+import com.mongodb.ReadPreference
 import com.mongodb.ServerAddress
 
 public class MongoReplSetConnection {
 
-  private MongoClient master
+  private MongoClient node
   private def nodes = []
   private boolean retryable = true
+  private boolean isMaster = false
 
   public MongoReplSetConnection(String sourceMongoDB, int port, boolean retryable = true) {
     ServerAddress server = new ServerAddress(sourceMongoDB, port)
-    master = new MongoClient(server)
-    nodes = getNodesWithinReplicaSet(master)
+    node = new MongoClient(server)
+    isMaster = node.getDB("test").command("ismaster").get("ismaster")
+    nodes = getNodesWithinReplicaSet(node)
     this.retryable = retryable
   }
 
   private getNodesWithinReplicaSet(master) {
     // TODO: Replace this API by different call (to investigate with mongo guys)
-    String [] hosts = master.getDB("test").command("ismaster").get("hosts")
+    String [] hosts = node.getDB("test").command("ismaster").get("hosts")
     println "Hosts are: $hosts"
     hosts.collect {
       getServerAddress(it)
@@ -36,35 +40,40 @@ public class MongoReplSetConnection {
   def using(Closure runnable, Closure betweenRetry = {}) {
     def clonedRunnable = runnable.clone()
     boolean shouldContinue = true
-    def mongoClient
     while(shouldContinue) {
       try {
         shouldContinue = retryable
-        clonedRunnable(master)
+        clonedRunnable(node)
         shouldContinue = false
-      } catch(MongoException.Network problem) {
+        } catch(MongoException.Network problem) {
         if (retryable) {
-          println "\nPrimary crashed. Re-establishing Connection"
+          println "\nNode crashed. Re-establishing Connection"
           betweenRetry.clone().call()
-          mongoClient = waitUntilElectionCompletes(nodes)
-          master = connectToNewMaster(mongoClient)
-          nodes = getNodesWithinReplicaSet(master)
+          node = connectToANewNode(nodes)
+          nodes = getNodesWithinReplicaSet(node)
         }
       }
     }
   }
 
-  private connectToNewMaster(mongoClient) {
-    String primaryNode = mongoClient.getReplicaSetStatus().master
-    println("The new master is: $primaryNode")
-    ServerAddress serverAddress = getServerAddress(primaryNode)
-    new MongoClient(serverAddress)
+  private connectToANewNode(nodes) {
+    def options = new MongoClientOptions.Builder()
+    if(isMaster) {
+      options.readPreference(ReadPreference.primary())
+    } else {
+      options.readPreference(ReadPreference.secondaryPreferred())
+    }
+    getNodeAfterElection(nodes, options.build())
   }
 
-  private def waitUntilElectionCompletes(nodes) {
-    println "Re-electing master..."
-    MongoClient mongoClient = new MongoClient(nodes)
-    while(mongoClient.getReplicaSetStatus().master == null);
+  private def getNodeAfterElection(nodes, options) {
+    MongoClient mongoClient = new MongoClient(nodes, options)
+    while(mongoClient.getReplicaSetStatus().master == null) {
+      println 'Still waiting for master to be elected'
+      sleep 2 * 1000
+    }
+    String primaryNode = mongoClient.getReplicaSetStatus().master
+    println("The master node is: $primaryNode")
     mongoClient
   }
 }

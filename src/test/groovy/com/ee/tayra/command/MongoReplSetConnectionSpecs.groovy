@@ -2,7 +2,6 @@ package com.ee.tayra.command
 
 import spock.lang.*;
 
-import com.ee.tayra.command.MongoReplSetConnection;
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
@@ -23,12 +22,10 @@ public class MongoReplSetConnectionSpecs extends Specification {
 		mongoReplsetConnection = null
 	}
 
-	def loansTheMongoMasterConnectionOnceAvailable() {
+	def loansTheMongoConnectionOnceAvailable() {
 		given: 'the closure which needs the mongo connection'
 			def actual = null
-			def execute = { mongo ->
-				actual = mongo
-			}
+			def execute = { mongo -> actual = mongo }
 
 		when: 'using the connection'
 			mongoReplsetConnection.using(execute)
@@ -37,19 +34,17 @@ public class MongoReplSetConnectionSpecs extends Specification {
 			actual instanceof MongoClient
 	}
 
-	def allowsUserOperationBetweenMasterCrashAndReelectionAttempt() {
-		given: 'master crashes'
+	def allowsUserOperationBetweenNodeCrashAndReelectionAttempt() {
+		given: 'the node crashes'
 			def called = false
 			def execute = {
 				if(!called) {
-					throw new MongoException.Network('Master Crashed', new IOException())
+					throw new MongoException.Network('The Node Crashed', new IOException())
 				}
 			}
 
 		and: 'a retry closure'
-			def retry = {
-				called = true
-			}
+			def retry = { called = true }
 
 		when: 'using the connection'
 			mongoReplsetConnection.using(execute, retry)
@@ -58,18 +53,17 @@ public class MongoReplSetConnectionSpecs extends Specification {
 			called
 	}
 
-	def doesNotReactToAnyFailureOtherThanMasterCrash() {
-		given: 'a problem other than master crash occurs'
+	def doesNotReactToAnyFailureOtherThanNodeCrash() {
+		given: 'a problem other than node crash occurs'
 			def notCalled = true
 			def execute = {
 				if(notCalled) {
-					throw new MongoException('Non Master-Crash Exception')				}
+					throw new MongoException('Non Node-Crash Exception')
+				}
 			}
 
 		and: 'a retry closure'
-			def retry = {
-				notCalled = false
-			}
+			def retry = { notCalled = false }
 
 		when: 'using the connection'
 			mongoReplsetConnection.using(execute, retry)
@@ -79,20 +73,18 @@ public class MongoReplSetConnectionSpecs extends Specification {
 			thrown(MongoException)
 	}
 
-	def doesNotSurviveMasterCrashWhenRetryableIsFalse() {
+	def doesNotSurviveNodeCrashWhenRetryableIsFalse() {
 		given: 'Mongo replica set connection with retryable as false'
 			mongoReplsetConnection = new MongoReplSetConnection(source, port, false)
-		and: 'master crashes'
+			and: 'node crashes'
 			def called = false
 			def execute = {
 				if(!called) {
-					throw new MongoException.Network('Master Crashed', new IOException())
+					throw new MongoException.Network('Node Crashed', new IOException())
 				}
 			}
 		and: 'a retry closure'
-			def retry = {
-				called = true
-			}
+			def retry = { called = true }
 
 		when: 'using the connection'
 			mongoReplsetConnection.using(execute, retry)
