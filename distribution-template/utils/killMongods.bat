@@ -1,1 +1,0 @@
-taskkill /IM mongod.exe
