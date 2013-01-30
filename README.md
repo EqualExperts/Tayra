@@ -3,10 +3,26 @@
 ##Incremental backup tool for MongoDB
 * Use Cases
  * [Re-Syncing](http://www.kchodorow.com/blog/2010/10/14/getting-to-know-your-oplog/) 
- * [Rollback](http://www.mongodb.org/display/DOCS/Replica+Sets+-+Rollbacks)
- 
+ * [Rollback](http://www.mongodb.org/display/DOCS/Replica+Sets+-+Rollbacks)<br>
+<br>
+
+* Overview<br>
+
+ Tayra can be viewed as an external and persistent oplog that is stored on the 
+ file system instead of residing within MongoDB. The files generated can then be
+ used to restore the data incrementally to any target MongoDB instance, which can
+ be injected into a replica set in case of any event that threatens the
+ availability of service.<br>
+
+* Features Summary
+ * Selective restore
+ * Rotating Logs in backup and restore
+ * Surviving node crash in a replica set
+ * Secured and unsecured backup/restore
+<br>
+
 ## Build Info
-we are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
+We are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
 Please do not checkin Eclipse or Intellij or any IDE specific files.  For Idea or Eclipse they
 can be generated using
 * `gradle eclipse`
