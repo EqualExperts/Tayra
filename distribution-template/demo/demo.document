@@ -93,7 +93,8 @@ for(i=0;i<1000;i++){ db.collB.save({roll:i})}
 
 backup -f selective.out -u admin -p admin -s localhost -t
 
-restore -d localhost -f selective.out -u admin -p admin --port=27024 --sDb=selectA --sUntil=
+restore -d localhost -f selective.out -u admin -p admin --port=27024 --sDb=selectA
+--sUntil=<Paste a TimeStamp from Backup file>
 
 
 
