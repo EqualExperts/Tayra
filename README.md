@@ -1,7 +1,5 @@
-# Tayra <a href="http://www.equalexperts.com/eelabs/projects/tayra/"><img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right"></a>
-<br>
-###*Incremental backup tool for MongoDB*
-
+# Tayra  <a href="http://www.equalexperts.com/eelabs/projects/tayra/"><img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right"></a>
+***Incremental backup tool for MongoDB***
 ##Overview
 
  Tayra can be viewed as an external and persistent oplog that is stored on the 
