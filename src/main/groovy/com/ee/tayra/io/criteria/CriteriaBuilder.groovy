@@ -20,6 +20,10 @@ public class CriteriaBuilder {
     criteria.add(new TimestampCriteria(timestamp));
   }
 
+  public void usingCollection(String collectionName) {
+    criteria.add(new CollectionCriteria(collectionName));
+}
+
   public Criterion build(Closure closure = {}) {
     def clonedClosure = closure.clone()
     clonedClosure.resolveStrategy = Closure.DELEGATE_FIRST

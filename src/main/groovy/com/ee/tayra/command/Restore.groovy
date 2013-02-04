@@ -20,6 +20,7 @@ cli.with {
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
   _ args:1, argName:'sDb',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none, Eg: --sDb=test', optionalArg:true
   _ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is none, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
+  _ args:1, argName:'sCollection',longOpt:'sCollection', 'OPTIONAL, Collection name for selective restore, default is none, Eg: --sCollection=test', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -73,6 +74,9 @@ def criteria = new CriteriaBuilder().build {
   if(options.sUntil) {
     usingUntil options.sUntil
   }
+  if(options.sCollection) {
+	  usingCollection options.sCollection
+	}
  }
 
 mongo = null

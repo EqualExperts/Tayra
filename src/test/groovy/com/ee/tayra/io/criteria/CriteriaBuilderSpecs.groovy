@@ -52,7 +52,7 @@ class CriteriaBuilderSpecs extends Specification{
 			criterion == Criterion.ALL
 	}
 
-	def producesTimestampCriteriaUsingWithClosure() {
+	def buildsTimestampCriteriaUsingSpec() {
 		given: 'timestamp filter'
 			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
 
@@ -64,7 +64,7 @@ class CriteriaBuilderSpecs extends Specification{
 			criterion.criteria()[0] instanceof TimestampCriteria
 	}
 
-	def producesDbCriteriaUsingWithClosure() {
+	def buildsDbCriteriaUsingSpec() {
 		given: 'database filter'
 			def dbName = 'test'
 
@@ -76,6 +76,20 @@ class CriteriaBuilderSpecs extends Specification{
 
 		then: 'Criterion should be an instance of DbCriteria'
 			criterion.criteria()[0] instanceof DbCriteria
+	}
+	
+	def buildsCollectionCriteriaUsingSpec() {
+		given: 'collection filter'
+			def collectionName = 'test'
+
+		when: 'criteria is built'
+			def criterion = criteriaBuilder.build {
+				usingCollection collectionName
+
+			}
+
+		then: 'Criterion should be an instance of DbCriteria'
+			criterion.criteria()[0] instanceof CollectionCriteria
 	}
 
 }
