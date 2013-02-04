@@ -73,7 +73,7 @@ public class MongoReplSetConnection {
       sleep 2 * 1000
     }
     String primaryNode = mongoClient.getReplicaSetStatus().master
-    println "Elected master node is: $primaryNode"
+    println "Elected master: $primaryNode"
     mongoClient
   }
 }
