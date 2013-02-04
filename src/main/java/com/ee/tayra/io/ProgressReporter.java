@@ -34,20 +34,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-class ProgressReporter implements CopyListener {
+class ProgressReporter implements CopyListener, Reporter {
 
-  private final Writer exceptionDocsWriter;
+  private static final int PAD_BY = 10;
+  protected static final String NEW_LINE = System
+      .getProperty("line.separator");
   private final PrintWriter progressWriter;
-  private final String [] spinner = new String [] {"/", "-", "\\", "|"};
-  private static final CharSequence NEW_LINE =
-    System.getProperty("line.separator");
+  private final String[] spinner = new String[] {"/", "-", "\\", "|"};
   private int documentsWritten = 0;
   private int documentsRead = 0;
-  private int exceptionDocuments = 0;
 
-  public ProgressReporter(final Writer exceptionDocsWriter,
-    final PrintWriter progressWriter) {
-    this.exceptionDocsWriter = exceptionDocsWriter;
+  public ProgressReporter(final PrintWriter progressWriter) {
     this.progressWriter = progressWriter;
   }
 
@@ -59,52 +56,56 @@ class ProgressReporter implements CopyListener {
   @Override
   public final void onWriteSuccess(final String document) {
     ++documentsWritten;
-    progressWriter.printf("%s Wrote %d Document(s)\r",
-      spinner[documentsWritten % spinner.length], documentsWritten);
+    getProgressWriter().printf("%s Wrote %d Document(s)\r",
+        spinner[documentsWritten % spinner.length], documentsWritten);
   }
 
   @Override
-  public final void onWriteFailure(final String document,
-    final Throwable problem) {
-    if (document == null) {
-      problem.printStackTrace(progressWriter);
-      return;
-    }
-
-    exceptionDocuments++;
-    if (exceptionDocsWriter == null) {
-    progressWriter.printf("===> Unable to Write Document(s) %s",
-      problem.getMessage());
-    return;
-    }
-
-    try {
-      exceptionDocsWriter.append(document);
-      exceptionDocsWriter.append(NEW_LINE);
-      exceptionDocsWriter.flush();
-    } catch (IOException e) {
-      progressWriter.printf("===> Unable to Write Exceptioning Document(s) %s",
-        e.getMessage());
-      problem.printStackTrace(progressWriter);
-    }
+  public void onWriteFailure(final String document, final Throwable problem) {
+    getProgressWriter().printf("===> Unable to Write Document(s) %s",
+        problem.getMessage());
   }
 
   @Override
   public final void onReadFailure(final String document,
-    final Throwable problem) {
-    progressWriter.printf("===> Unable to Read Documents: %s\r",
-      problem.getMessage());
+      final Throwable problem) {
+    getProgressWriter().printf("===> Unable to Read Documents: %s\r",
+        problem.getMessage());
   }
 
-public int getDocumentsRead() {
+  public final int getDocumentsRead() {
     return documentsRead;
   }
 
-  public int getExceptionDocuments() {
-    return exceptionDocuments;
+  public final int getDocumentsWritten() {
+    return documentsWritten;
   }
 
-  public int getDocumentsWritten() {
-    return documentsWritten;
+  @Override
+  public void summarizeTo(final Writer writer) {
+    // console.printf("%s\r", "".padRight(79, " "));
+    try {
+      writeln(writer, "");
+      writeln(writer, "---------------------------------");
+      writeln(writer, "             Summary             ");
+      writeln(writer, "---------------------------------");
+      writeln(writer, "Total Documents Read: " + documentsRead);
+      writeln(writer, "Documents Written: " + documentsWritten);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public final void writeln(final Writer writer, final String data)
+    throws IOException {
+    int len = data.length() + PAD_BY;
+    String result = String.format("%" + len + "s", data);
+    writer.write(result);
+    writer.write(NEW_LINE);
+    writer.flush();
+  }
+
+  public PrintWriter getProgressWriter() {
+    return progressWriter;
   }
 }

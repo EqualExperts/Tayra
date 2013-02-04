@@ -2,6 +2,8 @@ package com.ee.tayra.command
 
 import spock.lang.*
 
+import com.ee.tayra.io.CopyListener;
+import com.ee.tayra.io.EmptyProgressReporter;
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.SelectiveOplogReplayer
@@ -92,7 +94,7 @@ class RestoreSpecs extends Specification {
 
 		when: 'restore runs'
 			new Restore(context).run()
-			
+
 		then: 'perform the restore operation'
 			1 * mockReplayer.replay('"ts"')
 	}
@@ -193,5 +195,28 @@ class RestoreSpecs extends Specification {
 	then: 'perform the restore operation'
 		1 * mockSelectiveOplogReplayer.replay('"ts"')
 	}
+
+	def invokesEmptyProgressReporterWithDryrun() {
+		given:'arguments contains -d, -port and -f and -dry-run options'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out', '--dry-run'])
+
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			context.setVariable('writer', mockSelectiveOplogReplayer)
+
+		and: 'an Empty Progress Reporter is Injected'
+			EmptyProgressReporter mockProgressReporter = Mock(EmptyProgressReporter)
+			context.setVariable('listener', mockProgressReporter)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'invokes Read Success on Mock reporter'
+//			1 * mockProgressReporter.onReadSuccess(_)
+//			1 * mockProgressReporter.onWriteSuccess(_)
+			1 * mockProgressReporter.summarizeTo(_)
+		}
 
 }

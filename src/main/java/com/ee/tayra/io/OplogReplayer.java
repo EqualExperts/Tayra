@@ -41,6 +41,7 @@ public class OplogReplayer implements Replayer {
     this.operations = operations;
   }
 
+  @Override
   public boolean replay(final String document) {
     final String operationCode = extractOpcode(document);
     Operation operation = operations.get(operationCode);

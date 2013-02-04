@@ -107,7 +107,7 @@ if(options.u) {
 
 writer = new TimestampRecorder(getWriter())
 listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-		: new ProgressReporter(null, console)
+		: new ProgressReporter(console)
 
 timestampFile = new File(timestampFileName)
 if(timestampFile.isDirectory()) {
@@ -127,7 +127,7 @@ addShutdownHook {
 		new FileWriter(timestampFileName).append(writer.timestamp).flush()
 	}
 	if (listener) {
-		printSummaryTo console, listener
+		listener.summarizeTo console
 	}
 }
 errorLog = 'error.log'
@@ -165,14 +165,4 @@ try {
 def getAuthenticator(mongo) {
 	binding.hasVariable('authenticator') ?
 			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
-}
-
-def printSummaryTo(console, listener) {
-	console.printf '%s\r', ''.padRight(79, ' ')
-	console.println ''
-	console.println '---------------------------------'
-	console.println '             Summary             '
-	console.println '---------------------------------'
-	console.println "Total Documents Read: $listener.documentsRead"
-	console.println "Documents Written: $listener.documentsWritten"
 }
