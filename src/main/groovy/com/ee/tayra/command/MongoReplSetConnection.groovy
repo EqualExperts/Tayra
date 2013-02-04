@@ -69,11 +69,11 @@ public class MongoReplSetConnection {
   private def getNodeAfterElection(nodes, options) {
     MongoClient mongoClient = new MongoClient(nodes, options)
     while(mongoClient.getReplicaSetStatus().master == null) {
-      println 'Still waiting for master to be elected'
+      println 'Still waiting for master to be elected...'
       sleep 2 * 1000
     }
     String primaryNode = mongoClient.getReplicaSetStatus().master
-    println("The master node is: $primaryNode")
+    println "Elected master node is: $primaryNode"
     mongoClient
   }
 }
