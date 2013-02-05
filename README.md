@@ -15,6 +15,9 @@
  * Secured and unsecured backup/restore
 <br>
 
+## Binary Distributions
+**[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**
+
 ## Build Info
 We are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
 Please do not checkin Eclipse or Intellij or any IDE specific files.  For Idea or Eclipse they
