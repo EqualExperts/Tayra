@@ -1,3 +1,4 @@
+@echo off
  REM Copyright (c) 2013, Equal Experts Ltd
  REM All rights reserved.
  REM
@@ -27,5 +28,4 @@
  REM are those of the authors and should not be interpreted as representing
  REM official policies, either expressed or implied, of the Tayra Project.
 
-@echo off
 java -cp %%JAVA_CLASS_PATH%% com.ee.tayra.runner.Runner "restore" %*
