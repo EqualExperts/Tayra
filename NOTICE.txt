@@ -1,0 +1,23 @@
+=========================================================================
+== ÊNOTICE file corresponding to the section 4 d of Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê==
+== Êthe Apache License, Version 2.0, Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê ==
+== Êin this case for the Tayra distribution.  Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê==
+=========================================================================
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+It includes the following other software:
+Groovy (http://groovy.codehaus.org)
+Log4J (http://logging.apache.org/log4j/)
+Commons CLI (http://commons.apache.org/cli/)
+Functional Java (http://functionaljava.org/)
+MongoDB Java Driver (http://docs.mongodb.org/ecosystem/drivers/#java)
+
+It uses the following other software:
+JUnit (http://www.junit.org/)
+Hamcrest (http://code.google.com/p/hamcrest/)
+Spock (http://code.google.com/p/spock/)
+Gradle (http://www.gradle.org/)
+
+For licenses see the LICENSE.txt file.
