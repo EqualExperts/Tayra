@@ -6,10 +6,10 @@
  REM met:
  REM
  REM 1. Redistributions of source code must retain the above copyright notice,
- REM Ê Êthis list of conditions and the following disclaimer.
+ REM    this list of conditions and the following disclaimer.
  REM 2. Redistributions in binary form must reproduce the above copyright
- REM Ê Ênotice, this list of conditions and the following disclaimer in the
- REM Ê Êdocumentation and/or other materials provided with the distribution.
+ REM    notice, this list of conditions and the following disclaimer in the
+ REM    documentation and/or other materials provided with the distribution.
  REM
  REM THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  REM "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED

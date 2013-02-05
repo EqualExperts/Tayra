@@ -1,7 +1,7 @@
 =========================================================================
-== ÊNOTICE file corresponding to the section 4 d of Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê==
-== Êthe Apache License, Version 2.0, Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê ==
-== Êin this case for the Tayra distribution.  Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê Ê==
+==  NOTICE file corresponding to the section 4 d of                    ==
+==  the Apache License, Version 2.0,                                   ==
+==  in this case for the Tayra distribution.                           ==
 =========================================================================
 
 This product includes software developed by
