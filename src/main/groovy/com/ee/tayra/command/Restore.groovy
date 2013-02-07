@@ -40,8 +40,10 @@ import com.ee.tayra.io.criteria.CriteriaBuilder;
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sDb=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
 
+boolean destinationOptionRequired = args.contains('--dry-run') ? false : true
+
 cli.with  {
-	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: true
+	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: destinationOptionRequired
 	_ args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
 	f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
 	_ args:0, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
@@ -128,6 +130,7 @@ try {
 		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 				: new EmptyProgressReporter()
 	}
+
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
 
@@ -142,6 +145,7 @@ try {
 	def endTime = new Date().time
 	console.println "Completed in ${(endTime - startTime)/1000} secs"
 	listener.summarizeTo console
+
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)

@@ -36,7 +36,7 @@ import java.io.Writer;
 
 class ProgressReporter implements CopyListener, Reporter {
 
-  private static final int PAD_BY = 10;
+  private static final int PAD_BY = 5;
   protected static final String NEW_LINE = System
       .getProperty("line.separator");
   private final PrintWriter progressWriter;
@@ -83,7 +83,6 @@ class ProgressReporter implements CopyListener, Reporter {
 
   @Override
   public void summarizeTo(final Writer writer) {
-    // console.printf("%s\r", "".padRight(79, " "));
     try {
       writeln(writer, "");
       writeln(writer, "---------------------------------");

@@ -18,7 +18,7 @@ public class ProgressReporterSpecs extends Specification{
 	}
 
 
-		def incrementsReadDocumentsCountAfterASuccessfulRead() {
+	def incrementsReadDocumentsCountAfterASuccessfulRead() {
 		given: 'an empty document'
 			String document = "{}"
 
@@ -42,7 +42,6 @@ public class ProgressReporterSpecs extends Specification{
 	}
 
 
-//TODO : Refer back. Initially Ignore=null. What to do?
 	def doesNotIncrementWrittenDocumentsCountAfterAFailedWrite() {
 		given: 'an empty document'
 			String document = "{}"

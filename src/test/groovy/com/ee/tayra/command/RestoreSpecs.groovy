@@ -2,10 +2,12 @@ package com.ee.tayra.command
 
 import spock.lang.*
 
+import com.ee.tayra.io.ConsoleReplayer;
 import com.ee.tayra.io.CopyListener;
 import com.ee.tayra.io.EmptyProgressReporter;
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.OplogReplayer
+import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.SelectiveOplogReplayer
 import com.ee.tayra.command.Authenticator;
 import com.ee.tayra.command.Restore;
@@ -180,43 +182,64 @@ class RestoreSpecs extends Specification {
 	}
 
 	def invokesSelectiveRestore() {
-	given:'arguments contains -d, -port and -f and -sDb options'
-		def context = new Binding()
-		context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','-sDb="test"'])
-
-	and: 'the reader and writer is injected'
-		def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
-		context.setVariable('reader', source)
-		context.setVariable('writer', mockSelectiveOplogReplayer)
-
-	when: 'restore runs'
-		new Restore(context).run()
-
-	then: 'perform the restore operation'
-		1 * mockSelectiveOplogReplayer.replay('"ts"')
-	}
-
-	def invokesEmptyProgressReporterWithDryrun() {
-		given:'arguments contains -d, -port and -f and -dry-run options'
+		given:'arguments contains -d, -port and -f and -sDb options'
 			def context = new Binding()
-			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out', '--dry-run'])
+			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','-sDb="test"'])
 
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
 			context.setVariable('writer', mockSelectiveOplogReplayer)
 
-		and: 'an Empty Progress Reporter is Injected'
-			EmptyProgressReporter mockProgressReporter = Mock(EmptyProgressReporter)
-			context.setVariable('listener', mockProgressReporter)
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'perform the restore operation'
+			1 * mockSelectiveOplogReplayer.replay('"ts"')
+	}
+
+
+	def invokesEmptyListenerWithDryrun() {
+		given:'arguments contains -f and -dry-run options'
+			def context = new Binding()
+			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
+
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			context.setVariable('writer', mockSelectiveOplogReplayer)
+
+		and: 'an empty listener is injected'
+			CopyListener mockEmptyListener = Mock(CopyListener)
+			context.setVariable('listener', mockEmptyListener)
 
 		when: 'restore runs'
 			new Restore(context).run()
 
-		then: 'invokes Read Success on Mock reporter'
-//			1 * mockProgressReporter.onReadSuccess(_)
-//			1 * mockProgressReporter.onWriteSuccess(_)
-			1 * mockProgressReporter.summarizeTo(_)
-		}
+		then: 'invokes Read Success on listener'
+			1 * mockEmptyListener.onReadSuccess('"ts"')
+			0 * mockEmptyListener.onWriteSuccess('"ts"')
+			0 * mockEmptyListener.onReadFailure('"ts"', _)
+			0 * mockEmptyListener.onWriteFailure('"ts"', _)
+	}
+
+
+	def ignoresDestinationOptionWithDryRun() {
+		given:'arguments contains -f and --dry-run options'
+			def context = new Binding()
+			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
+
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			mockReplayer = Mock(Replayer)
+			context.setVariable('writer', mockReplayer)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'perform the restore operation'
+			1 * mockReplayer.replay('"ts"')
+	}
 
 }
