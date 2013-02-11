@@ -50,7 +50,6 @@ class ProgressReporter implements CopyListener, Reporter {
   public ProgressReporter(final PrintWriter progressWriter) {
     this.progressWriter = progressWriter;
     startTime = new Date().getTime();
-    writeStartTimeTo(progressWriter);
   }
 
   @Override

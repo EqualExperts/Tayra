@@ -20,7 +20,6 @@ class RestoreSpecs extends Specification {
 	private Replayer mockReplayer
 	private String username = 'admin'
 	private String password = 'admin'
-	private Replayer mockSelectiveOplogReplayer
 
 	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
@@ -32,8 +31,7 @@ class RestoreSpecs extends Specification {
 
 	def setup() {
 		result = new StringBuilder()
-		mockReplayer = Mock(OplogReplayer)
-		mockSelectiveOplogReplayer = Mock(SelectiveOplogReplayer)
+		mockReplayer = Mock(Replayer)
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
@@ -181,25 +179,94 @@ class RestoreSpecs extends Specification {
 			result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
 	}
 
-	def invokesSelectiveRestore() {
-		given:'arguments contains -d, -port and -f and -sDb options'
+	def invokesRestoreWhenSelectDbOptionIsSupplied() {
+		given:'arguments contains -d, --port and -f and --sDb options'
 			def context = new Binding()
-			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','-sDb="test"'])
+			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sDb="test"'])
 
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockSelectiveOplogReplayer)
+			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
 
 		then: 'perform the restore operation'
-			1 * mockSelectiveOplogReplayer.replay('"ts"')
+			1 * mockReplayer.replay('"ts"')
 	}
 
 
-	def invokesEmptyListenerWithDryrun() {
+	def notifiesListenerOnSuccessfulReadOperation() {
+		given:'arguments contain all essential options'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			context.setVariable('writer', mockReplayer)
+
+		and: 'an listener is injected'
+			CopyListener mockListener = Mock(CopyListener)
+			context.setVariable('listener', mockListener)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'invokes Read Success on listener'
+			1 * mockListener.onReadSuccess('"ts"')
+			0 * mockListener.onWriteSuccess('"ts"')
+			0 * mockListener.onReadFailure('"ts"', _)
+			0 * mockListener.onWriteFailure('"ts"', _)
+	}
+
+
+	def reportsSummary() {
+		given:'arguments contain all essential options'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			context.setVariable('writer', mockReplayer)
+
+		and: 'an empty reporter is injected'
+			Reporter mockReporter = Mock(Reporter)
+			context.setVariable('reporter', mockReporter)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'it summarizes'
+			1 * mockReporter.summarizeTo(_)
+	}
+
+
+	def reportsStartTime() {
+		given:'arguments contain all essential options'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+
+		and: 'the reader and writer is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+			context.setVariable('writer', mockReplayer)
+
+		and: 'an empty reporter is injected'
+			Reporter mockReporter = Mock(Reporter)
+			context.setVariable('reporter', mockReporter)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'it reports start time'
+			1 * mockReporter.writeStartTimeTo(_)
+	}
+
+
+	def notifiesListenerOnSuccessfulReadOperationWithDryrun() {
 		given:'arguments contains -f and -dry-run options'
 			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
@@ -207,7 +274,7 @@ class RestoreSpecs extends Specification {
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockSelectiveOplogReplayer)
+			context.setVariable('writer', mockReplayer)
 
 		and: 'an empty listener is injected'
 			CopyListener mockEmptyListener = Mock(CopyListener)
@@ -224,7 +291,7 @@ class RestoreSpecs extends Specification {
 	}
 
 
-	def ignoresDestinationOptionWithDryRun() {
+	def ignoresMandatoryDestinationOptionWhenDryRunOptionIsGiven() {
 		given:'arguments contains -f and --dry-run options'
 			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
@@ -238,7 +305,7 @@ class RestoreSpecs extends Specification {
 		when: 'restore runs'
 			new Restore(context).run()
 
-		then: 'perform the restore operation'
+		then: 'it performs the restore operation'
 			1 * mockReplayer.replay('"ts"')
 	}
 

@@ -112,6 +112,8 @@ mongo = null
 try {
 	def writer = null
 	def listener = null
+	def reporter = null
+	def listeningReporter = null
 
 	if(!options.'dry-run'){
 		ServerAddress server = new ServerAddress(destMongoDB, port);
@@ -121,25 +123,37 @@ try {
 		writer = binding.hasVariable('writer') ? binding.getVariable('writer')
 				: new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo)))
 
+		listeningReporter = new RestoreProgressReporter(new FileWriter(exceptionFile), console)
+
 		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-				: new RestoreProgressReporter(new FileWriter(exceptionFile), console)
+				: listeningReporter
+
+		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
+				: listeningReporter
 	} else {
 		writer = binding.hasVariable('writer') ? binding.getVariable('writer')
 				: new SelectiveOplogReplayer(criteria, new ConsoleReplayer(console))
 
+		listeningReporter = new EmptyProgressReporter()
+
 		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-				: new EmptyProgressReporter()
+				: listeningReporter
+
+		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
+				: listeningReporter
 	}
 
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
+
+	reporter.writeStartTimeTo console
 
 	files.withFile {
 		def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
 		copier.copy(reader, writer, listener)
 	}
 
-	listener.summarizeTo console
+	reporter.summarizeTo console
 
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
