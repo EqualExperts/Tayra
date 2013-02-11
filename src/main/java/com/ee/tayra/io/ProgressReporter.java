@@ -33,19 +33,24 @@ package com.ee.tayra.io;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Date;
 
 class ProgressReporter implements CopyListener, Reporter {
 
-  private static final int PAD_BY = 5;
+  private static final int MS_TO_SECONDS = 1000;
+  private static final int PAD_BY = 2;
   protected static final String NEW_LINE = System
       .getProperty("line.separator");
   private final PrintWriter progressWriter;
   private final String[] spinner = new String[] {"/", "-", "\\", "|"};
   private int documentsWritten = 0;
   private int documentsRead = 0;
+  private long startTime;
 
   public ProgressReporter(final PrintWriter progressWriter) {
     this.progressWriter = progressWriter;
+    startTime = new Date().getTime();
+    writeStartTimeTo(progressWriter);
   }
 
   @Override
@@ -85,6 +90,8 @@ class ProgressReporter implements CopyListener, Reporter {
   public void summarizeTo(final Writer writer) {
     try {
       writeln(writer, "");
+      writeln(writer, "Completed in : "
+          + (new Date().getTime() - startTime) / MS_TO_SECONDS + " seconds");
       writeln(writer, "---------------------------------");
       writeln(writer, "             Summary             ");
       writeln(writer, "---------------------------------");
@@ -96,7 +103,7 @@ class ProgressReporter implements CopyListener, Reporter {
   }
 
   public final void writeln(final Writer writer, final String data)
-    throws IOException {
+      throws IOException {
     int len = data.length() + PAD_BY;
     String result = String.format("%" + len + "s", data);
     writer.write(result);
@@ -106,5 +113,14 @@ class ProgressReporter implements CopyListener, Reporter {
 
   public PrintWriter getProgressWriter() {
     return progressWriter;
+  }
+
+  @Override
+  public final void writeStartTimeTo(final Writer writer) {
+    try {
+      writeln(writer, "Process started on : " + new Date(startTime));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

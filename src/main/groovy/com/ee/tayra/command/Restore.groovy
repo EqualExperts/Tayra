@@ -134,16 +134,11 @@ try {
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
 
-	def startTime = new Date().time
-	console.println "Restore Started On: ${new Date(startTime)}"
-
 	files.withFile {
 		def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
 		copier.copy(reader, writer, listener)
 	}
 
-	def endTime = new Date().time
-	console.println "Completed in ${(endTime - startTime)/1000} secs"
 	listener.summarizeTo console
 
 } catch (Throwable problem) {
