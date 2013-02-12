@@ -48,9 +48,11 @@ cli.with {
   e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
-  _ args:1, argName:'sDb',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none, Eg: --sDb=test', optionalArg:true
+//  _ args:1, argName:'sDb',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none, Eg: --sDb=test', optionalArg:true
   _ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is none, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
-}
+  _ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is none, Eg: --sNs=test', optionalArg:true
+    }
+
 
 def options = cli.parse(args)
 
@@ -97,11 +99,14 @@ if(options.fAll) {
 }
 
 def criteria = new CriteriaBuilder().build {
-  if(options.sDb) {
-    usingDatabase options.sDb
-  }
+//  if(options.sDb) {
+//    usingDatabase options.sDb
+//  }
   if(options.sUntil) {
     usingUntil options.sUntil
+  }
+  if(options.sNs) {
+    usingNamespace options.sNs
   }
  }
 

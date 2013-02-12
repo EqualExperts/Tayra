@@ -15,19 +15,19 @@ class CriteriaBuilderSpecs extends Specification{
 		criteriaBuilder = new CriteriaBuilder()
 	}
 
-	def producesDbCriteria() {
-		given: 'a database filter'
-			def dbName = 'test'
-
-		and: 'it is injected'
-			criteriaBuilder.usingDatabase(dbName)
-
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build()
-
-		then: 'Criterion should be an instance of DbCriteria'
-			criterion.criteria()[0] instanceof DbCriteria
-	}
+//	def producesDbCriteria() {
+//		given: 'a database filter'
+//			def dbName = 'test'
+//
+//		and: 'it is injected'
+//			criteriaBuilder.usingDatabase(dbName)
+//
+//		when: 'criteria is built'
+//			def criterion = criteriaBuilder.build()
+//
+//		then: 'Criterion should be an instance of DbCriteria'
+//			criterion.criteria()[0] instanceof DbCriteria
+//	}
 
 	def producesTimestampCriteria() {
 		given: 'timestamp filter'
@@ -63,19 +63,34 @@ class CriteriaBuilderSpecs extends Specification{
 		then: 'Criterion should be an instance of DbCriteria'
 			criterion.criteria()[0] instanceof TimestampCriteria
 	}
-
-	def producesDbCriteriaUsingWithClosure() {
-		given: 'database filter'
-			def dbName = 'test'
+//    
+//	def producesDbCriteriaUsingWithClosure() {
+//		given: 'database filter'
+//			def dbName = 'test'
+//
+//		when: 'criteria is built'
+//			def criterion = criteriaBuilder.build {
+//				usingDatabase dbName
+//
+//			}
+//
+//		then: 'Criterion should be an instance of DbCriteria'
+//			criterion.criteria()[0] instanceof DbCriteria
+//	}
+	
+	def producesNamespaceCriteriaWithClosure() {
+		given: 'namespace filter'
+			def namespace = 'test'
 
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build {
-				usingDatabase dbName
+				usingNamespace namespace
 
 			}
 
-		then: 'Criterion should be an instance of DbCriteria'
-			criterion.criteria()[0] instanceof DbCriteria
+		then: 'Criterion should be an instance of NamespaceCriteria'
+			criterion.criteria()[0] instanceof NamespaceCriteria
 	}
+	
 
 }

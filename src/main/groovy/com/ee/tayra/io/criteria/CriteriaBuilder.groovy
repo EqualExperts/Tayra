@@ -42,13 +42,18 @@ public class CriteriaBuilder {
 
   private List<Criterion> criteria = new ArrayList<Criterion>();
 
-  public void usingDatabase(String db) {
-    criteria.add(new DbCriteria(db));
-  }
+//  public void usingDatabase(String db) {
+//    criteria.add(new DbCriteria(db));
+//  }
 
   public void usingUntil(String timestamp) {
     criteria.add(new TimestampCriteria(timestamp));
   }
+  
+  public void usingNamespace(String namespace) {
+	  criteria.add(new NamespaceCriteria(namespace));
+	}
+	
 
   public Criterion build(Closure closure = {}) {
     def clonedClosure = closure.clone()
