@@ -61,6 +61,8 @@ if(!options) {
 	return
 }
 
+Config config = new Config()
+
 destMongoDB = options.d ? options.d : null
 restoreFromFile = options.f
 
@@ -108,50 +110,22 @@ def criteria = new CriteriaBuilder().build {
 	}
 }
 
-//mongo = null
+config.destMongoDB = destMongoDB
+config.port = port
+config.username = username
+config.password = password
+config.criteria = criteria
+config.exceptionFile = exceptionFile
+config.console = console
+config.authenticator = getAuthenticator()
+
 try {
-	def writer = null
-	def listener = null
-	def reporter = null
-	def listeningReporter = null
+	RestoreFactory resource = RestoreFactory.create(options.'dry-run', config)
 
-	def resource = new ResourceBuilder().build(options.'dry-run', binding, destMongoDB, port, username, password, criteria, exceptionFile, console)
+	def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : resource.createWriter()
+	def listener = binding.hasVariable('listener') ? binding.getVariable('listener') : resource.createListener()
+	def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : resource.createReporter()
 
-	writer = resource.getWriter()
-	listener = resource.getListener()
-	reporter = resource.getReporter()
-
-
-/*
-	if(!options.'dry-run'){
-
-		ServerAddress server = new ServerAddress(destMongoDB, port);
-		mongo = new Mongo(server)
-		getAuthenticator(mongo).authenticate(username, password)
-
-		writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-				: new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo)))
-
-		listeningReporter = new RestoreProgressReporter(new FileWriter(exceptionFile), console)
-
-		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-				: listeningReporter
-
-		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-				: listeningReporter
-	} else {
-		writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-				: new SelectiveOplogReplayer(criteria, new ConsoleReplayer(console))
-
-		listeningReporter = new EmptyProgressReporter()
-
-		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-				: listeningReporter
-
-		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-				: listeningReporter
-	}
-*/
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
 
@@ -172,7 +146,7 @@ try {
 //	}
 }
 
-//def getAuthenticator(mongo) {
-//	binding.hasVariable('authenticator') ?
-//			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
-//}
+def getAuthenticator() {
+	binding.hasVariable('authenticator') ?
+			binding.getVariable('authenticator') : null
+}

@@ -18,6 +18,10 @@ class RestoreSpecs extends Specification {
 	private static StringBuilder result;
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
 	private Replayer mockReplayer
+	private CopyListener mockListener
+	private Reporter mockReporter
+	private def context
+
 	private String username = 'admin'
 	private String password = 'admin'
 
@@ -31,12 +35,17 @@ class RestoreSpecs extends Specification {
 
 	def setup() {
 		result = new StringBuilder()
+		context = new Binding()
 		mockReplayer = Mock(Replayer)
+		mockListener = Mock(CopyListener)
+		mockReporter = Mock(Reporter)
+		context.setVariable('writer', mockReplayer)
+		context.setVariable('listener', mockListener)
+		context.setVariable('reporter', mockReporter)
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
 		given: 'no arguments are supplied'
-			def context = new Binding()
 			context.setVariable('args', [])
 
 		when: 'restore runs'
@@ -48,7 +57,6 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenInvalidArgsAreSupplied() {
 		given: 'Invalid arguments are supplied'
-			def context = new Binding()
 			context.setVariable('args', ['-h', '-i'])
 
 		when: 'restore runs'
@@ -60,7 +68,6 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenNoOutputFileIsSupplied() {
 		given: 'argument list does not contain output file option -f'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost'])
 
 		when: 'restore runs'
@@ -72,7 +79,6 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenNoDestinationMongoDBIsSupplied() {
 		given: 'argument list does not contain the destination option -d'
-			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out'])
 
 		when: 'restore runs'
@@ -84,13 +90,11 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForSecuredStandalone() {
 		given:'arguments contains -d, -f, -u and -p options'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
 
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -101,13 +105,11 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
 		given:'arguments contains -d, -port and -f options'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out'])
 
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -116,9 +118,9 @@ class RestoreSpecs extends Specification {
 			1 * mockReplayer.replay('"ts"')
 	}
 
+	// TODO : Revisit the location
 	def shoutsWhenNoUsernameIsGivenForSecuredStandalone() {
 		given:'arguments contains -d, -f and --port options but not --username'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out'])
 
 		and: 'have a authenticator that does not authenticate'
@@ -133,9 +135,9 @@ class RestoreSpecs extends Specification {
 			result.toString().contains('Username cannot be empty')
 	}
 
+	// TODO : Revisit the location
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -d, --port, -f, -u and -p option'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', 'incorrect', '-p', password])
 
 		and: 'have a authenticator that does not authenticate'
@@ -150,9 +152,9 @@ class RestoreSpecs extends Specification {
 			result.toString().contains('Authentication Failed to localhost')
 	}
 
+	// TODO : Revisit the location
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -d, --port, -f and -u option'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
 
 		and: 'have a authenticator that does not authenticate'
@@ -169,7 +171,6 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenMongoDBUrlIsIncorrect() {
 		given: 'the destination host is incorrect or does not exist'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'nonexistentHost', '-f', 'test.out'])
 
 		when: 'restore runs'
@@ -181,13 +182,11 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenSelectDbOptionIsSupplied() {
 		given:'arguments contains -d, --port and -f and --sDb options'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sDb="test"'])
 
-		and: 'the reader and writer is injected'
+		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -199,17 +198,11 @@ class RestoreSpecs extends Specification {
 
 	def notifiesListenerOnSuccessfulReadOperation() {
 		given:'arguments contain all essential options'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
 
-		and: 'the reader and writer is injected'
+		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
-
-		and: 'an listener is injected'
-			CopyListener mockListener = Mock(CopyListener)
-			context.setVariable('listener', mockListener)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -224,17 +217,11 @@ class RestoreSpecs extends Specification {
 
 	def reportsSummary() {
 		given:'arguments contain all essential options'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
 
-		and: 'the reader and writer is injected'
+		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
-
-		and: 'an empty reporter is injected'
-			Reporter mockReporter = Mock(Reporter)
-			context.setVariable('reporter', mockReporter)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -246,17 +233,11 @@ class RestoreSpecs extends Specification {
 
 	def reportsStartTime() {
 		given:'arguments contain all essential options'
-			def context = new Binding()
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
 
-		and: 'the reader and writer is injected'
+		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
-
-		and: 'an empty reporter is injected'
-			Reporter mockReporter = Mock(Reporter)
-			context.setVariable('reporter', mockReporter)
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -268,13 +249,11 @@ class RestoreSpecs extends Specification {
 
 	def notifiesListenerOnSuccessfulReadOperationWithDryrun() {
 		given:'arguments contains -f and -dry-run options'
-			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
 
-		and: 'the reader and writer is injected'
+		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			context.setVariable('writer', mockReplayer)
 
 		and: 'an empty listener is injected'
 			CopyListener mockEmptyListener = Mock(CopyListener)
@@ -293,14 +272,11 @@ class RestoreSpecs extends Specification {
 
 	def ignoresMandatoryDestinationOptionWhenDryRunOptionIsGiven() {
 		given:'arguments contains -f and --dry-run options'
-			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
 
-		and: 'the reader and writer is injected'
+		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
 			context.setVariable('reader', source)
-			mockReplayer = Mock(Replayer)
-			context.setVariable('writer', mockReplayer)
 
 		when: 'restore runs'
 			new Restore(context).run()
