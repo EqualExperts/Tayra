@@ -61,7 +61,7 @@ if(!options) {
 	return
 }
 
-destMongoDB = options.d
+destMongoDB = options.d ? options.d : null
 restoreFromFile = options.f
 
 int port = 27017
@@ -108,14 +108,23 @@ def criteria = new CriteriaBuilder().build {
 	}
 }
 
-mongo = null
+//mongo = null
 try {
 	def writer = null
 	def listener = null
 	def reporter = null
 	def listeningReporter = null
 
+	def resource = new ResourceBuilder().build(options.'dry-run', binding, destMongoDB, port, username, password, criteria, exceptionFile, console)
+
+	writer = resource.getWriter()
+	listener = resource.getListener()
+	reporter = resource.getReporter()
+
+
+/*
 	if(!options.'dry-run'){
+
 		ServerAddress server = new ServerAddress(destMongoDB, port);
 		mongo = new Mongo(server)
 		getAuthenticator(mongo).authenticate(username, password)
@@ -142,7 +151,7 @@ try {
 		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
 				: listeningReporter
 	}
-
+*/
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
 
@@ -154,17 +163,16 @@ try {
 	}
 
 	reporter.summarizeTo console
-
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)
-} finally {
-	if(mongo) {
-		mongo.close()
-	}
+//} finally {
+//	if(mongo) {
+//		mongo.close()
+//	}
 }
 
-def getAuthenticator(mongo) {
-	binding.hasVariable('authenticator') ?
-			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
-}
+//def getAuthenticator(mongo) {
+//	binding.hasVariable('authenticator') ?
+//			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
+//}
