@@ -3,7 +3,7 @@ package com.ee.tayra.io.criteria
 import spock.lang.Specification;
 
 class NamespaceCriteriaSpecs extends Specification{
-  static createCollectionEntry = '"ns" : "eelabs.$cmd", "o" : { "create" : "countries", "capped" : null, "size" : null } }'
+  static createCollectionEntry = '{ "ts" : Timestamp(1360665338000, 1), "h" : NumberLong("7391500989066642719"), "v" : 2, "op" : "c", "ns" : "eelabs.$cmd", "o" : { "create" : "countries", "capped" : null, "size" : null } }'
   static createCollectionWithInsert= """\
    '"ns" : "eelabs.countries",
    "o" : { "_id" : ObjectId("511499dd9365898be4b00b0d"), "name" : "Test1" } }'
@@ -21,6 +21,8 @@ class NamespaceCriteriaSpecs extends Specification{
   static dropIndex='"ns" : "eelabs.$cmd", "o" : { "deleteIndexes" : "countries", "index" : { "roll" : 1 } } }'
   static insertDocFail = '"ns" : "eelabs.friends" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
   static dropIndexFail='"ns" : "ee.$cmd", "o" : { "deleteIndexes" : "countries", "index" : { "roll" : 1 } } }'
+  
+  static cc = '{ "ts" : Timestamp(1360665338000, 1), "h" : NumberLong("7391500989066642719"), "v" : 2, "op" : "c", "ns" : "eelabs.$cmd", "o" : { "create" : "jobs", "capped" : null, "size" : null } }'
   
   def namespaceOne ='eelabs'
   def namespaceTwo ='eelabs.countries'
@@ -70,4 +72,12 @@ class NamespaceCriteriaSpecs extends Specification{
   dropIndexFail              | false
 }
   
+  def satisfiesCreateCollection () {
+	  given:
+	  		document = '{ "ts" : Timestamp(1360666812000, 1), "h" : NumberLong("1794385978087899558"), "v" : 2, "op" : "c", "ns" : "eelabs.$cmd", "o" : { "create" : "countries", "capped" : null, "size" : null } }'
+	  when :
+		  criteria = new NamespaceCriteria(namespaceTwo)
+	  then :
+	  	   criteria.isSatisfiedBy(document)
+  }
 }

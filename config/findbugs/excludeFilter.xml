@@ -155,5 +155,11 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+   <Match>
+    <Class name="com.ee.tayra.io.criteria.NamespaceCriteria"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
 
 </FindBugsFilter>
