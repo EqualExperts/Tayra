@@ -118,7 +118,6 @@ class RestoreSpecs extends Specification {
 			1 * mockReplayer.replay('"ts"')
 	}
 
-	// TODO : Revisit the location
 	def shoutsWhenNoUsernameIsGivenForSecuredStandalone() {
 		given:'arguments contains -d, -f and --port options but not --username'
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out'])
@@ -132,10 +131,10 @@ class RestoreSpecs extends Specification {
 			new Restore(context).run()
 
 		then: 'error message should be thrown as'
+		println "bhago says : " + result.toString()
 			result.toString().contains('Username cannot be empty')
 	}
 
-	// TODO : Revisit the location
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -d, --port, -f, -u and -p option'
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', 'incorrect', '-p', password])
@@ -152,7 +151,6 @@ class RestoreSpecs extends Specification {
 			result.toString().contains('Authentication Failed to localhost')
 	}
 
-	// TODO : Revisit the location
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -d, --port, -f and -u option'
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', 'incorrect'])

@@ -31,50 +31,54 @@
 package com.ee.tayra.command
 
 import com.ee.tayra.domain.operation.Operations
+import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.OplogReplayer
+import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
 import com.mongodb.Mongo
 import com.mongodb.ServerAddress
 import java.io.PrintWriter;
 
-class DefaultRestoreFactory extends RestoreFactory{
+class DefaultFactory extends RestoreFactory {
 
-	private final PrintWriter console;
-	private final def criteria;
 	private final Mongo mongo;
 	private final def listeningReporter
-	private final def authenticator
+	private final Config config;
 
-	public DefaultRestoreFactory(Config config) {
-		this.criteria = config.criteria
-		this.console = config.console
-		this.authenticator = config.authenticator
+	public DefaultFactory(Config config) {
+		this.config = config;
 
 		ServerAddress server = new ServerAddress(config.destMongoDB, config.port)
 		this.mongo = new Mongo(server)
 		getAuthenticator(mongo).authenticate(config.username, config.password)
 
 		listeningReporter = new RestoreProgressReporter(new FileWriter
-				(config.exceptionFile), console)
+				(config.exceptionFile), config.console)
 	}
 
 	@Override
-	public def createWriter() {
-		new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo)))
+	public Replayer createWriter() {
+		new SelectiveOplogReplayer(config.criteria, new OplogReplayer(new Operations(mongo)))
 	}
 
 	@Override
-	public def createListener() {
-		listeningReporter
+	public CopyListener createListener() {
+		(CopyListener)listeningReporter
 	}
 
 	@Override
-	public def createReporter() {
-		listeningReporter
+	public Reporter createReporter() {
+		(Reporter)listeningReporter
+	}
+
+	@Override
+	public Mongo getMongo() {
+		mongo
 	}
 
 	def getAuthenticator(mongo) {
-		authenticator == null ? new MongoAuthenticator(mongo) : authenticator
+		config.authenticator == null ? new MongoAuthenticator(mongo) : config.authenticator
 	}
 }

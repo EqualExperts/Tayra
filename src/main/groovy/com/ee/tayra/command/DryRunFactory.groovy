@@ -31,33 +31,41 @@
 package com.ee.tayra.command
 
 import com.ee.tayra.io.ConsoleReplayer
+import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.EmptyProgressReporter
+import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.SelectiveOplogReplayer
+import com.mongodb.Mongo;
+
 import java.io.PrintWriter;
 
-class DryRunFactory extends RestoreFactory{
+class DryRunFactory extends RestoreFactory {
 
-	private final PrintWriter console
-	private final def listeningReporter	private final def criteria
+	private final def listeningReporter	private final Config config;
 
 	public DryRunFactory(Config config) {
-		this.criteria = config.criteria
-		this.console = config.console
+		this.config = config;
 		listeningReporter = new EmptyProgressReporter()
 	}
 
 	@Override
-	public def createWriter() {
-		new SelectiveOplogReplayer(criteria, new ConsoleReplayer(console))
+	public Replayer createWriter() {
+		new SelectiveOplogReplayer(config.criteria, new ConsoleReplayer(config.console))
 	}
 
 	@Override
-	public def createListener() {
-		listeningReporter
+	public CopyListener createListener() {
+		(CopyListener)listeningReporter
 	}
 
 	@Override
-	public def createReporter() {
-		listeningReporter
+	public Reporter createReporter() {
+		(Reporter)listeningReporter
+	}
+
+	@Override
+	public Mongo getMongo() {
+		null
 	}
 }

@@ -30,20 +30,22 @@
  ******************************************************************************/
 package com.ee.tayra.command
 
+import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.Replayer
+import com.ee.tayra.io.Reporter
+import com.mongodb.Mongo
+
 abstract class RestoreFactory {
 
-  public static RestoreFactory create (boolean isDryRun, Config config) {
-    if(!isDryRun){
-      return new DefaultRestoreFactory(config)
-    } else {
-      return new DryRunFactory(config)
-    }
-  }
+	public static RestoreFactory create (boolean isDryRun, Config config) {
+		isDryRun ? new DryRunFactory(config) : new DefaultFactory(config)
+	}
 
-  public abstract def createWriter()
+	public abstract Replayer createWriter()
 
-  public abstract def createListener()
+	public abstract CopyListener createListener()
 
-  public abstract def createReporter()
+	public abstract Reporter createReporter()
 
+	public abstract Mongo getMongo()
 }

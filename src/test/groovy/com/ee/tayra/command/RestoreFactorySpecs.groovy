@@ -24,7 +24,7 @@ class RestoreFactorySpecs extends Specification{
 			def factory = RestoreFactory.create(isDryrunSupplied, config)
 
 		then: 'it is an instance of DefaultRestoreFactory'
-			factory instanceof DefaultRestoreFactory
+			factory.class == DefaultFactory
 	}
 
 
@@ -36,7 +36,7 @@ class RestoreFactorySpecs extends Specification{
 				def factory = RestoreFactory.create(isDryrunSupplied, config)
 
 			then: 'it is an instance of DefaultRestoreFactory'
-				factory instanceof DryRunFactory
+				factory.class == DryRunFactory
 	}
 
 }

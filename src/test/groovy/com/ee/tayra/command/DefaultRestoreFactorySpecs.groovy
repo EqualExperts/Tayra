@@ -16,21 +16,21 @@ class DefaultRestoreFactorySpecs extends Specification {
 		config.username = 'admin'
 		config.password = 'admin'
 		config.exceptionFile = 'exception.documents'
-		factory =  new DefaultRestoreFactory(config)
+		factory =  new DefaultFactory(config)
 	}
 
 	def createsEmptyListener() {
 		expect: 'listener created is instance of EmptyProgressReporter'
-			factory.createListener() instanceof RestoreProgressReporter
+			factory.createListener().class == RestoreProgressReporter
 	}
 
 	def createsEmptyReporter() {
 		expect: 'reporter created is instance of EmptyProgressReporter'
-				factory.createReporter() instanceof RestoreProgressReporter
+				factory.createReporter().class == RestoreProgressReporter
 	}
 
 	def createsWriter() {
 		expect: 'writer created is instance of SelectiveOplogReplayer'
-			factory.createWriter() instanceof SelectiveOplogReplayer
+			factory.createWriter().class == SelectiveOplogReplayer
 	}
 }

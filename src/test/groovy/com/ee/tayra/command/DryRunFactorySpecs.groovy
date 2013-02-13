@@ -17,16 +17,16 @@ class DryRunFactorySpecs extends Specification{
 
 	def createsEmptyListener() {
 		expect: 'listener created is instance of EmptyProgressReporter'
-			factory.createListener() instanceof EmptyProgressReporter
+			factory.createListener().class == EmptyProgressReporter
 	}
 
 	def createsEmptyReporter() {
 		expect: 'reporter created is instance of EmptyProgressReporter'
-			factory.createReporter() instanceof EmptyProgressReporter
+			factory.createReporter().class == EmptyProgressReporter
 	}
 
 	def createsWriter() {
 		expect: 'writer created is instance of SelectiveOplogReplayer'
-			factory.createWriter() instanceof SelectiveOplogReplayer
+			factory.createWriter().class == SelectiveOplogReplayer
 	}
 }

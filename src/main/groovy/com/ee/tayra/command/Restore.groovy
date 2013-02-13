@@ -63,15 +63,17 @@ if(!options) {
 
 Config config = new Config()
 
-destMongoDB = options.d ? options.d : null
+config.destMongoDB = options.d ? options.d : null
 restoreFromFile = options.f
 
 int port = 27017
 if(options.port) {
 	port = Integer.parseInt(options.port)
 }
+config.port = port
 
 PrintWriter console = new PrintWriter(System.out, true)
+config.console = console
 
 def readPassword(output) {
 	def input = System.console()
@@ -90,11 +92,14 @@ if(options.u) {
 	username = options.u
 	password = options.p ?: readPassword(console)
 }
+config.username = username
+config.password = password
 
 exceptionFile = 'exception.documents'
 if(options.e) {
 	exceptionFile = options.e
 }
+config.exceptionFile = exceptionFile
 
 isMultiple = false
 if(options.fAll) {
@@ -109,22 +114,17 @@ def criteria = new CriteriaBuilder().build {
 		usingUntil options.sUntil
 	}
 }
-
-config.destMongoDB = destMongoDB
-config.port = port
-config.username = username
-config.password = password
 config.criteria = criteria
-config.exceptionFile = exceptionFile
-config.console = console
-config.authenticator = getAuthenticator()
+config.authenticator = binding.hasVariable('authenticator') ?
+				binding.getVariable('authenticator') : null
 
+RestoreFactory factory = null
 try {
-	RestoreFactory resource = RestoreFactory.create(options.'dry-run', config)
+	factory = RestoreFactory.create(options.'dry-run', config)
 
-	def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : resource.createWriter()
-	def listener = binding.hasVariable('listener') ? binding.getVariable('listener') : resource.createListener()
-	def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : resource.createReporter()
+	def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
+	def listener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
+	def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
 
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
@@ -140,13 +140,8 @@ try {
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)
-//} finally {
-//	if(mongo) {
-//		mongo.close()
-//	}
-}
-
-def getAuthenticator() {
-	binding.hasVariable('authenticator') ?
-			binding.getVariable('authenticator') : null
+} finally {
+	if(factory != null && factory.getMongo() != null) {
+		factory.getMongo().close()
+	}
 }
