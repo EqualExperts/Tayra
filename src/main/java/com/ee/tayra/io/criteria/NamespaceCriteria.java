@@ -14,7 +14,7 @@ public class NamespaceCriteria implements Criterion {
 @Override
   public boolean isSatisfiedBy(final String document) {
     String documentNamespace = getNamespace(document);
-    if(documentNamespace == BLANK) {
+    if (documentNamespace == BLANK) {
       return false;
     }
     if (isDDL(documentNamespace)) {
@@ -72,6 +72,9 @@ private boolean matchDbName(final String document,
     if (payload.contains("dropDatabase")) {
       return true;
     }
+//    if (payload.contains(incomingCollectionName)) {
+//      return true;
+//    }
     if (payload.contains("create")) {
       return matchCreateCollection(incomingCollectionName, payload);
     }
@@ -90,7 +93,7 @@ private boolean matchDbName(final String document,
 private boolean matchCreateIndex(final String incomingCollectionName,
   final String payload) {
   int startIndex = payload.indexOf("\"ns\" :") - 1;
-    int endIndex = payload.indexOf("\",", startIndex);
+    int endIndex = payload.indexOf(",", startIndex);
     String namespace = payload.substring(startIndex, endIndex)
             .split(":") [1].replaceAll("\"", BLANK).trim();
     String collection = namespace.split("\\.", 2) [1];
@@ -123,11 +126,11 @@ private boolean matchDropCollection(final String incomingCollectionName,
     }
   return false;
 }
-
+//
 private boolean matchCreateCollection(final String incomingCollectionName,
     final String payload) {
   int startIndex = payload.indexOf("\"create\" :") - 1;
-    int endIndex = payload.indexOf(",", startIndex);
+    int endIndex = payload.indexOf("}", startIndex);
     String collection = payload.substring(startIndex, endIndex)
             .split(":") [1].replaceAll("\"", BLANK).trim();
     if (incomingCollectionName.equals(collection)) {
@@ -135,6 +138,7 @@ private boolean matchCreateCollection(final String incomingCollectionName,
     }
     return false;
 }
+
 
   private String extractDbName(final String incomingNS) {
     return incomingNS.split("\\.", 2)[0];
