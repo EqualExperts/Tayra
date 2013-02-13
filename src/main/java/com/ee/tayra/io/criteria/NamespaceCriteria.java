@@ -72,9 +72,6 @@ private boolean matchDbName(final String document,
     if (payload.contains("dropDatabase")) {
       return true;
     }
-//    if (payload.contains(incomingCollectionName)) {
-//      return true;
-//    }
     if (payload.contains("create")) {
       return matchCreateCollection(incomingCollectionName, payload);
     }
@@ -126,11 +123,16 @@ private boolean matchDropCollection(final String incomingCollectionName,
     }
   return false;
 }
-//
+//TO_DO : Working for capped :
 private boolean matchCreateCollection(final String incomingCollectionName,
     final String payload) {
-  int startIndex = payload.indexOf("\"create\" :") - 1;
-    int endIndex = payload.indexOf("}", startIndex);
+  int startIndex;
+  int endIndex;
+  startIndex = payload.indexOf("\"create\" :") - 1;
+  endIndex = payload.indexOf("}", startIndex);
+    if (payload.contains("capped")) {
+        endIndex = payload.indexOf(",", startIndex);
+    }
     String collection = payload.substring(startIndex, endIndex)
             .split(":") [1].replaceAll("\"", BLANK).trim();
     if (incomingCollectionName.equals(collection)) {
@@ -138,8 +140,6 @@ private boolean matchCreateCollection(final String incomingCollectionName,
     }
     return false;
 }
-
-
   private String extractDbName(final String incomingNS) {
     return incomingNS.split("\\.", 2)[0];
   }
