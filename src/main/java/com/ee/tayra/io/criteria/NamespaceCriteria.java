@@ -5,6 +5,7 @@ public class NamespaceCriteria implements Criterion {
   private String incomingNs;
   private String collectionName;
   private String dbName;
+
   public NamespaceCriteria(final String ns) {
     this.incomingNs = ns;
     this.dbName = extractDbName(ns);
@@ -27,9 +28,9 @@ public class NamespaceCriteria implements Criterion {
 private boolean matchDML(final String document,
     final String documentNamespace) {
   if (collectionName == BLANK) {
-      return matchDbName(document, documentNamespace);
+      return matchDbName(documentNamespace);
     }
-    return matchDbAndCollectionName(document, documentNamespace);
+    return matchDbAndCollectionName(documentNamespace);
 }
 
   private boolean isDDL(final String documentNamespace) {
@@ -38,7 +39,7 @@ private boolean matchDML(final String document,
   }
 private boolean matchDDL(final String document,
     final String documentNamespace) {
-  if (matchDbName(document, documentNamespace)) {
+  if (matchDbName(documentNamespace)) {
     if (collectionName == BLANK) {
       return true;
     }
@@ -47,16 +48,14 @@ private boolean matchDDL(final String document,
   return false;
 }
 
-private boolean matchDbAndCollectionName(final String document,
-  final String documentNamespace) {
+private boolean matchDbAndCollectionName(final String documentNamespace) {
   if (incomingNs.equals(documentNamespace)) {
       return true;
   }
   return false;
 }
 
-private boolean matchDbName(final String document,
-  final String documentNamespace) {
+private boolean matchDbName(final String documentNamespace) {
   String documentDb = documentNamespace.split("\\.", 2)[0];
     if (dbName.equals(documentDb)) {
       return true;
@@ -66,7 +65,7 @@ private boolean matchDbName(final String document,
 
   private boolean matchCollectionInPayload(final String document,
     final String incomingCollectionName) {
-     //Do it for DDL indexes and collections
+
     int startIndex = document.indexOf("\"o\" :") - 1;
     String payload = document.substring(startIndex).split(":", 2)[1];
     if (payload.contains("dropDatabase")) {
@@ -114,7 +113,7 @@ private boolean matchDropIndex(final String incomingCollectionName,
 
 private boolean matchDropCollection(final String incomingCollectionName,
     final String payload) {
-  int startIndex = payload.indexOf("\"drop\" :") - 1;
+    int startIndex = payload.indexOf("\"drop\" :") - 1;
     int endIndex = payload.indexOf("}", startIndex);
     String collection = payload.substring(startIndex, endIndex)
             .split(":") [1].replaceAll("\"", BLANK).trim();
@@ -123,7 +122,7 @@ private boolean matchDropCollection(final String incomingCollectionName,
     }
   return false;
 }
-//TO_DO : Working for capped :
+
 private boolean matchCreateCollection(final String incomingCollectionName,
     final String payload) {
   int startIndex;
