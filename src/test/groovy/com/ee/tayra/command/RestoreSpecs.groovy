@@ -131,7 +131,6 @@ class RestoreSpecs extends Specification {
 			new Restore(context).run()
 
 		then: 'error message should be thrown as'
-		println "bhago says : " + result.toString()
 			result.toString().contains('Username cannot be empty')
 	}
 
