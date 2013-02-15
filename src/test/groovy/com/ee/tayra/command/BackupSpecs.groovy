@@ -4,6 +4,8 @@ import spock.lang.*
 
 import com.ee.tayra.command.Authenticator;
 import com.ee.tayra.command.Backup;
+import com.ee.tayra.io.CopyListener;
+import com.ee.tayra.io.Reporter;
 import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.MongoOptions
@@ -14,6 +16,10 @@ public class BackupSpecs extends Specification {
 	private static StringBuilder result;
 	private String username = 'admin'
 	private String password = 'admin'
+	private CopyListener mockListener
+	private Reporter mockReporter
+	private Writer mockWriter
+	private def context
 
 	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
@@ -26,11 +32,17 @@ public class BackupSpecs extends Specification {
 	public void setup() {
 		new File('timestamp.out').delete()
 		result = new StringBuilder()
+		context = new Binding()
+		mockListener = Mock(CopyListener)
+		mockReporter = Mock(Reporter)
+		mockWriter = Mock(Writer)
+		context.setVariable('listener', mockListener)
+		context.setVariable('reporter', mockReporter)
+		context.setVariable('writer', mockWriter)
 	}
 
 	def shoutsWhenNoMandatoryArgsAreSupplied() {
 		given: 'no arguments'
-			def context = new Binding()
 			context.setVariable('args', [])
 
 		when: 'backup runs'
@@ -42,7 +54,6 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenNoOutputFileIsSupplied() {
 		given: 'argument contains -s option only'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost'])
 
 		when: 'backup runs with above args'
@@ -54,7 +65,6 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenNoSourceMongoDBIsSupplied() {
 		given: 'argument contains -f option only'
-			def context = new Binding()
 			context.setVariable('args', ['-f', 'test.out'])
 
 		when: 'backup runs with above args'
@@ -66,7 +76,6 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenMongoDBUrlIsIncorrect() {
 		given:'arguments containing non-existent source'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'nonexistentHost', '-f', 'test.out'])
 
 		when: 'backup runs with above args'
@@ -78,7 +87,6 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
 		given: 'localhost not belonging to replica set'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=27021'])
 
 		when: 'backup runs with above args'
@@ -90,7 +98,6 @@ public class BackupSpecs extends Specification {
 
 	def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecuredConnection() {
 		given:'arguments contains -s, -f, -u and -p options'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', password])
 
 		and: 'a result captor is injected'
@@ -106,7 +113,6 @@ public class BackupSpecs extends Specification {
 
 	def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
 		given:'arguments contains -s, -f options'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=17017'])
 
 		and: 'a result captor is injected'
@@ -134,7 +140,6 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
 		given:'arguments contains -s, -f options but not --username'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
 
 		and: 'have a authenticator that does not authenticate'
@@ -182,5 +187,6 @@ public class BackupSpecs extends Specification {
 		then: 'error message should be thrown as'
 			result.toString().contains('Authentication Failed to localhost')
 	}
+
 }
 
