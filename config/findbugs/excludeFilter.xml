@@ -173,5 +173,17 @@
       <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
     </Not>
   </Match>
+   <Match>
+  <Class name="com.ee.tayra.io.criteria.DDLOperation"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
+   <Match>
+  <Class name="com.ee.tayra.io.criteria.DMLOperation"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
 
 </FindBugsFilter>

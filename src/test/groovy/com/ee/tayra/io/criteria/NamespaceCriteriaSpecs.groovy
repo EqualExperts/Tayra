@@ -4,10 +4,10 @@ import spock.lang.Specification;
 
 class NamespaceCriteriaSpecs extends Specification{
   static createCollectionEntry = '{ "ts" : Timestamp(1360665338000, 1), "h" : NumberLong("7391500989066642719"), "v" : 2, "op" : "c", "ns" : "eelabs.$cmd", "o" : { "create" : "countries", "capped" : null, "size" : null } }'
-  static createCollectionWithInsert= """\
-   '"ns" : "eelabs.countries",
-   "o" : { "_id" : ObjectId("511499dd9365898be4b00b0d"), "name" : "Test1" } }'
-"""
+  static createCollectionWithInsert= '''
+   "ns" : "eelabs.countries",
+   "o" : { "_id" : ObjectId("511499dd9365898be4b00b0d"), "name" : "Test1" } }
+'''
   static updateDoc =
   '"ns" : "eelabs.countries","o2" : { "_id" : ObjectId("511499dd9365898be4b00b0d") },"o" : { "$set" : { "name" : "Test2" } } }'
   static insertDoc = '"ns" : "eelabs.countries" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
@@ -21,7 +21,7 @@ class NamespaceCriteriaSpecs extends Specification{
   static createIndex = '{ "ts" : { "$ts" : 1360732964 , "$inc" : 1} , "h" : -3247792282971197891 , "v" : 2 , "op" : "i" , "ns" : "eelabs.system.indexes" , "o" : { "_id" : { "$oid" : "511b232461ad583bb301e9ec"} , "ns" : "eelabs.countries" , "key" : { "name" : 1.0} , "name" : "name_1"}}'
   static dropIndex = '{ "ts" : { "$ts" : 1360733107 , "$inc" : 1} , "h" : 5409713632279739576 , "v" : 2 , "op" : "c" , "ns" : "eelabs.$cmd" , "o" : { "deleteIndexes" : "countries" , "index" : { "name" : 1.0}}}'
   static cappedCreateCollection=' { "ts" : { "$ts" : 1360731743 , "$inc" : 1} , "h" : 7090731753035073884 , "v" : 2 , "op" : "c" , "ns" : "eelabs.$cmd" , "o" : { "create" : "countries" , "capped" : true , "size" : 10000.0}}'
-  
+  static initiatingSet ='{ "ts" : Timestamp(1361164446000, 1), "h" : NumberLong(0), "v" : 2, "op" : "n", "ns" : "", "o" : { "msg" : "initiating set" } }'
   
   def namespaceOne ='eelabs'
   def namespaceTwo ='eelabs.countries'
@@ -36,18 +36,18 @@ class NamespaceCriteriaSpecs extends Specification{
   
     where:
     document                 | outcome
-  createCollectionEntry      | true
+ createCollectionEntry      | true
   createCollectionWithInsert | true  
-  insertDoc                  | true
+ insertDoc                  | true
   updateDoc                  | true    
   deleteDoc                  | true
   dropCollection             | true
   dropDatabase               | true
   createIndex                | true
   dropIndex                  | true
-  
   insertDocFail              | true
   dropIndexFail              | false
+  initiatingSet              | false
 }
     
   def satisfiesDatabaseAndCollectionCriteria (){
@@ -61,12 +61,13 @@ class NamespaceCriteriaSpecs extends Specification{
     updateDoc                  | true
     deleteDoc                  | true
     dropDatabase               | true
-    insertDocFail              | false
-    dropIndexFail              | false
     createCollection           | true
+    cappedCreateCollection     | true
     dropCollection             | true
     createIndex                | true
-	dropIndex                  | true
-	cappedCreateCollection     | true
+    dropIndex                  | true
+    insertDocFail              | false
+    dropIndexFail              | false
+    initiatingSet              | false
 }
 }
