@@ -141,15 +141,17 @@ checkstyleTest {
 
 def prepareExecutables() {
 	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }.join(File.pathSeparator)
+	def allLibFilesTayraHomeWindows = new File("$libsDir").list().collect { "%TAYRA_HOME%/libs/$it" }.join(File.pathSeparator)
+	def allLibFilesTayraHomeLinux = new File("$libsDir").list().collect { "\$TAYRA_HOME/libs/$it" }.join(File.pathSeparator)
 	new File("$distsTemplateDir").list().each { filename ->
 		if(filename.startsWith('backup') || filename.startsWith('restore')) {
 			def contents = new File("$distsTemplateDir/$filename").getText()
 			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
 				if(filename.endsWith('.sh')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replaceAll(File.pathSeparator,':')
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesTayraHomeLinux").replaceAll(File.pathSeparator,':')
 				}
 				if(filename.endsWith('.bat')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replaceAll(File.pathSeparator,';')
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesTayraHomeWindows").replaceAll(File.pathSeparator,';')
 				}
 			}
 		}

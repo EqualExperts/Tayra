@@ -28,4 +28,6 @@
  REM are those of the authors and should not be interpreted as representing
  REM official policies, either expressed or implied, of the Tayra Project.
 
-java -cp %%JAVA_CLASS_PATH%% com.ee.tayra.runner.Runner "backup" %*
+if defined TAYRA_HOME (SET CLASSPATH=%%TAYRA_CLASS_PATH%%) else (SET CLASSPATH=%%JAVA_CLASS_PATH%%)
+
+java -cp %CLASSPATH% com.ee.tayra.runner.Runner "backup" %*
