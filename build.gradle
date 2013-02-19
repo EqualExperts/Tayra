@@ -32,7 +32,7 @@ project.ext {
   mockito = 'org.mockito:mockito-all:1.9.0'
   cglib = 'cglib:cglib-nodep:2.2'
   spock = 'org.spockframework:spock-core:0.7-groovy-2.0'
-  
+  unmanagedTestLibDir = "$projectDir/test-lib"
 
   //code coverage lib
   coberturaLib = 'net.sourceforge.cobertura:cobertura:1.9.4.1'
@@ -45,6 +45,11 @@ project.ext {
   //Distribution settings
   distsTemplateDir = 'distribution-template'
   distsBinDir = "$distsDir/bin"
+  
+  //Acceptance Tests
+  acceptanceTestDir = 'acceptance-tests'
+  acceptanceTestStoriesDir = "$projectDir/$acceptanceTestDir/stories"
+  acceptanceTestReportsDir = "$reporting.baseDir/$acceptanceTestDir"
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
@@ -65,6 +70,7 @@ dependencies {
   groovy(groovy)
   compile(project.ext.mongoDriver, project.ext.groovy, project.ext.commonsCli, project.ext.functionaljava, project.ext.log4j)
   testCompile(project.ext.hamcrest, project.ext.junit, project.ext.mockito, project.ext.spock, project.ext.cglib)
+  testCompile fileTree (dir: "$unmanagedTestLibDir", includes: ['*.jar'])
   cobertura(project.ext.coberturaLib)
   testRuntime(project.ext.coberturaLib)
 }
@@ -111,6 +117,21 @@ test {
 		}
 		ant.'cobertura-check'(totalbranchrate:project.ext.branchCoverageBaseline, totallinerate:project.ext.lineCoverageBaseline)
 		setClasspath(originalClasspath)
+		
+		runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
+	}
+}
+
+def runAcceptanceTests(String srcFolder, String reportsFolder) {
+	println "Running FIT Acceptance Tests..."
+	def accTestReportsDir = new File("$project.ext.acceptanceTestReportsDir")
+	if(!accTestReportsDir.exists()) {
+		accTestReportsDir.mkdirs()
+	}
+	javaexec {
+	    main = 'fitlibrary.runner.FolderRunner'
+	    classpath = sourceSets.test.runtimeClasspath
+	    args "$srcFolder", "$reportsFolder"
 	}
 }
 
@@ -141,17 +162,17 @@ checkstyleTest {
 
 def prepareExecutables() {
 	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }.join(File.pathSeparator)
-	def allLibFilesTayraHomeWindows = new File("$libsDir").list().collect { "%TAYRA_HOME%/libs/$it" }.join(File.pathSeparator)
-	def allLibFilesTayraHomeLinux = new File("$libsDir").list().collect { "\$TAYRA_HOME/libs/$it" }.join(File.pathSeparator)
+	def allLibFilesWin = new File("$libsDir").list().collect { "%TAYRA_HOME%/libs/$it" }.join(File.pathSeparator)
+	def allLibFilesxnix = new File("$libsDir").list().collect { "\$TAYRA_HOME/libs/$it" }.join(File.pathSeparator)
 	new File("$distsTemplateDir").list().each { filename ->
 		if(filename.startsWith('backup') || filename.startsWith('restore')) {
 			def contents = new File("$distsTemplateDir/$filename").getText()
 			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
 				if(filename.endsWith('.sh')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesTayraHomeLinux").replaceAll(File.pathSeparator,':')
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesxnix").replaceAll(File.pathSeparator,':')
 				}
 				if(filename.endsWith('.bat')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesTayraHomeWindows").replaceAll(File.pathSeparator,';')
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesWin").replaceAll(File.pathSeparator,';')
 				}
 			}
 		}

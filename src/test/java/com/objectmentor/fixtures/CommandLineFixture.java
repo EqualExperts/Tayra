@@ -11,12 +11,12 @@ import java.util.*;
  * returns EOF or error.
  */
 class LineGatherer implements Runnable {
-  private LinkedList lines;
+  private LinkedList<String> lines;
   private BufferedReader reader;
   private boolean done = false;
 
   public LineGatherer(BufferedReader reader) {
-    this.lines = new LinkedList();
+    this.lines = new LinkedList<String>();
     this.reader = reader;
   }
 
@@ -42,7 +42,7 @@ class LineGatherer implements Runnable {
     if (lines.isEmpty())
       return null;
     else {
-      String line =  (String) lines.removeFirst();
+      String line = lines.removeFirst();
       if (CommandLineFixture.isVerbose) System.out.println("line = " + line);
       return line;
     }
@@ -78,11 +78,11 @@ public class CommandLineFixture extends ActionFixture {
     public Process process;
   }
 
-  private HashMap commandProcessMap = new HashMap();
+  private HashMap<String, CommandProcess> commandProcessMap = new HashMap<String, CommandProcess>();
 
-  static HashMap definitions = new HashMap();
+  static HashMap<String, String> definitions = new HashMap<String, String>();
   //Added by Dhaval
-  static List environment = new ArrayList();
+  static List<String> environment = new ArrayList<String>();
   static boolean isVerbose = false;
 
   /**
@@ -98,9 +98,9 @@ public class CommandLineFixture extends ActionFixture {
   }
 
   private void endTable() {
-    Set processIds = commandProcessMap.keySet();
-    for (Iterator iterator = processIds.iterator(); iterator.hasNext();) {
-      String processId = (String) iterator.next();
+    Set<String> processIds = commandProcessMap.keySet();
+    for (Iterator<String> iterator = processIds.iterator(); iterator.hasNext();) {
+      String processId = iterator.next();
       CommandProcess p = getCommandProcess(processId);
       flushProcess(p);
     }
@@ -347,7 +347,7 @@ private boolean processIdAlreadyInUse(String processId) {
   }
 
   private CommandProcess getCommandProcess(String processId) {
-    CommandProcess p = (CommandProcess) commandProcessMap.get(processId);
+    CommandProcess p = commandProcessMap.get(processId);
     return p;
   }
 
@@ -426,8 +426,8 @@ private boolean processIdAlreadyInUse(String processId) {
 
   String replaceDefinitions(String source) {
     String target = new String(source);
-    Set macros = definitions.keySet();
-    for (Iterator i = macros.iterator(); i.hasNext();) {
+    Set<String> macros = definitions.keySet();
+    for (Iterator<String> i = macros.iterator(); i.hasNext();) {
       String name = (String) i.next();
       String content = (String) definitions.get(name);
       int pos;
