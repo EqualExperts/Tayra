@@ -168,18 +168,16 @@ checkstyleTest {
 findbugsTest.enabled = false
 
 def prepareExecutables() {
-	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }.join(File.pathSeparator)
-	def allLibFilesWin = new File("$libsDir").list().collect { "%TAYRA_HOME%/libs/$it" }.join(File.pathSeparator)
-	def allLibFilesxnix = new File("$libsDir").list().collect { "\$TAYRA_HOME/libs/$it" }.join(File.pathSeparator)
+	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }
 	new File("$distsTemplateDir").list().each { filename ->
 		if(filename.startsWith('backup') || filename.startsWith('restore')) {
 			def contents = new File("$distsTemplateDir/$filename").getText()
 			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
 				if(filename.endsWith('.sh')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesxnix").replaceAll(File.pathSeparator,':')
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"\$TAYRA_HOME/$it"}).join(":"))
 				}
 				if(filename.endsWith('.bat')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', "$allLibFiles").replace('%%TAYRA_CLASS_PATH%%', "$allLibFilesWin").replaceAll(File.pathSeparator,';')
+					writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"%TAYRA_HOME%/$it"}).join(";"))
 				}
 			}
 		}
