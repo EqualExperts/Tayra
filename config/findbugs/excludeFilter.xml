@@ -155,5 +155,35 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+   <Match>
+    <Class name="com.ee.tayra.io.criteria.OperationStrategy$1"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.tayra.io.criteria.OperationStrategy$2"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.tayra.io.criteria.NamespaceCriteria"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
+   <Match>
+  <Class name="com.ee.tayra.io.criteria.DDLOperation"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
+   <Match>
+  <Class name="com.ee.tayra.io.criteria.DMLOperation"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
 
 </FindBugsFilter>
