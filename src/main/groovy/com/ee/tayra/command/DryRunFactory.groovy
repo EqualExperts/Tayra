@@ -32,7 +32,7 @@ package com.ee.tayra.command
 
 import com.ee.tayra.io.ConsoleReplayer
 import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.EmptyProgressReporter
+import com.ee.tayra.io.DeafAndDumbReporter
 import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.SelectiveOplogReplayer
@@ -46,7 +46,7 @@ class DryRunFactory extends RestoreFactory {
 
 	public DryRunFactory(Config config) {
 		this.config = config;
-		listeningReporter = new EmptyProgressReporter()
+		listeningReporter = new DeafAndDumbReporter()
 	}
 
 	@Override

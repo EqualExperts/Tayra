@@ -4,7 +4,7 @@ import spock.lang.*
 
 import com.ee.tayra.io.ConsoleReplayer;
 import com.ee.tayra.io.CopyListener;
-import com.ee.tayra.io.EmptyProgressReporter;
+import com.ee.tayra.io.DeafAndDumbReporter;
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.Reporter

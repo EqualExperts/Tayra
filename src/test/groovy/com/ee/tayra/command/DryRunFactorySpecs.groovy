@@ -1,6 +1,6 @@
 package com.ee.tayra.command
 
-import com.ee.tayra.io.EmptyProgressReporter;
+import com.ee.tayra.io.DeafAndDumbReporter;
 import com.ee.tayra.io.SelectiveOplogReplayer;
 
 import spock.lang.Specification
@@ -17,12 +17,12 @@ class DryRunFactorySpecs extends Specification{
 
 	def createsEmptyListener() {
 		expect: 'listener created is instance of EmptyProgressReporter'
-			factory.createListener().class == EmptyProgressReporter
+			factory.createListener().class == DeafAndDumbReporter
 	}
 
 	def createsEmptyReporter() {
 		expect: 'reporter created is instance of EmptyProgressReporter'
-			factory.createReporter().class == EmptyProgressReporter
+			factory.createReporter().class == DeafAndDumbReporter
 	}
 
 	def createsWriter() {

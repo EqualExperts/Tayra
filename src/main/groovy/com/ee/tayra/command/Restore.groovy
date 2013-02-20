@@ -88,7 +88,7 @@ def readPassword(output) {
 
 String username = ''
 String password = ''
-if(options.u) {
+if(options.u && destinationOptionRequired) {
 	username = options.u
 	password = options.p ?: readPassword(console)
 }

@@ -32,7 +32,7 @@ package com.ee.tayra.io;
 
 import java.io.Writer;
 
-public class EmptyProgressReporter implements CopyListener, Reporter {
+public class DeafAndDumbReporter implements CopyListener, Reporter {
 
   @Override
   public final void onReadSuccess(final String document) {
