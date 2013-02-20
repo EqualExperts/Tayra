@@ -61,15 +61,19 @@ if(!options) {
 	return
 }
 
-destMongoDB = options.d
+Config config = new Config()
+
+config.destMongoDB = options.d ? options.d : null
 restoreFromFile = options.f
 
 int port = 27017
 if(options.port) {
 	port = Integer.parseInt(options.port)
 }
+config.port = port
 
 PrintWriter console = new PrintWriter(System.out, true)
+config.console = console
 
 def readPassword(output) {
 	def input = System.console()
@@ -84,15 +88,18 @@ def readPassword(output) {
 
 String username = ''
 String password = ''
-if(options.u) {
+if(options.u && destinationOptionRequired) {
 	username = options.u
 	password = options.p ?: readPassword(console)
 }
+config.username = username
+config.password = password
 
 exceptionFile = 'exception.documents'
 if(options.e) {
 	exceptionFile = options.e
 }
+config.exceptionFile = exceptionFile
 
 isMultiple = false
 if(options.fAll) {
@@ -107,41 +114,17 @@ def criteria = new CriteriaBuilder().build {
 		usingUntil options.sUntil
 	}
 }
+config.criteria = criteria
+config.authenticator = binding.hasVariable('authenticator') ?
+				binding.getVariable('authenticator') : null
 
-mongo = null
+RestoreFactory factory = null
 try {
-	def writer = null
-	def listener = null
-	def reporter = null
-	def listeningReporter = null
+	factory = RestoreFactory.create(options.'dry-run', config)
 
-	if(!options.'dry-run'){
-		ServerAddress server = new ServerAddress(destMongoDB, port);
-		mongo = new Mongo(server)
-		getAuthenticator(mongo).authenticate(username, password)
-
-		writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-				: new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo)))
-
-		listeningReporter = new RestoreProgressReporter(new FileWriter(exceptionFile), console)
-
-		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-				: listeningReporter
-
-		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-				: listeningReporter
-	} else {
-		writer = binding.hasVariable('writer') ? binding.getVariable('writer')
-				: new SelectiveOplogReplayer(criteria, new ConsoleReplayer(console))
-
-		listeningReporter = new EmptyProgressReporter()
-
-		listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-				: listeningReporter
-
-		reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-				: listeningReporter
-	}
+	def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
+	def listener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
+	def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
 
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
@@ -154,17 +137,11 @@ try {
 	}
 
 	reporter.summarizeTo console
-
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)
 } finally {
-	if(mongo) {
-		mongo.close()
+	if(factory != null && factory.getMongo() != null) {
+		factory.getMongo().close()
 	}
-}
-
-def getAuthenticator(mongo) {
-	binding.hasVariable('authenticator') ?
-			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
 }

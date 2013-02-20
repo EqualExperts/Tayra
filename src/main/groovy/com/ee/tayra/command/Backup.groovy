@@ -106,8 +106,14 @@ if(options.u) {
 }
 
 writer = new TimestampRecorder(getWriter())
-listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-		: new ProgressReporter(console)
+
+def listeningReporter = new ProgressReporter(console)
+
+def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
+		: listeningReporter
+
+def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
+		: listeningReporter
 
 timestampFile = new File(timestampFileName)
 if(timestampFile.isDirectory()) {
@@ -126,15 +132,15 @@ addShutdownHook {
 	if (writer){
 		new FileWriter(timestampFileName).append(writer.timestamp).flush()
 	}
-	if (listener) {
-		listener.summarizeTo console
+	if (reporter) {
+		reporter.summarizeTo console
 	}
 }
 errorLog = 'error.log'
 def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
 try {
-	console.println "Backup Started On: ${new Date()}"
+	reporter.writeStartTimeTo console
 	new MongoReplSetConnection(sourceMongoDB, port).using { mongo ->
 		getAuthenticator(mongo).authenticate(username, password)
 		def oplog = new Oplog(mongo)

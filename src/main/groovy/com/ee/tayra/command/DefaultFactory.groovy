@@ -28,35 +28,57 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.io;
+package com.ee.tayra.command
 
-import java.io.Writer;
+import com.ee.tayra.domain.operation.Operations
+import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.OplogReplayer
+import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.Replayer
+import com.ee.tayra.io.RestoreProgressReporter
+import com.ee.tayra.io.SelectiveOplogReplayer
+import com.mongodb.Mongo
+import com.mongodb.ServerAddress
+import java.io.PrintWriter;
 
-public class EmptyProgressReporter implements CopyListener, Reporter {
+class DefaultFactory extends RestoreFactory {
 
-  @Override
-  public final void onReadSuccess(final String document) {
-  }
+	private final Mongo mongo;
+	private final def listeningReporter
+	private final Config config;
 
-  @Override
-  public final void onWriteSuccess(final String document) {
-  }
+	public DefaultFactory(Config config) {
+		this.config = config;
 
-  @Override
-  public final void onWriteFailure(final String document,
-      final Throwable problem) {
-  }
+		ServerAddress server = new ServerAddress(config.destMongoDB, config.port)
+		this.mongo = new Mongo(server)
+		getAuthenticator(mongo).authenticate(config.username, config.password)
 
-  @Override
-  public final void onReadFailure(final String document,
-      final Throwable problem) {
-  }
+		listeningReporter = new RestoreProgressReporter(new FileWriter
+				(config.exceptionFile), config.console)
+	}
 
-  @Override
-  public void summarizeTo(final Writer writer) {
-  }
+	@Override
+	public Replayer createWriter() {
+		new SelectiveOplogReplayer(config.criteria, new OplogReplayer(new Operations(mongo)))
+	}
 
-  @Override
-  public void writeStartTimeTo(final Writer writer) {
-  }
+	@Override
+	public CopyListener createListener() {
+		(CopyListener)listeningReporter
+	}
+
+	@Override
+	public Reporter createReporter() {
+		(Reporter)listeningReporter
+	}
+
+	@Override
+	public Mongo getMongo() {
+		mongo
+	}
+
+	def getAuthenticator(mongo) {
+		config.authenticator == null ? new MongoAuthenticator(mongo) : config.authenticator
+	}
 }
