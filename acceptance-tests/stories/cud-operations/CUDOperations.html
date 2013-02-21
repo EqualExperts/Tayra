@@ -33,7 +33,7 @@
 						<td>Connect to MongoDB node</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre>27017</pre></td>
+						<td><pre>17017</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">use database</td>
@@ -68,7 +68,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -s localhost -f test.out</pre></td>
+						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -89,7 +89,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27020</pre></td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -114,11 +114,11 @@
 						<td>For source node</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre>27017</pre></td>
+						<td><pre>17017</pre></td>
 						<td>and destination node</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre>27020</pre></td>
+						<td><pre>27021</pre></td>
 					</tr>
 					<tr>
 						<td>run in database</td>
@@ -142,11 +142,11 @@
 						<td>For source node</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre>27017</pre></td>
+						<td><pre>17017</pre></td>
 						<td>and destination node</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre>27020</pre></td>
+						<td><pre>27021</pre></td>
 					</tr>
 					<tr>
 						<td>	find documents for collection</td>
