@@ -136,7 +136,7 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	javaexec {
 	    main = 'fitlibrary.runner.FolderRunner'
 	    classpath = sourceSets.test.runtimeClasspath
-	    args "$srcFolder", "$reportsFolder"
+	    args = ["$srcFolder", "$reportsFolder"]
 	}
 }
 
