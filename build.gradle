@@ -123,9 +123,9 @@ test {
 }
 
 // For individual use only, assumes you have binaries existing already. 
-//task 'acceptance-test' << {
-//  runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
-//}
+task 'acceptance-test' << {
+  runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
+}
 
 def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	println "Running FIT Acceptance Tests..."

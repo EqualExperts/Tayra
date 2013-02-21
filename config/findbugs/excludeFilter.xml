@@ -185,5 +185,28 @@
       <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
     </Not>
   </Match>
-
+  <Match>
+  <Class name="com.ee.tayra.domain.operation.DeleteDocumentBuilder$_documentStructure_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.domain.operation.DocumentBuilder$_documentStructure_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.domain.operation.UpdateDocumentBuilder$_documentStructure_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.fixtures.RunnerFixture"/>
+    <Not>
+      <Bug code="DM_DEFAULT_ENCODING" />
+    </Not>
+  </Match>
 </FindBugsFilter>
