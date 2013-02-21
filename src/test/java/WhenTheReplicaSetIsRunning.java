@@ -10,7 +10,7 @@ public class WhenTheReplicaSetIsRunning extends DoFixture {
   public WhenTheReplicaSetIsRunning() {
   }
 
-  public final Fixture openTerminalAnd() {
+  public final Fixture openTerminal() {
      return new RunnerFixture();
   }
 

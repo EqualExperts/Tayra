@@ -28,7 +28,7 @@ public class RunnerFixture extends DoFixture {
     stderr = new PrintStream(err, true);
   }
 
-  public final void run(final Parse cells) throws IOException {
+  public final void andRun(final Parse cells) throws IOException {
     Parse args = cells.more;
     if (args == null) {
         throw new MissingCellsFailureException(cells.text()
@@ -53,7 +53,7 @@ public class RunnerFixture extends DoFixture {
     }
   }
 
-  public final void show(final Parse cells) {
+  public final void andShow(final Parse cells) {
     Parse stream = cells.more;
     if (stream == null) {
         throw new MissingCellsFailureException(cells.text()
