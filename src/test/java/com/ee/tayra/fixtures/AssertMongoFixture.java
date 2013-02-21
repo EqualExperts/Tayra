@@ -16,83 +16,109 @@ import fitlibrary.DoFixture;
 import fitlibrary.SetFixture;
 
 public class AssertMongoFixture extends DoFixture {
-	private final MongoClient src;
-	private final MongoClient dest;
 
-	public AssertMongoFixture(String srcHost, int srcPort, String destHost,
-			int destPort) throws UnknownHostException {
-		src = new MongoClient(srcHost, srcPort);
-		dest = new MongoClient(destHost, destPort);
-	}
+  private static final DBObject IGNORE_FIELDS =
+                              (DBObject) JSON.parse("{ _id : 0 }");
+  private final MongoClient src;
+  private final MongoClient dest;
 
-	public Fixture runInDatabaseQueryAndCleanupDatabases(String database, String query, boolean cleanupDB) {
-		DB srcDB = getDB(src, database);
-		DB destDB = getDB(dest, database);
-		Number srcResult = (Number) srcDB.eval(query);
-		Number destResult = (Number) destDB.eval(query);
-		if(cleanupDB) {
-			cleanupDBs(srcDB, destDB);
-		}
-		Result result = new Result(srcResult.longValue(), destResult.longValue());
-		return new SetFixture(Collections.singletonList(result));
-	}
+  public AssertMongoFixture(final String srcHost, final int srcPort,
+  final String destHost, final int destPort) throws UnknownHostException {
+    src = new MongoClient(srcHost, srcPort);
+    dest = new MongoClient(destHost, destPort);
+  }
 
-	private void cleanupDBs(DB srcDB, DB destDB) {
-		srcDB.dropDatabase();
-		destDB.dropDatabase();
-	}
-	
-	public Fixture findDocumentsForCollectionInDatabaseWhereAndCleanupDatabases(String collection, String database, String where, boolean cleanupDatabase) {
-		DBObject whereClause = where != null ? (DBObject) JSON.parse(where) : null;
-		DBObject ignoreFields = (DBObject) JSON.parse("{ _id : 0 }");
-		
-		DB srcDB = getDB(src, database);
-		DBCollection srcCollection = srcDB.getCollection(collection);
-		List<String> srcDocs = getDocuments(srcCollection.find(whereClause, ignoreFields));
-		
-		DB destDB = getDB(dest, database);
-		DBCollection destCollection = destDB.getCollection(collection);
-		List<String> destDocs = getDocuments(destCollection.find(whereClause, ignoreFields));
-		List<Result> results = allDocuments(srcDocs, destDocs);
-		if(cleanupDatabase) {
-			cleanupDBs(srcDB, destDB);
-		}
-		return new SetFixture(results);
-	}
-	
-	private DB getDB(MongoClient mongo, String dbname) {
-		return mongo.getDB(dbname);
-	}
-	
-	private List<Result> allDocuments(List<String> srcDocs,
-			List<String> destDocs) {
-		List<Result> results = new ArrayList<Result>();
-		List<String> target = srcDocs;
-		if(srcDocs.size() > destDocs.size()) {
-			target = srcDocs;
-		} 
-		if(srcDocs.size() < destDocs.size()) {
-			target = destDocs;
-		} 
-		for (int index = 0; index < target.size(); index++) {
-			results.add(new Result(srcDocs.get(index), destDocs.get(index)));
-		}
-		return results;
-	}
+  public final Fixture runInDatabaseQueryAndCleanupDatabases(
+  final String database, final String query, final boolean cleanupDB) {
+    DB srcDB = getDB(src, database);
+    DB destDB = getDB(dest, database);
+    Number srcResult = (Number) srcDB.eval(query);
+    Number destResult = (Number) destDB.eval(query);
+    if (cleanupDB) {
+      cleanupDBs(srcDB, destDB);
+    }
+    Result result =
+      new Result(srcResult.longValue(), destResult.longValue());
+    return new SetFixture(Collections.singletonList(result));
+  }
 
-	private List<String> getDocuments(DBCursor results) {
-		List<String> documents = new ArrayList<String>();
-		for(DBObject document : results) {
-			documents.add(document.toString());
-		}
-		return documents;
-	}
+  private void cleanupDBs(final DB srcDB, final DB destDB) {
+    srcDB.dropDatabase();
+    destDB.dropDatabase();
+  }
 
-	
-	@Override
-	protected void tearDown() throws Exception {
-		src.close();
-		dest.close();
-		super.tearDown();
-	}
+  public final Fixture
+  findDocumentsForCollectionInDatabaseWhereAndCleanupDatabases(
+  final String collection, final String database,
+  final String where, final boolean cleanupDatabase) {
+    DBObject predicates = null;
+    if (where != null) {
+        predicates = (DBObject) JSON.parse(where);
+    }
+    DB srcDB = getDB(src, database);
+    List<String> srcDocs =
+        documentsInCollection(srcDB, collection, predicates);
+
+    DB destDB = getDB(dest, database);
+    List<String> destDocs =
+        documentsInCollection(destDB, collection, predicates);
+
+    List<Result> results = allDocuments(srcDocs, destDocs);
+    if (cleanupDatabase) {
+      cleanupDBs(srcDB, destDB);
+    }
+    return new SetFixture(results);
+  }
+
+  private List<String> documentsInCollection(
+  final DB db, final String collection, final DBObject where) {
+    DBCollection aCollection = db.getCollection(collection);
+    return documentsFrom(aCollection.find(where, IGNORE_FIELDS));
+  }
+
+  private DB getDB(final MongoClient mongo, final String dbname) {
+    return mongo.getDB(dbname);
+  }
+
+  private List<Result> allDocuments(final List<String> srcDocs,
+  final List<String> destDocs) {
+    List<Result> results = new ArrayList<Result>();
+    List<String> target = srcDocs;
+    if (srcDocs.size() > destDocs.size()) {
+      target = srcDocs;
+    }
+    if (srcDocs.size() < destDocs.size()) {
+      target = destDocs;
+    }
+    for (int index = 0; index < target.size(); index++) {
+      String srcValue = getValueOrNullAt(srcDocs, index);
+      String destValue = getValueOrNullAt(destDocs, index);
+      results.add(new Result(srcValue, destValue));
+    }
+    return results;
+  }
+
+  private String getValueOrNullAt(final List<String> docs,
+  final int index) {
+    if (index > docs.size() - 1) {
+      return null;
+    } else {
+      return docs.get(index);
+    }
+  }
+
+  private List<String> documentsFrom(final DBCursor results) {
+    List<String> documents = new ArrayList<String>();
+    for (DBObject document : results) {
+      documents.add(document.toString());
+    }
+    return documents;
+  }
+
+  @Override
+  protected final void tearDown() throws Exception {
+    src.close();
+    dest.close();
+    super.tearDown();
+  }
 }

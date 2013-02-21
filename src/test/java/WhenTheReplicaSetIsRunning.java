@@ -1,27 +1,27 @@
-
-
 import java.net.UnknownHostException;
-
 import com.ee.tayra.fixtures.AssertMongoFixture;
 import com.ee.tayra.fixtures.MongoFixture;
-import com.objectmentor.fixtures.CommandLineFixture;
+import com.ee.tayra.fixtures.RunnerFixture;
 
 import fit.Fixture;
 import fitlibrary.DoFixture;
 
 public class WhenTheReplicaSetIsRunning extends DoFixture {
-	public WhenTheReplicaSetIsRunning() {
-	}
-	
-	public Fixture openTerminalAndRun() {
-		return new CommandLineFixture();
-	}
-	
-	public Fixture connectToMongoDBNodeOnPort(String host, int port) throws UnknownHostException {
-		return new MongoFixture(host, port);
-	}
-	
-	public Fixture forSourceNodeOnPortAndDestinationNodeOnPort(String srcHost, int srcPort, String destHost, int destPort) throws UnknownHostException {
-		return new AssertMongoFixture(srcHost, srcPort, destHost, destPort);
-	}
+  public WhenTheReplicaSetIsRunning() {
+  }
+
+  public final Fixture openTerminalAnd() {
+     return new RunnerFixture();
+  }
+
+  public final Fixture connectToMongoDBNodeOnPort(final String host,
+  final int port) throws UnknownHostException {
+    return new MongoFixture(host, port);
+  }
+
+  public final Fixture forSourceNodeOnPortAndDestinationNodeOnPort(
+   final String srcHost, final int srcPort, final String destHost,
+   final int destPort) throws UnknownHostException {
+    return new AssertMongoFixture(srcHost, srcPort, destHost, destPort);
+  }
 }

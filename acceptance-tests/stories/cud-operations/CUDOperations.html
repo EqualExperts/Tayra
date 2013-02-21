@@ -63,55 +63,47 @@
 				<br/>
 				<h4>2. Run Backup Utility</h4>
 				<table>
-					<tr>
-						<td colspan="3" class="headingTableRow">Open terminal and run</td>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal and</td>
 					</tr>
 					<tr>
-						<td>environment</td>
-						<td>TAYRA_HOME</td>
-						<td>/Users/dhavald/Documents/workspace/Tayra-Acceptance-Tests/Tayra-0.7.0.Beta1</td>
+						<td>run</td>
+						<td colspan="3"><pre>backup -s localhost -f test.out</pre></td>
 					</tr>
 					<tr>
-						<td>definition</td>
-						<td>TAYRA_HOME</td>
-						<td>/Users/dhavald/Documents/workspace/Tayra-Acceptance-Tests/Tayra-0.7.0.Beta1</td>
+						<td colspan="2">show</td>
+						<td colspan="2"><pre>stdout</pre></td>
 					</tr>
 					<tr>
-						<td>command</td>
-						<td>TAYRA_HOME/backup.sh -s localhost -f test.out</td>
-						<td>backup</td>
-					</tr>
-					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
 						<td>contains</td>
-						<td>backup.stdout</td>
 						<td>Backup Started</td>
 					</tr>
 				</table>
 				<br/>
 				<h4>3. Run Restore Utility</h4>
 				<table>
-					<tr>
-						<td colspan="3" class="headingTableRow">Open terminal and run</td>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal and</td>
 					</tr>
 					<tr>
-						<td>environment</td>
-						<td>TAYRA_HOME</td>
-						<td>/Users/dhavald/Documents/workspace/Tayra-Acceptance-Tests/Tayra-0.7.0.Beta1</td>
+						<td>run</td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27020</pre></td>
 					</tr>
 					<tr>
-						<td>definition</td>
-						<td>TAYRA_HOME</td>
-						<td>/Users/dhavald/Documents/workspace/Tayra-Acceptance-Tests/Tayra-0.7.0.Beta1</td>
+						<td colspan="2">show</td>
+						<td colspan="2"><pre>stdout</pre></td>
 					</tr>
 					<tr>
-						<td>command</td>
-						<td>TAYRA_HOME/restore.sh -d localhost -f test.out --port=27020</td>
-						<td>restore</td>
+						<td colspan="2">show</td>
+						<td colspan="2"><pre>stderr</pre></td>
 					</tr>
 					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
 						<td>contains</td>
-						<td>restore.stdout</td>
-						<td>Restore Started</td>
+						<td>Process started</td>
 					</tr>
 				</table>
 				<br/>
