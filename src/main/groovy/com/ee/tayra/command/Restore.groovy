@@ -43,7 +43,7 @@ def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [
 boolean destinationOptionRequired = args.contains('--dry-run') ? false : true
 
 cli.with  {
-	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: destinationOptionRequired
+	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', optionalArg:true 
 	_ args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
 	f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
 	_ args:0, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
@@ -64,7 +64,14 @@ if(!options) {
 
 Config config = new Config()
 
-config.destMongoDB = options.d ? options.d : null
+//config.destMongoDB = options.d == true ? 'localhost' : options.d
+
+config.destMongoDB = 'localhost'
+if(options.d) {
+	config.destMongoDB = options.d == true ? 'localhost' : options.d
+}
+println config.destMongoDB
+
 restoreFromFile = options.f
 
 int port = 27017
