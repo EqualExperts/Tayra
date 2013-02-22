@@ -177,9 +177,9 @@ class RestoreSpecs extends Specification {
 			result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
 	}
 
-	def invokesRestoreWhenSelectDbOptionIsSupplied() {
-		given:'arguments contains -d, --port and -f and --sDb options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sDb="test"'])
+	def invokesRestoreWhenSelectNamespaceOptionIsSupplied() {
+		given:'arguments contains -d, --port and -f and --sNs options'
+			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sNs=test'])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))

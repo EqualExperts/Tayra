@@ -2,7 +2,7 @@ package com.ee.tayra.io.criteria
 
 import com.ee.tayra.io.criteria.CriteriaBuilder;
 import com.ee.tayra.io.criteria.Criterion;
-import com.ee.tayra.io.criteria.DbCriteria;
+import com.ee.tayra.io.criteria.NamespaceCriteria;
 import com.ee.tayra.io.criteria.TimestampCriteria;
 
 import spock.lang.Specification;
@@ -15,19 +15,19 @@ class CriteriaBuilderSpecs extends Specification{
 		criteriaBuilder = new CriteriaBuilder()
 	}
 
-//	def producesDbCriteria() {
-//		given: 'a database filter'
-//			def dbName = 'test'
-//
-//		and: 'it is injected'
-//			criteriaBuilder.usingDatabase(dbName)
-//
-//		when: 'criteria is built'
-//			def criterion = criteriaBuilder.build()
-//
-//		then: 'Criterion should be an instance of DbCriteria'
-//			criterion.criteria()[0] instanceof DbCriteria
-//	}
+	def producesNamespaceCriteria() {
+		given: 'a namespace filter'
+			def namespace = 'test'
+
+		and: 'it is injected'
+			criteriaBuilder.usingNamespace(namespace)
+
+		when: 'criteria is built'
+			def criterion = criteriaBuilder.build()
+
+		then: 'Criterion should be an instance of NamespaceCriteria'
+			criterion.criteria()[0] instanceof NamespaceCriteria
+	}
 
 	def producesTimestampCriteria() {
 		given: 'timestamp filter'
