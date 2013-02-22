@@ -6,31 +6,25 @@ class OperationTypeSpecs extends Specification {
 	
 	
 	def producesDDLOperation(){
-		
 		given:'a DDL operation'
-		def documentNamespace = 'eelabs.$cmd'
+			def documentNamespace = 'eelabs.$cmd'
 		
 		when: 
-		def type = OperationType.create(documentNamespace);
+			def type = OperationType.create(documentNamespace);
 		
 		then:'type should be instance of DDLOperation'
-		 
-		type.getClass() == DDLOperation
-				
+			type.getClass() == DDLOperation
 	}
 
 	def producesDMLOperation() {
-		
 		given:'a DML operation'
-		def documentNamespace = 'eelabs.countries'
+			def documentNamespace = 'eelabs.countries'
 		
 		when:
-		def type = OperationType.create(documentNamespace);
+			def type = OperationType.create(documentNamespace);
 		
 		then:'type should be instance of DMLOperation'
-		 
-		type.getClass() == DMLOperation
-				
+			type.getClass() == DMLOperation
 	}
 	
 	

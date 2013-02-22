@@ -35,77 +35,85 @@ public enum DDLStrategy {
 CREATECOLLECTION {
   @Override
   public String extractCollection(final String payload) {
-  int startIndex = payload.indexOf("\"create\" :") - 1;
-  int endIndex = payload.indexOf("}", startIndex);
-  if (payload.contains("capped")) {
-    endIndex = payload.indexOf(",", startIndex);
-  }
-return payload.substring(startIndex, endIndex)
-       .split(":") [1].replaceAll("\"", BLANK).trim();
+    String create = "\"create\" :";
+    int startIndex = payload.indexOf(create) - 1;
+    int endIndex = payload.indexOf("}", startIndex);
+    if (payload.contains("capped")) {
+      endIndex = payload.indexOf(",", startIndex);
+    }
+  return payload.substring(startIndex, endIndex)
+    .split(":") [1].replaceAll("\"", BLANK).trim();
 }
 },
 
 DROPCOLLECTION {
   @Override
   public String extractCollection(final String payload) {
-    int startIndex = payload.indexOf("\"drop\" :") - 1;
+    String drop = "\"drop\" :";
+    int startIndex = payload.indexOf(drop) - 1;
     int endIndex = payload.indexOf("}", startIndex);
       return payload.substring(startIndex, endIndex)
         .split(":") [1].replaceAll("\"", BLANK).trim();
-}
+  }
 },
 
 CREATEINDEX {
   @Override
   public String extractCollection(final String payload) {
-     int startIndex = payload.indexOf("\"ns\" :") - 1;
-     int endIndex = payload.indexOf(",", startIndex);
-     String namespace = payload.substring(startIndex, endIndex)
-         .split(":") [1].replaceAll("\"", BLANK).trim();
-         return namespace.split("\\.", 2) [1];
+    String ns = "\"ns\" :";
+    int startIndex = payload.indexOf(ns) - 1;
+    int endIndex = payload.indexOf(",", startIndex);
+    String namespace = payload.substring(startIndex, endIndex)
+      .split(":") [1].replaceAll("\"", BLANK).trim();
+    return namespace.split("\\.", 2) [1];
   }
 },
 
 DROPINDEX {
   @Override
   public String extractCollection(final String payload) {
-    int startIndex = payload.indexOf("\"deleteIndexes\" :") - 1;
+    String deleteIndexes = "\"deleteIndexes\" :";
+    int startIndex = payload.indexOf(deleteIndexes) - 1;
     int endIndex = payload.indexOf(",", startIndex);
-     return payload.substring(startIndex, endIndex)
-    .split(":") [1].replaceAll("\"", BLANK).trim();
+    return payload.substring(startIndex, endIndex)
+      .split(":") [1].replaceAll("\"", BLANK).trim();
   }
 },
 
 NO_STRATEGY {
-
   @Override
-  String extractCollection(final String payload) {
+  public String extractCollection(final String payload) {
     throw new DDLOperationNotSupported("Cannot recognize operation "
-  + "in the payload " + payload);
+      + "in the payload " + payload);
   }
 };
 
+  private static final String DELETE_INDEXES = ".*\"deleteIndexes\".*";
+  private static final String NS = ".*\"ns\".*";
+  private static final String DROP = ".*\"drop\".*";
+  private static final String CREATE = ".*\"create\".*";
+
   public boolean matchCollection(final String incomingCollectionName,
-      final String payload) {
+    final String payload) {
     String collection = extractCollection(payload);
     return incomingCollectionName.equals(collection);
-}
-abstract String extractCollection(String payload);
-private static final String BLANK = "";
+  }
+  abstract String extractCollection(String payload);
+  private static final String BLANK = "";
 
-public static DDLStrategy create(final String payload) {
-  if (payload.matches(".*\"create\".*")) {
+  public static DDLStrategy create(final String payload) {
+    if (payload.matches(CREATE)) {
       return DDLStrategy.CREATECOLLECTION;
     }
-    if (payload.matches(".*\"drop\".*")) {
+    if (payload.matches(DROP)) {
       return DDLStrategy.DROPCOLLECTION;
     }
-    if (payload.matches(".*\"ns\".*")) {
+    if (payload.matches(NS)) {
       return DDLStrategy.CREATEINDEX;
     }
-    if (payload.matches(".*\"deleteIndexes\".*")) {
+    if (payload.matches(DELETE_INDEXES)) {
       return DDLStrategy.DROPINDEX;
     }
-  return DDLStrategy.NO_STRATEGY;
-}
+      return DDLStrategy.NO_STRATEGY;
+  }
 }

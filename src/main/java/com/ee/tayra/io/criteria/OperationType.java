@@ -32,8 +32,11 @@ package com.ee.tayra.io.criteria;
 
 public abstract class OperationType {
 
-   static final String BLANK = "";
-public static OperationType create(final String documentNamespace) {
+  private static final String DOT = "\\.";
+private static final String SYSTEM_INDEXES = "system.indexes";
+  private static final String CMD = "$cmd";
+  static final String BLANK = "";
+  public static OperationType create(final String documentNamespace) {
     if (isDDL(documentNamespace)) {
       return new DDLOperation();
     }
@@ -41,40 +44,40 @@ public static OperationType create(final String documentNamespace) {
   }
 
   private static boolean isDDL(final String documentNamespace) {
-     String command = documentNamespace.split("\\.", 2)[1];
-      return (("$cmd".equals(command)) || ("system.indexes".equals(command)));
+    String command = documentNamespace.split(DOT, 2)[1];
+    return ((CMD.equals(command)) || (SYSTEM_INDEXES.equals(command)));
   }
 
-   final String extractCollectionName(final String incomingNS) {
-      try {
-        return incomingNS.split("\\.", 2)[1];
-      } catch (ArrayIndexOutOfBoundsException e) {
-        return BLANK;
+  final String extractCollectionName(final String incomingNS) {
+    try {
+      return incomingNS.split(DOT, 2)[1];
+    } catch (ArrayIndexOutOfBoundsException e) {
+      return BLANK;
     }
   }
 
-    final boolean matchDbName(final String document,
-      final String documentNamespace, final String incomingNs) {
+  final boolean matchDbName(final String document,
+    final String documentNamespace, final String incomingNs) {
       String dbName = extractDbName(incomingNs);
-      String documentDb = documentNamespace.split("\\.", 2)[0];
+      String documentDb = documentNamespace.split(DOT, 2)[0];
       if (dbName.equals(documentDb)) {
         return true;
       }
       return false;
-    }
+  }
 
-   final boolean matchDbAndCollectionName(final String document,
-          final String documentNamespace, final String incomingNs) {
-          if (incomingNs.equals(documentNamespace)) {
-          return true;
-        }
-        return false;
+  final boolean matchDbAndCollectionName(final String document,
+    final String documentNamespace, final String incomingNs) {
+      if (incomingNs.equals(documentNamespace)) {
+        return true;
       }
+        return false;
+  }
 
   private String extractDbName(final String incomingNS) {
-      return incomingNS.split("\\.", 2)[0];
+    return incomingNS.split(DOT, 2)[0];
   }
 
   public abstract boolean match(final String document,
-                  final String documentNamespace, final String incomingNs);
+    final String documentNamespace, final String incomingNs);
 }
