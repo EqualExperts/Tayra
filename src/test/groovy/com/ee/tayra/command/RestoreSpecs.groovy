@@ -52,7 +52,7 @@ class RestoreSpecs extends Specification {
 			new Restore(context).run()
 
 		then: 'error message should be shown as'
-			result.toString() == 'error: Missing required options: df'
+			result.toString() == 'error: Missing required option: f'
 	}
 
 	def shoutsWhenInvalidArgsAreSupplied() {
@@ -63,7 +63,7 @@ class RestoreSpecs extends Specification {
 			new Restore(context).run()
 
 		then: 'error message should be shown as'
-			result.toString() == 'error: Missing required options: df'
+			result.toString() == 'error: Missing required option: f'
 	}
 
 	def shoutsWhenNoOutputFileIsSupplied() {
@@ -75,17 +75,6 @@ class RestoreSpecs extends Specification {
 
 		then: 'error message should be displayed as'
 			result.toString() == 'error: Missing required option: f'
-	}
-
-	def shoutsWhenNoDestinationMongoDBIsSupplied() {
-		given: 'argument list does not contain the destination option -d'
-			context.setVariable('args', ['-f', 'test.out'])
-
-		when: 'restore runs'
-			new Restore(context).run()
-
-		then: 'error message should be displayed as'
-			result.toString() == 'error: Missing required option: d'
 	}
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForSecuredStandalone() {
@@ -192,7 +181,6 @@ class RestoreSpecs extends Specification {
 			1 * mockReplayer.replay('"ts"')
 	}
 
-
 	def notifiesListenerOnSuccessfulReadOperation() {
 		given:'arguments contain all essential options'
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
@@ -211,7 +199,6 @@ class RestoreSpecs extends Specification {
 			0 * mockListener.onWriteFailure('"ts"', _)
 	}
 
-
 	def reportsSummary() {
 		given:'arguments contain all essential options'
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
@@ -227,7 +214,6 @@ class RestoreSpecs extends Specification {
 			1 * mockReporter.summarizeTo(_)
 	}
 
-
 	def reportsStartTime() {
 		given:'arguments contain all essential options'
 			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
@@ -242,7 +228,6 @@ class RestoreSpecs extends Specification {
 		then: 'it reports start time'
 			1 * mockReporter.writeStartTimeTo(_)
 	}
-
 
 	def notifiesListenerOnSuccessfulReadOperationWithDryrun() {
 		given:'arguments contains -f and -dry-run options'
@@ -266,7 +251,6 @@ class RestoreSpecs extends Specification {
 			0 * mockEmptyListener.onWriteFailure('"ts"', _)
 	}
 
-
 	def ignoresMandatoryDestinationOptionWhenDryRunOptionIsGiven() {
 		given:'arguments contains -f and --dry-run options'
 			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
@@ -281,5 +265,4 @@ class RestoreSpecs extends Specification {
 		then: 'it performs the restore operation'
 			1 * mockReplayer.replay('"ts"')
 	}
-
 }

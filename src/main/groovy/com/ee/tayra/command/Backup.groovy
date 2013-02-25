@@ -39,7 +39,7 @@ import com.mongodb.ServerAddress
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password]')
 cli.with {
-	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
+	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'OPTIONAL, Source MongoDB IP/Host, default is localhost', optionalArg:true
 	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
 	f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
 	_  args:1, argName: 'fSize', longOpt:'fSize', 'OPTIONAL, Size of Backup File, Default is 512MB, Usage Eg: --fSize=4MB', optionalArg:true
@@ -55,7 +55,11 @@ if(!options) {
 	return
 }
 
-sourceMongoDB = options.s
+sourceMongoDB = 'localhost'
+if(options.s) {
+	sourceMongoDB = options.s == true ? 'localhost' : options.s
+}
+
 recordToFile = options.f
 timestampFileName = 'timestamp.out'
 timestamp = null

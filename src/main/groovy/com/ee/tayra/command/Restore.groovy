@@ -38,22 +38,19 @@ import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.*
 import com.ee.tayra.io.criteria.CriteriaBuilder;
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sDb=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
-
-boolean destinationOptionRequired = args.contains('--dry-run') ? false : true
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
 
 cli.with  {
-	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', optionalArg:true 
+	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'OPTIONAL, Destination MongoDB IP/Host, default is localhost', optionalArg:true 
 	_ args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
 	f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
 	_ args:0, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
 	e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
 	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
 	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
-	_ args:1, argName:'sDb',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none, Eg: --sDb=test', optionalArg:true
-	_ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is none, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
+	_ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is until NOW, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
 	_ args:0, argName:'dry-run', longOpt: 'dry-run', 'OPTIONAL, To preview selected documents', optionalArg:true
-	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is none, Eg: --sNs=test', optionalArg:true
+	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is all namespaces, Eg: --sNs=test', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -64,13 +61,11 @@ if(!options) {
 
 Config config = new Config()
 
-//config.destMongoDB = options.d == true ? 'localhost' : options.d
-
-config.destMongoDB = 'localhost'
+destMongoDB = 'localhost'
 if(options.d) {
-	config.destMongoDB = options.d == true ? 'localhost' : options.d
+	destMongoDB = options.d == true ? 'localhost' : options.d
 }
-println config.destMongoDB
+config.destMongoDB = destMongoDB
 
 restoreFromFile = options.f
 
@@ -96,7 +91,7 @@ def readPassword(output) {
 
 String username = ''
 String password = ''
-if(options.u && destinationOptionRequired) {
+if(options.u && !options.'dry-run') {
 	username = options.u
 	password = options.p ?: readPassword(console)
 }
@@ -115,9 +110,6 @@ if(options.fAll) {
 }
 
 def criteria = new CriteriaBuilder().build {
-	if(options.sDb) {
-		usingDatabase options.sDb
-	}
 	if(options.sUntil) {
 		usingUntil options.sUntil
 	}

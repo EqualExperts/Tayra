@@ -49,7 +49,7 @@ public class BackupSpecs extends Specification {
 			new Backup(context).run()
 
 		then: 'error message should be shown as'
-			result.toString() == 'error: Missing required options: sf'
+			result.toString() == 'error: Missing required option: f'
 	}
 
 	def shoutsWhenNoOutputFileIsSupplied() {
@@ -61,17 +61,6 @@ public class BackupSpecs extends Specification {
 
 		then: 'error message should be shown as'
 			result.toString() == 'error: Missing required option: f'
-	}
-
-	def shoutsWhenNoSourceMongoDBIsSupplied() {
-		given: 'argument contains -f option only'
-			context.setVariable('args', ['-f', 'test.out'])
-
-		when: 'backup runs with above args'
-			new Backup(context).run()
-
-		then: 'error message should be shown as'
-			result.toString() == 'error: Missing required option: s'
 	}
 
 	def shoutsWhenMongoDBUrlIsIncorrect() {
