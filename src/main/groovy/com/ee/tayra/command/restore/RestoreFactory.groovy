@@ -28,57 +28,24 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
-import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.OplogReplayer
-import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.Replayer
-import com.ee.tayra.io.RestoreProgressReporter
-import com.ee.tayra.io.SelectiveOplogReplayer
+import com.ee.tayra.io.Reporter
 import com.mongodb.Mongo
-import com.mongodb.ServerAddress
-import java.io.PrintWriter;
 
-class DefaultFactory extends RestoreFactory {
+abstract class RestoreFactory {
 
-	private final Mongo mongo;
-	private final def listeningReporter
-	private final Config config;
-
-	public DefaultFactory(Config config) {
-		this.config = config;
-
-		ServerAddress server = new ServerAddress(config.destMongoDB, config.port)
-		this.mongo = new Mongo(server)
-		getAuthenticator(mongo).authenticate(config.username, config.password)
-
-		listeningReporter = new RestoreProgressReporter(new FileWriter
-				(config.exceptionFile), config.console)
+	public static RestoreFactory create (boolean isDryRun, RestoreCmdDefaults config) {
+		isDryRun ? new DryRunFactory(config) : new DefaultFactory(config)
 	}
 
-	@Override
-	public Replayer createWriter() {
-		new SelectiveOplogReplayer(config.criteria, new OplogReplayer(new Operations(mongo)))
-	}
+	public abstract Replayer createWriter()
 
-	@Override
-	public CopyListener createListener() {
-		(CopyListener)listeningReporter
-	}
+	public abstract CopyListener createListener()
 
-	@Override
-	public Reporter createReporter() {
-		(Reporter)listeningReporter
-	}
+	public abstract Reporter createReporter()
 
-	@Override
-	public Mongo getMongo() {
-		mongo
-	}
-
-	def getAuthenticator(mongo) {
-		config.authenticator == null ? new MongoAuthenticator(mongo) : config.authenticator
-	}
+	public abstract Mongo getMongo()
 }

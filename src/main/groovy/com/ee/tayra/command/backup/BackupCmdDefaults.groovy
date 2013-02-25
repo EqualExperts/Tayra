@@ -28,10 +28,14 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.backup
 
-interface Authenticator {
+import java.io.PrintWriter;
 
-	boolean authenticate(String username, String password)
+class BackupCmdDefaults {
 
+	public String mongo = 'localhost'
+	public int port = 27017
+	public String username = ''
+	public String password = ''
 }

@@ -28,7 +28,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
 import com.mongodb.DB
 import com.mongodb.Mongo
@@ -59,21 +59,17 @@ if(!options) {
 	return
 }
 
-Config config = new Config()
+config = new RestoreCmdDefaults()
 
-destMongoDB = 'localhost'
 if(options.d) {
-	destMongoDB = options.d == true ? 'localhost' : options.d
+	config.mongo = options.d == true ? 'localhost' : options.d
 }
-config.destMongoDB = destMongoDB
 
 restoreFromFile = options.f
 
-int port = 27017
 if(options.port) {
-	port = Integer.parseInt(options.port)
+	config.port = Integer.parseInt(options.port)
 }
-config.port = port
 
 PrintWriter console = new PrintWriter(System.out, true)
 config.console = console
@@ -89,20 +85,14 @@ def readPassword(output) {
 	return new String(System.console().readPassword())
 }
 
-String username = ''
-String password = ''
 if(options.u && !options.'dry-run') {
-	username = options.u
-	password = options.p ?: readPassword(console)
+	config.username = options.u
+	config.password = options.p ?: readPassword(console)
 }
-config.username = username
-config.password = password
 
-exceptionFile = 'exception.documents'
 if(options.e) {
-	exceptionFile = options.e
+	config.exceptionFile = options.e
 }
-config.exceptionFile = exceptionFile
 
 isMultiple = false
 if(options.fAll) {

@@ -28,7 +28,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
 import com.ee.tayra.io.ConsoleReplayer
 import com.ee.tayra.io.CopyListener
@@ -42,9 +42,9 @@ import java.io.PrintWriter;
 
 class DryRunFactory extends RestoreFactory {
 
-	private final def listeningReporter	private final Config config;
+	private final def listeningReporter	private final RestoreCmdDefaults config;
 
-	public DryRunFactory(Config config) {
+	public DryRunFactory(RestoreCmdDefaults config) {
 		this.config = config;
 		listeningReporter = new DeafAndDumbReporter()
 	}

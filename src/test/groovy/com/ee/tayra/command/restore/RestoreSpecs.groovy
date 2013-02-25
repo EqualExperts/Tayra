@@ -1,4 +1,4 @@
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
 import spock.lang.*
 
@@ -9,8 +9,8 @@ import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.SelectiveOplogReplayer
-import com.ee.tayra.command.Authenticator;
-import com.ee.tayra.command.Restore;
+import com.ee.tayra.command.restore.Restore;
+import com.ee.tayra.connector.Authenticator;
 import com.mongodb.MongoException
 
 class RestoreSpecs extends Specification {
@@ -264,5 +264,21 @@ class RestoreSpecs extends Specification {
 
 		then: 'it performs the restore operation'
 			1 * mockReplayer.replay('"ts"')
+	}
+	
+	def setsDefaultValuesOfOptions() {
+		given: 'arguments contain all essential options and not -d, --port, -u, -p'
+			context.setVariable('args', ['-f', 'test.out'])
+		
+		when: 'restore runs'
+			new Restore(context).run()
+			
+		then: 'following variables get default values'
+			def config = context.getVariable('config')
+			config.mongo == 'localhost'
+			config.port == 27017
+			config.username == ''
+			config.password == ''
+			config.exceptionFile == 'exception.documents'
 	}
 }

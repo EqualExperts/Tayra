@@ -1,17 +1,19 @@
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
+import com.ee.tayra.command.restore.DefaultFactory;
+import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
 import spock.lang.Specification
 
 class DefaultRestoreFactorySpecs extends Specification {
 
-	private Config config
+	private RestoreCmdDefaults config
 	private def factory
 
 	def setup() {
-		config = new Config()
-		config.destMongoDB = 'localhost'
+		config = new RestoreCmdDefaults()
+		config.mongo = 'localhost'
 		config.port = 27017
 		config.username = 'admin'
 		config.password = 'admin'

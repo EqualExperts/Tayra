@@ -28,21 +28,18 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.runner
+package com.ee.tayra.command.restore
 
-import com.ee.tayra.command.*
-import com.ee.tayra.command.backup.Backup;
-import com.ee.tayra.command.restore.Restore;
+import java.io.PrintWriter;
 
-def scriptName = args[0]
-Binding context = new Binding()
-context.setVariable('args', args[1..<args.length])
-if (scriptName == 'backup') {
-  script = new Backup(context)
-} else if (scriptName == 'restore') { 
-	script = new Restore(context)
-} else {
-  throw new IllegalArgumentException("Don't know how to process: $scriptName")
+class RestoreCmdDefaults {
+
+	public String mongo = 'localhost'
+	public int port = 27017
+	public String username = ''
+	public String password = ''
+	public def criteria
+	public String exceptionFile = 'exception.documents'
+	public PrintWriter console
+	public def authenticator
 }
-
-script.run()

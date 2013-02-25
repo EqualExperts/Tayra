@@ -1,5 +1,7 @@
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
+import com.ee.tayra.command.restore.DryRunFactory;
+import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.DeafAndDumbReporter;
 import com.ee.tayra.io.SelectiveOplogReplayer;
 
@@ -11,7 +13,7 @@ class DryRunFactorySpecs extends Specification{
 	private def factory
 
 	def setup() {
-		config = new Config()
+		config = new RestoreCmdDefaults()
 		factory =  new DryRunFactory(config)
 	}
 

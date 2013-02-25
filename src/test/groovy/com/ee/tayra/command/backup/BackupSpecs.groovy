@@ -1,9 +1,9 @@
-package com.ee.tayra.command
+package com.ee.tayra.command.backup
 
 import spock.lang.*
 
-import com.ee.tayra.command.Authenticator;
-import com.ee.tayra.command.Backup;
+import com.ee.tayra.command.backup.Backup;
+import com.ee.tayra.connector.Authenticator;
 import com.ee.tayra.io.CopyListener;
 import com.ee.tayra.io.Reporter;
 import com.mongodb.Mongo
@@ -145,7 +145,6 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -s and -f option'
-			def context = new Binding()
 			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
 
 		and: 'have a authenticator that does not authenticate'
@@ -177,5 +176,19 @@ public class BackupSpecs extends Specification {
 			result.toString().contains('Authentication Failed to localhost')
 	}
 
+	def setsDefaultValuesOfOptions() {
+		given: 'arguments contain all essential options and not -s, --port, -u, -p'
+			context.setVariable('args', ['-f', 'test.out'])
+		
+		when: 'backup runs'
+			new Backup(context).run()
+			
+		then: 'following variables get default values'
+			def config = context.getVariable('config')
+			config.mongo == 'localhost'
+			config.port == 27017
+			config.username == ''
+			config.password == ''
+	}
 }
 

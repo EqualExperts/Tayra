@@ -28,9 +28,11 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.backup
 
 import com.ee.tayra.*
+import com.ee.tayra.connector.MongoAuthenticator;
+import com.ee.tayra.connector.MongoReplSetConnection;
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
 import com.mongodb.Mongo
@@ -55,9 +57,10 @@ if(!options) {
 	return
 }
 
-sourceMongoDB = 'localhost'
+config = new BackupCmdDefaults()
+
 if(options.s) {
-	sourceMongoDB = options.s == true ? 'localhost' : options.s
+	config.mongo = options.s == true ? 'localhost' : options.s
 }
 
 recordToFile = options.f
@@ -67,11 +70,11 @@ timestamp = null
 logWriter = new RotatingFileWriter(recordToFile)
 
 if(options.fSize) {
-	logWriter.setFileSize(options.fSize)
+	logWriter.fileSize = options.fSize
 }
 
 if(options.fMax) {
-	logWriter.setFileMax(Integer.parseInt(options.fMax))
+	logWriter.fileMax = Integer.parseInt(options.fMax)
 }
 
 def getWriter() {
@@ -79,9 +82,8 @@ def getWriter() {
 			: logWriter
 }
 
-int port = 27017
 if(options.port) {
-	port = Integer.parseInt(options.port)
+	config.port = Integer.parseInt(options.port)
 }
 
 boolean isContinuous = false
@@ -102,11 +104,9 @@ def readPassword(output) {
 	return new String(System.console().readPassword())
 }
 
-String username = ''
-String password = ''
 if(options.u) {
-	username = options.u
-	password = options.p ?: readPassword(console)
+	config.username = options.u
+	config.password = options.p ?: readPassword(console)
 }
 
 writer = new TimestampRecorder(getWriter())
@@ -145,8 +145,8 @@ def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
 try {
 	reporter.writeStartTimeTo console
-	new MongoReplSetConnection(sourceMongoDB, port).using { mongo ->
-		getAuthenticator(mongo).authenticate(username, password)
+	new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
+		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
 		def reader = new OplogReader(oplog, timestamp, isContinuous)
 		new Copier().copy(reader, writer, listener, new CopyListener() {
