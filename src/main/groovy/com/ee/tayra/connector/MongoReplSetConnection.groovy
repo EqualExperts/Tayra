@@ -28,7 +28,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.connector
 
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientOptions

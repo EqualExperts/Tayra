@@ -28,43 +28,10 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.connector
 
-import java.io.PrintWriter;
+interface Authenticator {
 
-import com.mongodb.Mongo
-import com.mongodb.MongoException
+	boolean authenticate(String username, String password)
 
-class MongoAuthenticator implements Authenticator {
-	
-  private Mongo mongo;
-
-  public MongoAuthenticator(final Mongo mongo) {
-	  this.mongo = mongo;
-  }
-  
-  private boolean onUnsecureDB() {
-	  try {
-		  mongo.databaseNames
-		  return true
-	  } catch (MongoException e) {
-		  return false
-	  }
-  }
-  
-  public boolean authenticate(String username, String password) {
-	  if(onUnsecureDB()) {
-		  return false
-	  }
-	  if(!username) {
-		  throw new MongoException('Username cannot be empty')
-	  } 
-	  if(!password) {
-		  throw new MongoException('Password cannot be empty')
-	  }
-	  if(!mongo.getDB('admin').authenticate(username, password.toCharArray())) {
-		  throw new MongoException("Authentication Failed to $mongo.address.host")
-	  }
-	  true
-  }
 }

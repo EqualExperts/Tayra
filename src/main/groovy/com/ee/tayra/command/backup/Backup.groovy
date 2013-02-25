@@ -28,9 +28,11 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.backup
 
 import com.ee.tayra.*
+import com.ee.tayra.connector.MongoAuthenticator;
+import com.ee.tayra.connector.MongoReplSetConnection;
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
 import com.mongodb.Mongo
@@ -39,7 +41,7 @@ import com.mongodb.ServerAddress
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password]')
 cli.with {
-	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'REQUIRED, Source MongoDB IP/Host', required: true
+	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'OPTIONAL, Source MongoDB IP/Host, default is localhost', optionalArg:true
 	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
 	f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
 	_  args:1, argName: 'fSize', longOpt:'fSize', 'OPTIONAL, Size of Backup File, Default is 512MB, Usage Eg: --fSize=4MB', optionalArg:true
@@ -55,7 +57,12 @@ if(!options) {
 	return
 }
 
-sourceMongoDB = options.s
+config = new BackupCmdDefaults()
+
+if(options.s) {
+	config.mongo = options.s == true ? 'localhost' : options.s
+}
+
 recordToFile = options.f
 timestampFileName = 'timestamp.out'
 timestamp = null
@@ -63,11 +70,11 @@ timestamp = null
 logWriter = new RotatingFileWriter(recordToFile)
 
 if(options.fSize) {
-	logWriter.setFileSize(options.fSize)
+	logWriter.fileSize = options.fSize
 }
 
 if(options.fMax) {
-	logWriter.setFileMax(Integer.parseInt(options.fMax))
+	logWriter.fileMax = Integer.parseInt(options.fMax)
 }
 
 def getWriter() {
@@ -75,9 +82,8 @@ def getWriter() {
 			: logWriter
 }
 
-int port = 27017
 if(options.port) {
-	port = Integer.parseInt(options.port)
+	config.port = Integer.parseInt(options.port)
 }
 
 boolean isContinuous = false
@@ -98,11 +104,9 @@ def readPassword(output) {
 	return new String(System.console().readPassword())
 }
 
-String username = ''
-String password = ''
 if(options.u) {
-	username = options.u
-	password = options.p ?: readPassword(console)
+	config.username = options.u
+	config.password = options.p ?: readPassword(console)
 }
 
 writer = new TimestampRecorder(getWriter())
@@ -141,8 +145,8 @@ def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
 try {
 	reporter.writeStartTimeTo console
-	new MongoReplSetConnection(sourceMongoDB, port).using { mongo ->
-		getAuthenticator(mongo).authenticate(username, password)
+	new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
+		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
 		def reader = new OplogReader(oplog, timestamp, isContinuous)
 		new Copier().copy(reader, writer, listener, new CopyListener() {

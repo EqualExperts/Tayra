@@ -1,15 +1,20 @@
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
+
+import com.ee.tayra.command.restore.DefaultFactory;
+import com.ee.tayra.command.restore.DryRunFactory;
+import com.ee.tayra.command.restore.RestoreCmdDefaults;
+import com.ee.tayra.command.restore.RestoreFactory;
 
 import spock.lang.Specification
 
 class RestoreFactorySpecs extends Specification{
 
 	private boolean isDryrunSupplied
-	private Config config
+	private RestoreCmdDefaults config
 
 	def setup() {
-		config = new Config()
-		config.destMongoDB = 'localhost'
+		config = new RestoreCmdDefaults()
+		config.mongo = 'localhost'
 		config.port = 27017
 		config.username = 'admin'
 		config.password = 'admin'

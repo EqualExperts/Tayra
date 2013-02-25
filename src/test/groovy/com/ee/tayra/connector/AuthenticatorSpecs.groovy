@@ -1,11 +1,11 @@
-package com.ee.tayra.command
+package com.ee.tayra.connector
 
 import java.net.UnknownHostException;
 
 import spock.lang.Ignore
 import spock.lang.Specification
 
-import com.ee.tayra.command.MongoAuthenticator;
+import com.ee.tayra.connector.MongoAuthenticator;
 import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.MongoOptions

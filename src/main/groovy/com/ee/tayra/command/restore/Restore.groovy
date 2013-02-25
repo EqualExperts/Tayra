@@ -28,7 +28,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
 import com.mongodb.DB
 import com.mongodb.Mongo
@@ -38,22 +38,19 @@ import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.*
 import com.ee.tayra.io.criteria.CriteriaBuilder;
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sDb=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
-
-boolean destinationOptionRequired = args.contains('--dry-run') ? false : true
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
 
 cli.with  {
-	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'REQUIRED, Destination MongoDB IP/Host', required: destinationOptionRequired
+	d args:1, argName: 'MongoDB Host', longOpt:'dest', 'OPTIONAL, Destination MongoDB IP/Host, default is localhost', optionalArg:true 
 	_ args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
 	f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
 	_ args:0, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
 	e args:1, argName: 'exceptionFile', longOpt:'exceptionFile', 'OPTIONAL, File containing documents that failed to restore, default writes to file "exception.documents" in the run directory', required: false
 	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
 	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
-	_ args:1, argName:'sDb',longOpt:'sDb', 'OPTIONAL, Dbname for selective restore, default is none, Eg: --sDb=test', optionalArg:true
-	_ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is none, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
+	_ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is until NOW, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
 	_ args:0, argName:'dry-run', longOpt: 'dry-run', 'OPTIONAL, To preview selected documents', optionalArg:true
-	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is none, Eg: --sNs=test', optionalArg:true
+	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is all namespaces, Eg: --sNs=test', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -62,16 +59,17 @@ if(!options) {
 	return
 }
 
-Config config = new Config()
+config = new RestoreCmdDefaults()
 
-config.destMongoDB = options.d ? options.d : null
+if(options.d) {
+	config.mongo = options.d == true ? 'localhost' : options.d
+}
+
 restoreFromFile = options.f
 
-int port = 27017
 if(options.port) {
-	port = Integer.parseInt(options.port)
+	config.port = Integer.parseInt(options.port)
 }
-config.port = port
 
 PrintWriter console = new PrintWriter(System.out, true)
 config.console = console
@@ -87,20 +85,14 @@ def readPassword(output) {
 	return new String(System.console().readPassword())
 }
 
-String username = ''
-String password = ''
-if(options.u && destinationOptionRequired) {
-	username = options.u
-	password = options.p ?: readPassword(console)
+if(options.u && !options.'dry-run') {
+	config.username = options.u
+	config.password = options.p ?: readPassword(console)
 }
-config.username = username
-config.password = password
 
-exceptionFile = 'exception.documents'
 if(options.e) {
-	exceptionFile = options.e
+	config.exceptionFile = options.e
 }
-config.exceptionFile = exceptionFile
 
 isMultiple = false
 if(options.fAll) {
@@ -108,9 +100,6 @@ if(options.fAll) {
 }
 
 def criteria = new CriteriaBuilder().build {
-	if(options.sDb) {
-		usingDatabase options.sDb
-	}
 	if(options.sUntil) {
 		usingUntil options.sUntil
 	}

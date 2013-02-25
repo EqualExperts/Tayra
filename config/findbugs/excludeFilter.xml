@@ -54,13 +54,13 @@
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Restore$_run_closure1" />
+    <Class name="com.ee.tayra.command.restore.Restore$_run_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Backup$_run_closure2" />
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
@@ -90,61 +90,61 @@
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Backup$_run_closure1" />
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Backup$_run_closure2" />
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Backup$_run_closure3" />
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure3" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.MongoReplSetConnection$_closure1" />
+    <Class name="com.ee.tayra.connector.MongoReplSetConnection$_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.MongoReplSetConnection$_using_closure2" />
+    <Class name="com.ee.tayra.connector.MongoReplSetConnection$_using_closure2" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.MongoReplSetConnection$_getNodesWithinReplicaSet_closure1" />
+    <Class name="com.ee.tayra.connector.MongoReplSetConnection$_getNodesWithinReplicaSet_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Backup$_run_closure4"/>
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure4"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.MongoReplSetConnection$_using_closure3"/>
+    <Class name="com.ee.tayra.connector.MongoReplSetConnection$_using_closure3"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Backup$_run_closure5"/>
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure5"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.command.Restore$_run_closure3"/>
+    <Class name="com.ee.tayra.command.restore.Restore$_run_closure3"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
@@ -207,6 +207,12 @@
   <Class name="com.ee.tayra.fixtures.RunnerFixture"/>
     <Not>
       <Bug code="DM_DEFAULT_ENCODING" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.restore.Restore$_run_closure2"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
 </FindBugsFilter>

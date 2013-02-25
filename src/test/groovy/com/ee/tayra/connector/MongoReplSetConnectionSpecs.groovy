@@ -1,7 +1,8 @@
-package com.ee.tayra.command
+package com.ee.tayra.connector
 
 import spock.lang.*;
 
+import com.ee.tayra.connector.MongoReplSetConnection;
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress

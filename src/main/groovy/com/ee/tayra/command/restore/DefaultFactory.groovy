@@ -28,24 +28,58 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command
+package com.ee.tayra.command.restore
 
+import com.ee.tayra.connector.MongoAuthenticator;
+import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.Replayer
+import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.Replayer
+import com.ee.tayra.io.RestoreProgressReporter
+import com.ee.tayra.io.SelectiveOplogReplayer
 import com.mongodb.Mongo
+import com.mongodb.ServerAddress
+import java.io.PrintWriter;
 
-abstract class RestoreFactory {
+class DefaultFactory extends RestoreFactory {
 
-	public static RestoreFactory create (boolean isDryRun, Config config) {
-		isDryRun ? new DryRunFactory(config) : new DefaultFactory(config)
+	private final Mongo mongo;
+	private final def listeningReporter
+	private final RestoreCmdDefaults config;
+
+	public DefaultFactory(RestoreCmdDefaults config) {
+		this.config = config;
+
+		ServerAddress server = new ServerAddress(config.mongo, config.port)
+		this.mongo = new Mongo(server)
+		getAuthenticator(mongo).authenticate(config.username, config.password)
+
+		listeningReporter = new RestoreProgressReporter(new FileWriter
+				(config.exceptionFile), config.console)
 	}
 
-	public abstract Replayer createWriter()
+	@Override
+	public Replayer createWriter() {
+		new SelectiveOplogReplayer(config.criteria, new OplogReplayer(new Operations(mongo)))
+	}
 
-	public abstract CopyListener createListener()
+	@Override
+	public CopyListener createListener() {
+		(CopyListener)listeningReporter
+	}
 
-	public abstract Reporter createReporter()
+	@Override
+	public Reporter createReporter() {
+		(Reporter)listeningReporter
+	}
 
-	public abstract Mongo getMongo()
+	@Override
+	public Mongo getMongo() {
+		mongo
+	}
+
+	def getAuthenticator(mongo) {
+		config.authenticator == null ? new MongoAuthenticator(mongo) : config.authenticator
+	}
 }

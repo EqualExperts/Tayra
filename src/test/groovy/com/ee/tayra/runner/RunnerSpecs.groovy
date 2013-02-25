@@ -36,7 +36,7 @@ class RunnerSpecs extends Specification {
 			runner.run()
 		
 		then: 'error message should be shown as'
-			result.toString() == 'error: Missing required options: sf'
+			result.toString() == 'error: Missing required option: f'
 	}	
 	
 	def shoutsWhenAnUnknownCommandIsInvoked() {
@@ -74,6 +74,6 @@ class RunnerSpecs extends Specification {
 			runner.run()
 		
 		then: 'error message should be shown as'
-			result.toString() == 'error: Missing required options: df'
+			result.toString() == 'error: Missing required option: f'
 	}
 }
