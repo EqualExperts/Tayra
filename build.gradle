@@ -48,7 +48,7 @@ project.ext {
   
   //Acceptance Tests
   acceptanceTestDir = 'acceptance-tests'
-  acceptanceTestStoriesDir = "$projectDir/$acceptanceTestDir/stories"
+  acceptanceTestStoriesDir = "$projectDir/$acceptanceTestDir/stories/played"
   acceptanceTestReportsDir = "$reporting.baseDir/$acceptanceTestDir"
 }
 
