@@ -131,10 +131,21 @@ if(timestampFile.exists()) {
 		console.println("Unable to read $timestampFile.name")
 	}
 }
+def reader = null
+
+boolean normalExecution = false;
 
 addShutdownHook {
+
+	if(!normalExecution && reporter) {
+		reporter.writeln (console,'==> User forced a Stop-Read...')
+	}
+	if(reader) {
+		reader.close()
+	}
 	if (writer){
-		new FileWriter(timestampFileName).append(writer.timestamp).flush()
+		writer.flush()
+		new FileWriter(timestampFileName).append(writer.timestamp).close()
 	}
 	if (reporter) {
 		reporter.summarizeTo console
@@ -148,7 +159,7 @@ try {
 	new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
 		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
-		def reader = new OplogReader(oplog, timestamp, isContinuous)
+		reader = new OplogReader(oplog, timestamp, isContinuous)
 		new Copier().copy(reader, writer, listener, new CopyListener() {
 					void onReadSuccess(String document){
 					}
@@ -163,14 +174,15 @@ try {
 				})
 	} {
 		if (writer){
-			new FileWriter(timestampFileName).append(writer.timestamp).flush()
-			timestamp=writer.timestamp
+			new FileWriter(timestampFileName).append(writer.timestamp).close()
+			timestamp = writer.timestamp
 		}
 		console.println "Attempting to resume Backup On: ${new Date()}"
 	}
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform backup...$problem.message"
 }
+normalExecution = true;
 
 def getAuthenticator(mongo) {
 	binding.hasVariable('authenticator') ?

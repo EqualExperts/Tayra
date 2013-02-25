@@ -52,7 +52,6 @@ public class Oplog implements MongoCollection {
     if (!oplogExists) {
       throw new NotAReplicaSetNode("node is not a part of ReplicaSet");
     }
-
     oplog = local.getCollection(OPLOG_COLLECTIONNAME);
   }
 
@@ -72,7 +71,7 @@ public class Oplog implements MongoCollection {
     return QueryBuilder
             .start()
               .put("ts")
-              .greaterThanEquals(timestamp.get("ts"))
+              .greaterThan(timestamp.get("ts"))
             .get();
     }
 

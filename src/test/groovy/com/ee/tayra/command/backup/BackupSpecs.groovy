@@ -6,6 +6,7 @@ import com.ee.tayra.command.backup.Backup;
 import com.ee.tayra.connector.Authenticator;
 import com.ee.tayra.io.CopyListener;
 import com.ee.tayra.io.Reporter;
+import com.ee.tayra.io.ProgressReporter;
 import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.MongoOptions
@@ -13,7 +14,7 @@ import com.mongodb.ServerAddress
 
 public class BackupSpecs extends Specification {
 
-	private static StringBuilder result;
+	private static StringBuilder result
 	private String username = 'admin'
 	private String password = 'admin'
 	private CopyListener mockListener
@@ -123,7 +124,7 @@ public class BackupSpecs extends Specification {
 		def options = new MongoOptions()
 		options.safe = true
 		ServerAddress server = new ServerAddress("localhost", 17017)
-		def UnsecuredReplicaset = new Mongo(server, options);
+		def UnsecuredReplicaset = new Mongo(server, options)
 		UnsecuredReplicaset.getDB('admin').addUser('admin', 'admin'.toCharArray())
 	}
 
@@ -179,10 +180,10 @@ public class BackupSpecs extends Specification {
 	def setsDefaultValuesOfOptions() {
 		given: 'arguments contain all essential options and not -s, --port, -u, -p'
 			context.setVariable('args', ['-f', 'test.out'])
-		
+
 		when: 'backup runs'
 			new Backup(context).run()
-			
+
 		then: 'following variables get default values'
 			def config = context.getVariable('config')
 			config.mongo == 'localhost'
@@ -190,5 +191,21 @@ public class BackupSpecs extends Specification {
 			config.username == ''
 			config.password == ''
 	}
+
+	def summarizesOnFinishingBackupProcess() {
+		given:'arguments contains -s, -f, -u and -p options'
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', password])
+
+		and: 'a reporter is injected'
+			def mockProgressReporter = Mock(ProgressReporter)
+			context.setVariable('reporter', mockProgressReporter)
+
+		when: 'backup runs with above args'
+			new Backup(context).run()
+
+		then: 'then reporter summarizes'
+			(_) * mockProgressReporter.summarizeTo(_)
+	}
+
 }
 
