@@ -1,9 +1,9 @@
 package com.ee.tayra.io.criteria
 
-import com.ee.tayra.io.criteria.CriteriaBuilder;
-import com.ee.tayra.io.criteria.Criterion;
-import com.ee.tayra.io.criteria.NamespaceCriteria;
-import com.ee.tayra.io.criteria.TimestampCriteria;
+import com.ee.tayra.io.criteria.CriteriaBuilder
+import com.ee.tayra.io.criteria.Criterion
+import com.ee.tayra.io.criteria.NamespaceCriteria
+import com.ee.tayra.io.criteria.TimestampCriteria
 
 import spock.lang.Specification;
 
@@ -26,7 +26,7 @@ class CriteriaBuilderSpecs extends Specification{
 			def criterion = criteriaBuilder.build()
 
 		then: 'Criterion should be an instance of NamespaceCriteria'
-			criterion.criteria()[0] instanceof NamespaceCriteria
+			criterion.criteria()[0].getClass() == NamespaceCriteria
 	}
 
 	def producesTimestampCriteria() {
@@ -38,7 +38,7 @@ class CriteriaBuilderSpecs extends Specification{
 			def criterion = criteriaBuilder.build()
 
 		then: 'Criterion should be an instance of TimestampCriteria'
-			criterion.criteria()[0] instanceof TimestampCriteria
+			criterion.criteria()[0].getClass() == TimestampCriteria
 	}
 
 	def producesAll() {
@@ -61,23 +61,9 @@ class CriteriaBuilderSpecs extends Specification{
 				usingUntil timestamp
 	        }
 		then: 'Criterion should be an instance of DbCriteria'
-			criterion.criteria()[0] instanceof TimestampCriteria
+			criterion.criteria()[0].getClass() == TimestampCriteria
 	}
-//    
-//	def producesDbCriteriaUsingWithClosure() {
-//		given: 'database filter'
-//			def dbName = 'test'
-//
-//		when: 'criteria is built'
-//			def criterion = criteriaBuilder.build {
-//				usingDatabase dbName
-//
-//			}
-//
-//		then: 'Criterion should be an instance of DbCriteria'
-//			criterion.criteria()[0] instanceof DbCriteria
-//	}
-	
+
 	def producesNamespaceCriteriaWithClosure() {
 		given: 'namespace filter'
 			def namespace = 'test'
@@ -85,12 +71,9 @@ class CriteriaBuilderSpecs extends Specification{
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build {
 				usingNamespace namespace
-
 			}
 
 		then: 'Criterion should be an instance of NamespaceCriteria'
-			criterion.criteria()[0] instanceof NamespaceCriteria
+			criterion.criteria()[0].getClass() == NamespaceCriteria
 	}
-	
-
 }

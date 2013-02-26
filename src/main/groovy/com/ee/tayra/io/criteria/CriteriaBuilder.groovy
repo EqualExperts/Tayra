@@ -47,14 +47,10 @@ public class CriteriaBuilder {
   
   public void usingNamespace(String namespace) {
 	  criteria.add(new NamespaceCriteria(namespace));
-	}
-	
+  }
 
   public Criterion build(Closure closure = {}) {
-    def clonedClosure = closure.clone()
-    clonedClosure.resolveStrategy = Closure.DELEGATE_FIRST
-    clonedClosure.delegate = this
-    clonedClosure()
+	with closure
     if(criteria.isEmpty()) {
       return Criterion.ALL
     }

@@ -165,6 +165,8 @@ checkstyleTest {
 	exclude('**/*/*Specs.java')
 }
 
+findbugsTest.enabled = false
+
 def prepareExecutables() {
 	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }.join(File.pathSeparator)
 	def allLibFilesWin = new File("$libsDir").list().collect { "%TAYRA_HOME%/libs/$it" }.join(File.pathSeparator)

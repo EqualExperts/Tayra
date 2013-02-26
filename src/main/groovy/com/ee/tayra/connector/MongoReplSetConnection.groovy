@@ -68,14 +68,13 @@ public class MongoReplSetConnection {
   }
 
   def using(Closure runnable, Closure betweenRetry = {}) {
-    def clonedRunnable = runnable.clone()
     boolean shouldContinue = true
     while(shouldContinue) {
       try {
         shouldContinue = retryable
-        clonedRunnable(node)
+	    node.with runnable
         shouldContinue = false
-        } catch(MongoException.Network problem) {
+      } catch(MongoException.Network problem) {
         if (retryable) {
           println "\nNode crashed. Re-establishing Connection"
           betweenRetry.clone().call()
