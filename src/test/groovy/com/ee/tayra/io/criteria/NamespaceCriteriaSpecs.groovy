@@ -29,16 +29,16 @@ class NamespaceCriteriaSpecs extends Specification{
   def criteria
   def document
   
-  def satisfiesDatabaseCriteria (){
-    criteria = new NamespaceCriteria (namespaceOne)
+  def satisfiesDatabaseCriteria(){
+    criteria = new NamespaceCriteria (namespaceOne, false)
   expect:
     outcome == criteria.isSatisfiedBy(document)
   
     where:
     document                 | outcome
- createCollectionEntry      | true
+  createCollectionEntry      | true
   createCollectionWithInsert | true  
- insertDoc                  | true
+  insertDoc                  | true
   updateDoc                  | true    
   deleteDoc                  | true
   dropCollection             | true
@@ -50,8 +50,8 @@ class NamespaceCriteriaSpecs extends Specification{
   initiatingSet              | false
 }
     
-  def satisfiesDatabaseAndCollectionCriteria (){
-    criteria = new NamespaceCriteria (namespaceTwo)
+  def satisfiesDatabaseAndCollectionCriteria(){
+    criteria = new NamespaceCriteria (namespaceTwo, false)
   expect:
     outcome == criteria.isSatisfiedBy(document)
   
@@ -70,4 +70,46 @@ class NamespaceCriteriaSpecs extends Specification{
     dropIndexFail              | false
     initiatingSet              | false
 }
+  
+  def satisfiesDatabaseCriteriaWithSExclude(){
+	  criteria = new NamespaceCriteria (namespaceOne, true)
+	expect:
+	  outcome == criteria.isSatisfiedBy(document)
+	
+	  where:
+	  document                 | outcome
+    createCollectionEntry      | false
+	createCollectionWithInsert | false
+    insertDoc                  | false
+	updateDoc                  | false
+	deleteDoc                  | false
+	dropCollection             | false
+	dropDatabase               | false
+	createIndex                | false
+	dropIndex                  | false
+	insertDocFail              | false
+	dropIndexFail              | true
+	initiatingSet              | true
+  }
+	  
+	def satisfiesDatabaseAndCollectionCriteriaWithSExclude(){
+	  criteria = new NamespaceCriteria (namespaceTwo, true)
+	expect:
+	  outcome == criteria.isSatisfiedBy(document)
+	
+	where:
+	  document                   | outcome
+	  insertDoc                  | false
+	  updateDoc                  | false
+	  deleteDoc                  | false
+	  dropDatabase               | false
+	  createCollection           | false
+	  cappedCreateCollection     | false
+	  dropCollection             | false
+	  createIndex                | false
+	  dropIndex                  | false
+	  insertDocFail              | true
+	  dropIndexFail              | true
+	  initiatingSet              | true
+  }
 }

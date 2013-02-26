@@ -28,8 +28,8 @@ class DbNamespaceCriteriaSpecs extends Specification{
 	def criteria
 	def document
 
-	def satisfiesDatabaseCriteria (){
-		criteria = new NamespaceCriteria (namespace)
+	def satisfiesDatabaseCriteria() {
+		criteria = new NamespaceCriteria(namespace, false)
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
 		where:
@@ -46,13 +46,41 @@ class DbNamespaceCriteriaSpecs extends Specification{
 			insertDocFail              | true
 	}
 
-	def doesNotSatisfyDatabaseCriteria (){
-		criteria = new NamespaceCriteria (namespace)
+	def doesNotSatisfyDatabaseCriteria() {
+		criteria = new NamespaceCriteria(namespace, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
 	where:
 		document                   | outcome
 		dropIndexFail              | false
 		initiatingSet              | false
+	}
+
+	def satisfiesDatabaseCriteriaWithSExclude() {
+		criteria = new NamespaceCriteria(namespace, true)
+		expect:
+			outcome == criteria.isSatisfiedBy(document)
+		where:
+			document                 | outcome
+			createCollectionEntry      | false
+			createCollectionWithInsert | false
+			insertDoc                  | false
+			updateDoc                  | false
+			deleteDoc                  | false
+			dropCollection             | false
+			dropDatabase               | false
+			createIndex                | false
+			dropIndex                  | false
+			insertDocFail              | false
+	}
+
+	def doesNotSatisfyDatabaseCriteriaWithSExclude() {
+		criteria = new NamespaceCriteria(namespace, true)
+	expect:
+		outcome == criteria.isSatisfiedBy(document)
+	where:
+		document                   | outcome
+		dropIndexFail              | true
+		initiatingSet              | true
 	}
 }

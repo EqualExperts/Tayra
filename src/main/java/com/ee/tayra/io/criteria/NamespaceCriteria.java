@@ -33,13 +33,22 @@ package com.ee.tayra.io.criteria;
 public class NamespaceCriteria implements Criterion {
   private static final String BLANK = "";
   private String incomingNs;
+  private final boolean toExclude;
 
-  public NamespaceCriteria(final String ns) {
+  public NamespaceCriteria(final String ns, final boolean toExclude) {
     this.incomingNs = ns;
+    this.toExclude = toExclude;
 }
 
   @Override
   public boolean isSatisfiedBy(final String document) {
+    if (toExclude) {
+      return !criteriaSatisfied(document);
+    }
+    return criteriaSatisfied(document);
+  }
+
+  private boolean criteriaSatisfied(final String document) {
     String documentNamespace = getNamespace(document);
     if (BLANK.equals(documentNamespace)) {
       return false;

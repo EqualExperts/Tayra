@@ -27,13 +27,13 @@ class CollectionNsCriteriaSpecs extends Specification{
 	
 	def criteria
 	def document
-	
-	
-	def satisfiesDatabaseAndCollectionCriteria (){
-		criteria = new NamespaceCriteria (namespace)
+
+
+	def satisfiesDatabaseAndCollectionCriteria() {
+		criteria = new NamespaceCriteria(namespace, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
-	
+
 	where:
 		document                   | outcome
 		insertDoc                  | true
@@ -46,9 +46,9 @@ class CollectionNsCriteriaSpecs extends Specification{
 		createIndex                | true
 		dropIndex                  | true
 	}
-	
-	def doesNotSatisfyDatabaseAndCollectionCriteria (){
-		criteria = new NamespaceCriteria (namespace)
+
+	def doesNotSatisfyDatabaseAndCollectionCriteria() {
+		criteria = new NamespaceCriteria(namespace, false)
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
 		
@@ -57,6 +57,36 @@ class CollectionNsCriteriaSpecs extends Specification{
 		insertDocFail              | false
 		dropIndexFail              | false
 		initiatingSet              | false
+	}
+
+	def satisfiesDatabaseAndCollectionCriteriaWithSExclude() {
+		criteria = new NamespaceCriteria(namespace, true)
+	expect:
+		outcome == criteria.isSatisfiedBy(document)
+	
+	where:
+		document                   | outcome
+		insertDoc                  | false
+		updateDoc                  | false
+		deleteDoc                  | false
+		dropDatabase               | false
+		createCollection           | false
+		cappedCreateCollection     | false
+		dropCollection             | false
+		createIndex                | false
+		dropIndex                  | false
+	}
+
+	def doesNotSatisfyDatabaseAndCollectionCriteriaWithSExclude() {
+		criteria = new NamespaceCriteria(namespace, true)
+		expect:
+			outcome == criteria.isSatisfiedBy(document)
+		
+		where:
+		document                   | outcome
+		insertDocFail              | true
+		dropIndexFail              | true
+		initiatingSet              | true
 	}
 
 }
