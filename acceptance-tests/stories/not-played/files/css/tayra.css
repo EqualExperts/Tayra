@@ -1,0 +1,16 @@
+div.acceptanceTest {
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 3px solid gray;
+    border-bottom: 3px solid gray;
+    background-color: white;
+    padding: 10px;
+    padding-top: 10px;
+}
+
+.headingTableRow {
+    font-weight: normal;
+    font-style: italic;
+    background-color: #AAAAAA;
+}
+
