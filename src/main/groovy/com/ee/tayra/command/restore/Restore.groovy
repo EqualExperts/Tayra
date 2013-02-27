@@ -106,9 +106,9 @@ def boolean toExclude(option){
 	ArrayList arg = args
 	if (arg.contains('--sExclude')){
 		def optionIndex = arg.indexOf(option)
-				if(arg[optionIndex - 1] == '--sExclude') {
-					return true
-				}
+		if(arg[optionIndex - 1] == '--sExclude') {
+			return true
+		}
 	}
 	return false
 }

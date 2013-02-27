@@ -177,7 +177,7 @@ class RestoreSpecs extends Specification {
 		when: 'restore runs'
 			new Restore(context).run()
 
-		then: 'perform the restore operation'
+		then: 'it performs the restore operation'
 			1 * mockReplayer.replay('"ts"')
 	}
 
@@ -280,5 +280,50 @@ class RestoreSpecs extends Specification {
 			config.username == ''
 			config.password == ''
 			config.exceptionFile == 'exception.documents'
+	}
+	
+	def invokesRestoreWhenTimeStampOptionIsSupplied() {
+		given:'arguments contains -f, -u, -p and --sUntil options'
+			context.setVariable('args', ['-f', 'test.out','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+
+		and: 'the reader is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'it performs the restore operation'
+			1 * mockReplayer.replay('"ts"')
+	}
+		
+	def invokesRestoreWhenNamespaceOptionIsToBeExcluded() {
+		given:'arguments contains -f, -u, -p and --sNs with --sExclude options'
+			context.setVariable('args', ['-f', 'test.out','--sExclude','--sNs=test', '-u', username, '-p', password])
+
+		and: 'the reader is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'it performs the restore operation'
+			1 * mockReplayer.replay('"ts"')
+	}
+
+	def invokesRestoreWhenTimeStampOptionIsToBeExcluded() {
+		given:'arguments contains -f, -u, -p and --sUntil with --sExclude options'
+			context.setVariable('args', ['-f', 'test.out','--sExclude','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+
+		and: 'the reader is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'it performs the restore operation'
+			1 * mockReplayer.replay('"ts"')
 	}
 }
