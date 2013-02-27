@@ -35,11 +35,14 @@ import com.ee.tayra.connector.MongoAuthenticator;
 import com.ee.tayra.connector.MongoReplSetConnection;
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
+import com.ee.tayra.io.criteria.CriteriaBuilder
 import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
+import sun.misc.Signal
+import sun.misc.SignalHandler;
 
-def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password]')
+def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password] [--sNs=<dbName>]')
 cli.with {
 	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'OPTIONAL, Source MongoDB IP/Host, default is localhost', optionalArg:true
 	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
@@ -49,6 +52,7 @@ cli.with {
 	t  args:0, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
 	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
 	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
+	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective backup, default is all namespaces, Eg: --sNs=test', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -133,7 +137,13 @@ if(timestampFile.exists()) {
 }
 def reader = null
 
-boolean normalExecution = false;
+def criteria = new CriteriaBuilder().build {
+	if(options.sNs) {
+	  usingNamespace options.sNs
+	}
+}
+
+boolean normalExecution = false
 
 addShutdownHook {
 
@@ -159,7 +169,7 @@ try {
 	new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
 		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
-		reader = new OplogReader(oplog, timestamp, isContinuous)
+		reader = new SelectiveOplogReader(new OplogReader(oplog, timestamp, isContinuous), criteria)
 		new Copier().copy(reader, writer, listener, new CopyListener() {
 					void onReadSuccess(String document){
 					}
