@@ -73,19 +73,20 @@ public class TimestampCriteria implements Criterion {
   }
 
   private Date getTimestampFrom(final String filter) {
-   if (filter.contains(TS_IDENTIFIER)) {
-     int tsStartIndex = filter.indexOf(TS_IDENTIFIER) + TS_IDENTIFIER.length();
-     int tsEndIndex = filter.indexOf(INC_IDENTIFIER);
-     return new Date(Long.parseLong(filter.substring(tsStartIndex, tsEndIndex)
+    try {
+      if (filter.contains(TS_IDENTIFIER)) {
+       int tsStartIndex = filter.indexOf(TS_IDENTIFIER) +
+              TS_IDENTIFIER.length();
+       int tsEndIndex = filter.indexOf(INC_IDENTIFIER);
+       return new Date(Long.parseLong(filter.substring(tsStartIndex, tsEndIndex)
                               .replaceAll(",", "").trim()) * MILLI_CONVERSION);
-   } else {
-     try {
+      } else {
        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
        return format.parse(filter.substring(filter.indexOf("=") + 1));
-     } catch (ParseException p) {
-       return new Date(0L);
      }
-   }
+    } catch (ParseException p) {
+       System.out.println("Invalid timestamp syntax");
+       return new Date(0L);
+    }
   }
-
 }
