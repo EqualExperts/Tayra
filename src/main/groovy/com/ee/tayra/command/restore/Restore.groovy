@@ -56,7 +56,7 @@ cli.with  {
 	_ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
 }
 
-def options = cli.parse(args)
+options = cli.parse(args)
 
 if(!options) {
 	return
@@ -104,7 +104,7 @@ if(options.fAll) {
 
 def boolean toExclude(option){
 	ArrayList arg = args
-	if (arg.contains('--sExclude')){
+	if (options.sExclude){
 		def optionIndex = arg.indexOf(option)
 		if(arg[optionIndex - 1] == '--sExclude') {
 			return true
