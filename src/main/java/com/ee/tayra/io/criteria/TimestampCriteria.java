@@ -30,7 +30,6 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -93,7 +92,7 @@ public class TimestampCriteria implements Criterion {
        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
        return format.parse(filter.substring(filter.indexOf("=") + 1));
      }
-    } catch (ParseException p) {
+    } catch (Exception e) {
        System.out.println("Invalid timestamp syntax");
        return new Date(0L);
     }
