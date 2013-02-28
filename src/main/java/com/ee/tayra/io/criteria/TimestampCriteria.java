@@ -75,8 +75,8 @@ public class TimestampCriteria implements Criterion {
   private Date getTimestampFrom(final String filter) {
     try {
       if (filter.contains(TS_IDENTIFIER)) {
-       int tsStartIndex = filter.indexOf(TS_IDENTIFIER) +
-              TS_IDENTIFIER.length();
+       int tsStartIndex = filter.indexOf(TS_IDENTIFIER)
+                + TS_IDENTIFIER.length();
        int tsEndIndex = filter.indexOf(INC_IDENTIFIER);
        return new Date(Long.parseLong(filter.substring(tsStartIndex, tsEndIndex)
                               .replaceAll(",", "").trim()) * MILLI_CONVERSION);
