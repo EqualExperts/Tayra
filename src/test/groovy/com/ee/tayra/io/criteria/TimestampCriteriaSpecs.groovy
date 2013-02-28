@@ -15,7 +15,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, false)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			criteria.isSatisfiedBy(document)
@@ -29,7 +29,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, false)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			! criteria.isSatisfiedBy(document)
@@ -43,7 +43,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1356515303,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, false)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			criteria.isSatisfiedBy(document)
@@ -57,10 +57,64 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, false)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			!criteria.isSatisfiedBy(document)
 	}
 
+	def returnsFalseIfDocumentIsEarlierThanTimestampWithSExcludeOption () {
+		
+		given: 'A timestamp and an oplog document'
+			def timeStamp = '{ts:{$ts:1357537752,$inc:2}}'
+			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+			
+		when: 'timestamp criteria is applied to the document with sExclude as true'
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, true)
+	
+		then: 'document is excluded if it is older than the timestamp'
+			!criteria.isSatisfiedBy(document)
+		
+	}
+
+	def returnsTrueIfDocumentIsLaterThanTimestampWithSExcludeOption() {
+		
+		given: 'A timestamp and an oplog document'
+			def timeStamp = '{ts:{$ts:1300000000,$inc:1}}'
+			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+		
+		when: 'timestamp criteria is applied to the document with sExclude as true'
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, true)
+								
+		then: 'document is not excluded if it is later than the timestamp'
+			criteria.isSatisfiedBy(document)
+		
+	}
+	
+	def returnsFalseIfDocumentIsEarlierThanISOTimeWithSExcludeOption() {
+		
+		given: 'A timestamp and an oplog document'
+			def timeStamp = '2012-12-26T15:19:40Z'
+			def document = '{ts:{$ts:1356515303,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+		
+		when: 'timestamp criteria is applied to the document with sExclude as true'
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, true)
+								
+		then: 'document is excluded if it is older than the timestamp'
+			!criteria.isSatisfiedBy(document)
+		
+	}
+
+	def returnsTrueIfDocumentIsLaterThanISOTimeWithSExcludeOption() {
+		
+		given: 'A timestamp and an oplog document'
+			def timeStamp = '2012-12-26T15:19:40Z'
+			def document = '{ts:{$ts:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+		
+		when: 'timestamp criteria is applied to the document with sExclude as true'
+			TimestampCriteria criteria = new TimestampCriteria(timeStamp, true)
+								
+		then: 'document is not excluded if it is later than the timestamp'
+			criteria.isSatisfiedBy(document)
+	}
 }

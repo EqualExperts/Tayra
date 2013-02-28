@@ -20,7 +20,7 @@ class CriteriaBuilderSpecs extends Specification{
 			def namespace = 'test'
 
 		and: 'it is injected'
-			criteriaBuilder.usingNamespace(namespace)
+			criteriaBuilder.usingNamespace namespace, false
 
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build()
@@ -32,7 +32,7 @@ class CriteriaBuilderSpecs extends Specification{
 	def producesTimestampCriteria() {
 		given: 'timestamp filter'
 			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
-			criteriaBuilder.usingUntil(timestamp)
+			criteriaBuilder.usingUntil timestamp, false
 
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build()
@@ -58,7 +58,7 @@ class CriteriaBuilderSpecs extends Specification{
 
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build {
-				usingUntil timestamp
+				usingUntil timestamp, false
 	        }
 		then: 'Criterion should be an instance of DbCriteria'
 			criterion.criteria()[0].getClass() == TimestampCriteria
@@ -70,7 +70,7 @@ class CriteriaBuilderSpecs extends Specification{
 
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build {
-				usingNamespace namespace
+				usingNamespace namespace, false
 			}
 
 		then: 'Criterion should be an instance of NamespaceCriteria'

@@ -33,10 +33,12 @@ package com.ee.tayra.command.restore
 import com.mongodb.DB
 import com.mongodb.Mongo
 import com.mongodb.ServerAddress
+import com.mongodb.util.Args;
 import com.ee.tayra.domain.*
 import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.*
 import com.ee.tayra.io.criteria.CriteriaBuilder;
+
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
 
@@ -51,9 +53,10 @@ cli.with  {
 	_ args:1, argName:'sUntil',longOpt:'sUntil', 'OPTIONAL, timestamp for selective restore, default is until NOW, \n Eg: ISO Format --sUntil=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sUntil={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sUntil=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
 	_ args:0, argName:'dry-run', longOpt: 'dry-run', 'OPTIONAL, To preview selected documents', optionalArg:true
 	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is all namespaces, Eg: --sNs=test', optionalArg:true
+	_ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
 }
 
-def options = cli.parse(args)
+options = cli.parse(args)
 
 if(!options) {
 	return
@@ -99,12 +102,23 @@ if(options.fAll) {
 	isMultiple = true
 }
 
+def boolean toExclude(option){
+	ArrayList arg = args
+	if (options.sExclude){
+		def optionIndex = arg.indexOf(option)
+		if(arg[optionIndex - 1] == '--sExclude') {
+			return true
+		}
+	}
+	return false
+}
+
 def criteria = new CriteriaBuilder().build {
 	if(options.sUntil) {
-		usingUntil options.sUntil
+		usingUntil options.sUntil, toExclude('--sUntil='+options.sUntil)
 	}
 	if(options.sNs) {
-	  usingNamespace options.sNs
+	  usingNamespace options.sNs, toExclude('--sNs='+options.sNs)
 	}
 }
 config.criteria = criteria

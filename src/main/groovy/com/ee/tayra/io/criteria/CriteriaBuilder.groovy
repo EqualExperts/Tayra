@@ -41,14 +41,14 @@ public class CriteriaBuilder {
 
   private List<Criterion> criteria = new ArrayList<Criterion>();
 
-  public void usingUntil(String timestamp) {
-    criteria.add(new TimestampCriteria(timestamp));
-  }
-  
-  public void usingNamespace(String namespace) {
-	  criteria.add(new NamespaceCriteria(namespace));
+  public void usingUntil(String timestamp, toExclude) {
+    criteria.add(new TimestampCriteria(timestamp, toExclude));
   }
 
+  public void usingNamespace(String namespace, toExclude) {
+    criteria.add(new NamespaceCriteria(namespace, toExclude));
+  }
+ 
   public Criterion build(Closure closure = {}) {
 	with closure
     if(criteria.isEmpty()) {
