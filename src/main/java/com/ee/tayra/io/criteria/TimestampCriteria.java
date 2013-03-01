@@ -52,12 +52,12 @@ public class TimestampCriteria implements Criterion {
   @Override
   public boolean isSatisfiedBy(final String document) {
     if (toExclude) {
-      return !criteriaSatisfied(document);
+      return !isCriteriaSatisfied(document);
     }
-    return criteriaSatisfied(document);
+    return isCriteriaSatisfied(document);
   }
 
-  private boolean criteriaSatisfied(final String document) {
+  private boolean isCriteriaSatisfied(final String document) {
     String tsDocument = document.replaceAll("\"", "")
       .replaceAll(" ", "");
     if (timeStampUntil.compareTo(getTimestampFrom(tsDocument)) > 0) {

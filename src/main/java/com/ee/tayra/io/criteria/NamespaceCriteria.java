@@ -43,12 +43,12 @@ public class NamespaceCriteria implements Criterion {
   @Override
   public boolean isSatisfiedBy(final String document) {
     if (toExclude) {
-      return !criteriaSatisfied(document);
+      return !isCriteriaSatisfied(document);
     }
-    return criteriaSatisfied(document);
+    return isCriteriaSatisfied(document);
   }
 
-  private boolean criteriaSatisfied(final String document) {
+  private boolean isCriteriaSatisfied(final String document) {
     String documentNamespace = getNamespace(document);
     if (BLANK.equals(documentNamespace)) {
       return false;
