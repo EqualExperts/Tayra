@@ -64,8 +64,8 @@ if(options.s) {
 }
 
 recordToFile = options.f
-timestampFileName = 'timestamp.out'
-timestamp = null
+String timestampFileName = 'timestamp.out'
+String timestamp = null
 
 logWriter = new RotatingFileWriter(recordToFile)
 
@@ -109,7 +109,7 @@ if(options.u) {
 	config.password = options.p ?: readPassword(console)
 }
 
-writer = new TimestampRecorder(getWriter())
+def writer = new TimestampRecorder(getWriter())
 
 def listeningReporter = new ProgressReporter(console)
 
@@ -134,9 +134,7 @@ if(timestampFile.exists()) {
 def reader = null
 
 boolean normalExecution = false;
-
 addShutdownHook {
-
 	if(!normalExecution && reporter) {
 		reporter.writeln (console,'==> User forced a Stop-Read...')
 	}
@@ -145,7 +143,9 @@ addShutdownHook {
 	}
 	if (writer){
 		writer.flush()
-		new FileWriter(timestampFileName).append(writer.timestamp).close()
+		if(writer.timestamp.length() > 0){
+			new FileWriter(timestampFileName).append(writer.timestamp).close()
+		}
 	}
 	if (reporter) {
 		reporter.summarizeTo console
@@ -174,8 +174,10 @@ try {
 				})
 	} {
 		if (writer){
-			new FileWriter(timestampFileName).append(writer.timestamp).close()
-			timestamp = writer.timestamp
+			if(writer.timestamp.length() > 0){
+				new FileWriter(timestampFileName).append(writer.timestamp).close()
+				timestamp = writer.timestamp
+			}
 		}
 		console.println "Attempting to resume Backup On: ${new Date()}"
 	}
