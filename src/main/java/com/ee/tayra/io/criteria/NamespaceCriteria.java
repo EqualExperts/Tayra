@@ -31,13 +31,17 @@
 package com.ee.tayra.io.criteria;
 
 public class NamespaceCriteria implements Criterion {
+  private static final String DOT = "\\.";
   private static final String BLANK = "";
   private String incomingNs;
   private final boolean toExclude;
+  private String dBCollectionNs;
+  private String incomingOpCode;
 
   public NamespaceCriteria(final String ns, final boolean toExclude) {
     this.incomingNs = ns;
     this.toExclude = toExclude;
+    this.incomingOpCode = extractOpCodeFromIncomingNs();
 }
 
   @Override
@@ -54,8 +58,44 @@ public class NamespaceCriteria implements Criterion {
       return false;
     }
     OperationType type = OperationType.create(documentNamespace);
-    return type.match(document, documentNamespace, incomingNs);
+    if (type.match(document, documentNamespace, dBCollectionNs)) {
+      if (!(incomingOpCode.equals("noop"))) {
+        return incomingOpCode.equals(getDocumentOpcode(document));
+      }
+      return true;
+    }
+    return false;
   }
+
+  private String extractOpCodeFromIncomingNs() {
+    String incomingNsOperation = extractOperationFromNs();
+    Opcode incomingNsOperationEnum = Opcode.map(incomingNsOperation);
+    extractNsAsDbCollection(incomingNsOperation, incomingNsOperationEnum);
+    return incomingNsOperationEnum.getOpCode();
+  }
+
+  private void extractNsAsDbCollection(final String incomingNsOperation,
+      final Opcode incomingNsOperationEnum) {
+    dBCollectionNs = incomingNs;
+    if (!(incomingNsOperationEnum.compareTo(Opcode.No_Op) == 0)) {
+      dBCollectionNs = incomingNs.substring(0,
+          incomingNs.indexOf(incomingNsOperation) - 1);
+    }
+  }
+
+  private String extractOperationFromNs() {
+    String[] incomingNsInfo = incomingNs.split(DOT);
+    String incomingNsOperation = incomingNsInfo[(incomingNsInfo.length) - 1];
+    return incomingNsOperation;
+}
+
+  private String getDocumentOpcode(final String document) {
+    int opcodeStartIndex = document.indexOf("op") - 1;
+    int opcodeEndIndex = document.indexOf(",", opcodeStartIndex);
+    String opcodeSpec = document.substring(opcodeStartIndex, opcodeEndIndex);
+    String quotedOpcode = opcodeSpec.split(":")[1];
+    return quotedOpcode.replaceAll("\"", "").trim();
+}
 
   private String getNamespace(final String document) {
     int startIndex = document.indexOf("ns") - 1;
