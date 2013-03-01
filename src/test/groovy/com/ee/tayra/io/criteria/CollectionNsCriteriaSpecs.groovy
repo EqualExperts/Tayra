@@ -1,7 +1,5 @@
 package com.ee.tayra.io.criteria
 
-import com.sun.xml.internal.bind.v2.runtime.output.C14nXmlOutput.StaticAttribute;
-
 import spock.lang.Specification;
 
 class CollectionNsCriteriaSpecs extends Specification{
