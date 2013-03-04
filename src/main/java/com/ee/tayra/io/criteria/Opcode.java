@@ -23,7 +23,7 @@ remove {
 No_Op {
   @Override
   public String getOpCode() {
-    return "noop";
+    return "NO_OP";
   }
 };
 

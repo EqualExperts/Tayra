@@ -33,6 +33,7 @@ package com.ee.tayra.io.criteria;
 public class NamespaceCriteria implements Criterion {
   private static final String DOT = "\\.";
   private static final String BLANK = "";
+  private static final String NO_OP = "NO_OP";
   private String incomingNs;
   private final boolean toExclude;
   private String dBCollectionNs;
@@ -41,8 +42,8 @@ public class NamespaceCriteria implements Criterion {
   public NamespaceCriteria(final String ns, final boolean toExclude) {
     this.incomingNs = ns;
     this.toExclude = toExclude;
-    this.incomingOpCode = extractOpCodeFromIncomingNs();
-}
+    this.incomingOpCode = extractDbCollectionAndOpCodeFromIncomingNs();
+  }
 
   @Override
   public boolean isSatisfiedBy(final String document) {
@@ -59,35 +60,46 @@ public class NamespaceCriteria implements Criterion {
     }
     OperationType type = OperationType.create(documentNamespace);
     if (type.match(document, documentNamespace, dBCollectionNs)) {
-      if (!(incomingOpCode.equals("noop"))) {
-        return incomingOpCode.equals(getDocumentOpcode(document));
-      }
-      return true;
+      return matchOperation(document);
     }
     return false;
   }
 
-  private String extractOpCodeFromIncomingNs() {
-    String incomingNsOperation = extractOperationFromNs();
-    Opcode incomingNsOperationEnum = Opcode.map(incomingNsOperation);
-    extractNsAsDbCollection(incomingNsOperation, incomingNsOperationEnum);
+  private boolean matchOperation(final String document) {
+    if (!(incomingOpCode.equals(NO_OP))) {
+      return incomingOpCode.equals(getDocumentOpcode(document));
+    }
+    return true;
+  }
+
+  private String extractDbCollectionAndOpCodeFromIncomingNs() {
+    String incomingOperation = extractOperationFromNs();
+    Opcode incomingNsOperationEnum = Opcode.map(incomingOperation);
+    dBCollectionNs = extractNsAsDbCollection(incomingOperation,
+            incomingNsOperationEnum);
     return incomingNsOperationEnum.getOpCode();
   }
 
-  private void extractNsAsDbCollection(final String incomingNsOperation,
+  private String extractNsAsDbCollection(final String incomingNsOperation,
       final Opcode incomingNsOperationEnum) {
-    dBCollectionNs = incomingNs;
-    if (!(incomingNsOperationEnum.compareTo(Opcode.No_Op) == 0)) {
-      dBCollectionNs = incomingNs.substring(0,
+    String dBCollection = incomingNs;
+    if (!isNoOp(incomingNsOperationEnum)) {
+      dBCollection = incomingNs.substring(0,
           incomingNs.indexOf(incomingNsOperation) - 1);
+// check for db.collection pattern (should contain one dot)
     }
+    return dBCollection;
+  }
+
+  private boolean isNoOp(final Opcode incomingNsOperationEnum) {
+    return incomingNsOperationEnum.compareTo(Opcode.No_Op) == 0;
   }
 
   private String extractOperationFromNs() {
     String[] incomingNsInfo = incomingNs.split(DOT);
-    String incomingNsOperation = incomingNsInfo[(incomingNsInfo.length) - 1];
-    return incomingNsOperation;
-}
+    String incomingOperation = incomingNsInfo[(incomingNsInfo.length) - 1];
+    return incomingOperation;
+  }
 
   private String getDocumentOpcode(final String document) {
     int opcodeStartIndex = document.indexOf("op") - 1;

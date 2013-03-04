@@ -6,6 +6,8 @@ class OperationNsCriteriaSpecs extends Specification{
 	static eelabsCountriesUpdateDoc = '{ "ts" : { "$ts" : 1360733107 , "$inc" : 1} , "h" : 5409713632279739576 , "v" : 2 , "op" : "u" , "ns" : "eelabs.countries","o2" : { "_id" : ObjectId("511499dd9365898be4b00b0d") },"o" : { "$set" : { "name" : "Test2" } } }'
 	static eelabsCountriesInsertDoc = '{ "ts" : { "$ts" : 1360732964 , "$inc" : 1} , "h" : -3247792282971197891 , "v" : 2 , "op" : "i" , "ns" : "eelabs.countries" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 	static eelabsCountriesDeleteDoc = '{ "ts" : { "$ts" : 1360685980 , "$inc" : 1} , "h" : -3549987509950246055 , "v" : 2 , "op" : "d" , "ns" : "eelabs.countries", "b" : true, "o" : { "_id" : ObjectId("51149b949365898be4b00b0e") } }'
+
+	static eelabsPrefixedCollectionDoc = '{ "ts" : { "$ts" : 1360732964 , "$inc" : 1} , "h" : -3247792282971197891 , "v" : 2 , "op" : "i" , "ns" : "eelabs.people.address.street" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 	
 	static eelabsPeopleInsertDoc = '{ "ts" : { "$ts" : 1360732964 , "$inc" : 1} , "h" : -3247792282971197891 , "v" : 2 , "op" : "i" , "ns" : "eelabs.people" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
@@ -17,11 +19,12 @@ class OperationNsCriteriaSpecs extends Specification{
 	def namespaceDelete ='eelabs.countries.remove'
 	def namespaceWrongOperation ='eelabs.countries.wrong'
 	def namespaceWithoutOperation ='eelabs.countries'
+	def prefixedNamespaceInsert = 'eelabs.people.address.street.insert'
 
 	def criteria
 	def document
 
-	def satisfiesDatabaseCollectionAndInsertOpertionCriteria() {
+	def satisfiesNamespaceAndInsertOperationCriteria() {
 		criteria = new NamespaceCriteria(namespaceInsert, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -32,8 +35,8 @@ class OperationNsCriteriaSpecs extends Specification{
 		eelabsCountriesUpdateDoc              | false
 		eelabsCountriesDeleteDoc              | false
 	}
-	
-	def satisfiesDatabaseCollectionAndUpdateOpertionCriteria() {
+
+	def satisfiesNamespaceAndUpdateOperationCriteria() {
 		criteria = new NamespaceCriteria(namespaceUpdate, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -44,8 +47,8 @@ class OperationNsCriteriaSpecs extends Specification{
 		eelabsCountriesUpdateDoc              | true
 		eelabsCountriesDeleteDoc              | false
 	}
-	
-	def satisfiesDatabaseCollectionAndDeleteOpertionCriteria() {
+
+	def satisfiesNamespaceAndDeleteOperationCriteria() {
 		criteria = new NamespaceCriteria(namespaceDelete, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -57,7 +60,7 @@ class OperationNsCriteriaSpecs extends Specification{
 		eelabsCountriesDeleteDoc              | true
 	}
 
-	def satisfiesInsertOpertionAndNotDatabaseCriteria() {
+	def satisfiesInsertOperationAndNotDatabaseCriteria() {
 		criteria = new NamespaceCriteria(namespaceInsert, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -67,8 +70,8 @@ class OperationNsCriteriaSpecs extends Specification{
 		eeCountriesInsertDoc                  | false
 		eelabsCountriesInsertDoc              | true
 	}
-	
-	def satisfiesInsertOpertionDatabaseAndNotCollectionCriteria() {
+
+	def satisfiesInsertOperationDatabaseAndNotCollectionCriteria() {
 		criteria = new NamespaceCriteria(namespaceInsert, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -79,7 +82,7 @@ class OperationNsCriteriaSpecs extends Specification{
 		eelabsPeopleInsertDoc                 | false
 	}
 	
-	def satisfiesInsertOpertionAndNotDatabaseAndCollectionCriteria() {
+	def satisfiesInsertOperationAndNotDatabaseAndCollectionCriteria() {
 		criteria = new NamespaceCriteria(namespaceInsert, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -90,7 +93,7 @@ class OperationNsCriteriaSpecs extends Specification{
 		eelabsCountriesInsertDoc              | true
 	}
 	
-	def doesNotsatisfyWrongOpertionCriteria() {
+	def doesNotSatisfyWrongOperationCriteria() {
 		criteria = new NamespaceCriteria(namespaceWrongOperation, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -100,7 +103,7 @@ class OperationNsCriteriaSpecs extends Specification{
 		eelabsCountriesInsertDoc              | false
 	}
 	
-	def satisfiesNoOpertionCriteria() {
+	def satisfiesNoOperationCriteria() {
 		criteria = new NamespaceCriteria(namespaceWithoutOperation, false)
 	expect:
 		outcome == criteria.isSatisfiedBy(document)
@@ -109,4 +112,27 @@ class OperationNsCriteriaSpecs extends Specification{
 		document                              | outcome
 		eelabsCountriesInsertDoc              | true
 	}
+
+	def satisfiesPrefixedNamespaceAndOperationCriteria() {
+		criteria = new NamespaceCriteria(prefixedNamespaceInsert, false)
+	expect:
+		outcome == criteria.isSatisfiedBy(document)
+
+	where:
+		document                               | outcome
+		eelabsPrefixedCollectionDoc            | true
+	}
+
+	def shoutsWhenNoCollectionGivenWithOperation() {
+		criteria = new NamespaceCriteria(prefixedNamespaceInsert, false)
+	expect:
+		outcome == criteria.isSatisfiedBy(document)
+
+	where:
+		document                               | outcome
+		eelabsPrefixedCollectionDoc            | true
+	}
+
+//TODO	dbName.insert
+
 }
