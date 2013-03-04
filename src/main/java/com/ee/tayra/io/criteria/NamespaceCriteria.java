@@ -60,6 +60,9 @@ public class NamespaceCriteria implements Criterion {
     }
     OperationType type = OperationType.create(documentNamespace);
     if (type.match(document, documentNamespace, dBCollectionNs)) {
+      if (type.getClass().equals(DDLOperation.class)) {
+        return true;
+      }
       return matchOperation(document);
     }
     return false;

@@ -3,9 +3,16 @@ package com.ee.tayra.io.criteria
 import spock.lang.Specification
 
 class OperationNsCriteriaSpecs extends Specification{
+	
+	static eelabsCreateCappedCollection = '{ "ts" : Timestamp(1360665338000, 1), "h" : NumberLong("7391500989066642719"), "v" : 2, "op" : "c", "ns" : "eelabs.$cmd", "o" : { "create" : "countries", "capped" : null, "size" : null } }'
+	static eelabsCreateCollection = '{ "ts" : { "$ts" : 1360685980 , "$inc" : 1} , "h" : -3549987509950246055 , "v" : 2 , "op" : "c" , "ns" : "eelabs.$cmd" , "o" : { "create" : "countries"}}'
+	static eelabsDropDatabase ='{ "ts" : Timestamp(1360665338000, 1), "h" : NumberLong("7391500989066642719"), "v" : 2, "op" : "c", "ns" : "eelabs.$cmd", "o" : { "dropDatabase" : 1 } }'
+	static eelabsDropIndex = '{ "ts" : { "$ts" : 1360733107 , "$inc" : 1} , "h" : 5409713632279739576 , "v" : 2 , "op" : "c" , "ns" : "eelabs.$cmd" , "o" : { "deleteIndexes" : "countries" , "index" : { "name" : 1.0}}}'
+	
 	static eelabsCountriesUpdateDoc = '{ "ts" : { "$ts" : 1360733107 , "$inc" : 1} , "h" : 5409713632279739576 , "v" : 2 , "op" : "u" , "ns" : "eelabs.countries","o2" : { "_id" : ObjectId("511499dd9365898be4b00b0d") },"o" : { "$set" : { "name" : "Test2" } } }'
 	static eelabsCountriesInsertDoc = '{ "ts" : { "$ts" : 1360732964 , "$inc" : 1} , "h" : -3247792282971197891 , "v" : 2 , "op" : "i" , "ns" : "eelabs.countries" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 	static eelabsCountriesDeleteDoc = '{ "ts" : { "$ts" : 1360685980 , "$inc" : 1} , "h" : -3549987509950246055 , "v" : 2 , "op" : "d" , "ns" : "eelabs.countries", "b" : true, "o" : { "_id" : ObjectId("51149b949365898be4b00b0e") } }'
+	
 
 	static eelabsPrefixedCollectionDoc = '{ "ts" : { "$ts" : 1360732964 , "$inc" : 1} , "h" : -3247792282971197891 , "v" : 2 , "op" : "i" , "ns" : "eelabs.people.address.street" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 	
@@ -131,6 +138,19 @@ class OperationNsCriteriaSpecs extends Specification{
 	where:
 		document                               | outcome
 		eelabsPrefixedCollectionDoc            | true
+	}
+	
+	def satisfiesWhenDocumentIsDDL() {
+		criteria = new NamespaceCriteria(namespaceInsert, false)
+	expect:
+		outcome == criteria.isSatisfiedBy(document)
+
+	where:
+		document                               | outcome
+		eelabsCreateCappedCollection           | true
+		eelabsCreateCollection                 | true
+		eelabsDropDatabase                     | true
+		eelabsDropIndex                        | true
 	}
 
 //TODO	dbName.insert
