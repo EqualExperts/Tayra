@@ -32,13 +32,17 @@ package com.ee.tayra.io.criteria;
 
 public class NamespaceCriteria implements Criterion {
   private static final String BLANK = "";
-  private String incomingNs;
+  private String[] incomingNsList;
   private final boolean toExclude;
 
   public NamespaceCriteria(final String ns, final boolean toExclude) {
-    this.incomingNs = ns;
+    this.incomingNsList = namespaceList(ns);
     this.toExclude = toExclude;
-}
+  }
+
+  private String[] namespaceList(final String ns) {
+    return ns.split(",");
+  }
 
   @Override
   public boolean isSatisfiedBy(final String document) {
@@ -53,15 +57,24 @@ public class NamespaceCriteria implements Criterion {
     if (BLANK.equals(documentNamespace)) {
       return false;
     }
+      return isSatisfiedByEachCriteria(document, documentNamespace);
+  }
+
+  private boolean isSatisfiedByEachCriteria(final String document,
+        final String documentNamespace) {
     OperationType type = OperationType.create(documentNamespace);
-    return type.match(document, documentNamespace, incomingNs);
+    for (String incomingNS : incomingNsList) {
+      if (type.match(document, documentNamespace, incomingNS)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private String getNamespace(final String document) {
     int startIndex = document.indexOf("ns") - 1;
     int endIndex = document.indexOf(",", startIndex);
-    String namespace = document.substring(startIndex, endIndex)
-      .split(":") [1];
+    String namespace = document.substring(startIndex, endIndex).split(":") [1];
     return namespace.replaceAll("\"", BLANK).trim();
   }
 }
