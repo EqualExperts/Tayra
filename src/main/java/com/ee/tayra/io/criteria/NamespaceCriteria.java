@@ -42,7 +42,8 @@ public class NamespaceCriteria implements Criterion {
   public NamespaceCriteria(final String ns, final boolean toExclude) {
     this.incomingNs = ns;
     this.toExclude = toExclude;
-    this.incomingOpCode = extractDbCollectionAndOpCodeFromIncomingNs();
+    this.incomingOpCode = extractOpCodeFromIncomingNs(incomingNs);
+    this.dBCollectionNs = extractNsAsDbCollection(incomingNs, incomingOpCode);
   }
 
   @Override
@@ -54,18 +55,27 @@ public class NamespaceCriteria implements Criterion {
   }
 
   private boolean isCriteriaSatisfied(final String document) {
-    String documentNamespace = getNamespace(document);
+    String documentNamespace = getDocumentNamespace(document);
     if (BLANK.equals(documentNamespace)) {
       return false;
     }
     OperationType type = OperationType.create(documentNamespace);
-    if (type.match(document, documentNamespace, dBCollectionNs)) {
-      if (type.getClass().equals(DDLOperation.class)) {
+    if (dbCollectionMatched(document, documentNamespace, type)) {
+      if (isDDL(type)) {
         return true;
       }
       return matchOperation(document);
     }
     return false;
+  }
+
+  private boolean dbCollectionMatched(final String document,
+           final String documentNamespace, final OperationType type) {
+    return type.match(document, documentNamespace, dBCollectionNs);
+  }
+
+  private boolean isDDL(final OperationType type) {
+    return type.getClass().equals(DDLOperation.class);
   }
 
   private boolean matchOperation(final String document) {
@@ -75,30 +85,24 @@ public class NamespaceCriteria implements Criterion {
     return true;
   }
 
-  private String extractDbCollectionAndOpCodeFromIncomingNs() {
-    String incomingOperation = extractOperationFromNs();
-    Opcode incomingNsOperationEnum = Opcode.map(incomingOperation);
-    dBCollectionNs = extractNsAsDbCollection(incomingOperation,
-            incomingNsOperationEnum);
-    return incomingNsOperationEnum.getOpCode();
+  private String extractOpCodeFromIncomingNs(final String incomingNs) {
+    String incomingOperation = extractOperationFromNs(incomingNs);
+    return Opcode.map(incomingOperation).getOpCode();
   }
 
-  private String extractNsAsDbCollection(final String incomingNsOperation,
-      final Opcode incomingNsOperationEnum) {
+  private String extractNsAsDbCollection(final String incomingNs,
+        final String incomingOpCode) {
     String dBCollection = incomingNs;
-    if (!isNoOp(incomingNsOperationEnum)) {
+    if (!(incomingOpCode.equals(NO_OP))) {
+      String incomingOperation = extractOperationFromNs(incomingNs);
       dBCollection = incomingNs.substring(0,
-          incomingNs.indexOf(incomingNsOperation) - 1);
+          incomingNs.indexOf(incomingOperation) - 1);
 // check for db.collection pattern (should contain one dot)
     }
     return dBCollection;
   }
 
-  private boolean isNoOp(final Opcode incomingNsOperationEnum) {
-    return incomingNsOperationEnum.compareTo(Opcode.No_Op) == 0;
-  }
-
-  private String extractOperationFromNs() {
+  private String extractOperationFromNs(final String incomingNs) {
     String[] incomingNsInfo = incomingNs.split(DOT);
     String incomingOperation = incomingNsInfo[(incomingNsInfo.length) - 1];
     return incomingOperation;
@@ -112,7 +116,7 @@ public class NamespaceCriteria implements Criterion {
     return quotedOpcode.replaceAll("\"", "").trim();
 }
 
-  private String getNamespace(final String document) {
+  private String getDocumentNamespace(final String document) {
     int startIndex = document.indexOf("ns") - 1;
     int endIndex = document.indexOf(",", startIndex);
     String namespace = document.substring(startIndex, endIndex)
