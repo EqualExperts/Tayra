@@ -1,4 +1,5 @@
 import java.net.UnknownHostException;
+
 import com.ee.tayra.fixtures.AssertMongoFixture;
 import com.ee.tayra.fixtures.MongoFixture;
 import com.ee.tayra.fixtures.RunnerFixture;
@@ -21,11 +22,11 @@ public class WhenTheReplicaSetIsRunning extends DoFixture {
 
   public final Fixture forSourceNodeOnPortAndDestinationNodeOnPort(
    final String srcHost, final int srcPort, final String destHost,
-   final int destPort) throws UnknownHostException {
+   final int destPort) throws UnknownHostException, InterruptedException {
     return new AssertMongoFixture(srcHost, srcPort, destHost, destPort);
   }
 
-  public final void sleepFor(final long time) throws InterruptedException {
+  public final void waitFor(final long time) throws InterruptedException {
     Thread.sleep(time);
   }
 }

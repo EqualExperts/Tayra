@@ -9,7 +9,7 @@
 			<div class="header">
 				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
 				<div style="text-align:center;margin-top:-40">
-					<h1>Tayra selectively restores on the basis of namespace</h1>
+					<h1>Tayra selectively restores on the basis of multiple namespaces</h1>
 				</div>
 			</div>
 			<div class="contents">
@@ -52,6 +52,14 @@
 						<td colspan="2"><pre>db.items.insert({name:3})</pre></td>
 					</tr>
 					<tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.items.ensureIndex({name:1})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.items.dropIndex({name:1})</pre></td>
+          </tr>
+					<tr>
 						<td colspan="2">use database</td>
 						<td colspan="2">patents</td>
 					</tr>
@@ -67,6 +75,38 @@
 						<td colspan="2">run</td>
 						<td colspan="2"><pre>db.things.insert({name:3})</pre></td>
 					</tr>
+					<tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.things.ensureIndex({name:1})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.people.insert({name:1})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.people.insert({name:2})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.people.insert({name:3})</pre></td>
+          </tr>
+				 <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">projects</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.things.insert({name:1})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.things.insert({name:2})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.things.insert({name:3})</pre></td>
+         </tr>
 				</table>
 				<br/>
 				<h4>2. Run Backup Utility</h4>
@@ -97,7 +137,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=products.items</pre></td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=products.items,patents</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -115,10 +155,10 @@
 					</tr>
 				</table>
 				<br/>
-				<h4>4. Sleep</h4>
+				  <h4>4. Wait For Restore to complete</h4>
 				<table>
 					<tr>
-						<td>sleep for</td>
+						<td>wait for</td>
 						<td><pre>5000</pre></td>
 					</tr>
 				</table>
@@ -152,7 +192,7 @@
 					</tr>
 				</table>
 				<br/>
-				<h5>6a. Summary</h5>
+				<h5>5b. Summary</h5>
 				<table>
 					<tr class="headingTableRow">
 						<td>For source node</td>
@@ -176,11 +216,122 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">3</td><td colspan="4">0</td>
+						<td colspan="4">3</td><td colspan="4">3</td>
 					</tr>
 				</table>
+        <br/>
+        <h5>5c. Summary</h5>
+        <table>
+          <tr class="headingTableRow">
+            <td>For source node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>17017</pre></td>
+            <td>and destination node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>27021</pre></td>
+          </tr>
+          <tr>
+            <td>run in database</td>
+            <td colspan="2"><pre>patents</pre></td>
+            <td>query</td>
+            <td colspan="2"><pre>db.people.count()</pre></td>
+            <td>and cleanup databases</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4">3</td><td colspan="4">3</td>
+          </tr>
+        </table>
+        <br/>
+        <h5>5d. Summary</h5>
+        <table>
+          <tr class="headingTableRow">
+            <td>For source node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>17017</pre></td>
+            <td>and destination node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>27021</pre></td>
+          </tr>
+          <tr>
+            <td>run in database</td>
+            <td colspan="2"><pre>projects</pre></td>
+            <td>query</td>
+            <td colspan="2"><pre>db.things.count()</pre></td>
+            <td>and cleanup databases</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4">3</td><td colspan="4">0</td>
+          </tr>
+        </table>
+				  <h5>5e. Summary</h5>
+        <table>
+          <tr class="headingTableRow">
+            <td>For source node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>17017</pre></td>
+            <td>and destination node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>27021</pre></td>
+          </tr>
+          <tr>
+            <td>run in database</td>
+            <td colspan="2"><pre>products</pre></td>
+            <td>query</td>
+            <td colspan="2"><pre>db.system.indexes.find({"ns" : "products.items"}).count()</pre></td>
+            <td>and cleanup databases</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4">1</td><td colspan="4">1</td>
+          </tr>
+        </table>
 				<br/>
-				<h5>7a. Details I</h5>
+				 <h5>5f. Summary</h5>
+        <table>
+          <tr class="headingTableRow">
+            <td>For source node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>17017</pre></td>
+            <td>and destination node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>27021</pre></td>
+          </tr>
+          <tr>
+            <td>run in database</td>
+            <td colspan="2"><pre>patents</pre></td>
+            <td>query</td>
+            <td colspan="2"><pre>db.system.indexes.find({"ns" : "patents.things"}).count()</pre></td>
+            <td>and cleanup databases</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4">2</td><td colspan="4">2</td>
+          </tr>
+        </table>
+				<br/>
+				<h5>6a. Details I</h5>
 				<table>
 					<tr class="headingTableRow">
 						<td>For source node</td>
@@ -205,7 +356,7 @@
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
-					<tr>
+				  <tr>
 						<td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre>{ "name" : 1.0}</pre></td>
 					</tr>
 					<tr>
@@ -214,9 +365,9 @@
 					<tr>
 						<td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre>{ "name" : 3.0}</pre></td>
 					</tr>
-				</table>
+					</table>
 				<br/>
-				<h5>7b. Details II</h5>
+				<h5>6b. Details II</h5>
 				<table>
 					<tr class="headingTableRow">
 						<td>For source node</td>
@@ -236,21 +387,93 @@
 						<td>where</td>
 						<td><pre>null</pre></td>
 						<td>and cleanup databases </td>
-						<td>true</td>
+						<td>false</td>
 					</tr>
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre></pre></td>
+						<td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre>{ "name" : 1.0}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre></pre></td>
+						<td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre>{ "name" : 2.0}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre></pre></td>
+						<td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre>{ "name" : 3.0}</pre></td>
 					</tr>
 				</table>
+				<br/>
+        <h5>6c. Details III</h5>
+        <table>
+          <tr class="headingTableRow">
+            <td>For source node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>17017</pre></td>
+            <td>and destination node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>27021</pre></td>
+          </tr>
+          <tr>
+            <td>find documents for collection</td>
+            <td><pre>people</pre></td>
+            <td>in database</td>
+            <td><pre>patents</pre></td>
+            <td>where</td>
+            <td><pre>null</pre></td>
+            <td>and cleanup databases </td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre>{ "name" : 1.0}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre>{ "name" : 2.0}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre>{ "name" : 3.0}</pre></td>
+          </tr>
+        </table>
+                <br/>
+        <h5>6d. Details IV</h5>
+        <table>
+          <tr class="headingTableRow">
+            <td>For source node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>17017</pre></td>
+            <td>and destination node</td>
+            <td><pre>localhost</pre></td>
+            <td>on port</td>
+            <td><pre>27021</pre></td>
+          </tr>
+          <tr>
+            <td>find documents for collection</td>
+            <td><pre>things</pre></td>
+            <td>in database</td>
+            <td><pre>projects</pre></td>
+            <td>where</td>
+            <td><pre>null</pre></td>
+            <td>and cleanup databases </td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre></pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre></pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre></pre></td>
+          </tr>
+        </table>
 				
 			</div>
 			<div class="footer">
