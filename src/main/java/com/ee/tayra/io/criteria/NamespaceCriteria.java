@@ -30,18 +30,22 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class NamespaceCriteria implements Criterion {
+  private static final String COMMA = ",";
   private static final String BLANK = "";
-  private String[] incomingNsList;
+  private List<String> incomingNamespaces;
   private final boolean toExclude;
 
   public NamespaceCriteria(final String ns, final boolean toExclude) {
-    this.incomingNsList = namespaceList(ns);
+    this.incomingNamespaces = getNamespaces(ns);
     this.toExclude = toExclude;
   }
 
-  private String[] namespaceList(final String ns) {
-    return ns.split(",");
+  private List<String> getNamespaces(final String ns) {
+    return Arrays.asList(ns.split(COMMA));
   }
 
   @Override
@@ -63,7 +67,7 @@ public class NamespaceCriteria implements Criterion {
   private boolean isSatisfiedByEachCriteria(final String document,
         final String documentNamespace) {
     OperationType type = OperationType.create(documentNamespace);
-    for (String incomingNS : incomingNsList) {
+    for (String incomingNS : incomingNamespaces) {
       if (type.match(document, documentNamespace, incomingNS)) {
         return true;
       }
@@ -73,7 +77,7 @@ public class NamespaceCriteria implements Criterion {
 
   private String getNamespace(final String document) {
     int startIndex = document.indexOf("ns") - 1;
-    int endIndex = document.indexOf(",", startIndex);
+    int endIndex = document.indexOf(COMMA, startIndex);
     String namespace = document.substring(startIndex, endIndex).split(":") [1];
     return namespace.replaceAll("\"", BLANK).trim();
   }
