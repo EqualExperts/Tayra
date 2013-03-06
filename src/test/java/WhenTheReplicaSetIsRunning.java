@@ -24,4 +24,8 @@ public class WhenTheReplicaSetIsRunning extends DoFixture {
    final int destPort) throws UnknownHostException {
     return new AssertMongoFixture(srcHost, srcPort, destHost, destPort);
   }
+
+  public final void sleepFor(final long time) throws InterruptedException {
+    Thread.sleep(time);
+  }
 }
