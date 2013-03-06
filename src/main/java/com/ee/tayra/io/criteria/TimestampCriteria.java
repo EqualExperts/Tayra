@@ -43,23 +43,23 @@ public class TimestampCriteria implements Criterion {
   private final int increment;
   private final boolean toExclude;
 
-  public TimestampCriteria(final String filter, final boolean toExclude) {
+  public TimestampCriteria(final String filter, final boolean toExclude)
+      throws Exception {
     this.toExclude = toExclude;
     this.timeStampUntil = getTimestampFrom(filter);
     this.increment = getIncrementFrom(filter);
   }
 
   @Override
-  public boolean isSatisfiedBy(final String document) {
+  public boolean isSatisfiedBy(final String document) throws Exception {
     if (toExclude) {
       return !isCriteriaSatisfied(document);
     }
     return isCriteriaSatisfied(document);
   }
 
-  private boolean isCriteriaSatisfied(final String document) {
-    String tsDocument = document.replaceAll("\"", "")
-      .replaceAll(" ", "");
+  private boolean isCriteriaSatisfied(final String document) throws Exception {
+    String tsDocument = document.replaceAll("\"", "").replaceAll(" ", "");
     if (timeStampUntil.compareTo(getTimestampFrom(tsDocument)) > 0) {
       return true;
     }
@@ -80,8 +80,7 @@ public class TimestampCriteria implements Criterion {
     return Integer.MAX_VALUE;
   }
 
-  private Date getTimestampFrom(final String filter) {
-    try {
+  private Date getTimestampFrom(final String filter) throws Exception {
       if (filter.contains(TS_IDENTIFIER)) {
        int tsStartIndex = filter.indexOf(TS_IDENTIFIER)
                 + TS_IDENTIFIER.length();
@@ -91,10 +90,6 @@ public class TimestampCriteria implements Criterion {
       } else {
        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
        return format.parse(filter.substring(filter.indexOf("=") + 1));
-     }
-    } catch (Exception e) {
-       System.out.println("Invalid timestamp syntax");
-       return new Date(0L);
     }
   }
 }

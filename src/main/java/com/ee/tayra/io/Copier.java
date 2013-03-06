@@ -69,7 +69,7 @@ public class Copier {
           if (to.replay(document)) {
             notifier.notifyWriteSuccess(document);
           }
-        } catch (RuntimeException problem) {
+        } catch (Exception problem) {
           notifier.notifyWriteFailure(document, problem);
         }
       }
