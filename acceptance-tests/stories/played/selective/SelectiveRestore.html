@@ -9,7 +9,7 @@
 			<div class="header">
 				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
 				<div style="text-align:center;margin-top:-40">
-					<h1>Tayra selectively restores on the basis of multiple namespaces</h1>
+					<h1>Tayra selectively restores on the basis of multiple namespaces after Dry-Run</h1>
 				</div>
 			</div>
 			<div class="contents">
@@ -37,75 +37,75 @@
 					</tr>
 					<tr>
 						<td colspan="2">use database</td>
-						<td colspan="2">products</td>
+						<td colspan="2">dbOne</td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.items.insert({name:1})</pre></td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docOne"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.items.insert({name:2})</pre></td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docTwo"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.items.insert({name:3})</pre></td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docThree"})</pre></td>
 					</tr>
 					<tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.items.ensureIndex({name:1})</pre></td>
+            <td colspan="2"><pre>db.collOne.ensureIndex({name:1})</pre></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.items.dropIndex({name:1})</pre></td>
+            <td colspan="2"><pre>db.collOne.dropIndex({name:1})</pre></td>
           </tr>
 					<tr>
 						<td colspan="2">use database</td>
-						<td colspan="2">patents</td>
+						<td colspan="2">dbTwo</td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.things.insert({name:1})</pre></td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docOne"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.things.insert({name:2})</pre></td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docTwo"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.things.insert({name:3})</pre></td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docThree"})</pre></td>
 					</tr>
 					<tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.things.ensureIndex({name:1})</pre></td>
+            <td colspan="2"><pre>db.collOne.ensureIndex({name:1})</pre></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.people.insert({name:1})</pre></td>
+            <td colspan="2"><pre>db.collTwo.insert({name:"docOne"})</pre></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.people.insert({name:2})</pre></td>
+            <td colspan="2"><pre>db.collTwo.insert({name:"docTwo"})</pre></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.people.insert({name:3})</pre></td>
+            <td colspan="2"><pre>db.collTwo.insert({name:"docThree"})</pre></td>
           </tr>
 				 <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">projects</td>
+            <td colspan="2">dbThree</td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.things.insert({name:1})</pre></td>
+            <td colspan="2"><pre>db.collOne.insert({name:"docOne"})</pre></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.things.insert({name:2})</pre></td>
+            <td colspan="2"><pre>db.collOne.insert({name:"docTwo"})</pre></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.things.insert({name:3})</pre></td>
+            <td colspan="2"><pre>db.collOne.insert({name:"docThree"})</pre></td>
          </tr>
 				</table>
 				<br/>
@@ -130,14 +130,57 @@
 					</tr>
 				</table>
 				<br/>
-				<h4>3. Run Restore Utility using Namespace Option</h4>
+				<h4>3. Run Restore Utility using Namespace and Dry-Run options</h4>
 				<table>
 					<tr class="headingTableRow">
 						<td colspan="4">Open terminal</td>
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=products.items,patents</pre></td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=dbOne.collOne,dbTwo --dry-run</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stdout</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stderr</pre></td>-
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>"op" : "i" , "ns" : "dbOne.collOne"</td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>"op" : "i" , "ns" : "dbTwo.collOne"</td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>"op" : "i" , "ns" : "dbTwo.collTwo"</td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>not contains</td>
+						<td>"op" : "i" , "ns" : "dbThree.collOne"</td>
+					</tr>
+				</table>
+				<br/>
+				<h4>4. Run Restore Utility using Namespace option</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal</td>
+					</tr>
+					<tr>
+						<td>and run</td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=dbOne.collOne,dbTwo</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -155,14 +198,6 @@
 					</tr>
 				</table>
 				<br/>
-				  <h4>4. Wait For Restore to complete</h4>
-				<table>
-					<tr>
-						<td>wait for</td>
-						<td><pre>5000</pre></td>
-					</tr>
-				</table>
-				<br />
 				<h4>5. Ensure Expected Results</h4>
 				<h5>5a. Summary</h5>
 				<table>
@@ -178,9 +213,9 @@
 					</tr>
 					<tr>
 						<td>run in database</td>
-						<td colspan="2"><pre>products</pre></td>
+						<td colspan="2"><pre>dbOne</pre></td>
 						<td>query</td>
-						<td colspan="2"><pre>db.items.count()</pre></td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
 						<td>and cleanup databases</td>
 						<td>false</td>
 					</tr>
@@ -206,9 +241,9 @@
 					</tr>
 					<tr>
 						<td>run in database</td>
-						<td colspan="2"><pre>patents</pre></td>
+						<td colspan="2"><pre>dbTwo</pre></td>
 						<td>query</td>
-						<td colspan="2"><pre>db.things.count()</pre></td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
 						<td>and cleanup databases</td>
 						<td>false</td>
 					</tr>
@@ -234,9 +269,9 @@
           </tr>
           <tr>
             <td>run in database</td>
-            <td colspan="2"><pre>patents</pre></td>
+            <td colspan="2"><pre>dbTwo</pre></td>
             <td>query</td>
-            <td colspan="2"><pre>db.people.count()</pre></td>
+            <td colspan="2"><pre>db.collTwo.count()</pre></td>
             <td>and cleanup databases</td>
             <td>false</td>
           </tr>
@@ -262,9 +297,9 @@
           </tr>
           <tr>
             <td>run in database</td>
-            <td colspan="2"><pre>projects</pre></td>
+            <td colspan="2"><pre>dbThree</pre></td>
             <td>query</td>
-            <td colspan="2"><pre>db.things.count()</pre></td>
+            <td colspan="2"><pre>db.collOne.count()</pre></td>
             <td>and cleanup databases</td>
             <td>false</td>
           </tr>
@@ -289,9 +324,9 @@
           </tr>
           <tr>
             <td>run in database</td>
-            <td colspan="2"><pre>products</pre></td>
+            <td colspan="2"><pre>dbOne</pre></td>
             <td>query</td>
-            <td colspan="2"><pre>db.system.indexes.find({"ns" : "products.items"}).count()</pre></td>
+            <td colspan="2"><pre>db.system.indexes.find({"ns" : "dbOne.collOne"}).count()</pre></td>
             <td>and cleanup databases</td>
             <td>false</td>
           </tr>
@@ -317,9 +352,9 @@
           </tr>
           <tr>
             <td>run in database</td>
-            <td colspan="2"><pre>patents</pre></td>
+            <td colspan="2"><pre>dbTwo</pre></td>
             <td>query</td>
-            <td colspan="2"><pre>db.system.indexes.find({"ns" : "patents.things"}).count()</pre></td>
+            <td colspan="2"><pre>db.system.indexes.find({"ns" : "dbTwo.collOne"}).count()</pre></td>
             <td>and cleanup databases</td>
             <td>false</td>
           </tr>
@@ -345,9 +380,9 @@
 					</tr>
 					<tr>
 						<td>find documents for collection</td>
-						<td><pre>items</pre></td>
+						<td><pre>collOne</pre></td>
 						<td>in database</td>
-						<td><pre>products</pre></td>
+						<td><pre>dbOne</pre></td>
 						<td>where</td>
 						<td><pre>null</pre></td>
 						<td>and cleanup databases </td>
@@ -357,13 +392,13 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 				  <tr>
-						<td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre>{ "name" : 1.0}</pre></td>
+						<td colspan="4"><pre>{ "name" : "docOne"}</pre></td><td colspan="4"><pre>{ "name" : "docOne"}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre>{ "name" : 2.0}</pre></td>
+						<td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre>{ "name" : "docTwo"}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre>{ "name" : 3.0}</pre></td>
+						<td colspan="4"><pre>{ "name" : "docThree"}</pre></td><td colspan="4"><pre>{ "name" : "docThree"}</pre></td>
 					</tr>
 					</table>
 				<br/>
@@ -381,9 +416,9 @@
 					</tr>
 					<tr>
 						<td>find documents for collection</td>
-						<td><pre>things</pre></td>
+						<td><pre>collOne</pre></td>
 						<td>in database</td>
-						<td><pre>patents</pre></td>
+						<td><pre>dbTwo</pre></td>
 						<td>where</td>
 						<td><pre>null</pre></td>
 						<td>and cleanup databases </td>
@@ -393,13 +428,13 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre>{ "name" : 1.0}</pre></td>
+						<td colspan="4"><pre>{ "name" : "docOne"}</pre></td><td colspan="4"><pre>{ "name" : "docOne"}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre>{ "name" : 2.0}</pre></td>
+						<td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre>{ "name" : "docTwo"}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre>{ "name" : 3.0}</pre></td>
+						<td colspan="4"><pre>{ "name" : "docThree"}</pre></td><td colspan="4"><pre>{ "name" : "docThree"}</pre></td>
 					</tr>
 				</table>
 				<br/>
@@ -417,9 +452,9 @@
           </tr>
           <tr>
             <td>find documents for collection</td>
-            <td><pre>people</pre></td>
+            <td><pre>collTwo</pre></td>
             <td>in database</td>
-            <td><pre>patents</pre></td>
+            <td><pre>dbTwo</pre></td>
             <td>where</td>
             <td><pre>null</pre></td>
             <td>and cleanup databases </td>
@@ -429,13 +464,13 @@
             <td colspan="4">source value</td><td colspan="4">destination value</td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre>{ "name" : 1.0}</pre></td>
+            <td colspan="4"><pre>{ "name" : "docOne"}</pre></td><td colspan="4"><pre>{ "name" : "docOne"}</pre></td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre>{ "name" : 2.0}</pre></td>
+            <td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre>{ "name" : "docTwo"}</pre></td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre>{ "name" : 3.0}</pre></td>
+            <td colspan="4"><pre>{ "name" : "docThree"}</pre></td><td colspan="4"><pre>{ "name" : "docThree"}</pre></td>
           </tr>
         </table>
                 <br/>
@@ -453,9 +488,9 @@
           </tr>
           <tr>
             <td>find documents for collection</td>
-            <td><pre>things</pre></td>
+            <td><pre>collOne</pre></td>
             <td>in database</td>
-            <td><pre>projects</pre></td>
+            <td><pre>dbThree</pre></td>
             <td>where</td>
             <td><pre>null</pre></td>
             <td>and cleanup databases </td>
@@ -465,13 +500,13 @@
             <td colspan="4">source value</td><td colspan="4">destination value</td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "name" : 1.0}</pre></td><td colspan="4"><pre></pre></td>
+            <td colspan="4"><pre>{ "name" : "docOne"}</pre></td><td colspan="4"><pre></pre></td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "name" : 2.0}</pre></td><td colspan="4"><pre></pre></td>
+            <td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre></pre></td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "name" : 3.0}</pre></td><td colspan="4"><pre></pre></td>
+            <td colspan="4"><pre>{ "name" : "docThree"}</pre></td><td colspan="4"><pre></pre></td>
           </tr>
         </table>
 				
