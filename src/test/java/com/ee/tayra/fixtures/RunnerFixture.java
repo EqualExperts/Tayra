@@ -85,17 +85,17 @@ public class RunnerFixture extends DoFixture {
         + ", valid values are: <pre>stdout, stderr</pre>");
     }
   }
-  
+
   public final boolean andEnsureNotContains(
-		  final String streamName, final String text) {
-		    if (STDOUT.equalsIgnoreCase(streamName)) {
-		      return !(out.toString().contains(text));
-		    } else if (STDERR.equalsIgnoreCase(streamName)) {
-		      return err.toString().contains(text);
-		    } else {
-		      throw new FitFailureException("Don't know how to process "
-		        + streamName
-		        + ", valid values are: <pre>stdout, stderr</pre>");
-		    }
-		  }
+  final String streamName, final String text) {
+    if (STDOUT.equalsIgnoreCase(streamName)) {
+      return !(out.toString().contains(text));
+    } else if (STDERR.equalsIgnoreCase(streamName)) {
+      return err.toString().contains(text);
+    } else {
+      throw new FitFailureException("Don't know how to process "
+        + streamName
+        + ", valid values are: <pre>stdout, stderr</pre>");
+    }
+  }
 }
