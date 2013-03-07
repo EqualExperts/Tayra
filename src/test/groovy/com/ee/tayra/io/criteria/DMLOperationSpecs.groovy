@@ -9,7 +9,7 @@ class DMLOperationSpecs extends Specification {
 		'''
 def matchesNamespaceForDMLOperations() {
 	given :'a documents containg DML Operation'
-		def documentNamespace = 'eelabs.$cmd'	
+		def documentNamespace = 'eelabs.countries'	
 		def incomingNs ='eelabs'
 		def operation = new DMLOperation()
 	when : 
