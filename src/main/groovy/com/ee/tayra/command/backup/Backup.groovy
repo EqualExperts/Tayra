@@ -39,8 +39,6 @@ import com.ee.tayra.io.criteria.CriteriaBuilder
 import com.mongodb.Mongo
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
-import sun.misc.Signal
-import sun.misc.SignalHandler;
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password] [--sNs=<dbName>]')
 cli.with {
@@ -139,7 +137,7 @@ def reader = null
 
 def criteria = new CriteriaBuilder().build {
 	if(options.sNs) {
-	  usingNamespace options.sNs
+		usingNamespace options.sNs
 	}
 }
 
@@ -155,7 +153,9 @@ addShutdownHook {
 	}
 	if (writer){
 		writer.flush()
-		new FileWriter(timestampFileName).append(writer.timestamp).close()
+		if(writer.timestamp.length() > 0){
+			new FileWriter(timestampFileName).append(writer.timestamp).close()
+		}
 	}
 	if (reporter) {
 		reporter.summarizeTo console
@@ -184,8 +184,10 @@ try {
 				})
 	} {
 		if (writer){
-			new FileWriter(timestampFileName).append(writer.timestamp).close()
-			timestamp = writer.timestamp
+			if(writer.timestamp.length() > 0){
+				new FileWriter(timestampFileName).append(writer.timestamp).close()
+				timestamp = writer.timestamp
+			}
 		}
 		console.println "Attempting to resume Backup On: ${new Date()}"
 	}
