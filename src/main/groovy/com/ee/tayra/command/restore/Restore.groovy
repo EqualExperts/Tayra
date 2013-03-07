@@ -102,27 +102,16 @@ if(options.fAll) {
   isMultiple = true
 }
 
-def boolean toExclude(option){
-  ArrayList arg = args
-  if (options.sExclude){
-    def optionIndex = arg.indexOf(option)
-    if(arg[optionIndex - 1] == '--sExclude') {
-      return true
-    }
-  }
-  return false
-}
-
 RestoreFactory factory = null
 try {
-  criteria = new CriteriaBuilder().build {
+  criteria = new CriteriaBuilder().build (options.sExclude, {
     if(options.sUntil) {
-      usingUntil options.sUntil, toExclude('--sUntil='+options.sUntil)
+      usingUntil options.sUntil
     }
     if(options.sNs) {
-      usingNamespace options.sNs, toExclude('--sNs='+options.sNs)
+      usingNamespace options.sNs
     }
-  }
+  })
   config.criteria = criteria
   config.authenticator = binding.hasVariable('authenticator') ?
         binding.getVariable('authenticator') : null

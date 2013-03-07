@@ -42,23 +42,14 @@ public class TimestampCriteria implements Criterion {
   private static final long MILLI_CONVERSION = 1000L;
   private final Date timeStampUntil;
   private final int increment;
-  private final boolean toExclude;
 
-  public TimestampCriteria(final String filter, final boolean toExclude) {
-    this.toExclude = toExclude;
+  public TimestampCriteria(final String filter) {
     this.timeStampUntil = getTimestampFrom(filter);
     this.increment = getIncrementFrom(filter);
   }
 
   @Override
-  public boolean isSatisfiedBy(final String document) {
-    if (toExclude) {
-      return !isCriteriaSatisfied(document);
-    }
-    return isCriteriaSatisfied(document);
-  }
-
-  private boolean isCriteriaSatisfied(final String document) {
+  public final boolean isSatisfiedBy(final String document) {
     String tsDocument = document.replaceAll("\"", "").replaceAll(" ", "");
     if (timeStampUntil.compareTo(getTimestampFrom(tsDocument)) > 0) {
       return true;

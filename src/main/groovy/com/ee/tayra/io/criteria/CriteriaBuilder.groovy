@@ -41,19 +41,20 @@ public class CriteriaBuilder {
 
   private List<Criterion> criteria = new ArrayList<Criterion>();
 
-  public void usingUntil(String timestamp, toExclude) {
-    criteria.add(new TimestampCriteria(timestamp, toExclude));
+  public void usingUntil(String timestamp) {
+    criteria.add(new TimestampCriteria(timestamp));
   }
 
-  public void usingNamespace(String namespace, toExclude) {
-    criteria.add(new NamespaceCriteria(namespace, toExclude));
+  public void usingNamespace(String namespace) {
+    criteria.add(new NamespaceCriteria(namespace));
   }
- 
-  public Criterion build(Closure closure = {}) {
-	with closure
-    if(criteria.isEmpty()) {
+
+  public Criterion build( boolean excludeEnabled, Closure closure = {}) {
+    with closure
+    if (criteria.isEmpty()) {
       return Criterion.ALL
     }
-    return new MultiCriteria(criteria);
+    excludeEnabled ? new SExclude(new MultiCriteria(criteria)) :
+        new MultiCriteria(criteria)
   }
 }

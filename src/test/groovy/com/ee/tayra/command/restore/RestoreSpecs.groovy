@@ -265,7 +265,7 @@ class RestoreSpecs extends Specification {
 		then: 'it performs the restore operation'
 			1 * mockReplayer.replay('"ts"')
 	}
-	
+
 	def setsDefaultValuesOfOptions() {
 		given: 'arguments contain all essential options and not -d, --port, -u, -p'
 			context.setVariable('args', ['-f', 'test.out'])
@@ -281,7 +281,7 @@ class RestoreSpecs extends Specification {
 			config.password == ''
 			config.exceptionFile == 'exception.documents'
 	}
-	
+
 	def invokesRestoreWhenTimeStampOptionIsSupplied() {
 		given:'arguments contains -f, -u, -p and --sUntil options'
 			context.setVariable('args', ['-f', 'test.out','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
@@ -296,25 +296,10 @@ class RestoreSpecs extends Specification {
 		then: 'it performs the restore operation'
 			1 * mockReplayer.replay('"ts"')
 	}
-		
-	def invokesRestoreWhenNamespaceOptionIsToBeExcluded() {
-		given:'arguments contains -f, -u, -p and --sNs with --sExclude options'
-			context.setVariable('args', ['-f', 'test.out','--sExclude','--sNs=test', '-u', username, '-p', password])
 
-		and: 'the reader is injected'
-			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
-			context.setVariable('reader', source)
-
-		when: 'restore runs'
-			new Restore(context).run()
-
-		then: 'it performs the restore operation'
-			1 * mockReplayer.replay('"ts"')
-	}
-
-	def invokesRestoreWhenTimeStampOptionIsToBeExcluded() {
-		given:'arguments contains -f, -u, -p and --sUntil with --sExclude options'
-			context.setVariable('args', ['-f', 'test.out','--sExclude','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+	def invokesRestoreWhenSExcludeOptionIsGiven() {
+		given:'arguments contains -f, -u, -p, --sUntil, --sNs and --sExclude options'
+			context.setVariable('args', ['-f', 'test.out','--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
