@@ -52,3 +52,4 @@ a.out
 *.documents
 timestamp.out
 error.log
+acceptance-tests/stories/files/
