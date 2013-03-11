@@ -1,7 +1,6 @@
 package com.ee.tayra.fixtures;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.mongodb.DB;
@@ -21,14 +20,15 @@ public class AssertMongoFixture extends DoFixture {
                               (DBObject) JSON.parse("{ _id : 0 }");
   private final MongoClient src;
   private final MongoClient dest;
-
+  private List<Result> resultSet;
   public AssertMongoFixture(final String srcHost, final int srcPort,
   final String destHost, final int destPort) throws UnknownHostException {
     src = new MongoClient(srcHost, srcPort);
     dest = new MongoClient(destHost, destPort);
+    resultSet = new ArrayList<Result>();
   }
 
-  public final Fixture runInDatabaseQueryAndCleanupDatabases(
+  public final void runInDatabaseQueryAndCleanupDatabases(
   final String database, final String query, final boolean cleanupDB) {
     DB srcDB = getDB(src, database);
     DB destDB = getDB(dest, database);
@@ -37,12 +37,10 @@ public class AssertMongoFixture extends DoFixture {
     if (cleanupDB) {
       cleanupDBs(srcDB, destDB);
     }
-    Result result =
-      new Result(srcResult.longValue(), destResult.longValue());
-    return new SetFixture(Collections.singletonList(result));
+      resultSet.add(new Result(srcResult.longValue(), destResult.longValue()));
   }
 
-  private void cleanupDBs(final DB srcDB, final DB destDB) {
+   private void cleanupDBs(final DB srcDB, final DB destDB) {
     srcDB.dropDatabase();
     destDB.dropDatabase();
   }
@@ -68,6 +66,10 @@ public class AssertMongoFixture extends DoFixture {
       cleanupDBs(srcDB, destDB);
     }
     return new SetFixture(results);
+  }
+
+  public final Fixture matchResults() {
+    return new SetFixture(resultSet);
   }
 
   private List<String> documentsInCollection(

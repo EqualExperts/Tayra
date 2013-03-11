@@ -190,7 +190,54 @@
 						<td>false</td>
 					</tr>
 					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbOne</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.system.indexes.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbOne</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.system.indexes.find({ns : "dbOne.collTwo", name : "name_1"}).count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbTwo</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbThree</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>match results</td>
+					</tr>
+					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">2</td><td colspan="4">2</td>
+					</tr>
+					<tr>
+						<td colspan="4">3</td><td colspan="4">3</td>
+					</tr>
+					<tr>
+						<td colspan="4">0</td><td colspan="4">0</td>
+					</tr>
+					<tr>
+						<td colspan="4">0</td><td colspan="4">0</td>
 					</tr>
 					<tr>
 						<td colspan="4">2</td><td colspan="4">2</td>
@@ -229,34 +276,6 @@
 						<td colspan="4"><pre>{ "name" : "docFour"}</pre></td><td colspan="4"><pre>{ "name" : "docFour"}</pre></td>
 					</tr>
 				</table>
-				<h5>4b. Checking Index operations:</h5>
-				<h5>Summary:</h5>
-				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbOne</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.system.indexes.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">3</td><td colspan="4">3</td>
-					</tr>
-				</table>
 				<h5>Details:</h5>
 				<h5>Checking Create Index:</h5>
 				<table>
@@ -271,105 +290,20 @@
 						<td><pre>27021</pre></td>
 					</tr>
 					<tr>
-						<td>	find documents for collection</td>
+						<td>find documents for collection</td>
 						<td><pre>system.indexes</pre></td>
 						<td>in database</td>
 						<td><pre>dbOne</pre></td>
 						<td>where</td>
 						<td><pre>{ns : "dbOne.collOne", name : "name_1"}</pre></td>
 						<td>and cleanup databases </td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td><td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td>
-					</tr>
-				</table>
-				<h5>Checking Drop Index:</h5>
-				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbOne</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.system.indexes.find({ns : "dbOne.collTwo", name : "name_1"}).count()</pre></td>
-						<td>and cleanup databases</td>
 						<td>true</td>
 					</tr>
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">0</td><td colspan="4">0</td>
-					</tr>
-				</table>
-				<br/>
-				<h5>4c. Checking Drop Collection:</h5>
-				<h5>Summary/Details:</h5>
-				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbTwo</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.collOne.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">0</td><td colspan="4">0</td>
-					</tr>
-				</table>
-				<br/>
-				<h5>4d. Checking Drop Database:</h5>
-				<h5>Summary:</h5>
-				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbThree</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.collOne.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">2</td><td colspan="4">2</td>
+						<td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td><td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td>
 					</tr>
 				</table>
 				<br/>

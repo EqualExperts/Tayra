@@ -201,7 +201,7 @@
 				<h4>5. Ensure Expected Results</h4>
 				<h5>5a. Summary</h5>
 				<table>
-					<tr class="headingTableRow">
+				<tr class="headingTableRow">
 						<td>For source node</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
@@ -220,26 +220,6 @@
 						<td>false</td>
 					</tr>
 					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">3</td><td colspan="4">3</td>
-					</tr>
-				</table>
-				<br/>
-				<h5>5b. Summary</h5>
-				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
-					<tr>
 						<td>run in database</td>
 						<td colspan="2"><pre>dbTwo</pre></td>
 						<td>query</td>
@@ -247,124 +227,65 @@
 						<td>and cleanup databases</td>
 						<td>false</td>
 					</tr>
+					 <tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbTwo</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collTwo.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbThree</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbOne</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.system.indexes.find({"ns" : "dbOne.collOne"}).count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbTwo</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.system.indexes.find({"ns" : "dbTwo.collOne"}).count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>match results</td>
+					</tr>
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
 						<td colspan="4">3</td><td colspan="4">3</td>
 					</tr>
+					<tr>
+						<td colspan="4">3</td><td colspan="4">3</td>
+					</tr>
+					<tr>
+						<td colspan="4">3</td><td colspan="4">3</td>
+					</tr>
+					<tr>
+						<td colspan="4">3</td><td colspan="4">0</td>
+					</tr>
+					<tr>
+						<td colspan="4">1</td><td colspan="4">1</td>
+					</tr>
+					<tr>
+						<td colspan="4">2</td><td colspan="4">2</td>
+					</tr>
 				</table>
-        <br/>
-        <h5>5c. Summary</h5>
-        <table>
-          <tr class="headingTableRow">
-            <td>For source node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>17017</pre></td>
-            <td>and destination node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>27021</pre></td>
-          </tr>
-          <tr>
-            <td>run in database</td>
-            <td colspan="2"><pre>dbTwo</pre></td>
-            <td>query</td>
-            <td colspan="2"><pre>db.collTwo.count()</pre></td>
-            <td>and cleanup databases</td>
-            <td>false</td>
-          </tr>
-          <tr>
-            <td colspan="4">source value</td><td colspan="4">destination value</td>
-          </tr>
-          <tr>
-            <td colspan="4">3</td><td colspan="4">3</td>
-          </tr>
-        </table>
-        <br/>
-        <h5>5d. Summary</h5>
-        <table>
-          <tr class="headingTableRow">
-            <td>For source node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>17017</pre></td>
-            <td>and destination node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>27021</pre></td>
-          </tr>
-          <tr>
-            <td>run in database</td>
-            <td colspan="2"><pre>dbThree</pre></td>
-            <td>query</td>
-            <td colspan="2"><pre>db.collOne.count()</pre></td>
-            <td>and cleanup databases</td>
-            <td>false</td>
-          </tr>
-          <tr>
-            <td colspan="4">source value</td><td colspan="4">destination value</td>
-          </tr>
-          <tr>
-            <td colspan="4">3</td><td colspan="4">0</td>
-          </tr>
-        </table>
-				  <h5>5e. Summary</h5>
-        <table>
-          <tr class="headingTableRow">
-            <td>For source node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>17017</pre></td>
-            <td>and destination node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>27021</pre></td>
-          </tr>
-          <tr>
-            <td>run in database</td>
-            <td colspan="2"><pre>dbOne</pre></td>
-            <td>query</td>
-            <td colspan="2"><pre>db.system.indexes.find({"ns" : "dbOne.collOne"}).count()</pre></td>
-            <td>and cleanup databases</td>
-            <td>false</td>
-          </tr>
-          <tr>
-            <td colspan="4">source value</td><td colspan="4">destination value</td>
-          </tr>
-          <tr>
-            <td colspan="4">1</td><td colspan="4">1</td>
-          </tr>
-        </table>
 				<br/>
-				 <h5>5f. Summary</h5>
-        <table>
-          <tr class="headingTableRow">
-            <td>For source node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>17017</pre></td>
-            <td>and destination node</td>
-            <td><pre>localhost</pre></td>
-            <td>on port</td>
-            <td><pre>27021</pre></td>
-          </tr>
-          <tr>
-            <td>run in database</td>
-            <td colspan="2"><pre>dbTwo</pre></td>
-            <td>query</td>
-            <td colspan="2"><pre>db.system.indexes.find({"ns" : "dbTwo.collOne"}).count()</pre></td>
-            <td>and cleanup databases</td>
-            <td>false</td>
-          </tr>
-          <tr>
-            <td colspan="4">source value</td><td colspan="4">destination value</td>
-          </tr>
-          <tr>
-            <td colspan="4">2</td><td colspan="4">2</td>
-          </tr>
-        </table>
+				
 				<br/>
 				<h5>6a. Details I</h5>
 				<table>
