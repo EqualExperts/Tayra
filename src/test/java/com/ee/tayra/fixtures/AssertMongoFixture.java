@@ -2,8 +2,6 @@ package com.ee.tayra.fixtures;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -21,7 +19,6 @@ public class AssertMongoFixture extends DoFixture {
                               (DBObject) JSON.parse("{ _id : 0 }");
   private final MongoClient src;
   private final MongoClient dest;
-  private List<Result> resultSet;
 
 public AssertMongoFixture(final MongoConnector mongoConnector) {
   src = mongoConnector.getSource();
@@ -67,10 +64,6 @@ public final Fixture runInDatabaseQueryAndCleanupDatabases(
       cleanupDBs(srcDB, destDB);
     }
     return new SetFixture(results);
-  }
-
-  public final Fixture matchResults() {
-    return new SetFixture(resultSet);
   }
 
   private List<String> documentsInCollection(
