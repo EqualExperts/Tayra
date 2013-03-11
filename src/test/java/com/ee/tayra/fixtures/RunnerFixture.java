@@ -1,6 +1,7 @@
 package com.ee.tayra.fixtures;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -97,5 +98,10 @@ public class RunnerFixture extends DoFixture {
         + streamName
         + ", valid values are: <pre>stdout, stderr</pre>");
     }
+  }
+
+  public final boolean andEnsureFileIsCreated(final String fileName) {
+    File file = new File(fileName);
+    return file.exists();
   }
 }

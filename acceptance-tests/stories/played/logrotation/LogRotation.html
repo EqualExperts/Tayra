@@ -1,0 +1,364 @@
+<html>
+	<head>
+		<title>Tayra can backup across multiple files and restore from them</title>
+		<link rel="stylesheet" type="text/css" href="../files/css/fitnesse.css"/>
+		<link rel="stylesheet" type="text/css" href="../files/css/tayra.css"/>
+	</head>
+	<body>
+		<div class="acceptanceTest">
+			<div class="header">
+				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
+				<div style="text-align:center;margin-top:-40">
+					<h1>Tayra Restores Operations from backup across multiple files</h1>
+				</div>
+			</div>
+			<div class="contents">
+				<p>
+					<h3>
+					As a MongoDB admin<br/>
+	                I want to backup logs in multiple files<br/>
+	                And restore all the rotated log files generated in one go<br/>
+	                So that I can plan and manage backup/restore operations.<br/>
+	               </h3>
+				</p>
+				<table>
+					<tr>
+						<td class="headingTableRow">When the Replica Set is running</td>
+					</tr>
+				</table>
+				<br/>
+				<h4>1. Do Some CUD Operations</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td>Connect to MongoDB node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>17017</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">use database</td>
+						<td colspan="2">dbOne</td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.createCollection("collOne")</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.insert({name:"docOne"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.save({name:"docTwo"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.save({name:"docThree"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.remove({name:"docOne"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.update({name:"docThree"}, {$set : {name:"docFour"}})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.ensureIndex({name:1})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collTwo.save({name:"docOne"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collTwo.save({name:"docTwo"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collTwo.ensureIndex({name:1})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collTwo.dropIndex({name:1})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">use database</td>
+						<td colspan="2">dbTwo</td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.save({name:"docOne"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.drop()</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">use database</td>
+						<td colspan="2">dbThree</td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.save({name:"docOne"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.dropDatabase()</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">use database</td>
+						<td colspan="2">dbThree</td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.save({name:"docTwo"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.collOne.save({name:"docThree"})</pre></td>
+					</tr>
+				</table>
+				<br/>
+				<h4>2. Run Backup Utility With --fSize and --fMax options</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal</td>
+					</tr>
+					<tr>
+						<td>and run</td>
+						<td colspan="3"><pre>backup -f backup.log --port=17017 --fSize=3KB --fMax=1</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stdout</pre></td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>Process started</td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>backup.log</pre></td>
+						<td colspan="2">file is created</td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>backup.log.1</pre></td>
+						<td colspan="2">file is created</td>
+					</tr>
+				</table>
+				<br/>
+				<h4>3. Run Restore Utility</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal</td>
+					</tr>
+					<tr>
+						<td>and run</td>
+						<td colspan="3"><pre>restore -f backup.log --port=27021 -fAll</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stdout</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stderr</pre></td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>Process started</td>
+					</tr>
+				</table>
+				<br/>
+				<h4>4. Ensure Expected Results</h4>
+				<h5>4a. Verifying Inserts, Updates, Deletes:</h5>
+				<h5>Summary:</h5>
+				<table>
+					<tr class="headingTableRow">
+						<td>For source node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>17017</pre></td>
+						<td>and destination node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>27021</pre></td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbOne</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbOne</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.system.indexes.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbOne</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.system.indexes.find({ns : "dbOne.collTwo", name : "name_1"}).count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbTwo</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbThree</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td>match results</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">2</td><td colspan="4">2</td>
+					</tr>
+					<tr>
+						<td colspan="4">3</td><td colspan="4">3</td>
+					</tr>
+					<tr>
+						<td colspan="4">0</td><td colspan="4">0</td>
+					</tr>
+					<tr>
+						<td colspan="4">0</td><td colspan="4">0</td>
+					</tr>
+					<tr>
+						<td colspan="4">2</td><td colspan="4">2</td>
+					</tr>
+				</table>
+				<br/>
+				<h5>Details:</h5>
+				<h5>Verifying Save, Insert, Update, Delete:</h5>
+				<table>
+					<tr class="headingTableRow">
+						<td>For source node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>17017</pre></td>
+						<td>and destination node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>27021</pre></td>
+					</tr>
+					<tr>
+						<td>	find documents for collection</td>
+						<td><pre>collOne</pre></td>
+						<td>in database</td>
+						<td><pre>dbOne</pre></td>
+						<td>where</td>
+						<td><pre>null</pre></td>
+						<td>and cleanup databases </td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre>{ "name" : "docTwo"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "docFour"}</pre></td><td colspan="4"><pre>{ "name" : "docFour"}</pre></td>
+					</tr>
+				</table>
+				<h5>Details:</h5>
+				<h5>Verifying Create Index:</h5>
+				<table>
+					<tr class="headingTableRow">
+						<td>For source node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>17017</pre></td>
+						<td>and destination node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>27021</pre></td>
+					</tr>
+					<tr>
+						<td>find documents for collection</td>
+						<td><pre>system.indexes</pre></td>
+						<td>in database</td>
+						<td><pre>dbOne</pre></td>
+						<td>where</td>
+						<td><pre>{ns : "dbOne.collOne", name : "name_1"}</pre></td>
+						<td>and cleanup databases </td>
+						<td>true</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td><td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td>
+					</tr>
+				</table>
+				<br/>
+				<h5>Details:</h5>
+				<h5>Verifying dropDatabase:</h5>
+				<table>
+					<tr class="headingTableRow">
+						<td>For source node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>17017</pre></td>
+						<td>and destination node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>27021</pre></td>
+					</tr>
+					<tr>
+						<td>	find documents for collection</td>
+						<td><pre>collOne</pre></td>
+						<td>in database</td>
+						<td><pre>dbThree</pre></td>
+						<td>where</td>
+						<td><pre>null</pre></td>
+						<td>and cleanup databases </td>
+						<td>true</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre>{ "name" : "docTwo"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "docThree"}</pre></td><td colspan="4"><pre>{ "name" : "docThree"}</pre></td>
+					</tr>
+				</table>
+			</div>
+			<div class="footer">
+				<table>
+					<tr>
+						<td colspan="2">fit.Summary</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>
