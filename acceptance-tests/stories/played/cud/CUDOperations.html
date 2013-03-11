@@ -181,6 +181,13 @@
 						<td>on port</td>
 						<td><pre>27021</pre></td>
 					</tr>
+				</table>
+				<table>
+					<tr>
+						<td>
+							Assert That
+						</td>
+					</tr>
 					<tr>
 						<td>run in database</td>
 						<td colspan="2"><pre>dbOne</pre></td>
@@ -190,6 +197,19 @@
 						<td>false</td>
 					</tr>
 					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">2</td><td colspan="4">2</td>
+					</tr>
+				</table>
+				<table>
+				<tr>
+					<td>
+						Assert That
+					</td>
+				</tr>
+					<tr>
 						<td>run in database</td>
 						<td colspan="2"><pre>dbOne</pre></td>
 						<td>query</td>
@@ -197,6 +217,19 @@
 						<td>and cleanup databases</td>
 						<td>false</td>
 					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">3</td><td colspan="4">3</td>
+					</tr>
+				</table>
+				<table>
+				<tr>
+					<td>
+						Assert That
+					</td>
+				</tr>
 					<tr>
 						<td>run in database</td>
 						<td colspan="2"><pre>dbOne</pre></td>
@@ -214,6 +247,37 @@
 						<td>false</td>
 					</tr>
 					<tr>
+						<td colspan="4">0</td><td colspan="4">0</td>
+					</tr>
+				</table>
+				<table>
+				<tr>
+					<td>
+						Assert That
+					</td>
+				</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>dbTwo</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.collOne.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">0</td><td colspan="4">0</td>
+					</tr>
+				</table>
+				<table>
+				<tr>
+					<td>
+						Assert That
+					</td>
+				</tr>
+					<tr>
 						<td>run in database</td>
 						<td colspan="2"><pre>dbThree</pre></td>
 						<td>query</td>
@@ -222,22 +286,10 @@
 						<td>false</td>
 					</tr>
 					<tr>
-						<td>match results</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
+						<td colspan="4">0</td><td colspan="4">0</td>
 					</tr>
 					<tr>
 						<td colspan="4">2</td><td colspan="4">2</td>
-					</tr>
-					<tr>
-						<td colspan="4">3</td><td colspan="4">3</td>
-					</tr>
-					<tr>
-						<td colspan="4">0</td><td colspan="4">0</td>
-					</tr>
-					<tr>
-						<td colspan="4">0</td><td colspan="4">0</td>
 					</tr>
 					<tr>
 						<td colspan="4">2</td><td colspan="4">2</td>
@@ -245,19 +297,16 @@
 				</table>
 				<br/>
 				<h5>Details:</h5>
+				<h5>Checking documents of database dbOne</h5>
+				</br>
 				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
+				<tr>
+					<td>
+						Assert That
+					</td>
+				</tr>
 					<tr>
-						<td>	find documents for collection</td>
+						<td>find documents for collection</td>
 						<td><pre>collOne</pre></td>
 						<td>in database</td>
 						<td><pre>dbOne</pre></td>
@@ -278,16 +327,12 @@
 				</table>
 				<h5>Details:</h5>
 				<h5>Checking Create Index:</h5>
+			</br>
 				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
+					<tr>
+						<td>
+							Assert That
+						</td>
 					</tr>
 					<tr>
 						<td>find documents for collection</td>
@@ -308,19 +353,16 @@
 				</table>
 				<br/>
 				<h5>Details:</h5>
+				<h5>Checking documents for database dbThree:</h5>
+			</br>
 				<table>
-					<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
+					<tr>
+						<td>
+							Assert That
+						</td>
 					</tr>
 					<tr>
-						<td>	find documents for collection</td>
+						<td>find documents for collection</td>
 						<td><pre>collOne</pre></td>
 						<td>in database</td>
 						<td><pre>dbThree</pre></td>
