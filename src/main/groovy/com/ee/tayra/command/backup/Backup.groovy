@@ -150,6 +150,7 @@ addShutdownHook {
 	if (reporter) {
 		reporter.summarizeTo console
 	}
+	writer?.close()
 }
 errorLog = 'error.log'
 def stderr = new PrintStream (new FileOutputStream(errorLog))

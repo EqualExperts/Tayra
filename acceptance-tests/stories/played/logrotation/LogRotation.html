@@ -63,62 +63,6 @@
 						<td colspan="2">run</td>
 						<td colspan="2"><pre>db.collOne.update({name:"docThree"}, {$set : {name:"docFour"}})</pre></td>
 					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collOne.ensureIndex({name:1})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collTwo.save({name:"docOne"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collTwo.save({name:"docTwo"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collTwo.ensureIndex({name:1})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collTwo.dropIndex({name:1})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">use database</td>
-						<td colspan="2">dbTwo</td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collOne.save({name:"docOne"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collOne.drop()</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">use database</td>
-						<td colspan="2">dbThree</td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collOne.save({name:"docOne"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.dropDatabase()</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">use database</td>
-						<td colspan="2">dbThree</td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collOne.save({name:"docTwo"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.collOne.save({name:"docThree"})</pre></td>
-					</tr>
 				</table>
 				<br/>
 				<h4>2. Run Backup Utility With --fSize and --fMax options</h4>
@@ -128,7 +72,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -f backup.log --port=17017 --fSize=3KB --fMax=1</pre></td>
+						<td colspan="3"><pre>backup -f backup.log --port=17017 --fSize=1KB --fMax=1</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -192,7 +136,6 @@
 						<td><pre>27021</pre></td>
 					</tr>
 				</table>
-				
 				<table>
 					<tr>
 						<td>
@@ -213,93 +156,6 @@
 					<tr>
 						<td colspan="4">2</td><td colspan="4">2</td>
 					</tr>
-				</table>
-				
-				<table>
-					<tr>
-						<td>
-							Assert That
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbOne</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.system.indexes.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">3</td><td colspan="4">3</td>
-					</tr>
-					
-				</table>
-				<table>
-					<tr>
-						<td>
-							Assert That
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbOne</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.system.indexes.find({ns : "dbOne.collTwo", name : "name_1"}).count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">0</td><td colspan="4">0</td>
-					</tr>
-				</table>
-				<table>
-					<tr>
-						<td>
-							Assert That
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbTwo</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.collOne.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">0</td><td colspan="4">0</td>
-					</tr>
-				</table>
-				<table>
-					<tr>
-						<td>
-							Assert That
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>dbThree</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.collOne.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">2</td><td colspan="4">2</td>
-					</tr>
-					
 				</table>
 				<br/>
 				<h5>Details:</h5>
@@ -318,7 +174,7 @@
 						<td>where</td>
 						<td><pre>null</pre></td>
 						<td>and cleanup databases </td>
-						<td>false</td>
+						<td>true</td>
 					</tr>
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
@@ -330,61 +186,19 @@
 						<td colspan="4"><pre>{ "name" : "docFour"}</pre></td><td colspan="4"><pre>{ "name" : "docFour"}</pre></td>
 					</tr>
 				</table>
-				<h5>Details:</h5>
-				<h5>Verifying Create Index:</h5>
-				<table>
-					<tr>
-						<td>
-							Assert That
-						</td>
-					</tr>
-					<tr>
-						<td>find documents for collection</td>
-						<td><pre>system.indexes</pre></td>
-						<td>in database</td>
-						<td><pre>dbOne</pre></td>
-						<td>where</td>
-						<td><pre>{ns : "dbOne.collOne", name : "name_1"}</pre></td>
-						<td>and cleanup databases </td>
-						<td>true</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td><td colspan="4"><pre>{ "v" : 1 , "key" : { "name" : 1.0} , "ns" : "dbOne.collOne" , "name" : "name_1"}</pre></td>
-					</tr>
-				</table>
 				<br/>
-				<h5>Details:</h5>
-				<h5>Verifying dropDatabase:</h5>
+				<h5>Clean Up</h5>
 				<table>
-					<tr>
-						<td>
-							Assert That
-						</td>
-					</tr>
-					<tr>
-						<td>	find documents for collection</td>
-						<td><pre>collOne</pre></td>
-						<td>in database</td>
-						<td><pre>dbThree</pre></td>
-						<td>where</td>
-						<td><pre>null</pre></td>
-						<td>and cleanup databases </td>
-						<td>true</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "docTwo"}</pre></td><td colspan="4"><pre>{ "name" : "docTwo"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "docThree"}</pre></td><td colspan="4"><pre>{ "name" : "docThree"}</pre></td>
-					</tr>
+				  <tr>
+				  <td>Clean Backup File</td>
+				  <td>backup.log</td>
+				  </tr>
+				  <tr>
+				  <td>Clean Backup File</td>
+				  <td>backup.log.1</td>
+				  </tr>
 				</table>
-			</div>
+				</div>
 			<div class="footer">
 				<table>
 					<tr>

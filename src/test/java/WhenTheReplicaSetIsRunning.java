@@ -1,3 +1,4 @@
+import java.io.File;
 import java.net.UnknownHostException;
 
 import com.ee.tayra.fixtures.AssertMongoFixture;
@@ -30,6 +31,13 @@ public WhenTheReplicaSetIsRunning() {
   }
   public final Fixture assertThat() {
     return new AssertMongoFixture(mongoConnector);
+  }
+
+  public final void cleanBackupFile(final String fileName) {
+    File file = new File(fileName);
+    if (file.exists()) {
+      file.deleteOnExit();
+    }
   }
 
   @Override
