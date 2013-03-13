@@ -74,7 +74,6 @@ class TimestampCriteriaSpecs extends Specification {
 	
 		then: 'document is excluded if it is older than the timestamp'
 			!criteria.isSatisfiedBy(document)
-		
 	}
 
 	def returnsTrueIfDocumentIsLaterThanTimestampWithSExcludeOption() {
@@ -88,7 +87,6 @@ class TimestampCriteriaSpecs extends Specification {
 								
 		then: 'document is not excluded if it is later than the timestamp'
 			criteria.isSatisfiedBy(document)
-		
 	}
 	
 	def returnsFalseIfDocumentIsEarlierThanISOTimeWithSExcludeOption() {
@@ -126,7 +124,7 @@ class TimestampCriteriaSpecs extends Specification {
 			TimestampCriteria criteria = new TimestampCriteria(invalidTimeStamp, true)
 
 		then: 'it shouts'
-			thrown Exception
+			thrown RuntimeException
 	}
 
 	def shoutsWhenInvalidISOTimestampFormatIsGiven() {
@@ -137,7 +135,7 @@ class TimestampCriteriaSpecs extends Specification {
 			TimestampCriteria criteria = new TimestampCriteria(invalidTimeStamp, true)
 
 		then: 'it shouts'
-			thrown Exception
+			thrown RuntimeException
 	}
 
 	def shoutsWhenDocumentHasInvalidTimestampFormat() {
@@ -154,6 +152,6 @@ class TimestampCriteriaSpecs extends Specification {
 			criteria.isSatisfiedBy(document)
 
 		then: 'it shouts'
-			thrown Exception
+			thrown RuntimeException
 	}
 }
