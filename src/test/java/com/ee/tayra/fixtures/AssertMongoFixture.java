@@ -20,7 +20,7 @@ public class AssertMongoFixture extends DoFixture {
   private final MongoClient src;
   private final MongoClient dest;
 
-public AssertMongoFixture(final MongoConnector mongoConnector) {
+public AssertMongoFixture(final MongoSourceAndTargetConnector mongoConnector) {
   src = mongoConnector.getSource();
   dest = mongoConnector.getDestination();
 }

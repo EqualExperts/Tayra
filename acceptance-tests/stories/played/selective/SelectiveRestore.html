@@ -24,17 +24,28 @@
 				</p>
 				<table>
 					<tr>
-						<td class="headingTableRow">When the Replica Set is running</td>
+						<td class="headingTableRow">When the Tayra Environment is running with</td>
 					</tr>
 				</table>
 				<br/>
-				<h4>1. Do Some CUD Operations</h4>
 				<table>
 					<tr class="headingTableRow">
-						<td>Connect to MongoDB node</td>
+						<td>Source Replica set</td>
 						<td><pre>localhost</pre></td>
 						<td>on port</td>
 						<td><pre>17017</pre></td>
+						<td>and Target Node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>27021</pre></td>
+					</tr>
+				</table>
+				
+				<h4>1. Do Some CUD Operations</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="2">run mongo command on</td>
+						<td colspan="2"><pre>source</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">use database</td>
@@ -202,21 +213,9 @@
 				<h4>5. Ensure Expected Results</h4>
 				<h5>5a. Summary</h5>
 				<table>
-				<tr class="headingTableRow">
-						<td>For source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>17017</pre></td>
-						<td>and destination node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
-					</tr>
-				</table>
-				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -237,7 +236,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -258,7 +257,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					 <tr>
@@ -279,7 +278,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -300,7 +299,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -322,7 +321,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -346,7 +345,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -378,7 +377,7 @@
 				<table>
 					<tr>
 						<td>
-							Assert That
+							Ensure That
 						</td>
 					</tr>
 					<tr>
@@ -408,7 +407,7 @@
 		<table>
 			<tr>
 				<td>
-					Assert That
+					Ensure That
 				</td>
 			</tr>
             <tr>
@@ -440,7 +439,7 @@
 		<table>
 			<tr>
 				<td>
-					Assert That
+					Ensure That
 				</td>
 			</tr>
           <tr>
