@@ -42,7 +42,7 @@ public class MultiCriteria implements Criterion {
   }
 
   @Override
-  public final boolean isSatisfiedBy(final String document) throws Exception {
+  public final boolean isSatisfiedBy(final String document) {
     boolean isSatisfied = false;
     for (Criterion criterion: criteria) {
       isSatisfied = criterion.isSatisfiedBy(document);
