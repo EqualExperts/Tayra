@@ -30,16 +30,13 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria;
 
+import java.util.ArrayList;
 import java.util.List;
 import static java.util.Collections.unmodifiableList;
 
 public class MultiCriteria implements Criterion {
 
-  private List<Criterion> criteria;
-
-  public MultiCriteria(final List<Criterion> criteria) {
-    this.criteria = criteria;
-  }
+  private List<Criterion> criteria = new ArrayList<Criterion>();
 
   @Override
   public final boolean isSatisfiedBy(final String document) {
@@ -51,6 +48,14 @@ public class MultiCriteria implements Criterion {
       }
     }
     return isSatisfied;
+  }
+
+  public final void addCriteria(final Criterion criterion) {
+    criteria.add(criterion);
+  }
+
+  public final boolean noCriteriaGiven() {
+    return criteria.isEmpty();
   }
 
   public final List<Criterion> criteria() {

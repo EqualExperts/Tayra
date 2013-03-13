@@ -28,33 +28,33 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.io.criteria;
+package com.ee.tayra.io.criteria
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.ee.tayra.io.criteria.Criterion;
-import com.ee.tayra.io.criteria.MultiCriteria;
-import com.ee.tayra.io.criteria.TimestampCriteria;
+import java.util.ArrayList
+import java.util.List
 
 public class CriteriaBuilder {
 
-  private List<Criterion> criteria = new ArrayList<Criterion>();
+  private MultiCriteria multiCriteria = new MultiCriteria()
+  private boolean excludeEnabled = false
 
   public void usingUntil(String timestamp) {
-    criteria.add(new TimestampCriteria(timestamp));
+    multiCriteria.addCriteria(new TimestampCriteria(timestamp));
   }
 
   public void usingNamespace(String namespace) {
-    criteria.add(new NamespaceCriteria(namespace));
+    multiCriteria.addCriteria(new NamespaceCriteria(namespace));
   }
 
-  public Criterion build( boolean excludeEnabled, Closure closure = {}) {
+  public void usingExclude() {
+    this.excludeEnabled = true
+  }
+
+  public Criterion build(Closure closure = {}) {
     with closure
-    if (criteria.isEmpty()) {
+    if (multiCriteria.noCriteriaGiven()) {
       return Criterion.ALL
     }
-    excludeEnabled ? new SExclude(new MultiCriteria(criteria)) :
-        new MultiCriteria(criteria)
+    excludeEnabled ? new SExclude(multiCriteria) : multiCriteria
   }
 }

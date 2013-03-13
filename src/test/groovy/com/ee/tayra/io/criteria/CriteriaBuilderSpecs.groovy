@@ -10,8 +10,7 @@ import spock.lang.Specification;
 
 class CriteriaBuilderSpecs extends Specification{
 
-	def criteriaBuilder
-	boolean toExclude = false
+	CriteriaBuilder criteriaBuilder
 
 	def setup() {
 		criteriaBuilder = new CriteriaBuilder()
@@ -25,10 +24,10 @@ class CriteriaBuilderSpecs extends Specification{
 			criteriaBuilder.usingNamespace namespace
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build(toExclude)
+			def criterion = criteriaBuilder.build()
 
 		then: 'Criterion should be an instance of NamespaceCriteria'
-			criterion.criteria()[0].getClass() == NamespaceCriteria
+			criterion.criteria[0].getClass() == NamespaceCriteria
 	}
 
 	def producesTimestampCriteria() {
@@ -37,7 +36,7 @@ class CriteriaBuilderSpecs extends Specification{
 			criteriaBuilder.usingUntil timestamp
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build(toExclude)
+			def criterion = criteriaBuilder.build()
 
 		then: 'Criterion should be an instance of TimestampCriteria'
 			criterion.criteria()[0].getClass() == TimestampCriteria
@@ -48,7 +47,7 @@ class CriteriaBuilderSpecs extends Specification{
 			def filter=''
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build(toExclude)
+			def criterion = criteriaBuilder.build()
 
 		then:'Criterion should be an instance of All'
 			criterion == Criterion.ALL
@@ -59,9 +58,9 @@ class CriteriaBuilderSpecs extends Specification{
 			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build (toExclude, {
+			def criterion = criteriaBuilder.build {
 				usingUntil timestamp
-			})
+			}
 
 		then: 'Criterion should be an instance of DbCriteria'
 			criterion.criteria()[0].getClass() == TimestampCriteria
@@ -72,25 +71,23 @@ class CriteriaBuilderSpecs extends Specification{
 			def namespace = 'test'
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build (toExclude, {
+			def criterion = criteriaBuilder.build {
 				usingNamespace namespace
-			})
+			}
 
 		then: 'Criterion should be an instance of NamespaceCriteria'
 			criterion.criteria()[0].getClass() == NamespaceCriteria
 	}
 
 	def producesExcludeCriteria() {
-		given: 'criteria is to be excluded'
-			toExclude = true
-
-		and: 'a namespace filter'
+		given: 'a namespace filter'
 			def namespace = 'test'
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build(toExclude, {
+			def criterion = criteriaBuilder.build {
 				usingNamespace namespace
-			})
+				usingExclude()
+			}
 
 		then: 'Criterion returned should be an instance of sExclude'
 			criterion.getClass() == SExclude
@@ -101,9 +98,9 @@ class CriteriaBuilderSpecs extends Specification{
 			def namespace = 'test'
 
 		when: 'criteria is built'
-			def criterion = criteriaBuilder.build(toExclude, {
+			def criterion = criteriaBuilder.build {
 				usingNamespace namespace
-			})
+			}
 
 		then: 'Criterion returned should be an instance of MultiCriteria'
 			criterion.getClass() == MultiCriteria

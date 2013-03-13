@@ -104,14 +104,17 @@ if(options.fAll) {
 
 RestoreFactory factory = null
 try {
-  criteria = new CriteriaBuilder().build (options.sExclude, {
+  criteria = new CriteriaBuilder().build {
     if(options.sUntil) {
       usingUntil options.sUntil
     }
     if(options.sNs) {
       usingNamespace options.sNs
     }
-  })
+    if(options.sExclude) {
+      usingExclude()
+    }
+  }
   config.criteria = criteria
   config.authenticator = binding.hasVariable('authenticator') ?
         binding.getVariable('authenticator') : null

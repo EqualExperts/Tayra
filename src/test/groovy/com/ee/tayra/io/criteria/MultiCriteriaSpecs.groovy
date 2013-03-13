@@ -15,10 +15,9 @@ class MultiCriteriaSpecs  extends Specification {
 	def setup() {
 		criterion1 = Stub(Criterion)
 		criterion2 = Stub(Criterion)
-		List<Criterion> criteria = new ArrayList<Criterion>()
-		criteria.add(criterion1)
-		criteria.add(criterion2)
-		multiCriteria = new MultiCriteria(criteria)
+		multiCriteria = new MultiCriteria()
+		multiCriteria.addCriteria(criterion1)
+		multiCriteria.addCriteria(criterion2)
 	}
 
 	def documentDoesNotSatisfyCriteria() {
