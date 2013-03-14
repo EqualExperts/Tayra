@@ -29,11 +29,11 @@
  # official policies, either expressed or implied, of the Tayra Project.
  ##############################################################################
  #!/bin/sh
- if [ -z "$TAYRA_HOME" ]
+if [ -z "$TAYRA_HOME" ]
 then
   TAYRA_HOME=.
-fi  
+fi
 
- CLASSPATH=%%JAVA_CLASS_PATH%%
+CLASSPATH=%%JAVA_CLASS_PATH%%
 
 java -cp $CLASSPATH com.ee.tayra.runner.Runner "restore" $@

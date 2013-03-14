@@ -32,7 +32,7 @@
 if [ -z "$TAYRA_HOME" ]
 then
   TAYRA_HOME=.
-fi  
- CLASSPATH=%%JAVA_CLASS_PATH%%
+fi
+  CLASSPATH=%%JAVA_CLASS_PATH%%
 
 java -cp $CLASSPATH com.ee.tayra.runner.Runner "backup" $@
