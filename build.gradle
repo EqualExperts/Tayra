@@ -171,7 +171,7 @@ def prepareExecutables() {
 	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }
 	new File("$distsTemplateDir").list().each { filename ->
 		if(filename.startsWith('backup') || filename.startsWith('restore')) {
-			def contents = new File("$distsTemplateDir/$filename").getText()
+			def contents = new File("$distsTemplateDir/$filename").text
 			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
 				if(filename.endsWith('.sh')) {
 					writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"\$TAYRA_HOME/$it"}).join(":"))
