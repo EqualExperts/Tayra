@@ -14,24 +14,26 @@
 			</div>
 			<div class="contents">
 				<p>
-					<h3>
+					<h3>Narrative</h3>
 					As a MongoDB admin<br/>
 	                I want to be able to backup and replay Create, Update and Delete 
 	                Operations from backup file to standalone MongoDB<br/>
 	                So that I can bring it in sync with the source MongoDB from where it was backed up.<br/>
-	               </h3>
 				</p>
+				<br/>
 				<table>
 					<tr>
-						<td class="headingTableRow">When the Tayra Environment is running with</td>
-						<td colspan="2">Source </td>
-						<td colspan="2"><pre>localhost</pre></td>
-						<td colspan="2">On Port</td>
-						<td colspan="2"><pre>17017</pre></td>
-						<td colspan="2">and Target </td>
-						<td colspan="2"><pre>localhost</pre></td>
-						<td colspan="2">On Port</td>
-						<td colspan="2"><pre>27021</pre></td>
+						<td class="headingTableRow" colspan = 8>Given source replica set and target node are running</td>
+					</tr>
+					<tr>
+						<td >with source node</td>
+						<td><pre>localhost </pre> </td>
+						<td>on port</td>
+						<td><pre> 17017</pre> </td>
+						<td>and target node</td>
+						<td><pre>  localhost </pre> </td>
+						<td>on port</td>
+						<td><pre> 27021</pre> </td>
 					</tr>
 				</table>
 				
@@ -40,7 +42,7 @@
 				<table>
 					<tr class="headingTableRow">
 						<td colspan="2">run mongo command on</td>
-						<td colspan="2"><pre>Source</pre></td>
+						<td colspan="2"><pre>source</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">use database</td>

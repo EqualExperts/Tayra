@@ -9,30 +9,32 @@
 			<div class="header">
 				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
 				<div style="text-align:center;margin-top:-40">
-					<h1>Tayra selectively restores on the basis of multiple namespaces after Dry-Run</h1>
+					<h1>Tayra performs selective restore</h1>
 				</div>
 			</div>
 			<div class="contents">
 				<p>
-					<h3>
-					As a MongoDB admin<br/>
-					I want to be able to backup and selectively replay 
-					operations from recorded backup file to standalone MongoDB <br/>
-					So that I can selectively restore according to the given namespace criteria<br/>
-					after analyzing the results through Dry-Run option.<br/>
-					</h3>
+					<h3>Narrative</h3>
+						Adam, MongoDB admin, performs backup of a replica set on an ongoing basis.<br/>
+						On a not so great day, Dave, the developer, notices that the profile collection in 
+						the users database had inconsistent data due to application issues.<br/>
+						So, Dave approaches Adam and requests him to restore all other databases except
+						the profile collection in user database.
 				</p>
+				<br/>
 				<table>
 					<tr>
-						<td class="headingTableRow">When the Tayra Environment is running with</td>
-						<td colspan="2">Source </td>
-						<td colspan="2"><pre>localhost</pre></td>
-						<td colspan="2">On Port</td>
-						<td colspan="2"><pre>17017</pre></td>
-						<td colspan="2">and Target </td>
-						<td colspan="2"><pre>localhost</pre></td>
-						<td colspan="2">On Port</td>
-						<td colspan="2"><pre>27021</pre></td>
+						<td class="headingTableRow" colspan = 8>Given source replica set and target node are running</td>
+					</tr>
+					<tr>
+						<td >with source node</td>
+						<td><pre>localhost </pre> </td>
+						<td>on port</td>
+						<td><pre> 17017</pre> </td>
+						<td>and target node</td>
+						<td><pre>  localhost </pre> </td>
+						<td>on port</td>
+						<td><pre> 27021</pre> </td>
 					</tr>
 				</table>
 				<br/>
