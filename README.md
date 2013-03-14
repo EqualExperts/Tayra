@@ -16,7 +16,7 @@
 <br>
 
 ## Binary Distributions
-**[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**.  Please refer to the ReadMe.txt within it for Tayra's features and usage
+**[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**.  Please refer to the `ReadMe.txt` within it for Tayra's features and `Tayra Usage.rtf` for usage
 
 ## Build Info
 We are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
