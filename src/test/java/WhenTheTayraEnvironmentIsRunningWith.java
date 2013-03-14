@@ -1,4 +1,3 @@
-import java.io.File;
 import java.net.UnknownHostException;
 
 import com.ee.tayra.fixtures.AssertMongoFixture;
@@ -9,16 +8,27 @@ import fit.Fixture;
 import fitlibrary.DoFixture;
 
 public class WhenTheTayraEnvironmentIsRunningWith extends DoFixture {
+  private static final int TARGET_PORT = 7;
+  private static final int TARGET = 5;
+  private static final int SOURCE_PORT = 3;
+  private static final int SOURCE = 1;
   private MongoSourceAndTargetConnector mongoSourceAndTargetConnector;
+  private String sourceNode;
+  private int sourcePort;
+  private String targetNode;
+  private int targetPort;
 
   public WhenTheTayraEnvironmentIsRunningWith() {
   }
 
-  public final void sourceReplicaSetOnPortAndTargetNodeOnPort(
-    final String srcHost, final int srcPort, final String destHost,
-    final int destPort) throws UnknownHostException, InterruptedException {
-      mongoSourceAndTargetConnector = new MongoSourceAndTargetConnector(
-        srcHost, srcPort, destHost, destPort);
+  @Override
+  protected final void setUp() throws Exception {
+    sourceNode = args[SOURCE];
+    sourcePort = Integer.parseInt(args[SOURCE_PORT]);
+    targetNode = args[TARGET];
+    targetPort = Integer.parseInt(args[TARGET_PORT]);
+    mongoSourceAndTargetConnector = new MongoSourceAndTargetConnector(
+      sourceNode, sourcePort, targetNode, targetPort);
   }
 
   public final Fixture openTerminal() {
@@ -33,13 +43,6 @@ public class WhenTheTayraEnvironmentIsRunningWith extends DoFixture {
 
   public final Fixture ensureThat() {
     return new AssertMongoFixture(mongoSourceAndTargetConnector);
-  }
-
-  public final void cleanBackupFile(final String fileName) {
-    File file = new File(fileName);
-    if (file.exists()) {
-      file.deleteOnExit();
-    }
   }
 
   @Override
