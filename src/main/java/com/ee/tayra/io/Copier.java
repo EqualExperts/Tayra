@@ -43,15 +43,16 @@ public class Copier {
     try {
       while (from.hasDocument()) {
         String document = from.readDocument();
+        if (document.isEmpty()) {
+          continue;
+        }
         notifier.notifyReadSuccess(document);
-        if (document != null) {
-          try {
-            to.append(document);
-            to.flush();
-            notifier.notifyWriteSuccess(document);
-          } catch (IOException problem) {
-            notifier.notifyWriteFailure(document, problem);
-          }
+        try {
+          to.append(document);
+          to.flush();
+          notifier.notifyWriteSuccess(document);
+        } catch (IOException problem) {
+          notifier.notifyWriteFailure(document, problem);
         }
       }
     } catch (RuntimeException problem) {

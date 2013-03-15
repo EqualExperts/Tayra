@@ -215,4 +215,16 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.backup.BackupFactory$_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.io.SelectiveOplogReader"/>
+    <Not>
+      <Bug code="DM_STRING_CTOR" />
+    </Not>
+  </Match>
 </FindBugsFilter>

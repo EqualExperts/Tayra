@@ -4,31 +4,31 @@ import com.ee.tayra.io.criteria.Criterion;
 
 public class SelectiveOplogReader implements CollectionReader {
 
-  private final CollectionReader oplogReader;
+  private final CollectionReader delegate;
   private final Criterion criteria;
 
-  public SelectiveOplogReader(final CollectionReader oplogReader,
+  public SelectiveOplogReader(final CollectionReader delegate,
       final Criterion criteria) {
-    this.oplogReader = oplogReader;
+    this.delegate = delegate;
     this.criteria = criteria;
   }
 
   @Override
   public final String readDocument() {
-    String document = oplogReader.readDocument();
+    String document = delegate.readDocument();
     if (criteria.isSatisfiedBy(document)) {
       return document;
     }
-    return null;
+    return new String("");
   }
 
   @Override
   public final boolean hasDocument() {
-    return oplogReader.hasDocument();
+    return delegate.hasDocument();
   }
 
   @Override
   public final void close() {
-    oplogReader.close();
+    delegate.close();
   }
 }

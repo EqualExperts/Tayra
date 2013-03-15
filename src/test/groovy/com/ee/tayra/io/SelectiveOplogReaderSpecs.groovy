@@ -44,6 +44,6 @@ class SelectiveOplogReaderSpecs  extends Specification{
 			def result = selectiveOplogReader.readDocument()
 
 		then: 'Document should not be returned'
-			result == null
+			result == ''
 	}
 }

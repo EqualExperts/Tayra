@@ -28,58 +28,55 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.command.backup
 
-import com.ee.tayra.connector.MongoAuthenticator;
-import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.OplogReplayer
-import com.ee.tayra.io.Reporter
-import com.ee.tayra.io.Replayer
-import com.ee.tayra.io.RestoreProgressReporter
-import com.ee.tayra.io.SelectiveOplogReplayer
-import com.mongodb.Mongo
-import com.mongodb.ServerAddress
-import java.io.PrintWriter;
+import com.ee.tayra.io.OplogReader
+import com.ee.tayra.io.ProgressReporter
+import com.ee.tayra.io.RotatingFileWriter
+import com.ee.tayra.io.SelectiveOplogReader
+import com.ee.tayra.io.TimestampRecorder
+import com.ee.tayra.io.criteria.CriteriaBuilder
+import com.mongodb.MongoException
 
-class DefaultFactory extends RestoreFactory {
-
-  private final Mongo mongo;
+class BackupFactory {
+  private final BackupCmdDefaults config
   private final def listeningReporter
-  private final RestoreCmdDefaults config;
+  private final def logWriter
+  private final def criteria
 
-  public DefaultFactory(RestoreCmdDefaults config) {
-    this.config = config;
-
-    ServerAddress server = new ServerAddress(config.mongo, config.port)
-    this.mongo = new Mongo(server)
-    getAuthenticator(mongo).authenticate(config.username, config.password)
-
-    listeningReporter = new RestoreProgressReporter(new FileWriter
-        (config.exceptionFile), config.console)
+  public BackupFactory (config){
+    this.config = config
+    logWriter = new RotatingFileWriter(config.recordToFile)
+    logWriter.fileSize = config.fileSize
+    logWriter.fileMax = config.fileMax
+    listeningReporter = new ProgressReporter(config.console)
+    if(config.sNs){
+      criteria = new CriteriaBuilder().build { usingNamespace config.sNs }
+    }
   }
 
-  @Override
-  public Replayer createWriter() {
-    new SelectiveOplogReplayer(config.criteria, new OplogReplayer(new Operations(mongo)))
+  public def getReader(def oplog, def timestamp) {
+    criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
+        : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
-  @Override
-  public CopyListener createListener() {
-    (CopyListener)listeningReporter
+  public def getWriter(Writer writer){
+    new TimestampRecorder(writer)
   }
 
-  @Override
-  public Reporter createReporter() {
-    (Reporter)listeningReporter
-  }
-
-  @Override
-  public Mongo getMongo() {
-    mongo
-  }
-
-  def getAuthenticator(mongo) {
-    config.authenticator == null ? new MongoAuthenticator(mongo) : config.authenticator
+  public def getProblemListener() {
+    new CopyListener() {
+          void onReadSuccess(String document){
+          }
+          void onWriteSuccess(String document){
+          }
+          void onWriteFailure(String document, Throwable problem){
+          }
+          void onReadFailure(String document, Throwable problem){
+            if(problem instanceof MongoException)
+              throw problem
+          }
+        }
   }
 }

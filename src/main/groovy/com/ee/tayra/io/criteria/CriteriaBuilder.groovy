@@ -46,11 +46,11 @@ public class CriteriaBuilder {
   }
   
   public void usingNamespace(String namespace) {
-	  criteria.add(new NamespaceCriteria(namespace));
+    criteria.add(new NamespaceCriteria(namespace));
   }
 
   public Criterion build(Closure closure = {}) {
-	with closure
+    with closure
     if(criteria.isEmpty()) {
       return Criterion.ALL
     }

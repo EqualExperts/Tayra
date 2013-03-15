@@ -30,12 +30,15 @@
  ******************************************************************************/
 package com.ee.tayra.command.backup
 
-import java.io.PrintWriter;
-
 class BackupCmdDefaults {
-
-	public String mongo = 'localhost'
-	public int port = 27017
-	public String username = ''
-	public String password = ''
+  public String mongo = 'localhost'
+  public int port = 27017
+  public String username = ''
+  public String password = ''
+  public String recordToFile = ''
+  public String fileSize
+  public int fileMax
+  public boolean isContinuous = false
+  public String sNs = ''
+  public PrintWriter console
 }

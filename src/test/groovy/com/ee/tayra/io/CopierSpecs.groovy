@@ -267,7 +267,7 @@ public class CopierSpecs extends Specification {
 			0 * mockCopyListener.onWriteFailure(document, problem)
 	}
 
-	def reportsReadSuccessButNoWriteSuccessWhenCriteriaFails () {
+	def reportsNeitherReadSuccessNorWriteSuccessWhenCriteriaFails () {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
 			Writer mockWriter = Mock(Writer)
@@ -283,7 +283,7 @@ public class CopierSpecs extends Specification {
 			copier.copy(mockReader, mockWriter, mockCopyListener)
 
 		then: 'it notifies only read success'
-			1 * mockCopyListener.onReadSuccess(_)
+			0 * mockCopyListener.onReadSuccess(_)
 			0 * mockCopyListener.onWriteSuccess(_)
 	}
 
