@@ -20,12 +20,12 @@ public class AssertMongoFixture extends DoFixture {
   private final MongoClient src;
   private final MongoClient dest;
 
-public AssertMongoFixture(final MongoSourceAndTargetConnector mongoConnector) {
-  src = mongoConnector.getSource();
-  dest = mongoConnector.getDestination();
-}
+  public AssertMongoFixture(final MongoSourceAndTargetConnector mongoConnector) {
+    src = mongoConnector.getSource();
+    dest = mongoConnector.getDestination();
+  }
 
-public final Fixture runInDatabaseQueryAndCleanupDatabases(
+  public final Fixture runInDatabaseQueryAndCleanupDatabases(
   final String database, final String query, final boolean cleanupDB) {
     DB srcDB = getDB(src, database);
     DB destDB = getDB(dest, database);
@@ -38,7 +38,7 @@ public final Fixture runInDatabaseQueryAndCleanupDatabases(
     return new SetFixture(Collections.singletonList(result));
   }
 
-   private void cleanupDBs(final DB srcDB, final DB destDB) {
+  private void cleanupDBs(final DB srcDB, final DB destDB) {
     srcDB.dropDatabase();
     destDB.dropDatabase();
   }

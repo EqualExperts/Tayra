@@ -9,16 +9,30 @@
 			<div class="header">
 				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
 				<div style="text-align:center;margin-top:-40">
-					<h1>Tayra Restores CUD Operations on Collections</h1>
+					<h1>Tayra performs selective backup</h1>
 				</div>
 			</div>
 			<div class="contents">
 				<p>
 					<h3>Narrative</h3>
-					As a MongoDB admin<br/>
-	                I want to be able to backup and replay Create, Update and Delete 
-	                Operations from backup file to standalone MongoDB<br/>
-	                So that I can bring it in sync with the source MongoDB from where it was backed up.<br/>
+					<p>
+					IncyWincyWebApp stores some of its persistent data on MongoDB.  Before the 
+					application goes live, Adam, a MongoDB Admin, and Dave, a Developer need 
+					to decide what data needs to be backed up.  
+					</p>
+					<p>
+					<b>Dave:</b>  "Adam, We will need all major collections like the
+					profile in users database, orders within transactions database need to be 
+					backed up".
+					<br/>
+					<br/>
+					<b>Dave adding further:</b> "However I see no meaning in
+					backing up transient collections like sessions and ips in users 
+					database."
+					<br/>
+					<br/>
+					<b>Adam:</b> "Yeah Dave, that certainly makes sense, will do the needful!"
+					</p>
 				</p>
 				<br/>
 				<table>

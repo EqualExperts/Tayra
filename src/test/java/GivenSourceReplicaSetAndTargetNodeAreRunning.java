@@ -31,7 +31,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     return node.getMongoFixture(connector);
   }
 
-  public final Fixture ensureThat() {
+  public final Fixture ensuringTargetIsConsistentWithSource() {
     return new AssertMongoFixture(connector);
   }
 
