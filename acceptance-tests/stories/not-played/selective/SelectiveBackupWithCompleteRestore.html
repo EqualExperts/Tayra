@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Tayra can backup and selectively restore</title>
+		<title>Tayra can selectively backup and restore</title>
 		<link rel="stylesheet" type="text/css" href="../files/css/fitnesse.css"/>
 		<link rel="stylesheet" type="text/css" href="../files/css/tayra.css"/>
 	</head>
@@ -9,34 +9,30 @@
 			<div class="header">
 				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
 				<div style="text-align:center;margin-top:-40">
-					<h1>Tayra performs selective restore</h1>
+					<h1>Tayra performs selective backup</h1>
 				</div>
 			</div>
 			<div class="contents">
 				<p>
 					<h3>Narrative</h3>
-						<b>IncyWincyWebApp</b> stores some of its persistent data on MongoDB. <b>Adam</b>, MongoDB admin, performs
-						backup of a replica set on an ongoing basis.
+					<p>
+						IncyWincyWebApp stores some of its persistent data on MongoDB.  Before the 
+						application goes live, Adam, a MongoDB Admin, and Dave, a Developer need 
+						to decide what data needs to be backed up.  
+					</p>
+					<p>
+						<b>Dave:</b>  "Adam, We will need all major collections like the
+						<b>profile</b> in <b>users</b> database, <b>orders</b> within <b>transactions</b> database need to be 
+						backed up".
 						<br>
-						On a not so great day, <b>Dave</b>, the developer, notices that the <b>profile</b> collection in 
-						the <b>users</b> database has inconsistent data due to application issues.
-						<br><br>
-						So, Dave approaches Adam and requests:
-						<br><br>
-						<b>Dave: </b>Hey Adam, got some bad news! Looks like something has gone wrong with the data in 
-						<b>profile</b> collection of <b>users</b> database!
 						<br>
-						<b>Adam: </b> Oh My! I have already taken backup of the data for restoring to our new node at New Delhi
-						server a few hours ago! Should I scrap that?
+						<b>Dave adding further:</b> "However I see no meaning in
+						backing up transient collections like <b>sessions</b> and <b>ips</b> in <b>users</b> 
+						database."
 						<br>
-						<b>Dave: </b>Hmm.. Is there any way in which we could restore only <b>transactions</b> database and
-						only <b>ips</b> collection in <b>users</b> database
 						<br>
-						<b>Adam: </b>Oh yeah! With the new Tayra tool, we can selectively restore databases and collections!
-						<br>
-						<b>Dave: </b> That's great! Adam, you are a saviour!
-						<br>
-						<b>Adam: </b>No worries Dave, I'll take care of it during restore.
+						<b>Adam:</b> "Yeah Dave, that certainly makes sense, will do the needful!"
+					</p>
 				</p>
 				<br>
 				<table>
@@ -44,14 +40,14 @@
 						<td class="headingTableRow" colspan = 8>Given source replica set and target node are running</td>
 					</tr>
 					<tr>
-						<td >with source node</td>
-						<td><pre>localhost </pre> </td>
+						<td>with source node</td>
+						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre> 17017</pre> </td>
+						<td><pre> 17017</pre></td>
 						<td>and target node</td>
-						<td><pre>  localhost </pre> </td>
+						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre> 27021</pre> </td>
+						<td><pre>27021</pre></td>
 					</tr>
 				</table>
 				<br>
@@ -118,7 +114,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
+						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017 --sNs=transactions,users.profile</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -132,14 +128,14 @@
 					</tr>
 				</table>
 				<br>
-				<h4>3. Run Restore Utility using Namespace and Dry-Run options</h4>
+				<h4>3. Run Restore Utility</h4>
 				<table>
 					<tr class="headingTableRow">
 						<td colspan="4">Open terminal</td>
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=transactions,users.ips</pre></td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -177,7 +173,34 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">2</td><td colspan="4">0</td>
+						<td colspan="4">2</td><td colspan="4">2</td>
+					</tr>
+				</table>
+				<br>
+				<table>
+					<tr>
+						<td colspan="8" class="headingTableRow">
+							Ensuring target is consistent with source
+						</td>
+					</tr>
+					<tr>
+						<td>find documents for collection</td>
+						<td><pre>profile</pre></td>
+						<td>in database</td>
+						<td><pre>users</pre></td>
+						<td>where</td>
+						<td><pre>null</pre></td>
+						<td>and cleanup databases </td>
+						<td>true</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Two"}</pre></td><td colspan="4"><pre>{ "name" : "Two"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Four"}</pre></td><td colspan="4"><pre>{ "name" : "Four"}</pre></td>
 					</tr>
 				</table>
 				<br>
@@ -221,34 +244,9 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">1</td><td colspan="4">1</td>
+						<td colspan="4">1</td><td colspan="4">0</td>
 					</tr>
 				</table>
-				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>find documents for collection</td>
-						<td><pre>ips</pre></td>
-						<td>in database</td>
-						<td><pre>users</pre></td>
-						<td>where</td>
-						<td><pre>null</pre></td>
-						<td>and cleanup databases </td>
-						<td>true</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td><td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td>
-					</tr>
-				</table>
-				<br>
 				<br>
 				<h5>Checking documents of database transactions</h5>
 				<table>

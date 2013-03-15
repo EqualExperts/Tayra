@@ -15,29 +15,30 @@
 			<div class="contents">
 				<p>
 					<h3>Narrative</h3>
-					As a MongoDB admin<br/>
-	                I want to be able to backup and replay Create, Update and Delete 
-	                Operations from backup file to standalone MongoDB<br/>
-	                So that I can bring it in sync with the source MongoDB from where it was backed up.<br/>
+					As a MongoDB admin<br>
+									I want to be able to backup and replay Create, Update and Delete 
+									Operations from backup file to standalone MongoDB<br>
+									So that I can bring it in sync with the source MongoDB from where it was backed up.<br>
 				</p>
-				<br/>
+				<br>
 				<table>
 					<tr>
-						<td class="headingTableRow" colspan = 8>Given source replica set and target node are running</td>
+						<td class="headingTableRow" colspan = 8>
+							Given source replica set and target node are running
+						</td>
 					</tr>
 					<tr>
 						<td >with source node</td>
-						<td><pre>localhost </pre> </td>
+						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre> 17017</pre> </td>
+						<td><pre>17017</pre></td>
 						<td>and target node</td>
-						<td><pre>  localhost </pre> </td>
+						<td><pre>localhost</pre></td>
 						<td>on port</td>
-						<td><pre> 27021</pre> </td>
+						<td><pre>27021</pre></td>
 					</tr>
 				</table>
-				
-				<br/>
+				<br>
 				<h4>1. Do Some CUD Operations</h4>
 				<table>
 					<tr class="headingTableRow">
@@ -73,7 +74,7 @@
 						<td colspan="2"><pre>db.items.update({name:"Three"}, {$set : {name:"Four"}})</pre></td>
 					</tr>
 				</table>
-				<br/>
+				<br>
 				<h4>2. Run Backup Utility</h4>
 				<table>
 					<tr class="headingTableRow">
@@ -94,7 +95,7 @@
 						<td>Process started</td>
 					</tr>
 				</table>
-				<br/>
+				<br>
 				<h4>3. Run Restore Utility</h4>
 				<table>
 					<tr class="headingTableRow">
@@ -119,13 +120,13 @@
 						<td>Process started</td>
 					</tr>
 				</table>
-				<br/>
+				<br>
 				<h4>4. Ensure Expected Results</h4>
 				<h5>Checking documents of database things</h5>
 				<table>
 					<tr>
 						<td colspan="8">
-						    Ensuring target is consistent with source
+							Ensuring target is consistent with source
 						</td>
 					</tr>
 					<tr>
@@ -143,11 +144,11 @@
 						<td colspan="4">2</td><td colspan="4">2</td>
 					</tr>
 				</table>
-				</br/>
+				<br>
 				<table>
 					<tr>
 						<td colspan="8">
-						    Ensuring target is consistent with source
+							Ensuring target is consistent with source
 						</td>
 					</tr>
 					<tr>
@@ -170,7 +171,7 @@
 						<td colspan="4"><pre>{ "name" : "Four"}</pre></td><td colspan="4"><pre>{ "name" : "Four"}</pre></td>
 					</tr>
 				</table>
-				<br/>
+				<br>
 			</div>
 			<div class="footer">
 				<table>
