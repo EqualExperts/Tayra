@@ -36,22 +36,22 @@ import com.ee.tayra.io.DeafAndDumbReporter
 import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.SelectiveOplogReplayer
-import com.mongodb.Mongo;
+import com.mongodb.Mongo
 
-import java.io.PrintWriter;
+import java.io.PrintWriter
 
 class DryRunFactory extends RestoreFactory {
 
-	private final def listeningReporter	private final RestoreCmdDefaults config;
-
+	private final def listeningReporter
 	public DryRunFactory(RestoreCmdDefaults config) {
-		this.config = config;
+		super(config)
 		listeningReporter = new DeafAndDumbReporter()
 	}
 
 	@Override
 	public Replayer createWriter() {
-		new SelectiveOplogReplayer(config.criteria, new ConsoleReplayer(config.console))
+	  criteria ? new SelectiveOplogReplayer(criteria, new ConsoleReplayer(config.console)) :
+	    new ConsoleReplayer(config.console)
 	}
 
 	@Override

@@ -44,12 +44,11 @@ import java.io.PrintWriter;
 
 class DefaultFactory extends RestoreFactory {
 
-  private final Mongo mongo;
+  private final Mongo mongo
   private final def listeningReporter
-  private final RestoreCmdDefaults config;
 
   public DefaultFactory(RestoreCmdDefaults config) {
-    this.config = config;
+    super(config)
 
     ServerAddress server = new ServerAddress(config.mongo, config.port)
     this.mongo = new Mongo(server)
@@ -61,7 +60,8 @@ class DefaultFactory extends RestoreFactory {
 
   @Override
   public Replayer createWriter() {
-    new SelectiveOplogReplayer(config.criteria, new OplogReplayer(new Operations(mongo)))
+	criteria ? new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo))) :
+	    new OplogReplayer(new Operations(mongo))
   }
 
   @Override

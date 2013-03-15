@@ -99,15 +99,6 @@ if(options.fAll) {
 	isMultiple = true
 }
 
-def criteria = new CriteriaBuilder().build {
-	if(options.sUntil) {
-		usingUntil options.sUntil
-	}
-	if(options.sNs) {
-	  usingNamespace options.sNs
-	}
-}
-config.criteria = criteria
 config.authenticator = binding.hasVariable('authenticator') ?
 				binding.getVariable('authenticator') : null
 
@@ -117,20 +108,20 @@ try {
 	factory = RestoreFactory.create(options.'dry-run', config)
 
 	def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
-	def listener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
-	def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
+	def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
+	def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
 
 	def files = new RotatingFileCollection(restoreFromFile, isMultiple)
 	def copier = new Copier()
 
-	reporter.writeStartTimeTo console
+	progressReporter.writeStartTimeTo console
 
 	files.withFile {
 		def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-		copier.copy(reader, writer, listener)
+		copier.copy(reader, writer, progressListener)
 	}
 
-	reporter.summarizeTo console
+	progressReporter.summarizeTo console
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)

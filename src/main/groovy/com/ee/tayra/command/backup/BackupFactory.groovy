@@ -93,7 +93,7 @@ class BackupFactory {
     (Reporter)listeningReporter
   }
 
-  public def createMongoExceptionListener() {
+  public def createMongoExceptionBubbler() {
     new MongoExceptionBubbler()
   }
 }

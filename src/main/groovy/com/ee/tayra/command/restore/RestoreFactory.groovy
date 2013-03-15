@@ -34,11 +34,28 @@ import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.Reporter
 import com.mongodb.Mongo
+import com.ee.tayra.io.criteria.CriteriaBuilder
 
 abstract class RestoreFactory {
-
+	
+	protected final RestoreCmdDefaults config
+    protected def criteria
+	
 	public static RestoreFactory create (boolean isDryRun, RestoreCmdDefaults config) {
 		isDryRun ? new DryRunFactory(config) : new DefaultFactory(config)
+	}
+	
+	RestoreFactory(config) {
+		this.config = config
+		
+		criteria = new CriteriaBuilder().build {
+			if(config.sUntil) {
+				usingUntil config.sUntil
+			}
+			if(config.sNs) {
+			  usingNamespace config.sNs
+			}
+		}
 	}
 
 	public abstract Replayer createWriter()

@@ -38,7 +38,8 @@ class RestoreCmdDefaults {
 	public int port = 27017
 	public String username = ''
 	public String password = ''
-	public def criteria
+	public String sNs = ''
+	public String sUntil = ''
 	public String exceptionFile = 'exception.documents'
 	public PrintWriter console
 	public def authenticator

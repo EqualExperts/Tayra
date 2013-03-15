@@ -101,10 +101,10 @@ private def readPassword(output) {
 
 def backupFactory = new BackupFactory(config, console)
 
-def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
+def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener')
     : backupFactory.createListener()
 
-def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
+def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
     : backupFactory.createReporter()
 
 def writer =  binding.hasVariable('writer') ? binding.getVariable('writer')
@@ -116,14 +116,14 @@ def reader = null
 boolean normalExecution = false
 addShutdownHook {
   if(!normalExecution) {
-    reporter?.writeln (console,'==> User forced a Stop-Read...')
+    progressReporter?.writeln (console,'==> User forced a Stop-Read...')
   }
   reader?.close()
   writer?.flush()
   if(writer && writer.timestamp.length() > 0){
     createFile(timestampFileName).append(writer.timestamp).close()
   }
-  reporter?.summarizeTo console
+  progressReporter?.summarizeTo console
 }
 
 errorLog = 'error.log'
@@ -131,13 +131,13 @@ def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
 
 try {
-  reporter.writeStartTimeTo console
+  progressReporter.writeStartTimeTo console
   new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
     getAuthenticator(mongo).authenticate(config.username, config.password)
     def oplog = new Oplog(mongo)
     reader = backupFactory.createReader(oplog, timestamp)
-    def mongoExceptionListener = backupFactory.createMongoExceptionListener()
-    new Copier().copy(reader, writer, listener, mongoExceptionListener)
+    def exceptionBubbler = backupFactory.createMongoExceptionBubbler()
+    new Copier().copy(reader, writer, progressListener, exceptionBubbler)
   } {
     if(writer && writer.timestamp.length() > 0){
       createFile(timestampFileName).append(writer.timestamp).close()
