@@ -107,25 +107,10 @@ def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
 def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
     : backupFactory.createReporter()
 
-def logWriter =  binding.hasVariable('writer') ? binding.getVariable('writer')
-    : backupFactory.createLogWriter()
+def writer =  binding.hasVariable('writer') ? binding.getVariable('writer')
+    : backupFactory.createWriter()
 
-def writer = backupFactory.createWriter(logWriter)
-
-timestampFileName = 'timestamp.out'
-def timestamp = null
-timestampFile = new File(timestampFileName)
-if(timestampFile.isDirectory()) {
-  console.println("Expecting $timestampFile.name to be a File, but found Directory")
-  System.exit(1)
-}
-if(timestampFile.exists()) {
-  if(timestampFile.canRead() && timestampFile.length() > 0) {
-    timestamp = timestampFile.text
-  } else {
-    console.println("Unable to read $timestampFile.name")
-  }
-}
+def timestamp = backupFactory.timestamp
 
 def reader = null
 boolean normalExecution = false

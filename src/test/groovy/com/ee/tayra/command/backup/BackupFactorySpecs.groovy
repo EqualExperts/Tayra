@@ -47,7 +47,7 @@ class BackupFactorySpecs extends Specification {
       factory = new BackupFactory(config, console)
 
     then: 'reporter created is instance of EmptyProgressReporter'
-      factory.createMongoExceptionListener().class == MongoExceptionRelayer
+      factory.createMongoExceptionListener().class == MongoExceptionBubbler
   }
 
   def createsWriter() {

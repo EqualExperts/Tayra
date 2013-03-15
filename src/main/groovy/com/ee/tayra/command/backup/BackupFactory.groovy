@@ -31,7 +31,7 @@
 package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.MongoExceptionRelayer
+import com.ee.tayra.io.MongoExceptionBubbler
 import com.ee.tayra.io.OplogReader
 import com.ee.tayra.io.ProgressReporter
 import com.ee.tayra.io.Reporter
@@ -44,27 +44,45 @@ import com.mongodb.MongoException
 class BackupFactory {
   private final BackupCmdDefaults config
   private final def listeningReporter
-  private final def logWriter
+  private final def writer
   private final def criteria
+  private final def timestamp
+  private final String timestampFileName = 'timestamp.out'
 
   public BackupFactory (config, console){
     this.config = config
-    logWriter = new RotatingFileWriter(config.recordToFile)
-    logWriter.fileSize = config.fileSize
-    logWriter.fileMax = config.fileMax
+    def rfWriter = new RotatingFileWriter(config.recordToFile).with {
+      fileSize = config.fileSize
+      fileMax = config.fileMax
+    }
+	writer = new TimestampRecorder(rfWriter)
+	
     listeningReporter = new ProgressReporter(console)
     if(config.sNs){
       criteria = new CriteriaBuilder().build { usingNamespace config.sNs }
     }
+	
+	File timestampFile = new File(timestampFileName)
+	if(timestampFile.isDirectory()) {
+	  console.println("Expecting $timestampFile.name to be a File, but found Directory")
+	  System.exit(1)
+	}
+	if(timestampFile.exists()) {
+	  if(timestampFile.canRead() && timestampFile.length() > 0) {
+		timestamp = timestampFile.text
+	  } else {
+		console.println("Unable to read $timestampFile.name")
+	  }
+	}
   }
 
-  public def createReader(def oplog, def timestamp) {
+  public def createReader(def oplog) {
     criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
         : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
-  public def createWriter(Writer writer){
-    new TimestampRecorder(writer)
+  public def createWriter(){
+    writer
   }
 
   public def createListener(){
@@ -75,11 +93,7 @@ class BackupFactory {
     (Reporter)listeningReporter
   }
 
-  public def createLogWriter(){
-    logWriter
-  }
-
   public def createMongoExceptionListener() {
-    new MongoExceptionRelayer()
+    new MongoExceptionBubbler()
   }
 }

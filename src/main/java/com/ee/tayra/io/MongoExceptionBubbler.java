@@ -2,7 +2,7 @@ package com.ee.tayra.io;
 
 import com.mongodb.MongoException;
 
-public class MongoExceptionRelayer implements CopyListener {
+public class MongoExceptionBubbler implements CopyListener {
 
   public void onReadSuccess(String document) {
   }
@@ -13,10 +13,9 @@ public class MongoExceptionRelayer implements CopyListener {
   public void onWriteFailure(String document, Throwable problem) {
   }
 
-  public void onReadFailure(String document, Throwable problem)
-      throws Throwable {
+  public void onReadFailure(String document, Throwable problem) {
     if (problem instanceof MongoException) {
-      throw problem;
+      throw (MongoException)problem;
     }
   }
 }
