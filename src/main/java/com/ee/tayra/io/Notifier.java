@@ -61,7 +61,7 @@ public class Notifier {
   }
 
   public final void notifyWriteFailure(final String document,
-    final Throwable problem) {
+      final Throwable problem) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
       public void e(final CopyListener listener) {
@@ -71,11 +71,15 @@ public class Notifier {
   }
 
   public final void notifyReadFailure(final String document,
-  final Throwable problem) {
+      final Throwable problem) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
       public void e(final CopyListener listener) {
-        listener.onReadFailure(document, problem);
+        try {
+          listener.onReadFailure(document, problem);
+        } catch (Throwable e1) {
+          e1.printStackTrace();
+        }
       }
     });
   }

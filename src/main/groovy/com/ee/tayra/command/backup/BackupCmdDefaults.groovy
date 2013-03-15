@@ -40,5 +40,5 @@ class BackupCmdDefaults {
   public int fileMax
   public boolean isContinuous = false
   public String sNs = ''
-  public PrintWriter console
+//  public PrintWriter console
 }

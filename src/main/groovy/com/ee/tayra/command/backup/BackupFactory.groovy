@@ -31,8 +31,10 @@
 package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.MongoExceptionRelayer
 import com.ee.tayra.io.OplogReader
 import com.ee.tayra.io.ProgressReporter
+import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.RotatingFileWriter
 import com.ee.tayra.io.SelectiveOplogReader
 import com.ee.tayra.io.TimestampRecorder
@@ -45,38 +47,39 @@ class BackupFactory {
   private final def logWriter
   private final def criteria
 
-  public BackupFactory (config){
+  public BackupFactory (config, console){
     this.config = config
     logWriter = new RotatingFileWriter(config.recordToFile)
     logWriter.fileSize = config.fileSize
     logWriter.fileMax = config.fileMax
-    listeningReporter = new ProgressReporter(config.console)
+    listeningReporter = new ProgressReporter(console)
     if(config.sNs){
       criteria = new CriteriaBuilder().build { usingNamespace config.sNs }
     }
   }
 
-  public def getReader(def oplog, def timestamp) {
+  public def createReader(def oplog, def timestamp) {
     criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
         : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
-  public def getWriter(Writer writer){
+  public def createWriter(Writer writer){
     new TimestampRecorder(writer)
   }
 
-  public def getProblemListener() {
-    new CopyListener() {
-          void onReadSuccess(String document){
-          }
-          void onWriteSuccess(String document){
-          }
-          void onWriteFailure(String document, Throwable problem){
-          }
-          void onReadFailure(String document, Throwable problem){
-            if(problem instanceof MongoException)
-              throw problem
-          }
-        }
+  public def createListener(){
+    (CopyListener)listeningReporter
+  }
+
+  public def createReporter(){
+    (Reporter)listeningReporter
+  }
+
+  public def createLogWriter(){
+    logWriter
+  }
+
+  public def createMongoExceptionListener() {
+    new MongoExceptionRelayer()
   }
 }

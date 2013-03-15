@@ -38,5 +38,5 @@ public interface CopyListener {
 
   void onWriteFailure(String document, Throwable problem);
 
-  void onReadFailure(String document, Throwable problem);
+  void onReadFailure(String document, Throwable problem) throws Throwable;
 }

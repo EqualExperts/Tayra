@@ -57,7 +57,6 @@ if(!options) {
 PrintWriter console = new PrintWriter(System.out, true)
 
 config = new BackupCmdDefaults()
-config.console = console
 
 if(options.s) {
   config.mongo = options.s == true ? 'localhost' : options.s
@@ -100,20 +99,18 @@ private def readPassword(output) {
   return new String(System.console().readPassword())
 }
 
-def backupFactory = new BackupFactory(config)
-
-def listeningReporter = backupFactory.listeningReporter
+def backupFactory = new BackupFactory(config, console)
 
 def listener = binding.hasVariable('listener') ? binding.getVariable('listener')
-    : listeningReporter
+    : backupFactory.createListener()
 
 def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-    : listeningReporter
+    : backupFactory.createReporter()
 
 def logWriter =  binding.hasVariable('writer') ? binding.getVariable('writer')
-    : backupFactory.logWriter
+    : backupFactory.createLogWriter()
 
-def writer = backupFactory.getWriter(logWriter)
+def writer = backupFactory.createWriter(logWriter)
 
 timestampFileName = 'timestamp.out'
 def timestamp = null
@@ -133,8 +130,8 @@ if(timestampFile.exists()) {
 def reader = null
 boolean normalExecution = false
 addShutdownHook {
-  if(!normalExecution && reporter) {
-    reporter.writeln (console,'==> User forced a Stop-Read...')
+  if(!normalExecution) {
+    reporter?.writeln (console,'==> User forced a Stop-Read...')
   }
   reader?.close()
   writer?.flush()
@@ -153,9 +150,9 @@ try {
   new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
     getAuthenticator(mongo).authenticate(config.username, config.password)
     def oplog = new Oplog(mongo)
-    reader = backupFactory.getReader(oplog, timestamp)
-    def problemListener = backupFactory.getProblemListener()
-    new Copier().copy(reader, writer, listener, problemListener)
+    reader = backupFactory.createReader(oplog, timestamp)
+    def mongoExceptionListener = backupFactory.createMongoExceptionListener()
+    new Copier().copy(reader, writer, listener, mongoExceptionListener)
   } {
     if(writer && writer.timestamp.length() > 0){
       createFile(timestampFileName).append(writer.timestamp).close()
@@ -166,7 +163,7 @@ try {
 } catch (Throwable problem) {
   console.println "Oops!! Could not perform backup...$problem.message"
 }
-normalExecution = true;
+normalExecution = true
 
 def getAuthenticator(mongo) {
   binding.hasVariable('authenticator') ?
