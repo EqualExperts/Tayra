@@ -75,11 +75,7 @@ public class Notifier {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
       public void e(final CopyListener listener) {
-        try {
-          listener.onReadFailure(document, problem);
-        } catch (Throwable e1) {
-          e1.printStackTrace();
-        }
+        listener.onReadFailure(document, problem);
       }
     });
   }

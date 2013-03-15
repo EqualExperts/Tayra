@@ -20,29 +20,27 @@ class BackupFactorySpecs extends Specification {
   def createsSelectiveOplogReaderWhenCriteriaIsGiven() {
     given: 'command arguments contains criteria'
       def oplog = Mock(MongoCollection)
-      def timestamp = 'ts'
       config.sNs = 'db'
 
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
     then: 'reader created is instance of SelectiveOplogReader'
-      factory.createReader(oplog, timestamp).class == SelectiveOplogReader
+      factory.createReader(oplog).class == SelectiveOplogReader
   }
 
   def createsOplogReaderWhenNoCriteriaIsGiven() {
     given: 'command arguments contains no criteria'
       def oplog = Mock(MongoCollection)
-      def timestamp = 'ts'
 
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
     then: 'reader created is instance of SelectiveOplogReader'
-      factory.createReader(oplog, timestamp).class == OplogReader
+      factory.createReader(oplog).class == OplogReader
   }
 
-  def createsProblemListener() {
+  def createsMongoExceptionBubbler() {
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
@@ -51,13 +49,10 @@ class BackupFactorySpecs extends Specification {
   }
 
   def createsWriter() {
-    given: 'a Rotating Log Writer'
-      def mockWriter = Mock(Writer)
-
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
     then: 'writer created is instance of TimestampRecorder'
-      factory.createWriter(mockWriter).class == TimestampRecorder
+      factory.createWriter().class == TimestampRecorder
   }
 }

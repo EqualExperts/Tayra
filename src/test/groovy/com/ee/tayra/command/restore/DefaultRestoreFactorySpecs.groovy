@@ -4,21 +4,24 @@ import com.ee.tayra.command.restore.DefaultFactory;
 import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
+import com.mongodb.Mongo
 import spock.lang.Specification
 
 class DefaultRestoreFactorySpecs extends Specification {
 
 	private RestoreCmdDefaults config
 	private def factory
+	private Mongo ignoreMongo
+	private PrintWriter ignoreConsole
 
 	def setup() {
 		config = new RestoreCmdDefaults()
-		config.mongo = 'localhost'
+		config.destination = 'localhost'
 		config.port = 27017
 		config.username = 'admin'
 		config.password = 'admin'
 		config.exceptionFile = 'exception.documents'
-		factory =  new DefaultFactory(config)
+		factory =  new DefaultFactory(config, ignoreMongo, ignoreConsole)
 	}
 
 	def createsEmptyListener() {
@@ -28,7 +31,7 @@ class DefaultRestoreFactorySpecs extends Specification {
 
 	def createsEmptyReporter() {
 		expect: 'reporter created is instance of EmptyProgressReporter'
-				factory.createReporter().class == RestoreProgressReporter
+			factory.createReporter().class == RestoreProgressReporter
 	}
 
 	def createsWriter() {

@@ -4,6 +4,7 @@ import com.ee.tayra.command.restore.DefaultFactory;
 import com.ee.tayra.command.restore.DryRunFactory;
 import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.command.restore.RestoreFactory;
+import com.mongodb.Mongo
 
 import spock.lang.Specification
 
@@ -11,10 +12,12 @@ class RestoreFactorySpecs extends Specification{
 
 	private boolean isDryrunSupplied
 	private RestoreCmdDefaults config
+	private Mongo ignoreMongo
+	private PrintWriter ignoreConsole
 
 	def setup() {
 		config = new RestoreCmdDefaults()
-		config.mongo = 'localhost'
+		config.destination = 'localhost'
 		config.port = 27017
 		config.username = 'admin'
 		config.password = 'admin'
@@ -23,25 +26,24 @@ class RestoreFactorySpecs extends Specification{
 
 	def createsDefaultRestoreFactoryWhenDryrunOptionIsFalse() {
 		given: 'dry-run option is not supplied through command-line'
-			isDryrunSupplied = false
+			config.dryRunRequired = false
 
 		when: 'factory is created'
-			def factory = RestoreFactory.create(isDryrunSupplied, config)
+			def factory = RestoreFactory.createFactory(config, ignoreMongo, ignoreConsole)
 
 		then: 'it is an instance of DefaultRestoreFactory'
 			factory.class == DefaultFactory
 	}
 
-
 	def createsDryRunFactoryWhenDryrunOptionIsTrue() {
 		given: 'dry-run option is supplied through command-line'
-			isDryrunSupplied = true
+			config.dryRunRequired = true
 
-			when: 'factory is created'
-				def factory = RestoreFactory.create(isDryrunSupplied, config)
+		when: 'factory is created'
+			def factory = RestoreFactory.createFactory(config, ignoreMongo, ignoreConsole)
 
-			then: 'it is an instance of DefaultRestoreFactory'
-				factory.class == DryRunFactory
+		then: 'it is an instance of DefaultRestoreFactory'
+			factory.class == DryRunFactory
 	}
 
 }

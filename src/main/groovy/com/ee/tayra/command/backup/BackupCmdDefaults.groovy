@@ -31,7 +31,7 @@
 package com.ee.tayra.command.backup
 
 class BackupCmdDefaults {
-  public String mongo = 'localhost'
+  public String source = 'localhost'
   public int port = 27017
   public String username = ''
   public String password = ''

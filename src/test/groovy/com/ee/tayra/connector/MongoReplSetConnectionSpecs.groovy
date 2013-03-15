@@ -93,4 +93,24 @@ public class MongoReplSetConnectionSpecs extends Specification {
 		then: 'ensure retry was not invoked'
 			!called
 	}
+	
+	def connectsToASingleNode() {
+		given: 'Mongo replica set connection to a single node with retryable as false'
+			mongoReplsetConnection = new MongoReplSetConnection(source, 27021, false)
+			def executeCalled = false
+			def retryCalled = false
+			def execute = { executeCalled = true	}
+
+		and: 'a retry closure'
+			def retry = { retryCalled = true }
+
+		when: 'using the connection'
+			mongoReplsetConnection.using(execute, retry)
+
+		then: 'ensure execute was invoked '
+			executeCalled
+			
+		and: 'retry was not invoked'
+			!retryCalled
+	}
 }

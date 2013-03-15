@@ -1,5 +1,7 @@
 package com.ee.tayra.command.restore
 
+import java.io.PrintWriter;
+
 import com.ee.tayra.command.restore.DryRunFactory;
 import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.DeafAndDumbReporter;
@@ -11,10 +13,11 @@ class DryRunFactorySpecs extends Specification{
 
 	private def config
 	private def factory
+	private PrintWriter ignoreConsole
 
 	def setup() {
 		config = new RestoreCmdDefaults()
-		factory =  new DryRunFactory(config)
+		factory =  new DryRunFactory(config, ignoreConsole)
 	}
 
 	def createsEmptyListener() {

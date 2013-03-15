@@ -42,16 +42,17 @@ import java.io.PrintWriter
 
 class DryRunFactory extends RestoreFactory {
 
-	private final def listeningReporter
-	public DryRunFactory(RestoreCmdDefaults config) {
+	private final def listeningReporter	private final PrintWriter console
+	public DryRunFactory(RestoreCmdDefaults config, PrintWriter console) {
 		super(config)
+		this.console = console
 		listeningReporter = new DeafAndDumbReporter()
 	}
 
 	@Override
 	public Replayer createWriter() {
-	  criteria ? new SelectiveOplogReplayer(criteria, new ConsoleReplayer(config.console)) :
-	    new ConsoleReplayer(config.console)
+	  criteria ? new SelectiveOplogReplayer(criteria, new ConsoleReplayer(console)) :
+	    new ConsoleReplayer(console)
 	}
 
 	@Override
@@ -62,10 +63,5 @@ class DryRunFactory extends RestoreFactory {
 	@Override
 	public Reporter createReporter() {
 		(Reporter)listeningReporter
-	}
-
-	@Override
-	public Mongo getMongo() {
-		null
 	}
 }

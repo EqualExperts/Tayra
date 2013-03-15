@@ -49,9 +49,10 @@ class BackupFactory {
   private final def timestamp
   private final String timestampFileName = 'timestamp.out'
 
-  public BackupFactory (config, console){
+  public BackupFactory (config, console) {
     this.config = config
-    def rfWriter = new RotatingFileWriter(config.recordToFile).with {
+    Writer rfWriter = new RotatingFileWriter(config.recordToFile)
+	rfWriter.with {
       fileSize = config.fileSize
       fileMax = config.fileMax
     }
@@ -81,7 +82,7 @@ class BackupFactory {
         : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
-  public def createWriter(){
+  public TimestampRecorder createWriter(){
     writer
   }
 
@@ -95,5 +96,9 @@ class BackupFactory {
 
   public def createMongoExceptionBubbler() {
     new MongoExceptionBubbler()
+  }
+  
+  public def createTimestampFile() {
+	  new File(timestampFileName)
   }
 }

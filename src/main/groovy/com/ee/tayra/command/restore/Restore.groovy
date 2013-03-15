@@ -33,10 +33,12 @@ package com.ee.tayra.command.restore
 import com.mongodb.DB
 import com.mongodb.Mongo
 import com.mongodb.ServerAddress
+import com.ee.tayra.connector.MongoAuthenticator
+import com.ee.tayra.connector.MongoReplSetConnection
 import com.ee.tayra.domain.*
 import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.*
-import com.ee.tayra.io.criteria.CriteriaBuilder;
+import com.ee.tayra.io.criteria.CriteriaBuilder
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
 
@@ -62,7 +64,7 @@ if(!options) {
 config = new RestoreCmdDefaults()
 
 if(options.d) {
-	config.mongo = options.d == true ? 'localhost' : options.d
+	config.destination = options.d == true ? 'localhost' : options.d
 }
 
 restoreFromFile = options.f
@@ -72,7 +74,6 @@ if(options.port) {
 }
 
 PrintWriter console = new PrintWriter(System.out, true)
-config.console = console
 
 def readPassword(output) {
 	def input = System.console()
@@ -94,18 +95,24 @@ if(options.e) {
 	config.exceptionFile = options.e
 }
 
+if (options.'dry-run') {
+	config.dryRunRequired = true
+}
+
 isMultiple = false
 if(options.fAll) {
 	isMultiple = true
 }
 
-config.authenticator = binding.hasVariable('authenticator') ?
-				binding.getVariable('authenticator') : null
-
-
 RestoreFactory factory = null
+Mongo mongo = null
 try {
-	factory = RestoreFactory.create(options.'dry-run', config)
+	if(!options.'dry-run') {
+	    ServerAddress server = new ServerAddress(config.destination, config.port)
+	    mongo = new Mongo(server)
+		getAuthenticator(mongo).authenticate(config.username, config.password)
+	}
+	factory = RestoreFactory.createFactory(config, mongo, console)
 
 	def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
 	def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
@@ -126,7 +133,12 @@ try {
 	console.println "Oops!! Could not perform restore...$problem.message"
 	problem.printStackTrace(console)
 } finally {
-	if(factory != null && factory.getMongo() != null) {
-		factory.getMongo().close()
-	}
+    mongo?.close()
 }
+
+
+def getAuthenticator(mongo) {
+	binding.hasVariable('authenticator') ?
+		binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
+}
+  

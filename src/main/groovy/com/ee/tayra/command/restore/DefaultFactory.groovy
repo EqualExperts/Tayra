@@ -47,15 +47,11 @@ class DefaultFactory extends RestoreFactory {
   private final Mongo mongo
   private final def listeningReporter
 
-  public DefaultFactory(RestoreCmdDefaults config) {
+  public DefaultFactory(RestoreCmdDefaults config, Mongo mongo, PrintWriter console) {
     super(config)
-
-    ServerAddress server = new ServerAddress(config.mongo, config.port)
-    this.mongo = new Mongo(server)
-    getAuthenticator(mongo).authenticate(config.username, config.password)
-
+    this.mongo = mongo
     listeningReporter = new RestoreProgressReporter(new FileWriter
-        (config.exceptionFile), config.console)
+        (config.exceptionFile), console)
   }
 
   @Override
@@ -72,14 +68,5 @@ class DefaultFactory extends RestoreFactory {
   @Override
   public Reporter createReporter() {
     (Reporter)listeningReporter
-  }
-
-  @Override
-  public Mongo getMongo() {
-    mongo
-  }
-
-  def getAuthenticator(mongo) {
-    config.authenticator == null ? new MongoAuthenticator(mongo) : config.authenticator
   }
 }

@@ -59,7 +59,7 @@ PrintWriter console = new PrintWriter(System.out, true)
 config = new BackupCmdDefaults()
 
 if(options.s) {
-  config.mongo = options.s == true ? 'localhost' : options.s
+  config.source = options.s == true ? 'localhost' : options.s
 }
 
 config.recordToFile = options.f
@@ -99,18 +99,18 @@ private def readPassword(output) {
   return new String(System.console().readPassword())
 }
 
-def backupFactory = new BackupFactory(config, console)
+def factory = new BackupFactory(config, console)
 
 def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener')
-    : backupFactory.createListener()
+    : factory.createListener()
 
 def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-    : backupFactory.createReporter()
+    : factory.createReporter()
 
 def writer =  binding.hasVariable('writer') ? binding.getVariable('writer')
-    : backupFactory.createWriter()
+    : factory.createWriter()
 
-def timestamp = backupFactory.timestamp
+def timestamp = factory.timestamp
 
 def reader = null
 boolean normalExecution = false
@@ -120,8 +120,12 @@ addShutdownHook {
   }
   reader?.close()
   writer?.flush()
-  if(writer && writer.timestamp.length() > 0){
-    createFile(timestampFileName).append(writer.timestamp).close()
+  if(writer.getClass() == TimestampRecorder) {
+	  if(writer && writer.timestamp.length() > 0) {
+	    factory.createTimestampFile().withWriter {
+		  it.write writer.timestamp
+	    }
+	  }
   }
   progressReporter?.summarizeTo console
 }
@@ -132,15 +136,15 @@ System.setErr(stderr)
 
 try {
   progressReporter.writeStartTimeTo console
-  new MongoReplSetConnection(config.mongo, config.port).using { mongo ->
+  new MongoReplSetConnection(config.source, config.port).using { mongo ->
     getAuthenticator(mongo).authenticate(config.username, config.password)
     def oplog = new Oplog(mongo)
-    reader = backupFactory.createReader(oplog, timestamp)
-    def exceptionBubbler = backupFactory.createMongoExceptionBubbler()
+    reader = factory.createReader(oplog)
+    def exceptionBubbler = factory.createMongoExceptionBubbler()
     new Copier().copy(reader, writer, progressListener, exceptionBubbler)
   } {
     if(writer && writer.timestamp.length() > 0){
-      createFile(timestampFileName).append(writer.timestamp).close()
+      factory.createTimestampFile().append(writer.timestamp).close()
       timestamp = writer.timestamp
     }
     console.println "Attempting to resume Backup On: ${new Date()}"
@@ -153,8 +157,4 @@ normalExecution = true
 def getAuthenticator(mongo) {
   binding.hasVariable('authenticator') ?
       binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
-}
-
-def createFile(fileName) {
-  new FileWriter(fileName)
 }
