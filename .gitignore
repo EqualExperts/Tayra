@@ -52,3 +52,5 @@ a.out
 *.documents
 timestamp.out
 error.log
+.idea
+out
