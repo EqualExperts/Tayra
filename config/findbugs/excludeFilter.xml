@@ -234,6 +234,12 @@
     </Not>
   </Match>
   <Match>
+  <Class name="com.ee.tayra.command.restore.RestoreFactory$_createCriteria_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
   <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure5"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />

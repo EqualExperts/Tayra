@@ -39,23 +39,28 @@ import com.ee.tayra.io.criteria.Criterion
 
 abstract class RestoreFactory {
 	
-	protected final RestoreCmdDefaults config
     protected final Criterion criteria
 	
 	public static RestoreFactory createFactory (RestoreCmdDefaults config, Mongo mongo, PrintWriter console) {
 		config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
 	}
 	
-	RestoreFactory(config) {
-		this.config = config
-		criteria = new CriteriaBuilder().build {
-			if(config.sUntil) {
-				usingUntil config.sUntil
-			}
-			if(config.sNs) {
-			  usingNamespace config.sNs
+	RestoreFactory(RestoreCmdDefaults config) {
+		criteria = createCriteria(config)
+	}
+	
+	private Criterion createCriteria(RestoreCmdDefaults config) {
+		if(config.sNs || config.sUntil) {
+			new CriteriaBuilder().build {
+				if(config.sUntil) {
+					usingUntil config.sUntil
+				}
+				if(config.sNs) {
+				    usingNamespace config.sNs
+				}
 			}
 		}
+		
 	}
 
 	public abstract Replayer createWriter()

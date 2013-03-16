@@ -4,10 +4,11 @@ import com.ee.tayra.command.restore.DefaultFactory;
 import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
+import com.ee.tayra.io.OplogReplayer
 import com.mongodb.Mongo
 import spock.lang.Specification
 
-class DefaultRestoreFactorySpecs extends Specification {
+class DefaultFactorySpecs extends Specification {
 
 	private RestoreCmdDefaults config
 	private def factory
@@ -34,8 +35,20 @@ class DefaultRestoreFactorySpecs extends Specification {
 			factory.createReporter().class == RestoreProgressReporter
 	}
 
-	def createsWriter() {
-		expect: 'writer created is instance of SelectiveOplogReplayer'
-			factory.createWriter().class == SelectiveOplogReplayer
-	}
+	def createsWriters() {
+		given:
+		    config.sNs = namespace
+			config.sUntil = untilDate
+			factory =  new DefaultFactory(config, ignoreMongo, ignoreConsole)
+			
+		expect: 'writer created is type of klass'
+			factory.createWriter().class == klass
+			
+		where: 'namespace and until are varied as...'
+			namespace | untilDate | klass
+			    ''    |    ''     | OplogReplayer
+			  'test'  |    ''     | SelectiveOplogReplayer
+			  ''      |'16/3/2013'| SelectiveOplogReplayer
+			  'test'  |'16/3/2013'| SelectiveOplogReplayer
+ 	}
 }
