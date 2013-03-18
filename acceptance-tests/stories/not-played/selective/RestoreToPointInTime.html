@@ -15,9 +15,16 @@
 			<div class="contents">
 				<p>
 					<h3>Narrative</h3>
-						<b>IncyWincyWebApp</b> stores some of its persistent data on MongoDB.
-						For user analytics it requires <b>sessions</b> and <b>locations</b> collections from
-						<b>users</b> database.
+						<b>IncyWincyWebApp</b> stores some of its persistent data on MongoDB. <b>Adam</b>, MongoDB admin, performs
+						backup of a replica set on an ongoing basis. On a not so great day, Dave, the developer approaches Adam and requests:
+						<br><br>
+						<b>Dave: </b>Hey Adam, looks like something has gone wrong with the data in 
+						<b>profile</b> collection of <b>users</b> database and <b>orders</b> collection in <b>transactions</b> database
+						<br>
+						<b>Adam offering a solution: </b> Do you want me to restore only the collections which you want ?
+						<br>
+						<b>Dave: </b>Sure Adam, that'll be great if you could restore only <b>transactions</b> database and
+						<b>ips</b> collection in <b>users</b> database.
 				</p>
 				<br>
 				<table>
@@ -36,7 +43,7 @@
 					</tr>
 				</table>
 				<br>
-				<h4>1. Given an existing database</h4>
+				<h4>1. Do Some CUD Operations</h4>
 				<table>
 					<tr class="headingTableRow">
 						<td colspan="2">run mongo command on</td>
