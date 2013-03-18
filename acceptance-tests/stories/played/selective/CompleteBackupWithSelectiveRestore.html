@@ -60,23 +60,15 @@
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.save({name:"Three"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.remove({name:"One"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.update({name:"Three"}, {$set : {name:"Four"}})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
 						<td colspan="2"><pre>db.sessions.insert({sessionId:"One"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.ips.insert({ip:"1.2.3.4"})</pre></td>
+						<td colspan="2"><pre>db.locations.insert({place:"Pune"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.locations.insert({place:"London"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">use database</td>
@@ -120,7 +112,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=transactions,users.ips</pre></td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=users.locations,users.sessions</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -180,7 +172,31 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">1</td><td colspan="4">0</td>
+						<td colspan="4">1</td><td colspan="4">1</td>
+					</tr>
+				</table>
+				<br>
+				<table>
+					<tr>
+						<td colspan="8" class="headingTableRow">
+							Ensuring target is consistent with source
+						</td>
+					</tr>
+					<tr>
+						<td>find documents for collection</td>
+						<td><pre>sessions</pre></td>
+						<td>in database</td>
+						<td><pre>users</pre></td>
+						<td>where</td>
+						<td><pre>null</pre></td>
+						<td>and cleanup databases </td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "sessionId" : "One"}</pre></td><td colspan="4"><pre>{ "sessionId" : "One"}</pre></td>
 					</tr>
 				</table>
 				<br>
@@ -194,55 +210,7 @@
 						<td>run in database</td>
 						<td colspan="2"><pre>users</pre></td>
 						<td>query</td>
-						<td colspan="2"><pre>db.ips.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">1</td><td colspan="4">1</td>
-					</tr>
-				</table>
-				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>find documents for collection</td>
-						<td><pre>ips</pre></td>
-						<td>in database</td>
-						<td><pre>users</pre></td>
-						<td>where</td>
-						<td><pre>null</pre></td>
-						<td>and cleanup databases </td>
-						<td>true</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td><td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td>
-					</tr>
-				</table>
-				<br>
-				<br>
-				<h5>Checking documents of database transactions</h5>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>transactions</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.orders.count()</pre></td>
+						<td colspan="2"><pre>db.locations.count()</pre></td>
 						<td>and cleanup databases</td>
 						<td>false</td>
 					</tr>
@@ -262,9 +230,9 @@
 					</tr>
 					<tr>
 						<td>find documents for collection</td>
-						<td><pre>orders</pre></td>
+						<td><pre>locations</pre></td>
 						<td>in database</td>
-						<td><pre>transactions</pre></td>
+						<td><pre>users</pre></td>
 						<td>where</td>
 						<td><pre>null</pre></td>
 						<td>and cleanup databases </td>
@@ -274,12 +242,37 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "order" : "One"}</pre></td><td colspan="4"><pre>{ "order" : "One"}</pre></td>
+						<td colspan="4"><pre>{ "place" : "Pune"}</pre></td><td colspan="4"><pre>{ "place" : "Pune"}</pre></td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "order" : "Two"}</pre></td><td colspan="4"><pre>{ "order" : "Two"}</pre></td>
+						<td colspan="4"><pre>{ "place" : "London"}</pre></td><td colspan="4"><pre>{ "place" : "London"}</pre></td>
 					</tr>
 				</table>
+				<br>
+				<br>
+				<h5>Checking documents of database transactions</h5>
+				<table>
+					<tr>
+						<td colspan="8" class="headingTableRow">
+							Ensuring target is consistent with source
+						</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>transactions</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.orders.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>true</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">2</td><td colspan="4">0</td>
+					</tr>
+				</table>
+				<br>
 			</div>
 			<div class="footer">
 				<table>
