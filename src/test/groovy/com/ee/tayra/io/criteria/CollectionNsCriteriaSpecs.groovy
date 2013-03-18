@@ -56,7 +56,7 @@ class CollectionNsCriteriaSpecs extends Specification {
   def document
 
   def satisfiesDatabaseAndCollectionCriteria(){
-    criteria = new NamespaceCriteria (dBAndCollectionNamespace, false)
+    criteria = new NamespaceCriteria (dBAndCollectionNamespace)
 
     expect: '''criteria is satisfied for documents belonging to eelabs db
            and countries collection'''
@@ -76,7 +76,7 @@ class CollectionNsCriteriaSpecs extends Specification {
 }
 
   def doesNotSatisfyDatabaseAndCollectionCriteria() {
-    criteria = new NamespaceCriteria(dBAndCollectionNamespace, false)
+    criteria = new NamespaceCriteria(dBAndCollectionNamespace)
 
     expect: '''criteria is not satisfied for documents belonging to other than 
            eelabs db and countries collection'''
@@ -89,42 +89,8 @@ class CollectionNsCriteriaSpecs extends Specification {
     initiatingSet                  | false
   }
 
-  def satisfiesDatabaseAndCollectionCriteriaWithSExclude(){
-    criteria = new NamespaceCriteria (dBAndCollectionNamespace, true)
-
-    expect: '''criteria is not satisfied for documents belonging to
-             eelabs db and countries collection'''
-      outcome == criteria.isSatisfiedBy(document)
-  
-    where:
-      document                       | outcome
-    eelabsInsertDoc                  | false
-    eelabsUpdateDoc                  | false
-    eelabsDeleteDoc                  | false
-    eelabsDropDatabase               | false
-    eelabsCreateCollection           | false
-    eelabsCappedCreateCollection     | false
-    eelabsDropCollection             | false
-    eelabsCreateIndex                | false
-    eelabsDropIndex                  | false
-  }
-
-  def doesNotSatisfyDatabaseAndCollectionCriteriaWithSExclude() {
-    criteria = new NamespaceCriteria(dBAndCollectionNamespace, true)
-
-    expect: '''criteria is satisfied for documents belonging to other
-            than eelabs db and countries collection'''
-      outcome == criteria.isSatisfiedBy(document)
-
-    where:
-      document                     | outcome
-    eelabsInsertDocFail            | true
-    eeDropIndexFail                | true
-    initiatingSet                  | true
-  }
-
   def satisfiesMultipleDatabaseAndCollectionCriteria(){
-    criteria = new NamespaceCriteria (multipleDBAndCollectionNamespace, false)
+    criteria = new NamespaceCriteria (multipleDBAndCollectionNamespace)
   
     expect: '''criteria is satisfied for documents belonging to ee.people.addresses,
         eelabs.countries, tayra.project collections and not others'''
@@ -151,31 +117,4 @@ class CollectionNsCriteriaSpecs extends Specification {
     eeInsertThree                    | false
 }
 
-  def satisfiesMultipleDatabaseAndCollectionCriteriaWithSExclude(){
-    criteria = new NamespaceCriteria (multipleDBAndCollectionNamespace, true)
-  
-    expect:'''criteria is satisfied for documents belonging to other collections
-      than ee.people.addresses, eelabs.countries, tayra.project collections'''
-      outcome == criteria.isSatisfiedBy(document)
-  
-    where:
-      document                       | outcome
-    eelabsCreateCollectionEntry      | false
-    eelabsCreateCollectionWithInsert | false
-    eelabsInsertDoc                  | false
-    eelabsUpdateDoc                  | false
-    eelabsDeleteDoc                  | false
-    eelabsDropDatabase               | false
-    eelabsCreateCollection           | false
-    eelabsCappedCreateCollection     | false
-    eelabsDropCollection             | false
-    eelabsCreateIndex                | false
-    eelabsDropIndex                  | false
-    tayraInsertOne                   | true
-    tayraInsertTwo                   | true
-    tayraInsertThree                 | false
-    eePrefixedInsertOne              | false
-    eePrefixedInsertTwo              | false
-    eeInsertThree                    | true
-  }
 }

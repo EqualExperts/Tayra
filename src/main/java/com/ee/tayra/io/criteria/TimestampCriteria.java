@@ -42,23 +42,14 @@ public class TimestampCriteria implements Criterion {
   private static final long MILLI_CONVERSION = 1000L;
   private final Date timeStampUntil;
   private final int increment;
-  private final boolean toExclude;
 
-  public TimestampCriteria(final String filter, final boolean toExclude) {
-    this.toExclude = toExclude;
+  public TimestampCriteria(final String filter) {
     this.timeStampUntil = getTimestampFrom(filter);
     this.increment = getIncrementFrom(filter);
   }
 
   @Override
   public boolean isSatisfiedBy(final String document) {
-    if (toExclude) {
-      return !isCriteriaSatisfied(document);
-    }
-    return isCriteriaSatisfied(document);
-  }
-
-  private boolean isCriteriaSatisfied(final String document) {
     String tsDocument = document.replaceAll("\"", "").replaceAll(" ", "");
     if (timeStampUntil.compareTo(getTimestampFrom(tsDocument)) > 0) {
       return true;
@@ -72,21 +63,23 @@ public class TimestampCriteria implements Criterion {
   private int getIncrementFrom(final String filter) {
     if (filter.contains(INC_IDENTIFIER)) {
       int incStartIndex = filter.indexOf(INC_IDENTIFIER)
-              + INC_IDENTIFIER.length();
+          + INC_IDENTIFIER.length();
       int incEndIndex = filter.indexOf("}", incStartIndex);
       return Integer.parseInt(filter
-              .substring(incStartIndex, incEndIndex).trim());
-     }
+          .substring(incStartIndex, incEndIndex).trim());
+    }
     return Integer.MAX_VALUE;
   }
 
   private Date getTimestampFrom(final String filter) {
     if (filter.contains(TS_IDENTIFIER)) {
       int tsStartIndex = filter.indexOf(TS_IDENTIFIER)
-              + TS_IDENTIFIER.length();
+          + TS_IDENTIFIER.length();
       int tsEndIndex = filter.indexOf(INC_IDENTIFIER);
-      return new Date(Long.parseLong(filter.substring(tsStartIndex, tsEndIndex)
-                            .replaceAll(",", "").trim()) * MILLI_CONVERSION);
+      return new Date(Long.parseLong(filter
+          .substring(tsStartIndex, tsEndIndex).replaceAll(",", "")
+          .trim())
+          * MILLI_CONVERSION);
     } else {
       SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
       try {

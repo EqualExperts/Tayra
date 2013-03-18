@@ -215,4 +215,40 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.backup.BackupFactory$_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.backup.BackupFactory$_closure2"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.restore.RestoreFactory$_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.restore.RestoreFactory$_createCriteria_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure5"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.io.SelectiveOplogReader"/>
+    <Not>
+      <Bug code="DM_STRING_CTOR" />
+    </Not>
+  </Match>
 </FindBugsFilter>

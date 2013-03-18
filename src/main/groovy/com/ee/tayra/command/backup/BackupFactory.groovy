@@ -28,45 +28,77 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.command.backup
 
-import com.ee.tayra.connector.MongoAuthenticator;
-import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.OplogReplayer
+import com.ee.tayra.io.MongoExceptionBubbler
+import com.ee.tayra.io.OplogReader
+import com.ee.tayra.io.ProgressReporter
 import com.ee.tayra.io.Reporter
-import com.ee.tayra.io.Replayer
-import com.ee.tayra.io.RestoreProgressReporter
-import com.ee.tayra.io.SelectiveOplogReplayer
-import com.mongodb.Mongo
-import com.mongodb.ServerAddress
-import java.io.PrintWriter;
+import com.ee.tayra.io.RotatingFileWriter
+import com.ee.tayra.io.SelectiveOplogReader
+import com.ee.tayra.io.TimestampRecorder
+import com.ee.tayra.io.criteria.CriteriaBuilder
+import com.mongodb.MongoException
 
-class DefaultFactory extends RestoreFactory {
-
-  private final Mongo mongo
+class BackupFactory {
+  private final BackupCmdDefaults config
   private final def listeningReporter
+  private final def writer
+  private final def criteria
+  private final def timestamp
+  private final String timestampFileName = 'timestamp.out'
 
-  public DefaultFactory(RestoreCmdDefaults config, Mongo mongo, PrintWriter console) {
-    super(config)
-    this.mongo = mongo
-    listeningReporter = new RestoreProgressReporter(new FileWriter
-        (config.exceptionFile), console)
+  public BackupFactory (config, console) {
+    this.config = config
+    Writer rfWriter = new RotatingFileWriter(config.recordToFile)
+    rfWriter.with {
+      fileSize = config.fileSize
+      fileMax = config.fileMax
+    }
+    writer = new TimestampRecorder(rfWriter)
+
+    listeningReporter = new ProgressReporter(console)
+    if(config.sNs){
+      criteria = new CriteriaBuilder().build { usingNamespace config.sNs }
+    }
+
+    File timestampFile = new File(timestampFileName)
+    if(timestampFile.isDirectory()) {
+      console.println("Expecting $timestampFile.name to be a File, but found Directory")
+      System.exit(1)
+    }
+    if(timestampFile.exists()) {
+      if(timestampFile.canRead() && timestampFile.length() > 0) {
+        timestamp = timestampFile.text
+      } else {
+        console.println("Unable to read $timestampFile.name")
+      }
+    }
   }
 
-  @Override
-  public Replayer createWriter() {
-    criteria ? new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo))) :
-        new OplogReplayer(new Operations(mongo))
+  public def createReader(def oplog) {
+    criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
+        : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
-  @Override
-  public CopyListener createListener() {
+  public TimestampRecorder createWriter(){
+    writer
+  }
+
+  public def createListener(){
     (CopyListener)listeningReporter
   }
 
-  @Override
-  public Reporter createReporter() {
+  public def createReporter(){
     (Reporter)listeningReporter
+  }
+
+  public def createMongoExceptionBubbler() {
+    new MongoExceptionBubbler()
+  }
+
+  public def createTimestampFile() {
+    new File(timestampFileName)
   }
 }

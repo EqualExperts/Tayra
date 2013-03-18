@@ -63,7 +63,7 @@ class DbNamespaceCriteriaSpecs extends Specification {
   def document
 
   def satisfiesDatabaseCriteria(){
-      criteria = new NamespaceCriteria (namespace, false)
+      criteria = new NamespaceCriteria (namespace)
 
     expect: 'criteria is satisfied for documents belonging to eelabs db'
       outcome == criteria.isSatisfiedBy(document)
@@ -83,7 +83,7 @@ class DbNamespaceCriteriaSpecs extends Specification {
   }
 
   def doesNotSatisfyDatabaseCriteria() {
-    criteria = new NamespaceCriteria(namespace, false)
+    criteria = new NamespaceCriteria(namespace)
 
     expect: 'criteria is not satisfied for documents not belonging to eelabs db'
     outcome == criteria.isSatisfiedBy(document)
@@ -94,40 +94,8 @@ class DbNamespaceCriteriaSpecs extends Specification {
     initiatingSet                    | false
   }
 
-  def satisfiesDatabaseCriteriaWithSExclude(){
-    criteria = new NamespaceCriteria (namespace, true)
-
-    expect: 'criteria is not satisfied for documents belonging to eelabs db'
-    outcome == criteria.isSatisfiedBy(document)
-
-    where:
-      document                       | outcome
-    eelabsCreateCollectionEntry      | false
-    eelabsCreateCollectionWithInsert | false
-    eelabsInsertDoc                  | false
-    eelabsUpdateDoc                  | false
-    eelabsDeleteDoc                  | false
-    eelabsDropCollection             | false
-    eelabsDropDatabase               | false
-    eelabsCreateIndex                | false
-    eelabsDropIndex                  | false
-    eelabsInsertDocFail              | false
-  }
-
-  def doesNotSatisfyDatabaseCriteriaWithSExclude() {
-    criteria = new NamespaceCriteria(namespace, true)
-
-    expect: 'criteria is satisfied for documents belonging to other dbs than eelabs'
-      outcome == criteria.isSatisfiedBy(document)
-
-    where:
-      document                       | outcome
-    eeDropIndexFail                  | true
-    initiatingSet                    | true
-  }
-
   def satisfiesMultipleDatabaseCriteria(){
-    criteria = new NamespaceCriteria (multipleDBnamespace, false)
+    criteria = new NamespaceCriteria (multipleDBnamespace)
 
     expect: '''criteria is satisfied for documents belonging to ee, tayra, DL
            dbs and not eelabs'''
@@ -158,35 +126,4 @@ class DbNamespaceCriteriaSpecs extends Specification {
     eeInsertThree                    | true
   }
 
-  def satisfiesMultipleDatabaseCriteriaWithSExclude(){
-    criteria = new NamespaceCriteria (multipleDBnamespace, true)
-  
-    expect: '''criteria is not satisfied for documents belonging to ee, tayra,
-           DL dbs and satisfied for eelabs'''
-      outcome == criteria.isSatisfiedBy(document)
-
-    where:
-      document                       | outcome
-    eelabsCreateCollectionEntry      | true
-    eelabsCreateCollectionWithInsert | true
-    eelabsInsertDoc                  | true
-    eelabsUpdateDoc                  | true
-    eelabsDeleteDoc                  | true
-    eelabsDropCollection             | true
-    eelabsDropDatabase               | true
-    eelabsCreateIndex                | true
-    eelabsDropIndex                  | true
-    eelabsInsertDocFail              | true
-    initiatingSet                    | true
-    eeDropIndexFail                  | false
-    tayraInsertOne                   | false
-    tayraInsertTwo                   | false
-    tayraInsertThree                 | false
-    DLInsertOne                      | false
-    DLInsertTwo                      | false
-    DLInsertThree                    | false
-    eePrefixedInsertOne              | false
-    eePrefixedInsertTwo              | false
-    eeInsertThree                    | false
-  }
 }

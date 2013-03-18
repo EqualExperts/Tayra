@@ -37,11 +37,9 @@ public class NamespaceCriteria implements Criterion {
   private static final String COMMA = ",";
   private static final String BLANK = "";
   private List<String> incomingNamespaces;
-  private final boolean toExclude;
 
-  public NamespaceCriteria(final String ns, final boolean toExclude) {
+  public NamespaceCriteria(final String ns) {
     this.incomingNamespaces = getNamespaces(ns);
-    this.toExclude = toExclude;
   }
 
   private List<String> getNamespaces(final String ns) {
@@ -50,9 +48,6 @@ public class NamespaceCriteria implements Criterion {
 
   @Override
   public boolean isSatisfiedBy(final String document) {
-    if (toExclude) {
-      return !isCriteriaSatisfied(document);
-    }
     return isCriteriaSatisfied(document);
   }
 

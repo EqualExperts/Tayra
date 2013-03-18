@@ -57,7 +57,7 @@ public class CopierSpecs extends Specification {
 								.add("ts", dbObject.get("ts"))
 							.get();
 			OplogReader reader = new OplogReader(new Oplog(replicaSet), query.toString(), false)
-			
+
 		when: 'document is copied'
 			copier.copy(reader, writer)
 
@@ -105,7 +105,7 @@ public class CopierSpecs extends Specification {
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
-			
+
 		and: 'the replayer replays the document'
 			mockReplayer.replay (document) >> true
 
@@ -265,6 +265,26 @@ public class CopierSpecs extends Specification {
 			0 * mockCopyListener.onReadSuccess(document)
 			0 * mockCopyListener.onWriteSuccess(document)
 			0 * mockCopyListener.onWriteFailure(document, problem)
+	}
+
+	def reportsNeitherReadSuccessNorWriteSuccessWhenCriteriaFails () {
+		given: 'a collection reader and a writer'
+			CollectionReader mockReader = Mock(CollectionReader)
+			Writer mockWriter = Mock(Writer)
+
+		and: 'documents do not satisfy criteria'
+			mockReader.hasDocument() >> true >> false
+			mockReader.readDocument() >> null
+
+		and: 'a copy listener'
+			mockCopyListener = Mock(CopyListener)
+
+		when: 'the document is copied'
+			copier.copy(mockReader, mockWriter, mockCopyListener)
+
+		then: 'it notifies only read success'
+			0 * mockCopyListener.onReadSuccess(_)
+			0 * mockCopyListener.onWriteSuccess(_)
 	}
 
 }
