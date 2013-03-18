@@ -42,17 +42,6 @@ class CriteriaBuilderSpecs extends Specification{
 			criterion.criteria()[0].getClass() == TimestampCriteria
 	}
 
-	def producesAll() {
-		given: 'No filter'
-			def filter=''
-
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build()
-
-		then:'Criterion should be an instance of All'
-			criterion == Criterion.ALL
-	}
-
 	def producesTimestampCriteriaUsingWithClosure() {
 		given: 'timestamp filter'
 			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'

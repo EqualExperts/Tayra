@@ -35,7 +35,7 @@ import java.util.List
 
 public class CriteriaBuilder {
 
-  private MultiCriteria multiCriteria = new MultiCriteria()
+  private Criterion multiCriteria = new MultiCriteria()
   private boolean excludeEnabled = false
 
   public void usingUntil(String timestamp) {
@@ -52,9 +52,6 @@ public class CriteriaBuilder {
 
   public Criterion build(Closure closure = {}) {
     with closure
-    if (multiCriteria.noCriteriaGiven()) {
-      return Criterion.ALL
-    }
     excludeEnabled ? new SExclude(multiCriteria) : multiCriteria
   }
 }

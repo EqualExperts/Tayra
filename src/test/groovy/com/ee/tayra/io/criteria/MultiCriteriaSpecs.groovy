@@ -43,4 +43,15 @@ class MultiCriteriaSpecs  extends Specification {
 		then: 'the document satisfies all criteria'
 			isSatisfied
 	}
+
+	def emptyCriteriaMeansSelectAll() {
+		given: 'no criteria is supplied'
+			multiCriteria = new MultiCriteria()
+
+		when: 'it is queried'
+			def isSatisfied = multiCriteria.isSatisfiedBy(document)
+
+		then: 'all documents are selected'
+			isSatisfied
+	}
 }

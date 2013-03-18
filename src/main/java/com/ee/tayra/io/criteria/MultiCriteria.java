@@ -40,9 +40,9 @@ public class MultiCriteria implements Criterion {
 
   @Override
   public final boolean isSatisfiedBy(final String document) {
-    boolean isSatisfied = false;
+    boolean isSatisfied = true;
     for (Criterion criterion: criteria) {
-      isSatisfied = criterion.isSatisfiedBy(document);
+      isSatisfied &= criterion.isSatisfiedBy(document);
       if (!isSatisfied) {
         break;
       }
@@ -52,10 +52,6 @@ public class MultiCriteria implements Criterion {
 
   public final void addCriteria(final Criterion criterion) {
     criteria.add(criterion);
-  }
-
-  public final boolean noCriteriaGiven() {
-    return criteria.isEmpty();
   }
 
   public final List<Criterion> criteria() {
