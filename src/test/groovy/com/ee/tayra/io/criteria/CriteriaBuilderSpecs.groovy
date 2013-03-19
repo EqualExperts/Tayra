@@ -1,12 +1,6 @@
 package com.ee.tayra.io.criteria
 
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.criteria.NamespaceCriteria
-import com.ee.tayra.io.criteria.TimestampCriteria
-import com.ee.tayra.io.criteria.SExclude;
-
-import spock.lang.Specification;
+import spock.lang.Specification
 
 class CriteriaBuilderSpecs extends Specification{
 

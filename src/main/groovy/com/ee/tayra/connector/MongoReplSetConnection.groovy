@@ -55,9 +55,7 @@ public class MongoReplSetConnection {
     // TODO: Replace this API by different call (to investigate with mongo guys)
     String [] hosts = node.getDB("test").command("ismaster").get("hosts")
     println "Hosts are: $hosts"
-    hosts.collect {
-      getServerAddress(it)
-    }
+    hosts.collect { getServerAddress(it) }
   }
 
   private ServerAddress getServerAddress(String host) {
@@ -72,7 +70,7 @@ public class MongoReplSetConnection {
     while(shouldContinue) {
       try {
         shouldContinue = retryable
-	    node.with runnable
+        node.with runnable
         shouldContinue = false
       } catch(MongoException.Network problem) {
         if (retryable) {

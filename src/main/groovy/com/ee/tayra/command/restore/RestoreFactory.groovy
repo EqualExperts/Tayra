@@ -34,18 +34,37 @@ import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.Reporter
 import com.mongodb.Mongo
+import com.ee.tayra.io.criteria.CriteriaBuilder
+import com.ee.tayra.io.criteria.Criterion
 
 abstract class RestoreFactory {
+  
+    protected final Criterion criteria
+  
+  public static RestoreFactory createFactory (RestoreCmdDefaults config, Mongo mongo, PrintWriter console) {
+    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
+  }
+  
+  RestoreFactory(RestoreCmdDefaults config) {
+    criteria = createCriteria(config)
+  }
+  
+  private Criterion createCriteria(RestoreCmdDefaults config) {
+    if(config.sNs || config.sUntil) {
+      new CriteriaBuilder().build {
+        if(config.sUntil) {
+          usingUntil config.sUntil
+        }
+        if(config.sNs) {
+            usingNamespace config.sNs
+        }
+      }
+    }
+  }
 
-	public static RestoreFactory create (boolean isDryRun, RestoreCmdDefaults config) {
-		isDryRun ? new DryRunFactory(config) : new DefaultFactory(config)
-	}
+  public abstract Replayer createWriter()
 
-	public abstract Replayer createWriter()
+  public abstract CopyListener createListener()
 
-	public abstract CopyListener createListener()
-
-	public abstract Reporter createReporter()
-
-	public abstract Mongo getMongo()
+  public abstract Reporter createReporter()
 }

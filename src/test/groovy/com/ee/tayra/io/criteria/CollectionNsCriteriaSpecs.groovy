@@ -28,7 +28,7 @@ class CollectionNsCriteriaSpecs extends Specification {
         "o" : { "drop" : "countries"}}'''
   static eelabsCreateIndex = ''' "op" : "i" , "ns" : "eelabs.system.indexes" ,
         "o" : { "_id" : { "$oid" : "511b232461ad583bb301e9ec"} , "ns" : "eelabs.countries" , "key" : { "name" : 1.0} , "name" : "name_1"}}'''
-  static eelabsDropIndex = ''' "op" : "c" , "ns" : "eelabs.$cmd" , 
+  static eelabsDropIndex = ''' "op" : "c" , "ns" : "eelabs.$cmd" ,
         "o" : { "deleteIndexes" : "countries" , "index" : { "name" : 1.0}}}'''
   static eelabsCappedCreateCollection=''' "op" : "c" , "ns" : "eelabs.$cmd" ,
         "o" : { "create" : "countries" , "capped" : true , "size" : 10000.0}}'''
@@ -36,12 +36,12 @@ class CollectionNsCriteriaSpecs extends Specification {
         "o" : { "msg" : "initiating set" } }'''
 
   static tayraInsertOne = ''' "op" : "i" , "ns" : "tayra.people" , "o" :
-        { "_id" : { "$oid" : "512cab35696006eb3408bfdb"} , "name" : 29.0}}''' 
+        { "_id" : { "$oid" : "512cab35696006eb3408bfdb"} , "name" : 29.0}}'''
   static tayraInsertTwo = ''' "op" : "i" , "ns" : "tayra.people" , "o" :
         { "_id" : { "$oid" : "512cab35696006eb3408bfdc"} , "name" : 30.0}}'''
   static tayraInsertThree = ''' "op" : "i" , "ns" : "tayra.project" , "o" :
         { "_id" : { "$oid" : "512cab35696006eb3408bfdd"} , "name" : 31.0}}'''
-  
+
   static eePrefixedInsertOne = ''' "op" : "i" , "ns" : "ee.people.addresses" , "o" :
         { "_id" : { "$oid" : "512cab35696006eb3408bfdb"} , "name" : 29.0}}'''
   static eePrefixedInsertTwo = ''' "op" : "i" , "ns" : "ee.people.addresses" , "o" :
@@ -78,7 +78,7 @@ class CollectionNsCriteriaSpecs extends Specification {
   def doesNotSatisfyDatabaseAndCollectionCriteria() {
     criteria = new NamespaceCriteria(dBAndCollectionNamespace)
 
-    expect: '''criteria is not satisfied for documents belonging to other than 
+    expect: '''criteria is not satisfied for documents belonging to other than
            eelabs db and countries collection'''
       outcome == criteria.isSatisfiedBy(document)
 
@@ -91,11 +91,11 @@ class CollectionNsCriteriaSpecs extends Specification {
 
   def satisfiesMultipleDatabaseAndCollectionCriteria(){
     criteria = new NamespaceCriteria (multipleDBAndCollectionNamespace)
-  
+
     expect: '''criteria is satisfied for documents belonging to ee.people.addresses,
         eelabs.countries, tayra.project collections and not others'''
     outcome == criteria.isSatisfiedBy(document)
-  
+
     where:
       document                       | outcome
     eelabsCreateCollectionEntry      | true
@@ -115,5 +115,5 @@ class CollectionNsCriteriaSpecs extends Specification {
     eePrefixedInsertOne              | true
     eePrefixedInsertTwo              | true
     eeInsertThree                    | false
-}
+  }
 }

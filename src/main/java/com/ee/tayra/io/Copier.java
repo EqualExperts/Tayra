@@ -38,11 +38,14 @@ import java.io.Writer;
 public class Copier {
 
   public final void copy(final CollectionReader from, final Writer to,
-    final CopyListener... listeners) {
+      final CopyListener... listeners) {
     Notifier notifier = new Notifier(listeners);
     try {
       while (from.hasDocument()) {
         String document = from.readDocument();
+        if (document.isEmpty()) {
+          continue;
+        }
         notifier.notifyReadSuccess(document);
         try {
           to.append(document);
@@ -58,7 +61,7 @@ public class Copier {
   }
 
   public final void copy(final Reader reader, final Replayer to,
-    final CopyListener... listeners) {
+      final CopyListener... listeners) {
     Notifier notifier = new Notifier(listeners);
     BufferedReader from = createBufferedReader(reader);
     String document = null;

@@ -32,6 +32,6 @@ package com.ee.tayra.connector
 
 interface Authenticator {
 
-	boolean authenticate(String username, String password)
+  boolean authenticate(String username, String password)
 
 }

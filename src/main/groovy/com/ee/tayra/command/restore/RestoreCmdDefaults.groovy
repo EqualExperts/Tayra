@@ -34,12 +34,12 @@ import java.io.PrintWriter;
 
 class RestoreCmdDefaults {
 
-	public String mongo = 'localhost'
-	public int port = 27017
-	public String username = ''
-	public String password = ''
-	public def criteria
-	public String exceptionFile = 'exception.documents'
-	public PrintWriter console
-	public def authenticator
+  public String destination = 'localhost'
+  public int port = 27017
+  public String username = ''
+  public String password = ''
+  public String sNs = ''
+  public String sUntil = ''
+  public String exceptionFile = 'exception.documents'
+  public boolean dryRunRequired = false
 }

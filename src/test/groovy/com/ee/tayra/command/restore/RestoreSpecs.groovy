@@ -275,7 +275,7 @@ class RestoreSpecs extends Specification {
 			
 		then: 'following variables get default values'
 			def config = context.getVariable('config')
-			config.mongo == 'localhost'
+			config.destination == 'localhost'
 			config.port == 27017
 			config.username == ''
 			config.password == ''

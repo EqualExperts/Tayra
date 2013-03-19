@@ -30,20 +30,17 @@
  ******************************************************************************/
 package com.ee.tayra.command.restore
 
-import com.mongodb.DB
+import com.ee.tayra.connector.MongoAuthenticator
+import com.ee.tayra.domain.*
+import com.ee.tayra.io.*
 import com.mongodb.Mongo
 import com.mongodb.ServerAddress
-import com.mongodb.util.Args;
-import com.ee.tayra.domain.*
-import com.ee.tayra.domain.operation.Operations
-import com.ee.tayra.io.*
-import com.ee.tayra.io.criteria.CriteriaBuilder;
 
 
 def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
 
 cli.with  {
-  d args:1, argName: 'MongoDB Host', longOpt:'dest', 'OPTIONAL, Destination MongoDB IP/Host, default is localhost', optionalArg:true 
+  d args:1, argName: 'MongoDB Host', longOpt:'dest', 'OPTIONAL, Destination MongoDB IP/Host, default is localhost', optionalArg:true
   _ args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Destination MongoDB Port, default is 27017', optionalArg:true
   f args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To backup from', required: true
   _ args:0, argName:'fAll', longOpt: 'fAll', 'OPTIONAL,  Restore from All Files, Default Mode : Restore from Single File', optionalArg:true
@@ -65,7 +62,7 @@ if(!options) {
 config = new RestoreCmdDefaults()
 
 if(options.d) {
-  config.mongo = options.d == true ? 'localhost' : options.d
+  config.destination = options.d == true ? 'localhost' : options.d
 }
 
 restoreFromFile = options.f
@@ -75,7 +72,6 @@ if(options.port) {
 }
 
 PrintWriter console = new PrintWriter(System.out, true)
-config.console = console
 
 def readPassword(output) {
   def input = System.console()
@@ -88,6 +84,14 @@ def readPassword(output) {
   return new String(System.console().readPassword())
 }
 
+if(options.sNs){
+  config.sNs = options.sNs
+}
+
+if(options.sUntil){
+  config.sUntil = options.sUntil
+}
+
 if(options.u && !options.'dry-run') {
   config.username = options.u
   config.password = options.p ?: readPassword(console)
@@ -97,50 +101,51 @@ if(options.e) {
   config.exceptionFile = options.e
 }
 
+if (options.'dry-run') {
+  config.dryRunRequired = true
+}
+
 isMultiple = false
 if(options.fAll) {
   isMultiple = true
 }
 
 RestoreFactory factory = null
+Mongo mongo = null
 try {
-  criteria = new CriteriaBuilder().build {
-    if(options.sUntil) {
-      usingUntil options.sUntil
-    }
-    if(options.sNs) {
-      usingNamespace options.sNs
-    }
-    if(options.sExclude) {
-      usingExclude()
-    }
-  }
-  config.criteria = criteria
-  config.authenticator = binding.hasVariable('authenticator') ?
-        binding.getVariable('authenticator') : null
 
-  factory = RestoreFactory.create(options.'dry-run', config)
+  if(!options.'dry-run') {
+    ServerAddress server = new ServerAddress(config.destination, config.port)
+    mongo = new Mongo(server)
+    getAuthenticator(mongo).authenticate(config.username, config.password)
+  }
+  factory = RestoreFactory.createFactory(config, mongo, console)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
-  def listener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
-  def reporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
+  def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
+  def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
 
   def files = new RotatingFileCollection(restoreFromFile, isMultiple)
   def copier = new Copier()
 
-  reporter.writeStartTimeTo console
+  progressReporter.writeStartTimeTo console
 
   files.withFile {
     def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-    copier.copy(reader, writer, listener)
+    copier.copy(reader, writer, progressListener)
   }
 
-  reporter.summarizeTo console
+  progressReporter.summarizeTo console
 } catch (Throwable problem) {
   console.println "Oops!! Could not perform restore...$problem.message"
   problem.printStackTrace(console)
 } finally {
-  if(factory != null && factory.getMongo() != null) {
-    factory.getMongo().close()
-  }
+  mongo?.close()
 }
+
+
+def getAuthenticator(mongo) {
+  binding.hasVariable('authenticator') ?
+      binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
+}
+

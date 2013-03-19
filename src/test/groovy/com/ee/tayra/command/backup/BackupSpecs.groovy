@@ -186,7 +186,7 @@ public class BackupSpecs extends Specification {
 
 		then: 'following variables get default values'
 			def config = context.getVariable('config')
-			config.mongo == 'localhost'
+			config.source == 'localhost'
 			config.port == 27017
 			config.username == ''
 			config.password == ''

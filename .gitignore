@@ -53,3 +53,6 @@ a.out
 timestamp.out
 error.log
 acceptance-tests/stories/files/
+.idea
+out
+

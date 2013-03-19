@@ -36,7 +36,7 @@ class DbNamespaceCriteriaSpecs extends Specification {
         "o" : { "msg" : "initiating set" } }'''
 
   static tayraInsertOne = ''' "op" : "i" , "ns" : "tayra.people" , "o" :
-        { "_id" : { "$oid" : "512cab35696006eb3408bfdb"} , "name" : 29.0}}''' 
+        { "_id" : { "$oid" : "512cab35696006eb3408bfdb"} , "name" : 29.0}}'''
   static tayraInsertTwo = ''' "op" : "i" , "ns" : "tayra.people" , "o" :
         { "_id" : { "$oid" : "512cab35696006eb3408bfdc"} , "name" : 30.0}}'''
   static tayraInsertThree = ''' "op" : "i" , "ns" : "tayra.project" , "o" :
