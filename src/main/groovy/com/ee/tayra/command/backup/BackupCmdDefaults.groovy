@@ -40,4 +40,5 @@ class BackupCmdDefaults {
   public int fileMax
   public boolean isContinuous = false
   public String sNs = ''
+  public boolean sExclude = false
 }

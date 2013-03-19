@@ -46,6 +46,7 @@ cli.with {
   u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
   _ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective backup, default is all namespaces, Eg: --sNs=test', optionalArg:true
+  _ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
 }
 
 def options = cli.parse(args)
@@ -78,7 +79,11 @@ if(options.port) {
 }
 
 if(options.t) {
-  config.isContinuous = true
+	config.isContinuous = true
+}
+
+if(options.sExclude) {
+  config.sExclude = true
 }
 
 if(options.sNs){

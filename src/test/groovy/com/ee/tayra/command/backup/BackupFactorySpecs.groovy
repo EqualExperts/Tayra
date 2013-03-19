@@ -14,7 +14,7 @@ class BackupFactorySpecs extends Specification {
     config = new BackupCmdDefaults()
     config.recordToFile = 'test.out'
     config.port = 17017
-	console = Mock(PrintWriter)
+  console = Mock(PrintWriter)
   }
 
   def createsSelectiveOplogReaderWhenCriteriaIsGiven() {

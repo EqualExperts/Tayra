@@ -206,6 +206,19 @@ public class BackupSpecs extends Specification {
 		then: 'then reporter summarizes'
 			(_) * mockProgressReporter.summarizeTo(_)
 	}
+	
+	def backsUpNoDocumentWhenOnlySExcludeOptionIsGiven() {
+		given:'arguments contains -s, -f, -u, -p and --sExclude options'
+			context.setVariable('args', ['-s', 'localhost', '-f', '--sExclude', 'test.out',  '-u', username, '-p', password])
 
+		and: 'a result captor is injected'
+			def writer = new StringWriter()
+			context.setVariable('writer', writer)
+
+		when: 'backup runs with above args'
+			new Backup(context).run()
+
+		then: 'the output should contain "ts"'
+			writer.toString() == ''
+	}
 }
-

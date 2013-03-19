@@ -300,6 +300,21 @@ class RestoreSpecs extends Specification {
 	def invokesRestoreWhenSExcludeOptionIsGiven() {
 		given:'arguments contains -f, -u, -p, --sUntil, --sNs and --sExclude options'
 			context.setVariable('args', ['-f', 'test.out','--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+			
+		and: 'the reader is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+		
+		when: 'restore runs'
+			new Restore(context).run()
+			
+		then: 'it performs the restore operation'
+			1 * mockReplayer.replay('"ts"')
+	}
+	
+	def returnsNoDocumentWhenOnlySExcludeOptionIsGiven() {
+		given:'arguments contains -f, -u, -p,--sExclude options'
+			context.setVariable('args', ['-f', 'test.out','--sExclude', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -308,7 +323,8 @@ class RestoreSpecs extends Specification {
 		when: 'restore runs'
 			new Restore(context).run()
 
-		then: 'it performs the restore operation'
-			1 * mockReplayer.replay('"ts"')
+		then: 'it performs the restore operation and no document is restored'
+			result.toString() == ''
 	}
+	
 }

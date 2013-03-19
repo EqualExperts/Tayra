@@ -59,8 +59,15 @@ class BackupFactory {
     writer = new TimestampRecorder(rfWriter)
 
     listeningReporter = new ProgressReporter(console)
-    if(config.sNs){
-      criteria = new CriteriaBuilder().build { usingNamespace config.sNs }
+    if(config.sNs || config.sExclude){
+      criteria = new CriteriaBuilder().build {
+        if(config.sNs) {
+          usingNamespace config.sNs
+        }
+        if(config.sExclude) {
+          usingExclude()
+        }
+      }
     }
 
     File timestampFile = new File(timestampFileName)
