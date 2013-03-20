@@ -20,12 +20,14 @@ public class RunnerFixture extends DoFixture {
   private PrintStream stderr;
   private ByteArrayOutputStream err;
   private ByteArrayOutputStream out;
+  private String [] values;
 
-  public RunnerFixture() {
+  public RunnerFixture(final String ...values) {
     out = new ByteArrayOutputStream();
     err = new ByteArrayOutputStream();
     stdout = new PrintStream(out, true);
     stderr = new PrintStream(err, true);
+    this.values = values;
   }
 
   public final void andRun(final Parse cells) throws IOException {
@@ -34,8 +36,18 @@ public class RunnerFixture extends DoFixture {
         throw new MissingCellsFailureException(cells.text()
         + " requires an argument");
     }
+    runCommandWith(args);
+  }
+
+  private void runCommandWith(final Parse args) {
     Binding context = new Binding();
-    context.setVariable("args", args.text().split(" "));
+    String cmdString = args.text();
+    if (needsValueInjectionIn(cmdString)) {
+    cmdString = injectValuesIn(cmdString, values);
+      args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
+      args.addToBody("<pre/>" + cmdString + "</pre>");
+    }
+    context.setVariable("args", cmdString.split(" "));
     System.setOut(stdout);
     System.setErr(stderr);
     try {
@@ -51,6 +63,20 @@ public class RunnerFixture extends DoFixture {
       stdout.close();
       stderr.close();
     }
+  }
+
+  private String injectValuesIn(
+    final String cmdString, final String ...values) {
+    String result = new String(cmdString);
+    for (int index = 0; index < values.length; index++) {
+      String value = values[index];
+      result = result.replace("{" + index + "}", value);
+    }
+    return result;
+  }
+
+  private boolean needsValueInjectionIn(final String args) {
+    return args.contains("{0}");
   }
 
   public final void andShow(final Parse cells) {
@@ -74,7 +100,7 @@ public class RunnerFixture extends DoFixture {
   }
 
   public final boolean andEnsureContains(
-  final String streamName, final String text) {
+    final String streamName, final String text) {
     if (STDOUT.equalsIgnoreCase(streamName)) {
       return out.toString().contains(text);
     } else if (STDERR.equalsIgnoreCase(streamName)) {
@@ -87,7 +113,7 @@ public class RunnerFixture extends DoFixture {
   }
 
   public final boolean andEnsureNotContains(
-  final String streamName, final String text) {
+    final String streamName, final String text) {
     return !andEnsureContains(streamName, text);
   }
 }

@@ -8,7 +8,6 @@ import com.mongodb.MongoClient;
 import fit.Parse;
 import fit.exception.MissingCellsFailureException;
 import fitlibrary.DoFixture;
-//import fitlibrary.exception.table.MissingCellsException;
 
 public class MongoFixture extends DoFixture {
   private final MongoClient mongo;
@@ -26,7 +25,6 @@ public class MongoFixture extends DoFixture {
         throw new MissingCellsFailureException(cells.text()
         + " requires an argument");
     }
-
     String databaseName = expected.text();
     db = mongo.getDB(databaseName);
     String actual = db.getName();

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Tayra can backup and selectively restore</title>
+		<title>Tayra can backup and selectively restore to a point in time</title>
 		<link rel="stylesheet" type="text/css" href="../files/css/fitnesse.css"/>
 		<link rel="stylesheet" type="text/css" href="../files/css/tayra.css"/>
 	</head>
@@ -9,19 +9,20 @@
 			<div class="header">
 				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
 				<div style="text-align:center;margin-top:-40">
-					<h1>Tayra performs selective restore</h1>
+					<h1>Tayra performs selective restore to a point in time</h1>
 				</div>
 			</div>
 			<div class="contents">
 				<p>
 					<h3>Narrative</h3>
-						<b>IncyWincyWebApp</b> stores some of its persistent data on MongoDB. <b>Adam</b>, MongoDB admin, performs
-						backup of a replica set on an ongoing basis. On a not so great day, Dave, the developer approaches Adam and requests:
+						<b>IncyWincyWebApp</b> stores some of its persistent data on MongoDB.
+						<b>Adam</b>, MongoDB admin, performs backup of a replica set on an ongoing
+						basis. On a not so great day, Dave, the developer approaches Adam and requests:
 						<br><br>
-						<b>Dave: </b>Hey Adam, looks like something has gone wrong with the data in 
-						<b>profile</b> collection of <b>users</b> database and <b>orders</b> collection in <b>transactions</b> database
+						<b>Dave: </b>Hey Adam, looks like something has gone wrong with the data since 10 minutes.
 						<br>
-						<b>Adam offering a solution: </b> Do you want me to restore only the collections which you want ?
+						<b>Adam offering a solution: </b> Do you want me to restore only the collections
+						which you want ?
 						<br>
 						<b>Dave: </b>Sure Adam, that'll be great if you could restore only <b>transactions</b> database and
 						<b>ips</b> collection in <b>users</b> database.
@@ -68,6 +69,22 @@
 					<tr>
 						<td colspan="2">run</td>
 						<td colspan="2"><pre>db.profile.save({name:"Three"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.profile.save({name:"Five"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.profile.save({name:"Six"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.profile.save({name:"Seven"})</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">run</td>
+						<td colspan="2"><pre>db.profile.save({name:"Eight"})</pre></td>
 					</tr>
 					<tr>
 						<td colspan="2">run</td>
@@ -120,14 +137,38 @@
 					</tr>
 				</table>
 				<br>
-				<h4>3. Run Restore Utility using Namespace and Dry-Run options</h4>
+				<h4>3. Get Time in Timestamp format 10 mins before from the backed up file.</h4>
+				<p><i><h5>Note: As it is technically not possible to -
+				<ul>
+					<li>Get handle to the backedup file while the process is holding it, we will
+							query the Source MongoDB oplog, the master source.
+					</li>
+					<li>Know the timestamp 10 mins before as different machines have
+							different execution speeds and sleep is a bad strategy.<br>Instead, we 
+							will simulate this by going back 10 records in Oplog and get timestamp 
+							of the 10th record.
+					</li>
+				</ul>
+				<br>
+				Totally we dumped 15 documents, we travel back 10 records, get the timestamp
+				and we expect 5 documents in target.</h5></i></p>
+				<table>
+					<tr>
+						<td>Open oplog for node</td>
+						<td><pre>source</pre></td>
+						<td>and travel</td>
+						<td>10</td>
+						<td>documents back in time</td>
+					</tr>
+				</table>
+				<h4>4. Run Restore Utility to a Point in time.</h4>
 				<table>
 					<tr class="headingTableRow">
 						<td colspan="4">Open terminal</td>
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sNs=transactions,users.ips</pre></td>
+						<td colspan="3"><pre>restore -f test.out --port=27021 --sUntil={0}</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -165,7 +206,45 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">2</td><td colspan="4">0</td>
+						<td colspan="4">6</td><td colspan="4">4</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td colspan="8" class="headingTableRow">
+							Ensuring target is consistent with source
+						</td>
+					</tr>
+					<tr>
+						<td>find documents for collection</td>
+						<td><pre>profile</pre></td>
+						<td>in database</td>
+						<td><pre>users</pre></td>
+						<td>where</td>
+						<td><pre>null</pre></td>
+						<td>and cleanup databases </td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Two"}</pre></td><td colspan="4"><pre>{ "name" : "One"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Four"}</pre></td><td colspan="4"><pre>{ "name" : "Two"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Five"}</pre></td><td colspan="4"><pre>{ "name" : "Three"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Six"}</pre></td><td colspan="4"><pre>{ "name" : "Five"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Seven"}</pre></td><td colspan="4"><pre></pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Eight"}</pre></td><td colspan="4"><pre></pre></td>
 					</tr>
 				</table>
 				<br>
@@ -209,7 +288,7 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">1</td><td colspan="4">1</td>
+						<td colspan="4">1</td><td colspan="4">0</td>
 					</tr>
 				</table>
 				<br>
@@ -233,7 +312,7 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td><td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td>
+						<td colspan="4"><pre>{ "ip" : "1.2.3.4"}</pre></td><td colspan="4"><pre></pre></td>
 					</tr>
 				</table>
 				<br>
@@ -251,42 +330,16 @@
 						<td>query</td>
 						<td colspan="2"><pre>db.orders.count()</pre></td>
 						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">2</td><td colspan="4">2</td>
-					</tr>
-				</table>
-				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>find documents for collection</td>
-						<td><pre>orders</pre></td>
-						<td>in database</td>
-						<td><pre>transactions</pre></td>
-						<td>where</td>
-						<td><pre>null</pre></td>
-						<td>and cleanup databases </td>
 						<td>true</td>
 					</tr>
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4"><pre>{ "order" : "One"}</pre></td><td colspan="4"><pre>{ "order" : "One"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "order" : "Two"}</pre></td><td colspan="4"><pre>{ "order" : "Two"}</pre></td>
+						<td colspan="4">2</td><td colspan="4">0</td>
 					</tr>
 				</table>
+				<br>
 			</div>
 			<div class="footer">
 				<table>
