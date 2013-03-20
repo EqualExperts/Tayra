@@ -52,7 +52,7 @@
 					</tr>
 				</table>
 				<br>
-				<h4>1. Do Some CUD Operations</h4>
+				<h4>1. Some CUD Operations were done</h4>
 				<table>
 					<tr class="headingTableRow">
 						<td colspan="2">run mongo command on</td>
@@ -63,49 +63,26 @@
 						<td colspan="2">users</td>
 					</tr>
 					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.createCollection("profile")</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.insert({name:"One"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.save({name:"Two"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.save({name:"Three"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.remove({name:"One"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.profile.update({name:"Three"}, {$set : {name:"Four"}})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.sessions.insert({sessionId:"One"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.ips.insert({ip:"1.2.3.4"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">use database</td>
-						<td colspan="2">transactions</td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.orders.insert({order:"One"})</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">run</td>
-						<td colspan="2"><pre>db.orders.save({order:"Two"})</pre></td>
-					</tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.createCollection("profile")</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"One",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Two",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"Three",type:"public"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Four",type:"public"})</pre></td>
+          </tr>
+					
 				</table>
 				<br>
 				<h4>2. Run Backup Utility</h4>
@@ -115,7 +92,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017 --sNs=transactions,users.profile</pre></td>
+						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -154,8 +131,17 @@
 					</tr>
 				</table>
 				<br>
-				<h4>4. Ensure Expected Results</h4>
-				<h5>Checking documents of database users</h5>
+				<table>
+          <tr class="headingTableRow">
+            <td colspan="4">sleep</td>
+            <td colspan="4"><pre>500</pre></td>
+          </tr>
+        </table>
+				
+				<br>
+				<h4>4. Ensure Source and Target have same State</h4>
+			   <br>
+				
 				<table>
 					<tr>
 						<td colspan="8" class="headingTableRow">
@@ -174,10 +160,11 @@
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">2</td><td colspan="4">2</td>
+						<td colspan="4">4</td><td colspan="4">4</td>
 					</tr>
 				</table>
 				<br>
+				
 				<table>
 					<tr>
 						<td colspan="8" class="headingTableRow">
@@ -192,112 +179,233 @@
 						<td>where</td>
 						<td><pre>null</pre></td>
 						<td>and cleanup databases </td>
-						<td>true</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "Two"}</pre></td><td colspan="4"><pre>{ "name" : "Two"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "Four"}</pre></td><td colspan="4"><pre>{ "name" : "Four"}</pre></td>
-					</tr>
-				</table>
-				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>users</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.sessions.count()</pre></td>
-						<td>and cleanup databases</td>
 						<td>false</td>
 					</tr>
 					<tr>
 						<td colspan="4">source value</td><td colspan="4">destination value</td>
 					</tr>
 					<tr>
-						<td colspan="4">1</td><td colspan="4">0</td>
+						<td colspan="4"><pre>{ "name" : "One" , "type" : "private"} </pre></td><td colspan="4"><pre>{ "name" : "One" , "type" : "private"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td><td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td>
 					</tr>
 				</table>
 				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>users</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.ips.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">1</td><td colspan="4">0</td>
-					</tr>
-				</table>
-				<br>
-				<h5>Checking documents of database transactions</h5>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>transactions</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.orders.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">2</td><td colspan="4">2</td>
-					</tr>
-				</table>
-				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>find documents for collection</td>
-						<td><pre>orders</pre></td>
-						<td>in database</td>
-						<td><pre>transactions</pre></td>
-						<td>where</td>
-						<td><pre>null</pre></td>
-						<td>and cleanup databases </td>
-						<td>true</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "order" : "One"}</pre></td><td colspan="4"><pre>{ "order" : "One"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "order" : "Two"}</pre></td><td colspan="4"><pre>{ "order" : "Two"}</pre></td>
-					</tr>
-				</table>
+				
+				<h4>5. Some More CUD Operations were done and a Wrong update was made</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="2">run mongo command on</td>
+            <td colspan="2"><pre>source</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">users</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.createCollection("location")</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.location.insert({place:"UK"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.location.save({place:"India"})</pre></td>
+          </tr>
+           <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.update({type:"private"},{$set:{type:"public"}},{multi:true})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"Five",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Six",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"Seven",type:"public"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Eight",type:"public"})</pre></td>
+          </tr>
+          
+        </table>
+        <br>
+        <h4>6. Run Backup Utility</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>Process started</td>
+          </tr>
+        </table>
+        <br>
+        <h4>7. Run Restore Utility With Dry run to analyze the corrupt data</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --dry-run</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stderr</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Five" , "type" : "private"</td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Six" , "type" : "private"</td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Seven" , "type" : "public"</td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Eight" , "type" : "public"</td>
+          </tr>
+        </table>
+        <br>
+        
+        <br>
+        <h4>8. Run Restore Utility to exclude corrupt data after analysis is done</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sUntil=""</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stderr</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>Process started</td>
+          </tr>
+        </table>
+        
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sExclude --sUntil=""</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stderr</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>Process started</td>
+          </tr>
+        </table>
+        <br>
+        <h4>9. Ensure Target does not contains corrupt data</h4>
+         <br>
+        <table>
+          <tr>
+            <td colspan="8" class="headingTableRow">
+              Ensure source and target has
+            </td>
+          </tr>
+          <tr>
+            <td>find documents for collection</td>
+            <td><pre>profile</pre></td>
+            <td>in database</td>
+            <td><pre>users</pre></td>
+            <td>where</td>
+            <td><pre>null</pre></td>
+            <td>and cleanup databases </td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "One" , "type" : "public"} </pre></td><td colspan="4"><pre>{ "name" : "One" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Two" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Two" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Five" , "type" : "private"} </pre></td><td colspan="4"><pre>{ "name" : "Five" , "type" : "private"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Six" , "type" : "private"}</pre></td><td colspan="4"><pre>{ "name" : "Six" , "type" : "private"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Seven" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Seven" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Eight" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Eight" , "type" : "public"}</pre></td>
+          </tr>
+        </table>
+        <b><span style="color:red">table needs to be changed (first 2 rows will be private on destination side) after sUntil is included</span></b>
 			</div>
 			<div class="footer">
 				<table>
