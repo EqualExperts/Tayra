@@ -1,0 +1,465 @@
+<html>
+	<head>
+		<title>Tayra can help with analysis of documents for restore</title>
+		<link rel="stylesheet" type="text/css" href="../files/css/fitnesse.css"/>
+		<link rel="stylesheet" type="text/css" href="../files/css/tayra.css"/>
+	</head>
+	<body>
+		<div class="acceptanceTest">
+			<div class="header">
+				<img src="../files/images/EE-Labs-Logo-200x121px.jpeg" height="61" width="100"/>
+				<div style="text-align:center;margin-top:-40">
+					<h1>Tayra can help with analysis of documents for restore</h1>
+				</div>
+			</div>
+			<div class="contents">
+				<p>
+					<h3>Narrative</h3>
+					<p>
+						IncyWincyWebApp stores some of its persistent data on MongoDB.  On a not so
+                        great day, Oliver, the Ops guy, issues an accidental query that updated the
+                        <b>profile</b> collection in <b>users</b> database making status of private profiles
+                        public.  In his attempt to restore those documents to original state,
+                        he contacts Adam, the Admin and describes what happened.
+					</p>
+					<p>
+						<b>Adam:</b>  "Oliver, Do you know the time when this query was issued?
+						<br>
+						<br>
+						<b>Oliver:</b> "Around 1 o'clock today afternoon"
+						<br>
+						<br>
+						<b>Adam:</b> "Would it help if I did not restore the portion of log pertaining to that accidental update?"
+                        <br>
+                        <br>
+                        <b>Oliver:</b> "Yes, that would work!"
+                    </p>
+				</p>
+				<br>
+				<table>
+					<tr>
+						<td class="headingTableRow" colspan = 8>Given source replica set and target node are running</td>
+					</tr>
+					<tr>
+						<td>with source node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre> 17017</pre></td>
+						<td>and target node</td>
+						<td><pre>localhost</pre></td>
+						<td>on port</td>
+						<td><pre>27021</pre></td>
+					</tr>
+				</table>
+				<br>
+				<h4>1. Some CUD Operations were done</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="2">run mongo command on</td>
+						<td colspan="2"><pre>source</pre></td>
+					</tr>
+					<tr>
+						<td colspan="2">use database</td>
+						<td colspan="2">users</td>
+					</tr>
+					<tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.createCollection("profile")</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"One",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Two",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"Three",type:"public"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Four",type:"public"})</pre></td>
+          </tr>
+					
+				</table>
+				<br>
+				<h4>2. Run Backup Utility</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal</td>
+					</tr>
+					<tr>
+						<td>and run</td>
+						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stdout</pre></td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>Process started</td>
+					</tr>
+				</table>
+				<br>
+				<h4>3. Run Restore Utility</h4>
+				<table>
+					<tr class="headingTableRow">
+						<td colspan="4">Open terminal</td>
+					</tr>
+					<tr>
+						<td>and run</td>
+						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stdout</pre></td>
+					</tr>
+					<tr>
+						<td>and show</td>
+						<td colspan="3"><pre>stderr</pre></td>
+					</tr>
+					<tr>
+						<td>and ensure</td>
+						<td><pre>stdout</pre></td>
+						<td>contains</td>
+						<td>Process started</td>
+					</tr>
+				</table>
+				<br>
+				<h4>4. Ensure Source and Target have same State</h4>
+				<table>
+					<tr>
+						<td colspan="8" class="headingTableRow">
+							Ensuring target is consistent with source
+						</td>
+					</tr>
+					<tr>
+						<td>run in database</td>
+						<td colspan="2"><pre>users</pre></td>
+						<td>query</td>
+						<td colspan="2"><pre>db.profile.count()</pre></td>
+						<td>and cleanup databases</td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4">4</td><td colspan="4">4</td>
+					</tr>
+				</table>
+				<br>
+				
+				<table>
+					<tr>
+						<td colspan="8" class="headingTableRow">
+							Ensuring target is consistent with source
+						</td>
+					</tr>
+					<tr>
+						<td>find documents for collection</td>
+						<td><pre>profile</pre></td>
+						<td>in database</td>
+						<td><pre>users</pre></td>
+						<td>where</td>
+						<td><pre>null</pre></td>
+						<td>and cleanup databases </td>
+						<td>false</td>
+					</tr>
+					<tr>
+						<td colspan="4">source value</td><td colspan="4">destination value</td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "One" , "type" : "private"} </pre></td><td colspan="4"><pre>{ "name" : "One" , "type" : "private"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td><td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td>
+					</tr>
+					<tr>
+						<td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td>
+					</tr>
+				</table>
+				<br>
+				
+				<h4>5. Some More CUD Operations were done and a Wrong update was made</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="2">run mongo command on</td>
+            <td colspan="2"><pre>source</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">users</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.createCollection("location")</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.location.insert({place:"UK"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.location.save({place:"India"})</pre></td>
+          </tr>
+           <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.update({type:"private"},{$set:{type:"public"}},{multi:true})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"Five",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Six",type:"private"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.insert({name:"Seven",type:"public"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.save({name:"Eight",type:"public"})</pre></td>
+          </tr>
+        </table>
+        <br>
+        <h4>6. Run Backup Utility</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>Process started</td>
+          </tr>
+        </table>
+        <br>
+        <h4>7. Run Restore Utility With Dry run to analyze the corrupt data</h4>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --dry-run</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stderr</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Five" , "type" : "private"</td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Six" , "type" : "private"</td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Seven" , "type" : "public"</td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>"name" : "Eight" , "type" : "public"</td>
+          </tr>
+        </table>
+        <br>
+        <br>
+        <h4>8. Run Restore Utility to exclude corrupt data after analysis is done</h4>
+        <p><i><h5>
+        <ul>
+          <li>Dry-run indicates that wrong update query was fired at last 6th document.
+          So we adopt a strategy to first restore documents till last 7th document.
+          </li>
+          <li>
+          Then ignore further two documents containing wrong update, and restore
+          excluding them, i.e. restore since last 4th document.
+          </li>
+        </ul>
+       </h5></i></p>
+       <h4 >8a. 1st Restore all correct documents until error.</h4>
+        <table>
+          <tr>
+            <td>Open oplog for node</td>
+            <td><pre>source</pre></td>
+            <td>and travel</td>
+            <td>7</td>
+            <td>documents back in time</td>
+          </tr>
+        </table>        
+        <br>
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sUntil={0}</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stderr</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>Process started</td>
+          </tr>
+        </table>
+        <h4>8b. 2nd Restore all correct documents after error.</h4>
+        <table>
+          <tr>
+            <td>Open oplog for node</td>
+            <td><pre>source</pre></td>
+            <td>and travel</td>
+            <td>5</td>
+            <td>documents back in time</td>
+          </tr>
+        </table>        
+        <br>
+        
+        <table>
+          <tr class="headingTableRow">
+            <td colspan="4">Open terminal</td>
+          </tr>
+          <tr>
+            <td>and run</td>
+            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sExclude --sUntil={0}</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stdout</pre></td>
+          </tr>
+          <tr>
+            <td>and show</td>
+            <td colspan="3"><pre>stderr</pre></td>
+          </tr>
+          <tr>
+            <td>and ensure</td>
+            <td><pre>stdout</pre></td>
+            <td>contains</td>
+            <td>Process started</td>
+          </tr>
+        </table>
+        <br>
+        <h4>9. Ensure Target does not contains corrupt data</h4>
+        <table>
+          <tr>
+            <td colspan="8" class="headingTableRow">
+              Ensure source and target has
+            </td>
+          </tr>
+          <tr>
+            <td>find documents for collection</td>
+            <td><pre>profile</pre></td>
+            <td>in database</td>
+            <td><pre>users</pre></td>
+            <td>where</td>
+            <td><pre>null</pre></td>
+            <td>and cleanup databases </td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "One" , "type" : "public"} </pre></td><td colspan="4"><pre>{ "name" : "One" , "type" : "private"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Two" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Five" , "type" : "private"} </pre></td><td colspan="4"><pre>{ "name" : "Five" , "type" : "private"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Six" , "type" : "private"}</pre></td><td colspan="4"><pre>{ "name" : "Six" , "type" : "private"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Seven" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Seven" , "type" : "public"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "name" : "Eight" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Eight" , "type" : "public"}</pre></td>
+          </tr>
+        </table>
+        <br>
+         <table>
+          <tr>
+            <td colspan="8" class="headingTableRow">
+              Ensuring target is consistent with source
+            </td>
+          </tr>
+          <tr>
+            <td>find documents for collection</td>
+            <td><pre>location</pre></td>
+            <td>in database</td>
+            <td><pre>users</pre></td>
+            <td>where</td>
+            <td><pre>null</pre></td>
+            <td>and cleanup databases </td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "place" : "UK"} </pre></td><td colspan="4"><pre>{ "place" : "UK"}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "place" : "India"}</pre></td><td colspan="4"><pre>{ "place" : "India"}</pre></td>
+          </tr>
+        </table>
+			</div>
+			<div class="footer">
+				<table>
+					<tr>
+						<td colspan="2">fit.Summary</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

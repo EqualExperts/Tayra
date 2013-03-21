@@ -1,7 +1,6 @@
 package com.ee.tayra.command.restore
 
 import com.mongodb.Mongo
-
 import spock.lang.Specification
 
 class RestoreFactorySpecs extends Specification{
@@ -24,11 +23,12 @@ class RestoreFactorySpecs extends Specification{
 			config.dryRunRequired = dryRunRequired
 
 		expect: 'correct factory is created'
-            RestoreFactory.createFactory(config, ignoreMongo, ignoreConsole).class == klass
+			RestoreFactory.createFactory(config, ignoreMongo, ignoreConsole).class == klass
 
-        where: 'appropriate factories are created for dry run and non dry run options'
-            dryRunRequired | klass
-                true       | DryRunFactory
-                false      | DefaultFactory
+		where: 'appropriate factories are created for dry run and non dry run options'
+			dryRunRequired | klass
+				true       | DryRunFactory
+				false      | DefaultFactory
 	}
+	
 }

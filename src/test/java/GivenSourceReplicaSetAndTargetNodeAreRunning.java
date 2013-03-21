@@ -32,6 +32,13 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
   public final Fixture openTerminal() {
     return new RunnerFixture(value);
   }
+  public final void sleep(final int duration) {
+    try {
+    Thread.sleep(duration);
+  } catch (InterruptedException e) {
+    e.printStackTrace();
+  }
+  }
 
   public final Fixture runMongoCommandOn(final String nodeName)
       throws UnknownHostException {
@@ -62,6 +69,10 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
 
   private void addValue(final String value) {
     this.value = value;
+  }
+
+  public final Fixture ensureSourceAndTargetHas() {
+    return ensuringTargetIsConsistentWithSource();
   }
 
   @Override

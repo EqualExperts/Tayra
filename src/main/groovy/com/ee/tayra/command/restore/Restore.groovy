@@ -92,6 +92,10 @@ if(options.sUntil){
   config.sUntil = options.sUntil
 }
 
+if(options.sExclude) {
+  config.sExclude = true
+}
+
 if(options.u && !options.'dry-run') {
   config.username = options.u
   config.password = options.p ?: readPassword(console)
