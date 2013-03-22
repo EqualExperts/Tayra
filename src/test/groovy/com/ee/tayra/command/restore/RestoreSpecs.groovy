@@ -306,6 +306,21 @@ class RestoreSpecs extends Specification {
 			1 * mockReplayer.replay('"ts"')
 	}
 
+	def invokesRestoreWhenTimestampForSinceIsSupplied() {
+		given:'arguments contains -f, -u, -p and --sSince options'
+			context.setVariable('args', ['-f', 'test.out','--sSince={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+
+		and: 'the reader is injected'
+			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
+			context.setVariable('reader', source)
+
+		when: 'restore runs'
+			new Restore(context).run()
+
+		then: 'it performs the restore operation'
+			1 * mockReplayer.replay('"ts"')
+	}
+
 	def invokesRestoreWhenSExcludeOptionIsGiven() {
 		given:'arguments contains -f, -u, -p, --sUntil, --sNs and --sExclude options'
 			context.setVariable('args', ['-f', backupFile,'--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
