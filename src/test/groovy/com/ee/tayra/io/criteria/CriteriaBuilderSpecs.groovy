@@ -59,7 +59,7 @@ class CriteriaBuilderSpecs extends Specification{
 			}
 
 		then: 'Criterion should be an instance of SinceCriteria'
-			criterion.criteria()[0].getClass() == SinceCriteria
+			criterion.criteria()[0].getClass() == TimestampSince
 	}
 
 	def producesNamespaceCriteriaWithClosure() {

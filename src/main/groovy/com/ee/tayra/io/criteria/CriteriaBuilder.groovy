@@ -36,11 +36,11 @@ public class CriteriaBuilder {
   private boolean excludeEnabled = false
 
   public void usingUntil(String timestamp) {
-    multiCriteria.addCriteria(new TimestampCriterion(timestamp));
+    multiCriteria.addCriteria(new TimestampUntil(timestamp));
   }
 
   public void usingSince(String timestamp) {
-    multiCriteria.addCriteria(new SinceCriteria(timestamp));
+    multiCriteria.addCriteria(new TimestampSince(timestamp));
   }
   
   public void usingNamespace(String namespace) {
