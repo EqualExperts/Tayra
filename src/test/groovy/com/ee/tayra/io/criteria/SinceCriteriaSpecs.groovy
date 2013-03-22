@@ -2,7 +2,7 @@ package com.ee.tayra.io.criteria;
 
 import spock.lang.Specification;
 
-public class SinceCriteriaSpecs extends Specification{
+public class TimestampSinceSpecs extends Specification{
 
 	static def afterDocument = '{ts:{$ts:1357537755,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 	static def beforeDocument = '{ts:{$ts:1357537750,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
@@ -10,7 +10,7 @@ public class SinceCriteriaSpecs extends Specification{
 	def satisfiesSinceCriteriaWithJSONTimestamp () {
 
 		def timestamp = '{ts:{$ts:1357537752,$inc:2}}'
-		SinceCriteria criteria = new SinceCriteria(timestamp)
+		TimestampCriteria criteria = new TimestampSince(timestamp)
 		
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
@@ -24,7 +24,7 @@ public class SinceCriteriaSpecs extends Specification{
 	def satisfiesSinceCriteriaWithISOTimestamp () {
 		
 		def timestamp = '2013-01-07T11:19:12Z'
-		SinceCriteria criteria = new SinceCriteria(timestamp)
+		TimestampCriteria criteria = new TimestampSince(timestamp)
 
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
@@ -40,7 +40,7 @@ public class SinceCriteriaSpecs extends Specification{
 			def invalidTimeStamp = '{ts:{$s:1357801207,$inc:1}}'
 
 		when: 'timestamp criteria is applied to the document'
-			SinceCriteria criteria = new SinceCriteria(invalidTimeStamp)
+			TimestampSince criteria = new TimestampSince(invalidTimeStamp)
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -51,7 +51,7 @@ public class SinceCriteriaSpecs extends Specification{
 			def invalidTimeStamp = '2012-12-2615:19:40Z'
 
 		when: 'timestamp criteria is applied to the document'
-			SinceCriteria criteria = new SinceCriteria(invalidTimeStamp)
+			TimestampCriteria criteria = new TimestampSince(invalidTimeStamp)
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -65,7 +65,7 @@ public class SinceCriteriaSpecs extends Specification{
 			def document = '{ts:{$s:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
 		and: 'a timestamp criteria'
-			SinceCriteria criteria = new SinceCriteria(timeStamp)
+			TimestampCriteria criteria = new TimestampSince(timeStamp)
 
 		when: 'timestamp criteria is applied to the document'
 			criteria.isSatisfiedBy(document)

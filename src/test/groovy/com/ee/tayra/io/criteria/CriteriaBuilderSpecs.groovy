@@ -15,6 +15,32 @@ class CriteriaBuilderSpecs extends Specification{
 		criteriaBuilder = new CriteriaBuilder()
 	}
 
+	def producesNamespaceCriteria() {
+		given: 'a namespace filter'
+			def namespace = 'test'
+
+		and: 'it is injected'
+			criteriaBuilder.usingNamespace namespace
+
+		when: 'criteria is built'
+			def criterion = criteriaBuilder.build()
+
+		then: 'Criterion should be an instance of NamespaceCriteria'
+			criterion.criteria[0].getClass() == NamespaceCriteria
+	}
+
+	def producesTimestampCriteria() {
+		given: 'timestamp filter'
+			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
+			criteriaBuilder.usingUntil timestamp
+
+		when: 'criteria is built'
+			def criterion = criteriaBuilder.build()
+
+		then: 'Criterion should be an instance of TimestampCriteria'
+			criterion.criteria()[0].getClass() == TimestampUntil
+	}
+
 	def producesTimestampCriteriaUsingWithClosure() {
 		given: 'timestamp filter'
 			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'

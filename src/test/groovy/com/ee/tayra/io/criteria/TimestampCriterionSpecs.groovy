@@ -11,7 +11,11 @@ class TimestampCriterionSpecs extends Specification {
 			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(timeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 								
 		then: 'it returns true if the document is older than the timestamp'
 			criteria.isSatisfiedBy(document)
@@ -25,7 +29,11 @@ class TimestampCriterionSpecs extends Specification {
 			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(timeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 								
 		then: 'it returns true if the document is older than the timestamp'
 			! criteria.isSatisfiedBy(document)
@@ -39,7 +47,11 @@ class TimestampCriterionSpecs extends Specification {
 			def document = '{ts:{$ts:1356515303,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(timeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 								
 		then: 'it returns true if the document is older than the timestamp'
 			criteria.isSatisfiedBy(document)
@@ -53,7 +65,11 @@ class TimestampCriterionSpecs extends Specification {
 			def document = '{ts:{$ts:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(timeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 								
 		then: 'it returns true if the document is older than the timestamp'
 			!criteria.isSatisfiedBy(document)
@@ -64,7 +80,11 @@ class TimestampCriterionSpecs extends Specification {
 			def invalidTimeStamp = '{ts:{$s:1357801207,$inc:1}}'
 
 		when: 'timestamp criteria is applied to the document'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(invalidTimeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(invalidTimeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -75,7 +95,11 @@ class TimestampCriterionSpecs extends Specification {
 			def invalidTimeStamp = '2012-12-2615:19:40Z'
 
 		when: 'timestamp criteria is applied to the document'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(invalidTimeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(invalidTimeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -89,7 +113,11 @@ class TimestampCriterionSpecs extends Specification {
 			def document = '{ts:{$s:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
 		and: 'a timestamp criteria'
+<<<<<<< HEAD:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriterionSpecs.groovy
 			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
+=======
+			TimestampCriteria criteria = new TimestampUntil(timeStamp)
+>>>>>>> Refactored Timestamp Criteria:src/test/groovy/com/ee/tayra/io/criteria/TimestampCriteriaSpecs.groovy
 
 		when: 'timestamp criteria is applied to the document'
 			criteria.isSatisfiedBy(document)
