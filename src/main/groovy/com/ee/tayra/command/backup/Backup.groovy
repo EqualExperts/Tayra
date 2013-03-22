@@ -37,22 +37,22 @@ import com.ee.tayra.io.*
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password] [--sNs=<dbName>]')
 cli.with {
-  s  args:1, argName: 'MongoDB Host', longOpt:'source', 'OPTIONAL, Source MongoDB IP/Host, default is localhost', optionalArg:true
-  _  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
-  f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
-  _  args:1, argName: 'fSize', longOpt:'fSize', 'OPTIONAL, Size of Backup File, Default is 512MB, Usage Eg: --fSize=4MB', optionalArg:true
-  _ args:1, argName: 'fMax', longOpt:'fMax', 'OPTIONAL, Number of Backup Files to be generated, Default is 1, Usage Eg: --fMax=4', optionalArg:true
-  t  args:0, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
-  u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
-  p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
-  _ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective backup, default is all namespaces, Eg: --sNs=test', optionalArg:true
-  _ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
+	s  args:1, argName: 'MongoDB Host', longOpt:'source', 'OPTIONAL, Source MongoDB IP/Host, default is localhost', optionalArg:true
+	_  args:1, argName: 'port', longOpt:'port', 'OPTIONAL, Source MongoDB Port, default is 27017', optionalArg:true
+	f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
+	_  args:1, argName: 'fSize', longOpt:'fSize', 'OPTIONAL, Size of Backup File, Default is 512MB, Usage Eg: --fSize=4MB', optionalArg:true
+	_ args:1, argName: 'fMax', longOpt:'fMax', 'OPTIONAL, Number of Backup Files to be generated, Default is 1, Usage Eg: --fMax=4', optionalArg:true
+	t  args:0, argName: 'tailable', longOpt:'tailable', 'OPTIONAL, Default is Non-Tailable', optionalArg:true
+	u  args:1, argName: 'username', longOpt:'username', 'OPTIONAL, username for authentication, default is none', optionalArg:true
+	p  args:1, argName: 'password', longOpt:'password', 'OPTIONAL, password for authentication, default is none', optionalArg:true
+	_ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective backup, default is all namespaces, Eg: --sNs=test', optionalArg:true
+	_ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
 }
 
 def options = cli.parse(args)
 
 if(!options) {
-  return
+	return
 }
 
 PrintWriter console = new PrintWriter(System.out,true)
@@ -60,22 +60,22 @@ PrintWriter console = new PrintWriter(System.out,true)
 config = new BackupCmdDefaults()
 
 if(options.s) {
-  config.source = options.s == true ? 'localhost' : options.s
+	config.source = options.s == true ? 'localhost' : options.s
 }
 
 
 config.recordToFile = options.f
 
 if(options.fSize) {
-  config.fileSize = options.fSize
+	config.fileSize = options.fSize
 }
 
 if(options.fMax) {
-  config.fileMax = Integer.parseInt(options.fMax)
+	config.fileMax = Integer.parseInt(options.fMax)
 }
 
 if(options.port) {
-  config.port = Integer.parseInt(options.port)
+	config.port = Integer.parseInt(options.port)
 }
 
 if(options.t) {
@@ -83,55 +83,58 @@ if(options.t) {
 }
 
 if(options.sExclude) {
-  config.sExclude = true
+	config.sExclude = true
 }
 
 if(options.sNs){
-  config.sNs = options.sNs
+	config.sNs = options.sNs
 }
 
 if(options.u) {
-  config.username = options.u
-  config.password = options.p ?: readPassword(console)
+	config.username = options.u
+	config.password = options.p ?: readPassword(console)
 }
 
 private def readPassword(output) {
-  def input = System.console()
-  if(!input) {
-    output.println("Cannot Read Password Input, please use -p command line option")
-    return ''
-  }
-  print "Enter password: "
-  return new String(System.console().readPassword())
+	def input = System.console()
+	if(!input) {
+		output.println("Cannot Read Password Input, please use -p command line option")
+		return ''
+	}
+	print "Enter password: "
+	return new String(System.console().readPassword())
 }
 
 def factory = new BackupFactory(config, console)
 
 def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener')
-    : factory.createListener()
+		: factory.createListener()
 
 def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
-    : factory.createReporter()
+		: factory.createReporter()
 
 def writer =  binding.hasVariable('writer') ? binding.getVariable('writer')
-    : factory.createWriter()
+		: factory.createWriter()
 
 def timestamp = factory.timestamp
 
 def reader = null
 boolean normalExecution = false
 addShutdownHook {
-  if(!normalExecution) {
-    progressReporter?.writeln (console,'==> User forced a Stop-Read...')
-  }
-  reader?.close()
-  writer?.flush()
-  if(writer.getClass() == TimestampRecorder) {
-    if(writer && writer.timestamp.length() > 0) {
-      factory.createTimestampFile().withWriter { it.write writer.timestamp }
-    }
-  }
-  progressReporter?.summarizeTo console
+	if(!normalExecution) {
+		progressReporter?.writeln (console,'==> User forced a Stop-Read...')
+	}
+	try {
+		reader?.close()
+	} catch (RuntimeException e) {
+	}
+	writer?.flush()
+	if(writer.class == TimestampRecorder) {
+		if(writer && writer.timestamp.length() > 0) {
+			factory.createTimestampFile().withWriter { it.write writer.timestamp }
+		}
+	}
+	progressReporter?.summarizeTo console
 }
 
 errorLog = 'error.log'
@@ -139,26 +142,34 @@ def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
 
 try {
-  progressReporter.writeStartTimeTo console
-  new MongoReplSetConnection(config.source, config.port).using { mongo ->
-    getAuthenticator(mongo).authenticate(config.username, config.password)
-    def oplog = new Oplog(mongo)
-    reader = factory.createReader(oplog)
-    def exceptionBubbler = factory.createMongoExceptionBubbler()
-    new Copier().copy(reader, writer, progressListener, exceptionBubbler)
-  } {
-    if(writer && writer.timestamp.length() > 0){
-      factory.createTimestampFile().append(writer.timestamp).close()
-      timestamp = writer.timestamp
-    }
-    console.println "Attempting to resume Backup On: ${new Date()}"
-  }
+	progressReporter.writeStartTimeTo console
+	new MongoReplSetConnection(config.source, config.port).using { mongo ->
+		getAuthenticator(mongo).authenticate(config.username, config.password)
+		def oplog = new Oplog(mongo)
+		reader = factory.createReader(oplog)
+		def exceptionBubbler = factory.createMongoExceptionBubbler()
+		new Copier().copy(reader, writer, progressListener, exceptionBubbler)
+	} {
+		if(writer && writer.timestamp.length() > 0){
+			factory.createTimestampFile().append(writer.timestamp).close()
+			timestamp = writer.timestamp
+		}
+		console.println "Attempting to resume Backup On: ${new Date()}"
+	}
 } catch (Throwable problem) {
-  console.println "Oops!! Could not perform backup...$problem.message"
+	console.println "Oops!! Could not perform backup...$problem.message"
+} finally {
+	reader?.close()
+	writer?.flush()
+	if(writer.class == TimestampRecorder) {
+		if(writer && writer.timestamp.length() > 0) {
+			factory.createTimestampFile().withWriter { it.write writer.timestamp }
+		}
+	}
 }
 normalExecution = true
 
 def getAuthenticator(mongo) {
-  binding.hasVariable('authenticator') ?
-      binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
+	binding.hasVariable('authenticator') ?
+			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
 }

@@ -251,4 +251,16 @@
       <Bug code="DM_STRING_CTOR" />
     </Not>
   </Match>
+  <Match>
+  <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure6"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="GivenSourceReplicaSetAndTargetNodeAreRunning"/>
+    <Not>
+      <Bug code="NP_NULL_ON_SOME_PATH_EXCEPTION" />
+    </Not>
+  </Match>
 </FindBugsFilter>

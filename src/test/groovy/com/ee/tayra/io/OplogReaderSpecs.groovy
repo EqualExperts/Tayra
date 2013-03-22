@@ -17,7 +17,7 @@ public class OplogReaderSpecs extends Specification {
 	private MongoCollection mockOplogCollection
 
 	private MongoCollectionIterator<String> mockOplogCollectionIterator
-	
+
 	private CollectionReader reader
 	private String dbName = 'tayra'
 	private String collectionName = 'home'
@@ -37,7 +37,7 @@ public class OplogReaderSpecs extends Specification {
 	def readsACreateCollectionOperationDocument() {
 		given: 'a create collection oplog entry'
 			def document = MongoUtils.createCollection(dbName, collectionName) as String
-		
+
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -58,7 +58,7 @@ public class OplogReaderSpecs extends Specification {
 							.add('name', name)
 						.get()
 			def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
-			
+
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -83,7 +83,7 @@ public class OplogReaderSpecs extends Specification {
 							.add('name', name)
 						.get()
 			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
-			
+
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -103,7 +103,7 @@ public class OplogReaderSpecs extends Specification {
 							.add('_id', objId)
 						.get()
 			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as String
-			
+
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -118,7 +118,7 @@ public class OplogReaderSpecs extends Specification {
 	def readsADropCollectionOperationDocument() {
 		given: 'a drop collection oplog entry'
 			def document = MongoUtils.dropCollection(dbName, collectionName) as String
-			
+
 		and: 'oplog iterator returns the document'
 			mockOplogCollectionIterator.hasNext() >> true
 			mockOplogCollectionIterator.next() >> document
@@ -150,6 +150,18 @@ public class OplogReaderSpecs extends Specification {
 
 		and: 'reader tries to read a document'
 			reader.readDocument()
+
+		then: 'error message should be shown as'
+			def problem = thrown(ReaderAlreadyClosed)
+			problem.message == "Reader Already Closed"
+	}
+
+	def cannotCloseAnAlreadyClosedReader() {
+		given: 'reader is closed'
+			reader.close()
+
+		when: 'reader is closed again'
+			reader.close()
 
 		then: 'error message should be shown as'
 			def problem = thrown(ReaderAlreadyClosed)

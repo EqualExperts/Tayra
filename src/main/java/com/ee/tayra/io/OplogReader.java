@@ -59,6 +59,9 @@ public class OplogReader implements CollectionReader {
   }
 
   public final void close() {
+    if (iterator == null) {
+      throw new ReaderAlreadyClosed("Reader Already Closed");
+    }
     iterator.close();
     iterator = null;
   }

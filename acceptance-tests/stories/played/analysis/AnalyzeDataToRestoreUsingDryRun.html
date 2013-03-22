@@ -82,7 +82,7 @@
             <td colspan="2">run</td>
             <td colspan="2"><pre>db.profile.save({name:"Four",type:"public"})</pre></td>
           </tr>
-					
+
 				</table>
 				<br>
 				<h4>2. Run Backup Utility</h4>
@@ -154,7 +154,7 @@
 					</tr>
 				</table>
 				<br>
-				
+
 				<table>
 					<tr>
 						<td colspan="8" class="headingTableRow">
@@ -188,7 +188,7 @@
 					</tr>
 				</table>
 				<br>
-				
+
 				<h4>5. Some More CUD Operations were done and a Wrong update was made</h4>
         <table>
           <tr class="headingTableRow">
@@ -301,12 +301,12 @@
         <h4>8. Run Restore Utility to exclude corrupt data after analysis is done</h4>
         <p><i><h5>
         <ul>
-          <li>Dry-run indicates that wrong update query was fired at last 6th document.
-          So we adopt a strategy to first restore documents till last 7th document.
+          <li>Dry-run indicates that wrong update query was fired at 6th document from last.
+          So we adopt a strategy to first restore all documents before it.
           </li>
           <li>
-          Then ignore further two documents containing wrong update, and restore
-          excluding them, i.e. restore since last 4th document.
+          Further ignore the two documents containing wrong update, and then restore
+          excluding them, i.e. restore last four documents.
           </li>
         </ul>
        </h5></i></p>
@@ -319,7 +319,7 @@
             <td>7</td>
             <td>documents back in time</td>
           </tr>
-        </table>        
+        </table>
         <br>
         <table>
           <tr class="headingTableRow">
@@ -353,9 +353,9 @@
             <td>5</td>
             <td>documents back in time</td>
           </tr>
-        </table>        
+        </table>
         <br>
-        
+
         <table>
           <tr class="headingTableRow">
             <td colspan="4">Open terminal</td>
