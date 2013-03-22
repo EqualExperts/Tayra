@@ -49,6 +49,19 @@ class CriteriaBuilderSpecs extends Specification{
 			criterion.criteria()[0].getClass() == TimestampCriterion
 	}
 
+	def producesSinceCriteriaUsingWithClosure() {
+		given: 'timestamp filter'
+			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
+
+		when: 'criteria is built'
+			def criterion = criteriaBuilder.build {
+				usingSince timestamp
+			}
+
+		then: 'Criterion should be an instance of SinceCriteria'
+			criterion.criteria()[0].getClass() == SinceCriteria
+	}
+
 	def producesNamespaceCriteriaWithClosure() {
 		given: 'namespace filter'
 			def namespace = 'test'

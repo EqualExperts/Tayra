@@ -37,7 +37,7 @@ import com.mongodb.MongoClient
 import com.mongodb.ServerAddress
 
 
-def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--dry-run]')
+def cli = new CliBuilder(usage:'restore -d <MongoDB> [--port=number] -f <file> [-e exceptionFile] [--fAll] [--sNs=<dbName>] [--sUntil=<timestamp>] [--sSince=<timestamp>] [--dry-run]')
 
 cli.with  {
   d args:1, argName: 'MongoDB Host', longOpt:'dest', 'OPTIONAL, Destination MongoDB IP/Host, default is localhost', optionalArg:true
@@ -51,6 +51,7 @@ cli.with  {
   _ args:0, argName:'dry-run', longOpt: 'dry-run', 'OPTIONAL, To preview selected documents', optionalArg:true
   _ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is all namespaces, Eg: --sNs=dbName<.collectionName>', optionalArg:true
   _ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
+  _ args:1, argName:'sSince',longOpt:'sSince', 'OPTIONAL, timestamp for selective restore, default is from START, \n Eg: ISO Format --sSince=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sSince={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sSince=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
 }
 
 options = cli.parse(args)
@@ -94,6 +95,10 @@ if(options.sNs){
   config.sNs = options.sNs
 }
 
+if(options.sSince){
+  config.sSince = options.sSince
+}
+  
 if(options.sUntil){
   config.sUntil = options.sUntil
 }

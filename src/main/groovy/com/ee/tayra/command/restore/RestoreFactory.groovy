@@ -50,13 +50,16 @@ abstract class RestoreFactory {
   }
   
   private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude) {
+    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
       new CriteriaBuilder().build {
         if(config.sUntil) {
           usingUntil config.sUntil
         }
+        if(config.sSince) {
+          usingSince config.sSince
+        }
         if(config.sNs) {
-        	usingNamespace config.sNs
+          usingNamespace config.sNs
         }
         if(config.sExclude) {
              usingExclude()

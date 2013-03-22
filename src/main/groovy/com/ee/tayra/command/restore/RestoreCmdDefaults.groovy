@@ -40,6 +40,7 @@ class RestoreCmdDefaults {
   public String password = ''
   public String sNs = ''
   public String sUntil = ''
+  public String sSince = ''
   public String exceptionFile = 'exception.documents'
   public boolean dryRunRequired = false
   public boolean sExclude = false
