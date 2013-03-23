@@ -39,7 +39,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     public abstract String getConfiguration();
   };
 
-  private static final int SLEEP_TIME = 500;
+  private static final int SLEEP_TIME = 800;
   private MongoSourceAndTargetConnector connector;
   private NamedParameters namedParams;
 
