@@ -3,7 +3,9 @@ package com.ee.tayra.fixtures;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Map;
 
+import com.ee.tayra.fixtures.support.NamedParameters;
 import com.ee.tayra.runner.Runner;
 
 import fit.Parse;
@@ -20,21 +22,21 @@ public class RunnerFixture extends DoFixture {
   private PrintStream stderr;
   private ByteArrayOutputStream err;
   private ByteArrayOutputStream out;
-  private String [] values;
+  private final NamedParameters namedParams;
 
-  public RunnerFixture(final String ...values) {
+  public RunnerFixture(final NamedParameters namedParams) {
     out = new ByteArrayOutputStream();
     err = new ByteArrayOutputStream();
     stdout = new PrintStream(out, true);
     stderr = new PrintStream(err, true);
-    this.values = values;
+    this.namedParams = namedParams;
   }
 
   public final void andRun(final Parse cells) throws IOException {
     Parse args = cells.more;
     if (args == null) {
-        throw new MissingCellsFailureException(cells.text()
-        + " requires an argument");
+      throw new MissingCellsFailureException(cells.text()
+          + " requires an argument");
     }
     runCommandWith(args);
   }
@@ -43,8 +45,9 @@ public class RunnerFixture extends DoFixture {
     Binding context = new Binding();
     String cmdString = args.text();
     if (needsValueInjectionIn(cmdString)) {
-    cmdString = injectValuesIn(cmdString, values);
-      args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
+      cmdString = injectValuesIn(cmdString, namedParams);
+      args.addToBody("<hr/>" + label("Substituted Values Output")
+          + "<hr/>");
       args.addToBody("<pre/>" + cmdString + "</pre>");
     }
     context.setVariable("args", cmdString.split(" "));
@@ -53,8 +56,8 @@ public class RunnerFixture extends DoFixture {
     try {
       new Runner(context).run();
     } catch (Throwable t) {
-      StringBuilder message =
-              new StringBuilder("Oops!! I cannot run any further...");
+      StringBuilder message = new StringBuilder(
+          "Oops!! I cannot run any further...");
       if (t.getMessage() != null) {
         message.append(t.getMessage());
       }
@@ -65,25 +68,26 @@ public class RunnerFixture extends DoFixture {
     }
   }
 
-  private String injectValuesIn(
-    final String cmdString, final String ...values) {
+  private String injectValuesIn(final String cmdString,
+      final NamedParameters namedParams) {
     String result = new String(cmdString);
-    for (int index = 0; index < values.length; index++) {
-      String value = values[index];
-      result = result.replace("{" + index + "}", value);
+    for (Map.Entry<String, String> nameValue : namedParams.entrySet()) {
+      String key = nameValue.getKey();
+      String value = nameValue.getValue();
+      result = result.replace(key, value);
     }
     return result;
   }
 
   private boolean needsValueInjectionIn(final String args) {
-    return args.contains("{0}");
+    return args.matches(".*\\{.*\\}.*");
   }
 
   public final void andShow(final Parse cells) {
     Parse stream = cells.more;
     if (stream == null) {
-        throw new MissingCellsFailureException(cells.text()
-        + " requires an argument");
+      throw new MissingCellsFailureException(cells.text()
+          + " requires an argument");
     }
     String consoleStream = stream.text();
     if (STDOUT.equalsIgnoreCase(consoleStream)) {
@@ -94,26 +98,26 @@ public class RunnerFixture extends DoFixture {
       stream.addToBody("<pre/>" + err.toString() + "</pre>");
     } else {
       throw new FitFailureException("Don't know how to process "
-        + consoleStream
-        + ", valid values are: <pre>stdout, stderr</pre>");
+          + consoleStream
+          + ", valid values are: <pre>stdout, stderr</pre>");
     }
   }
 
-  public final boolean andEnsureContains(
-    final String streamName, final String text) {
+  public final boolean andEnsureContains(final String streamName,
+      final String text) {
     if (STDOUT.equalsIgnoreCase(streamName)) {
       return out.toString().contains(text);
     } else if (STDERR.equalsIgnoreCase(streamName)) {
       return err.toString().contains(text);
     } else {
       throw new FitFailureException("Don't know how to process "
-        + streamName
-        + ", valid values are: <pre>stdout, stderr</pre>");
+          + streamName
+          + ", valid values are: <pre>stdout, stderr</pre>");
     }
   }
 
-  public final boolean andEnsureNotContains(
-    final String streamName, final String text) {
+  public final boolean andEnsureNotContains(final String streamName,
+      final String text) {
     return !andEnsureContains(streamName, text);
   }
 }

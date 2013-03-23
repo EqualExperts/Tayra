@@ -30,25 +30,18 @@
 						<br>
 						<br>
 						<b>Adam:</b> "Would it help if I did not restore the portion of log pertaining to that accidental update?"
-                        <br>
-                        <br>
-                        <b>Oliver:</b> "Yes, that would work!"
-                    </p>
-				</p>
+						<br>
+						<br>
+						<b>Oliver:</b> "Yes, that would work!"
+					</p>
 				<br>
 				<table>
 					<tr>
-						<td class="headingTableRow" colspan = 8>Given source replica set and target node are running</td>
+						<td class="headingTableRow" colspan ="8">Given source replica set and target node are running</td>
 					</tr>
 					<tr>
-						<td>with source node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre> 17017</pre></td>
-						<td>and target node</td>
-						<td><pre>localhost</pre></td>
-						<td>on port</td>
-						<td><pre>27021</pre></td>
+						<td>with configuration</td>
+						<td>source {sourceNode} on port {sourcePort} , target {targetNode} on port {targetPort}</td>
 					</tr>
 				</table>
 				<br>
@@ -92,7 +85,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
+						<td colspan="3"><pre>backup -s {sourceNode} --port={sourcePort} -f {file}</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -113,15 +106,11 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d localhost -f test.out --port=27021</pre></td>
+						<td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file}</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
 						<td colspan="3"><pre>stdout</pre></td>
-					</tr>
-					<tr>
-						<td>and show</td>
-						<td colspan="3"><pre>stderr</pre></td>
 					</tr>
 					<tr>
 						<td>and ensure</td>
@@ -132,29 +121,7 @@
 				</table>
 				<br>
 				<h4>4. Ensure Source and Target have same State</h4>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>run in database</td>
-						<td colspan="2"><pre>users</pre></td>
-						<td>query</td>
-						<td colspan="2"><pre>db.profile.count()</pre></td>
-						<td>and cleanup databases</td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4">4</td><td colspan="4">4</td>
-					</tr>
-				</table>
 				<br>
-
 				<table>
 					<tr>
 						<td colspan="8" class="headingTableRow">
@@ -240,7 +207,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>backup -s localhost -f test.out --port=17017</pre></td>
+            <td colspan="3"><pre>backup -s {sourceNode} --port={sourcePort} -f {file}</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -261,39 +228,11 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --dry-run</pre></td>
+            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --dry-run</pre></td>
           </tr>
           <tr>
             <td>and show</td>
             <td colspan="3"><pre>stdout</pre></td>
-          </tr>
-          <tr>
-            <td>and show</td>
-            <td colspan="3"><pre>stderr</pre></td>
-          </tr>
-          <tr>
-            <td>and ensure</td>
-            <td><pre>stdout</pre></td>
-            <td>contains</td>
-            <td>"name" : "Five" , "type" : "private"</td>
-          </tr>
-          <tr>
-            <td>and ensure</td>
-            <td><pre>stdout</pre></td>
-            <td>contains</td>
-            <td>"name" : "Six" , "type" : "private"</td>
-          </tr>
-          <tr>
-            <td>and ensure</td>
-            <td><pre>stdout</pre></td>
-            <td>contains</td>
-            <td>"name" : "Seven" , "type" : "public"</td>
-          </tr>
-          <tr>
-            <td>and ensure</td>
-            <td><pre>stdout</pre></td>
-            <td>contains</td>
-            <td>"name" : "Eight" , "type" : "public"</td>
           </tr>
         </table>
         <br>
@@ -327,7 +266,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sUntil={0}</pre></td>
+            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --sUntil={Until}</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -362,7 +301,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d localhost -f test.out --port=27021 --sExclude --sUntil={0}</pre></td>
+            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --sExclude --sUntil={Until}</pre></td>
           </tr>
           <tr>
             <td>and show</td>

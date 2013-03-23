@@ -2,36 +2,23 @@ package com.ee.tayra.fixtures;
 
 import java.net.UnknownHostException;
 
+import com.ee.tayra.fixtures.support.NamedParameters;
 import com.mongodb.MongoClient;
 
 public class MongoSourceAndTargetConnector {
 
   private MongoClient source;
   private MongoClient destination;
-  private static MongoSourceAndTargetConnector singleton = null;
 
-  public MongoSourceAndTargetConnector(final String srcHost, final int srcPort,
-      final String destHost, final int destPort) throws UnknownHostException {
-    source = new MongoClient(srcHost, srcPort);
-    destination = new MongoClient(destHost, destPort);
-  }
-//  private MongoSourceAndTargetConnector() {
-//  source = new MongoClient(srcHost, srcPort);
-//      destination = new MongoClient(destHost, destPort);
-//  }
-
-  public static MongoSourceAndTargetConnector connectTo(final String srcHost,
-  final int srcPort, final String destHost, final int destPort)
-  throws UnknownHostException {
-     if (singleton == null) {
-       singleton = new MongoSourceAndTargetConnector(srcHost, srcPort, destHost,
-         destPort);
-     }
-     return singleton;
+  public MongoSourceAndTargetConnector(final NamedParameters namedParams)
+    throws UnknownHostException {
+      source = new MongoClient(namedParams.get("{sourceNode}"),
+        Integer.parseInt(namedParams.get("{sourcePort}")));
+      destination = new MongoClient(namedParams.get("{targetNode}"),
+        Integer.parseInt(namedParams.get("{targetPort}")));
   }
 
-
-  public final MongoClient getSource() {
+public final MongoClient getSource() {
     return source;
   }
 
