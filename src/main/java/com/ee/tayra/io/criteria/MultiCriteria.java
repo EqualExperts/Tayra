@@ -32,7 +32,6 @@ package com.ee.tayra.io.criteria;
 
 import java.util.ArrayList;
 import java.util.List;
-import static java.util.Collections.unmodifiableList;
 
 public class MultiCriteria implements Criterion {
 
@@ -50,12 +49,7 @@ public class MultiCriteria implements Criterion {
     return isSatisfied;
   }
 
-  public final void addCriteria(final Criterion criterion) {
-    criteria.add(criterion);
+  public final boolean addCriteria(final Criterion criterion) {
+    return criteria.add(criterion);
   }
-
-  public final List<Criterion> criteria() {
-    return unmodifiableList(criteria);
-  }
-
 }

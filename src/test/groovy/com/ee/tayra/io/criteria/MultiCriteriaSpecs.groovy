@@ -16,12 +16,14 @@ class MultiCriteriaSpecs  extends Specification {
 		criterion1 = Stub(Criterion)
 		criterion2 = Stub(Criterion)
 		multiCriteria = new MultiCriteria()
-		multiCriteria.addCriteria(criterion1)
-		multiCriteria.addCriteria(criterion2)
 	}
 
 	def documentDoesNotSatisfyCriteria() {
-		given: 'one of the criteria is not satisfied'
+		given: 'there are two criteria'
+			multiCriteria.addCriteria(criterion1)
+			multiCriteria.addCriteria(criterion2)
+
+		and: 'one of the criteria is not satisfied'
 			criterion1.isSatisfiedBy(document) >> true
 			criterion2.isSatisfiedBy(document) >> false
 		
@@ -33,7 +35,11 @@ class MultiCriteriaSpecs  extends Specification {
 	}
 
 	def documentSatisfiesAllCriteria() {
-		given: 'all criteria are satisfied'
+		given: 'there are two criteria'
+			multiCriteria.addCriteria(criterion1)
+			multiCriteria.addCriteria(criterion2)
+
+		and: 'all criteria are satisfied'
 			criterion1.isSatisfiedBy(document) >> true
 			criterion2.isSatisfiedBy(document) >> true
 		
@@ -45,13 +51,18 @@ class MultiCriteriaSpecs  extends Specification {
 	}
 
 	def emptyCriteriaMeansSelectAll() {
-		given: 'no criteria is supplied'
-			multiCriteria = new MultiCriteria()
-
 		when: 'it is queried'
 			def isSatisfied = multiCriteria.isSatisfiedBy(document)
 
 		then: 'all documents are selected'
 			isSatisfied
+	}
+	
+	def addsCriteriaSuccessfully() {
+		when: 'it is queried'
+			def added = multiCriteria.addCriteria(criterion1)
+
+		then: 'criteria is added'
+			added
 	}
 }

@@ -1,46 +1,49 @@
-package com.ee.tayra.io.criteria;
+package com.ee.tayra.io.criteria
 
-import spock.lang.Specification;
+import java.text.SimpleDateFormat
 
-public class TimestampSinceSpecs extends Specification{
+import static TimestampCriteria.*;
+
+import spock.lang.Specification
+
+class TimestampUntilSpecs extends Specification {
 
 	static def afterDocument = '{ts:{$ts:1357537755,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 	static def beforeDocument = '{ts:{$ts:1357537750,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
-	
-	def satisfiesSinceCriteriaWithJSONTimestamp () {
 
+	def satisfiesUntilCriteriaWithJSONTimestamp () {
 		def timestamp = '{ts:{$ts:1357537752,$inc:2}}'
-		TimestampCriteria criteria = new TimestampSince(timestamp)
-		
+		def criteria = TimestampCriteria.create(UNTIL_TIME,timestamp)
 		expect:
-			outcome == criteria.isSatisfiedBy(document)
-			
+				outcome == criteria.isSatisfiedBy(document)
+					
 		where:
-			document                       | outcome
-			afterDocument                  | true
-			beforeDocument                 | false
+				document                       | outcome
+				beforeDocument                 | true
+				afterDocument                  | false
+				
 	}
-	
-	def satisfiesSinceCriteriaWithISOTimestamp () {
+
+	def satisfiesUntilCriteriaWithISOTimestamp () {
 		
 		def timestamp = '2013-01-07T11:19:12Z'
-		TimestampCriteria criteria = new TimestampSince(timestamp)
-
+		def criteria = TimestampCriteria.create(UNTIL_TIME,timestamp)
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
 
 		where:
 			document                       | outcome
-			afterDocument                  | true
-			beforeDocument                 | false
+			beforeDocument                 | true
+			afterDocument                  | false
 	}
+	
 
 	def shoutsWhenInvalidJSONTimestampFormatIsGiven() {
 		given:'an invalid JSON timestamp'
 			def invalidTimeStamp = '{ts:{$s:1357801207,$inc:1}}'
 
 		when: 'timestamp criteria is applied to the document'
-			TimestampSince criteria = new TimestampSince(invalidTimeStamp)
+			def criteria = TimestampCriteria.create(UNTIL_TIME,invalidTimeStamp)
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -51,7 +54,7 @@ public class TimestampSinceSpecs extends Specification{
 			def invalidTimeStamp = '2012-12-2615:19:40Z'
 
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampSince(invalidTimeStamp)
+			def criteria = TimestampCriteria.create(UNTIL_TIME,invalidTimeStamp)
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -65,8 +68,7 @@ public class TimestampSinceSpecs extends Specification{
 			def document = '{ts:{$s:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
 		and: 'a timestamp criteria'
-			TimestampCriteria criteria = new TimestampSince(timeStamp)
-
+			def criteria = TimestampCriteria.create(UNTIL_TIME,timeStamp)
 		when: 'timestamp criteria is applied to the document'
 			criteria.isSatisfiedBy(document)
 

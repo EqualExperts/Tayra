@@ -20,7 +20,6 @@ import fitlibrary.DoFixture;
 
 public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
 
-
   private static final int SLEEP_TIME = 800;
   private MongoSourceAndTargetConnector connector;
   private NamedParameters parameters;

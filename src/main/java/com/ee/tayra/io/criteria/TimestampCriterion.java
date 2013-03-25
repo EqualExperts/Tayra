@@ -40,14 +40,25 @@ public abstract class TimestampCriterion implements Criterion {
   private static final String INC_IDENTIFIER = "$inc:";
   private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
   private static final long MILLI_CONVERSION = 1000L;
+  public static final String UNTIL_TIME = "Until";
+  public static final String SINCE_TIME = "Since";
 
-  public TimestampCriterion() {
+  public static TimestampCriterion create(final String timeLimit,
+    final String filter) {
+    if (UNTIL_TIME.equalsIgnoreCase(timeLimit)) {
+      return new Until(filter);
+    }
+    if (SINCE_TIME.equalsIgnoreCase(timeLimit)) {
+      return new Since(filter);
+    }
+    throw new IllegalArgumentException(
+        "Don't know how to process timeoption: " + timeLimit);
   }
 
   @Override
   public abstract boolean isSatisfiedBy(final String document);
 
-  protected final int getIncrementFrom(final String filter) {
+  private static int getIncrementFrom(final String filter) {
     if (filter.contains(INC_IDENTIFIER)) {
       int incStartIndex = filter.indexOf(INC_IDENTIFIER)
           + INC_IDENTIFIER.length();
@@ -58,7 +69,7 @@ public abstract class TimestampCriterion implements Criterion {
     return Integer.MAX_VALUE;
   }
 
-  protected final Date getTimestampFrom(final String filter) {
+  private static Date getTimestampFrom(final String filter) {
     if (filter.contains(TS_IDENTIFIER)) {
       int tsStartIndex = filter.indexOf(TS_IDENTIFIER)
           + TS_IDENTIFIER.length();
@@ -74,6 +85,53 @@ public abstract class TimestampCriterion implements Criterion {
       } catch (ParseException e) {
         throw new RuntimeException(e.getMessage());
       }
+    }
+  }
+
+  private static class Until extends TimestampCriterion {
+
+  private Date timestamp;
+  private int increment;
+
+  public Until(final String filter) {
+      this.timestamp = getTimestampFrom(filter);
+      this.increment = getIncrementFrom(filter);
+    }
+
+    @Override
+    public boolean isSatisfiedBy(final String document) {
+      String tsDocument = document.replaceAll("\"", "").replaceAll(" ",
+          "");
+      if (timestamp.compareTo(getTimestampFrom(tsDocument)) > 0) {
+        return true;
+      }
+      if (timestamp.compareTo(getTimestampFrom(tsDocument)) == 0) {
+        return increment >= getIncrementFrom(tsDocument);
+      }
+      return false;
+    }
+  }
+
+  private static class Since extends TimestampCriterion {
+
+  private Date timestamp;
+  private int increment;
+    public Since(final String filter) {
+      this.timestamp = getTimestampFrom(filter);
+      this.increment = getIncrementFrom(filter);
+    }
+
+    @Override
+    public final boolean isSatisfiedBy(final String document) {
+      String tsDocument = document.replaceAll("\"", "").replaceAll(" ",
+          "");
+      if (timestamp.compareTo(getTimestampFrom(tsDocument)) < 0) {
+        return true;
+      }
+      if (timestamp.compareTo(getTimestampFrom(tsDocument)) == 0) {
+        return increment <= getIncrementFrom(tsDocument);
+      }
+      return false;
     }
   }
 }

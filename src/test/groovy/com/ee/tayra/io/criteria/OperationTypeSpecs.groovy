@@ -27,6 +27,5 @@ class OperationTypeSpecs extends Specification {
 			type.getClass() == DMLOperation
 	}
 	
-	
 }
 

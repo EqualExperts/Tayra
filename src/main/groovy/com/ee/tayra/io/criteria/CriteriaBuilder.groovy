@@ -30,17 +30,21 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria
 
+import java.util.ArrayList
+import java.util.List
+import static com.ee.tayra.io.criteria.TimestampCriterion.*
+
 public class CriteriaBuilder {
 
   private Criterion multiCriteria = new MultiCriteria()
   private boolean excludeEnabled = false
 
   public void usingUntil(String timestamp) {
-    multiCriteria.addCriteria(new TimestampUntil(timestamp));
+    multiCriteria.addCriteria(create(UNTIL_TIME, timestamp));
   }
 
   public void usingSince(String timestamp) {
-    multiCriteria.addCriteria(new TimestampSince(timestamp));
+    multiCriteria.addCriteria(create(SINCE_TIME, timestamp));
   }
   
   public void usingNamespace(String namespace) {
