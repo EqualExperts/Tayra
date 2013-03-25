@@ -1,7 +1,7 @@
 package com.ee.tayra.io.criteria;
 
 import spock.lang.Specification;
-import static TimestampCriterion.*;
+import static TimestampCriteria.*;
 public class TimestampSinceSpecs extends Specification{
 
 	static def afterDocument = '{ts:{$ts:1357537755,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
