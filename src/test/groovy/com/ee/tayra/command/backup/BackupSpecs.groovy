@@ -221,4 +221,17 @@ public class BackupSpecs extends Specification {
 		then: 'the output should contain "ts"'
 			writer.toString() == ''
 	}
+	
+	def shoutsWhenWrongArgumentsAreSupplied() {
+		given:'arguments contains -s, -f valid options and --sNssss a not valid option'
+			def context = new Binding()
+			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--sNssss=users'])
+			
+		when: 'backup runs with above args'
+			new Backup(context).run()
+							
+		then: 'error message should be thrown as'
+			result.toString().contains('Cannot Understand [--sNssss, users]')
+	}
+	
 }

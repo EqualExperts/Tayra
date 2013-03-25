@@ -327,4 +327,17 @@ class RestoreSpecs extends Specification {
 			result.toString() == ''
 	}
 	
+	def shoutsWhenWrongArgumentsAreSupplied() {
+		given:'arguments contains -d, -f valid options and --sNssss: not valid option'
+			def context = new Binding()
+			context.setVariable('args', ['-d', 'localhost', '--port=27021','-f', 'test.out', '--sNsss=users'])
+			
+		when: 'backup runs with above args'
+			new Restore(context).run()
+				
+		then: 'error message should be thrown as'
+		println result.toString()
+			result.toString().contains('Cannot Understand [--sNsss, users]')
+	}
+	
 }

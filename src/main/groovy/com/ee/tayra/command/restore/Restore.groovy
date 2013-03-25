@@ -58,6 +58,13 @@ options = cli.parse(args)
 if(!options) {
   return
 }
+PrintWriter console = new PrintWriter(System.out, true)
+
+if(options.arguments()){
+  console.println "Cannot Understand ${options.arguments()}"
+  cli.usage()
+  return
+}
 
 config = new RestoreCmdDefaults()
 
@@ -71,7 +78,6 @@ if(options.port) {
   config.port = Integer.parseInt(options.port)
 }
 
-PrintWriter console = new PrintWriter(System.out, true)
 
 def readPassword(output) {
   def input = System.console()
