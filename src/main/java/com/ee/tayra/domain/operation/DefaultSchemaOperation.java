@@ -33,15 +33,15 @@ package com.ee.tayra.domain.operation;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
 class DefaultSchemaOperation extends Operation {
 
-  private final Mongo mongo;
+  private final MongoClient mongo;
   private final SchemaOperationsFactory schemaOperationsFactory;
 
-  public DefaultSchemaOperation(final Mongo mongo,
+  public DefaultSchemaOperation(final MongoClient mongo,
       final SchemaOperationsFactory schemaOperationsFactory) {
     this.mongo = mongo;
     this.schemaOperationsFactory = schemaOperationsFactory;

@@ -1,28 +1,22 @@
 package com.ee.tayra.connector
 
-import java.net.UnknownHostException;
-
-import spock.lang.Ignore
 import spock.lang.Specification
 
-import com.ee.tayra.connector.MongoAuthenticator;
-import com.mongodb.Mongo
+import com.ee.tayra.parameters.EnvironmentProperties
+import com.mongodb.MongoClient
 import com.mongodb.MongoException
-import com.mongodb.MongoOptions
 import com.mongodb.ServerAddress
 
 class AuthenticatorSpecs extends Specification {
 
 	private MongoAuthenticator authenticator
-	static Mongo secured
-	static final String HOST = "localhost"
-	static final int PORT = 27020
+	static MongoClient secured
+	static final String HOST = EnvironmentProperties.secureStandaloneNode
+	static final int PORT = EnvironmentProperties.secureStandalonePort
 	
 	def setupSpec() throws UnknownHostException, MongoException {
-		def options = new MongoOptions()
-		options.safe = true
 		ServerAddress server = new ServerAddress(HOST, PORT)
-		secured = new Mongo(server, options);
+		secured = new MongoClient(server);
 	}
 	public void setup() {
 		authenticator = new MongoAuthenticator(secured)
@@ -65,7 +59,7 @@ class AuthenticatorSpecs extends Specification {
 		    if('Secure') {
 		    	authenticator = new MongoAuthenticator(secured)
 			} else {
-				def unsecured = new Mongo(new ServerAddress(HOST, 27021))
+				def unsecured = new MongoClient(new ServerAddress(HOST, 27021))
 				authenticator = new MongoAuthenticator(unsecured)
 			}
 			

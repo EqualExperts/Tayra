@@ -48,7 +48,6 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
 
 		then: 'it complains that the collection cannot be created again'
 			def problem = thrown(CreateCollectionFailed)
-//			problem.message == 'command failed [create]: { "serverUsed" : "localhost/127.0.0.1:27020" , "errmsg" : "collection already exists" , "ok" : 0.0}'
 			problem.message.contains('"errmsg" : "collection already exists"')
 	}
 

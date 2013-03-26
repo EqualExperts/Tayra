@@ -1,4 +1,5 @@
 package com.ee.tayra.fixtures;
+
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -16,28 +17,28 @@ public class MongoCommandFixture extends DoFixture {
     mongo.getDB("test").command("ismaster");
   }
 
-public final void useDatabase(final Parse cells) {
+  public final void useDatabase(final Parse cells) {
     Parse expected = cells.more;
     if (expected == null) {
-        throw new MissingCellsFailureException(cells.text()
-        + " requires an argument");
+      throw new MissingCellsFailureException(cells.text()
+          + " requires an argument");
     }
 
     String databaseName = expected.text();
     db = mongo.getDB(databaseName);
     String actual = db.getName();
     if (databaseName.equals(actual)) {
-        right(expected);
+      right(expected);
     } else {
-        wrong(expected, actual);
+      wrong(expected, actual);
     }
   }
 
   public final void run(final Parse cells) {
     Parse command = cells.more;
     if (command == null) {
-        throw new MissingCellsFailureException(cells.text()
-        + " requires an argument");
+      throw new MissingCellsFailureException(cells.text()
+          + " requires an argument");
     }
     String cmdString = command.text();
     CommandResult result = db.doEval(cmdString);

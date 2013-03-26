@@ -4,6 +4,7 @@ import spock.lang.Specification
 
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.io.*
+import com.ee.tayra.parameters.EnvironmentProperties
 
 class BackupFactorySpecs extends Specification {
   private BackupCmdDefaults config
@@ -13,7 +14,7 @@ class BackupFactorySpecs extends Specification {
   def setup() {
     config = new BackupCmdDefaults()
     config.recordToFile = 'test.out'
-    config.port = 17017
+    config.port = EnvironmentProperties.unsecureSrcPort
   console = Mock(PrintWriter)
   }
 

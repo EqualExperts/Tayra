@@ -31,17 +31,17 @@
 package com.ee.tayra.domain.operation;
 
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
 class InsertDocument extends Operation {
 
   private static final String INDEX_NAMESPACE = "system.indexes";
-  private final Mongo mongo;
+  private final MongoClient mongo;
   private String dbName;
   private String collectionName;
 
-  public InsertDocument(final Mongo mongo) {
+  public InsertDocument(final MongoClient mongo) {
     this.mongo = mongo;
   }
 

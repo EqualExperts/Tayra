@@ -30,24 +30,21 @@
  ******************************************************************************/
 package com.ee.tayra.command.restore
 
-import com.ee.tayra.connector.MongoAuthenticator;
 import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.OplogReplayer
-import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.Replayer
+import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
-import com.mongodb.Mongo
-import com.mongodb.ServerAddress
-import java.io.PrintWriter;
+import com.mongodb.MongoClient
 
 class DefaultFactory extends RestoreFactory {
 
-  private final Mongo mongo
+  private final MongoClient mongo
   private final def listeningReporter
 
-  public DefaultFactory(RestoreCmdDefaults config, Mongo mongo, PrintWriter console) {
+  public DefaultFactory(RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
     super(config)
     this.mongo = mongo
     listeningReporter = new RestoreProgressReporter(new FileWriter

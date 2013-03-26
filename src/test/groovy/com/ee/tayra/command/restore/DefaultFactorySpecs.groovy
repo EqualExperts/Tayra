@@ -5,22 +5,23 @@ import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
 import com.ee.tayra.io.OplogReplayer
-import com.mongodb.Mongo
+import com.ee.tayra.parameters.EnvironmentProperties;
+import com.mongodb.MongoClient
 import spock.lang.Specification
 
 class DefaultFactorySpecs extends Specification {
 
 	private RestoreCmdDefaults config
 	private def factory
-	private Mongo ignoreMongo
+	private MongoClient ignoreMongo
 	private PrintWriter ignoreConsole
 
 	def setup() {
 		config = new RestoreCmdDefaults()
-		config.destination = 'localhost'
-		config.port = 27017
-		config.username = 'admin'
-		config.password = 'admin'
+		config.destination = EnvironmentProperties.secureSrcNode
+		config.port = EnvironmentProperties.secureSrcPort
+		config.username = EnvironmentProperties.username
+		config.password = EnvironmentProperties.password
 		config.exceptionFile = 'exception.documents'
 		factory =  new DefaultFactory(config, ignoreMongo, ignoreConsole)
 	}

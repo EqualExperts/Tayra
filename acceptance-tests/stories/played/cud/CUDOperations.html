@@ -29,7 +29,7 @@
 					</tr>
 					<tr>
 						<td>with configuration</td>
-						<td>source {sourceNode} on port {sourcePort} , target {targetNode} on port {targetPort}</td>
+						<td>source {secureSrcNode} on port {secureSrcPort} , target {secureTgtNode} on port {secureTgtPort} with {username} having {password}</td>
 					</tr>
 				</table>
 				<br>
@@ -76,7 +76,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -s {sourceNode} --port={sourcePort} -f {file}</pre></td>
+						<td colspan="3"><pre>backup -s {secureSrcNode} --port={secureSrcPort} -f {file} -u admin -p admin</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -97,7 +97,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file}</pre></td>
+						<td colspan="3"><pre>restore -d {secureTgtNode} --port={secureTgtPort} -f {file} -u admin -p admin</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>

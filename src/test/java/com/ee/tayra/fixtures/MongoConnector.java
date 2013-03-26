@@ -10,7 +10,8 @@ public class MongoConnector {
   private MongoClient destination;
 
   public MongoConnector(final String srcHost, final int srcPort,
-      final String destHost, final int destPort) throws UnknownHostException {
+      final String destHost, final int destPort)
+      throws UnknownHostException {
     source = new MongoClient(srcHost, srcPort);
     destination = new MongoClient(destHost, destPort);
   }

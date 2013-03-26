@@ -33,7 +33,7 @@ package com.ee.tayra.command.restore
 import com.ee.tayra.connector.MongoAuthenticator
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
 import com.mongodb.ServerAddress
 
 
@@ -121,12 +121,12 @@ if(options.fAll) {
 }
 
 RestoreFactory factory = null
-Mongo mongo = null
+MongoClient mongo = null
 try {
 
   if(!options.'dry-run') {
     ServerAddress server = new ServerAddress(config.destination, config.port)
-    mongo = new Mongo(server)
+    mongo = new MongoClient(server)
     getAuthenticator(mongo).authenticate(config.username, config.password)
   }
   factory = RestoreFactory.createFactory(config, mongo, console)

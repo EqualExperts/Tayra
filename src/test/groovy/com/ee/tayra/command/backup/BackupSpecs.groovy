@@ -2,21 +2,18 @@ package com.ee.tayra.command.backup
 
 import spock.lang.*
 
-import com.ee.tayra.command.backup.Backup;
-import com.ee.tayra.connector.Authenticator;
-import com.ee.tayra.io.CopyListener;
-import com.ee.tayra.io.Reporter;
-import com.ee.tayra.io.ProgressReporter;
-import com.mongodb.Mongo
+import com.ee.tayra.connector.Authenticator
+import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.ProgressReporter
+import com.ee.tayra.io.Reporter
+import com.ee.tayra.parameters.EnvironmentProperties
+import com.mongodb.MongoClient
 import com.mongodb.MongoException
-import com.mongodb.MongoOptions
 import com.mongodb.ServerAddress
 
 public class BackupSpecs extends Specification {
 
 	private static StringBuilder result
-	private String username = 'admin'
-	private String password = 'admin'
 	private CopyListener mockListener
 	private Reporter mockReporter
 	private Writer mockWriter
@@ -55,7 +52,7 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenNoOutputFileIsSupplied() {
 		given: 'argument contains -s option only'
-			context.setVariable('args', ['-s', 'localhost'])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode])
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -66,7 +63,7 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenMongoDBUrlIsIncorrect() {
 		given:'arguments containing non-existent source'
-			context.setVariable('args', ['-s', 'nonexistentHost', '-f', 'test.out'])
+			context.setVariable('args', ['-s', 'nonexistentHost', '-f', EnvironmentProperties.backupFile])
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -77,7 +74,7 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
 		given: 'localhost not belonging to replica set'
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=27021'])
+			context.setVariable('args', ['-s', EnvironmentProperties.unsecureStandaloneNode, '-f', EnvironmentProperties.backupFile, "--port=$EnvironmentProperties.unsecureStandalonePort"])
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -88,7 +85,7 @@ public class BackupSpecs extends Specification {
 
 	def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecuredConnection() {
 		given:'arguments contains -s, -f, -u and -p options'
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', password])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode, '-f', EnvironmentProperties.backupFile, '-u', EnvironmentProperties.username, '-p', EnvironmentProperties.password])
 
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
@@ -103,7 +100,7 @@ public class BackupSpecs extends Specification {
 
 	def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
 		given:'arguments contains -s, -f options'
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--port=17017'])
+			context.setVariable('args', ['-s', EnvironmentProperties.unsecureSrcNode, '-f', EnvironmentProperties.backupFile, "--port=$EnvironmentProperties.unsecureSrcPort"])
 
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
@@ -121,16 +118,14 @@ public class BackupSpecs extends Specification {
 	}
 
 	def forceTheTestToWorkOnWindows() {
-		def options = new MongoOptions()
-		options.safe = true
-		ServerAddress server = new ServerAddress("localhost", 17017)
-		def UnsecuredReplicaset = new Mongo(server, options)
+		ServerAddress server = new ServerAddress(EnvironmentProperties.unsecureSrcNode, EnvironmentProperties.unsecureSrcPort)
+		def UnsecuredReplicaset = new MongoClient(server)
 		UnsecuredReplicaset.getDB('admin').addUser('admin', 'admin'.toCharArray())
 	}
 
 	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
 		given:'arguments contains -s, -f options but not --username'
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out'])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode, '-f', EnvironmentProperties.backupFile])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -146,12 +141,12 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -s and -f option'
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode, '-f', EnvironmentProperties.backupFile, '-u', EnvironmentProperties.username, '-p', 'incorrect'])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
 			context.setVariable('authenticator', mockAuthenticator)
-			mockAuthenticator.authenticate(username, 'incorrect') >> { throw new MongoException('Authentication Failed to localhost') }
+			mockAuthenticator.authenticate(EnvironmentProperties.username, 'incorrect') >> { throw new MongoException('Authentication Failed to localhost') }
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -163,12 +158,12 @@ public class BackupSpecs extends Specification {
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', 'incorrect', '-p', password])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode, '-f', EnvironmentProperties.backupFile, '-u', 'incorrect', '-p', EnvironmentProperties.password])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
 			context.setVariable('authenticator', mockAuthenticator)
-			mockAuthenticator.authenticate('incorrect', password) >> { throw new MongoException('Authentication Failed to localhost') }
+			mockAuthenticator.authenticate('incorrect', EnvironmentProperties.password) >> { throw new MongoException('Authentication Failed to localhost') }
 
 		when: 'backup runs with above args'
 			new Backup(context).run()
@@ -179,7 +174,7 @@ public class BackupSpecs extends Specification {
 
 	def setsDefaultValuesOfOptions() {
 		given: 'arguments contain all essential options and not -s, --port, -u, -p'
-			context.setVariable('args', ['-f', 'test.out'])
+			context.setVariable('args', ['-f', EnvironmentProperties.backupFile])
 
 		when: 'backup runs'
 			new Backup(context).run()
@@ -194,7 +189,7 @@ public class BackupSpecs extends Specification {
 
 	def summarizesOnFinishingBackupProcess() {
 		given:'arguments contains -s, -f, -u and -p options'
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '-u', username, '-p', password])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode, '-f', EnvironmentProperties.backupFile, '-u', EnvironmentProperties.username, '-p', EnvironmentProperties.password])
 
 		and: 'a reporter is injected'
 			def mockProgressReporter = Mock(ProgressReporter)
@@ -209,7 +204,7 @@ public class BackupSpecs extends Specification {
 	
 	def backsUpNoDocumentWhenOnlySExcludeOptionIsGiven() {
 		given:'arguments contains -s, -f, -u, -p and --sExclude options'
-			context.setVariable('args', ['-s', 'localhost', '-f', '--sExclude', 'test.out',  '-u', username, '-p', password])
+			context.setVariable('args', ['-s', EnvironmentProperties.secureSrcNode, '-f',EnvironmentProperties.backupFile, '--sExclude', EnvironmentProperties.backupFile,  '-u', EnvironmentProperties.username, '-p', EnvironmentProperties.password])
 
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
@@ -225,7 +220,7 @@ public class BackupSpecs extends Specification {
 	def shoutsWhenWrongArgumentsAreSupplied() {
 		given:'arguments contains -s, -f valid options and --sNssss a not valid option'
 			def context = new Binding()
-			context.setVariable('args', ['-s', 'localhost', '-f', 'test.out', '--sNssss=users'])
+			context.setVariable('args', ['-s', EnvironmentProperties.unsecureSrcNode, '-f', EnvironmentProperties.backupFile, '--sNssss=users'])
 			
 		when: 'backup runs with above args'
 			new Backup(context).run()

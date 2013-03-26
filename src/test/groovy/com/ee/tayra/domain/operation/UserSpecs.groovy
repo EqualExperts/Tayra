@@ -1,12 +1,11 @@
 package com.ee.tayra.domain.operation
 
-import com.ee.tayra.domain.operation.DeleteDocument;
-import com.ee.tayra.domain.operation.InsertDocument;
-import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.Mongo
 import org.bson.types.ObjectId
 
 import spock.lang.*
+
+import com.mongodb.BasicDBObjectBuilder
+import com.mongodb.MongoClient
 
 class UserSpecs extends RequiresMongoConnection {
 
@@ -18,7 +17,7 @@ class UserSpecs extends RequiresMongoConnection {
 	
 	def insertsAUser() {
 		'a new connection to mongo is opened'
-			def authStandaloneTwo = new Mongo(HOST, PORT)
+			def authStandaloneTwo = new MongoClient(HOST, PORT)
 
 		given: 'an add user insert document oplog entry'
 			def o = BasicDBObjectBuilder

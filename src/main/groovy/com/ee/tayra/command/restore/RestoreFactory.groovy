@@ -33,15 +33,15 @@ package com.ee.tayra.command.restore
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.Reporter
-import com.mongodb.Mongo
 import com.ee.tayra.io.criteria.CriteriaBuilder
 import com.ee.tayra.io.criteria.Criterion
+import com.mongodb.MongoClient;
 
 abstract class RestoreFactory {
   
   protected final Criterion criteria
   
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, Mongo mongo, PrintWriter console) {
+  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
     config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
   }
   

@@ -34,13 +34,13 @@ import java.util.List;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 class DropDatabase implements SchemaOperation {
 
-  private final Mongo mongo;
+  private final MongoClient mongo;
 
-  public DropDatabase(final Mongo mongo) {
+  public DropDatabase(final MongoClient mongo) {
     this.mongo = mongo;
   }
 

@@ -3,13 +3,13 @@ import java.net.UnknownHostException;
 import java.util.Map.Entry;
 
 import com.ee.tayra.Environment;
+import com.ee.tayra.NamedParameters;
 import com.ee.tayra.fixtures.AssertMongoFixture;
 import com.ee.tayra.fixtures.MongoSourceAndTargetConnector;
 import com.ee.tayra.fixtures.RunnerFixture;
-import com.ee.tayra.NamedParameters;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 
@@ -30,7 +30,6 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
       throws UnknownHostException {
     parameters = Environment.settings();
     parameters.add("{file}", "test.out");
-    connector = new MongoSourceAndTargetConnector(parameters);
   }
 
 
@@ -61,7 +60,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
   public final boolean openOplogForNodeAndTravelDocumentsBackInTime(
       final String nodeName, final int howMany) {
     Node node = Node.valueOf(nodeName.toUpperCase(), connector);
-    Mongo mongo = node.getMongo();
+    MongoClient mongo = node.getMongo();
     DBCursor cursor = null;
     try {
       DBCollection collection = mongo.getDB("local").getCollection(
@@ -89,6 +88,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
           + " requires an argument");
     }
     String cmdString = args.text();
+    connector = new MongoSourceAndTargetConnector(cmdString, parameters);
     cmdString = injectValuesIn(cmdString, parameters);
     args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
     args.addToBody("<pre/>" + cmdString + "</pre>");

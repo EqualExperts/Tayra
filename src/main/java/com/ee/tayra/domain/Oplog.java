@@ -35,7 +35,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.QueryBuilder;
 import com.mongodb.util.JSON;
 
@@ -45,7 +45,7 @@ public class Oplog implements MongoCollection {
   private static final String OPLOG_COLLECTIONNAME = "oplog.rs";
   private static final String OPLOG_DB_NAME = "local";
 
-  public Oplog(final Mongo mongo) {
+  public Oplog(final MongoClient mongo) {
     DB local = mongo.getDB(OPLOG_DB_NAME);
 
     boolean oplogExists = local.collectionExists(OPLOG_COLLECTIONNAME);

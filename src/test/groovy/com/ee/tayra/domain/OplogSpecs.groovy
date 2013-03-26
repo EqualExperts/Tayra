@@ -1,33 +1,28 @@
 package com.ee.tayra.domain
 
-import spock.lang.Specification
-
 import com.ee.tayra.domain.operation.RequiresMongoConnection
-import com.ee.tayra.domain.IteratorAlreadyClosed;
-import com.ee.tayra.domain.MongoCollection;
-import com.ee.tayra.domain.MongoCollectionIterator;
-import com.ee.tayra.domain.NotAReplicaSetNode;
-import com.ee.tayra.domain.Oplog;
+import com.ee.tayra.parameters.EnvironmentProperties
 import com.mongodb.DB
 import com.mongodb.DBCursor
 import com.mongodb.DBObject
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.util.JSON
 
 public class OplogSpecs extends RequiresMongoConnection {
 
-	private static Mongo replicaSet
-	private static final String HOST = "localhost"
-	private static final int PORT = 27017
+	private static MongoClient replicaSet
+	private static final String HOST = EnvironmentProperties.secureSrcNode
+	private static final int PORT = EnvironmentProperties.secureSrcPort
+	private static final String USERNAME = EnvironmentProperties.username
+	private static final String PASSWORD = EnvironmentProperties.password
 	private MongoCollection oplog
 	private DB local
 	private String query = null
 	private boolean tailable = true
 
-	def setupSpec()throws UnknownHostException,
-			MongoException {
-		replicaSet = new Mongo(HOST, PORT)
+	def setupSpec()throws MongoException {
+		replicaSet = new MongoClient(HOST, PORT)
 	}
 
 	def cleanupSpec() {
@@ -35,14 +30,14 @@ public class OplogSpecs extends RequiresMongoConnection {
 	}
 
 	def setup() {
-		replicaSet.getDB("admin").authenticate("admin", "admin".toCharArray())
+		replicaSet.getDB("admin").authenticate(USERNAME, PASSWORD.toCharArray())
 		oplog = new Oplog(replicaSet)
 		local = replicaSet.getDB("local")
 	}
 
 	def doesNotConnectToStandaloneMongoInstance() throws Exception {
 		given: 'a standalone node'
-			standalone.getDB('admin').authenticate('admin', 'admin'.toCharArray())
+			standalone.getDB('admin').authenticate(USERNAME, PASSWORD.toCharArray())
 			DB local = standalone.getDB("local")
 
 		when: 'oplog created on Db of standalone'

@@ -30,16 +30,14 @@
  ******************************************************************************/
 package com.ee.tayra.connector
 
-import java.io.PrintWriter;
-
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
 import com.mongodb.MongoException
 
 class MongoAuthenticator implements Authenticator {
   
-  private Mongo mongo;
+  private MongoClient mongo;
 
-  public MongoAuthenticator(final Mongo mongo) {
+  public MongoAuthenticator(final MongoClient mongo) {
     this.mongo = mongo;
   }
   

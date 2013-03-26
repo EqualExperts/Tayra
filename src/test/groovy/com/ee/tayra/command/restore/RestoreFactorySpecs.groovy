@@ -1,20 +1,22 @@
 package com.ee.tayra.command.restore
 
-import com.mongodb.Mongo
 import spock.lang.Specification
+
+import com.ee.tayra.parameters.EnvironmentProperties
+import com.mongodb.MongoClient
 
 class RestoreFactorySpecs extends Specification{
 
 	private RestoreCmdDefaults config
-	private Mongo ignoreMongo
+	private MongoClient ignoreMongo
 	private PrintWriter ignoreConsole
 
 	def setup() {
 		config = new RestoreCmdDefaults()
-		config.destination = 'localhost'
-		config.port = 27017
-		config.username = 'admin'
-		config.password = 'admin'
+		config.destination = EnvironmentProperties.secureSrcNode
+		config.port = EnvironmentProperties.secureSrcPort
+		config.username = EnvironmentProperties.username
+		config.password = EnvironmentProperties.password
 		config.exceptionFile = 'exception.documents'
 	}
 

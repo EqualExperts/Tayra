@@ -31,15 +31,15 @@
 package com.ee.tayra.domain.operation;
 
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
 class UpdateDocument extends Operation {
 
-  private final Mongo mongo;
+  private final MongoClient mongo;
 
-  public UpdateDocument(final Mongo mongo) {
+  public UpdateDocument(final MongoClient mongo) {
     this.mongo = mongo;
   }
 

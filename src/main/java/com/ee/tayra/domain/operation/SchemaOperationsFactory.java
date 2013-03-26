@@ -32,13 +32,13 @@
 package com.ee.tayra.domain.operation;
 
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 public class SchemaOperationsFactory {
 
-  private final Mongo mongo;
+  private final MongoClient mongo;
 
-  public SchemaOperationsFactory(final Mongo mongo) {
+  public SchemaOperationsFactory(final MongoClient mongo) {
     this.mongo = mongo;
   }
 

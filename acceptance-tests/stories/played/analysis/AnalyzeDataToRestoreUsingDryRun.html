@@ -41,7 +41,7 @@
 					</tr>
 					<tr>
 						<td>with configuration</td>
-						<td>source {sourceNode} on port {sourcePort} , target {targetNode} on port {targetPort}</td>
+						<td>source {unsecureSrcNode} on port {unsecureSrcPort} , target {unsecureTgtNode} on port {unsecureTgtPort}</td>
 					</tr>
 				</table>
 				<br>
@@ -85,7 +85,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>backup -s {sourceNode} --port={sourcePort} -f {file}</pre></td>
+						<td colspan="3"><pre>backup -s {unsecureSrcNode} --port={unsecureSrcPort} -f {file}</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -106,7 +106,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file}</pre></td>
+						<td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file}</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>
@@ -207,7 +207,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>backup -s {sourceNode} --port={sourcePort} -f {file}</pre></td>
+            <td colspan="3"><pre>backup -s {unsecureSrcNode} --port={unsecureSrcPort} -f {file}</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -228,7 +228,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --dry-run</pre></td>
+            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --dry-run</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -266,7 +266,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --sUntil={Until}</pre></td>
+            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sUntil={Until}</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -301,7 +301,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --sExclude --sUntil={Until}</pre></td>
+            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sExclude --sUntil={Until}</pre></td>
           </tr>
           <tr>
             <td>and show</td>

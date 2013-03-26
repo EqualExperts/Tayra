@@ -1,6 +1,5 @@
 import com.ee.tayra.fixtures.MongoCommandFixture;
 import com.ee.tayra.fixtures.MongoSourceAndTargetConnector;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 import fit.Fixture;
@@ -8,7 +7,7 @@ import fit.Fixture;
 public abstract class Node {
   public abstract Fixture getMongoFixture();
 
-  public abstract Mongo getMongo();
+  public abstract MongoClient getMongo();
 
   public static final String SOURCE = "SOURCE";
   public static final String TARGET = "TARGET";
@@ -39,7 +38,7 @@ public abstract class Node {
     }
 
     @Override
-    public Mongo getMongo() {
+    public MongoClient getMongo() {
       return mongo;
     }
 

@@ -4,23 +4,18 @@ import spock.lang.*
 
 import com.ee.tayra.domain.NotAReplicaSetNode
 import com.ee.tayra.domain.Oplog
-import com.ee.tayra.io.CollectionReader;
-import com.ee.tayra.io.Copier;
-import com.ee.tayra.io.CopyListener;
-import com.ee.tayra.io.OplogReader;
-import com.ee.tayra.io.OplogReplayer;
-import com.ee.tayra.io.Replayer;
+import com.ee.tayra.parameters.EnvironmentProperties
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBObject
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
 import com.mongodb.MongoException
 
 public class CopierSpecs extends Specification {
 
-	private static Mongo replicaSet
-	private static final String HOST = "localhost"
-	private static final int PORT = 27017
+	private static MongoClient replicaSet
+	private static final String HOST = EnvironmentProperties.secureSrcNode
+	private static final int PORT = EnvironmentProperties.secureSrcPort
 	private DB local
 	private Copier copier
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
@@ -30,7 +25,7 @@ public class CopierSpecs extends Specification {
 	private Replayer mockReplayer
 
 	def setupSpec() throws UnknownHostException, MongoException {
-		replicaSet = new Mongo(HOST, PORT)
+		replicaSet = new MongoClient(HOST, PORT)
 	}
 
 	def cleanupSpec() {
@@ -39,7 +34,7 @@ public class CopierSpecs extends Specification {
 
 	def setup() {
 		copier = new Copier()
-		replicaSet.getDB("admin").authenticate("admin", "admin".toCharArray())
+		replicaSet.getDB("admin").authenticate(EnvironmentProperties.username, EnvironmentProperties.password.toCharArray())
 		local = replicaSet.getDB("local")
 		boolean oplogExists = local.collectionExists("oplog.rs")
 		if (!oplogExists) {

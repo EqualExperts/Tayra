@@ -1,12 +1,10 @@
 package com.ee.tayra.domain.operation
 
-import com.ee.tayra.domain.operation.DropCollection;
-import com.ee.tayra.domain.operation.DropCollectionFailed;
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBObject
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
 
 class DropCollectionSpecs extends RequiresMongoConnection {
 	
@@ -60,7 +58,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
 			! db.collectionExists(cappedCollectionName)
 	}
 	
-	private givenACappedCollection(Mongo standalone, DB db) {
+	private givenACappedCollection(MongoClient standalone, DB db) {
 		DBObject options = new BasicDBObjectBuilder()
 								.start()
 									.add('capped', true)

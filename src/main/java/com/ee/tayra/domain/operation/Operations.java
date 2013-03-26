@@ -33,15 +33,15 @@ package com.ee.tayra.domain.operation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 public class Operations implements OperationsFactory {
 
-  private final Mongo mongo;
+  private final MongoClient mongo;
   private final Map<String, Operation> operations;
   private SchemaOperationsFactory schemaOperationsFactory;
 
-  public Operations(final Mongo mongo) {
+  public Operations(final MongoClient mongo) {
     this.mongo = mongo;
     operations = new HashMap<String, Operation>();
     this.schemaOperationsFactory = new SchemaOperationsFactory(mongo);
