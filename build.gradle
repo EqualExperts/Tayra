@@ -160,7 +160,8 @@ task unzip(type: Copy) {
     into outputDir
 }
 
-task testJar(type: Jar, dependsOn: test) {
+// For individual use only, assumes you have binaries existing already.
+task testJar(type: Jar) {
   baseName = "${project.archivesBaseName}-test"
   destinationDir = project.distsDir
   from sourceSets.test.output
@@ -210,6 +211,4 @@ def prepareExecutables() {
 	}
 }
 
-//jar.dependsOn << 'testJar'
-//"smoke-test".dependsOn = ['testJar']
 build.dependsOn = ['check', 'distribute', 'smoke-test']
