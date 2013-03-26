@@ -152,7 +152,8 @@
 						<td><pre>source</pre></td>
 						<td>and travel</td>
 						<td>10</td>
-						<td>documents back in time</td>
+						<td>documents back in time and save timestamp in</td>
+						<td>{sUntil}</td>
 					</tr>
 				</table>
 				<h4>4. Run Restore Utility to a Point in time.</h4>
@@ -162,7 +163,7 @@
 					</tr>
 					<tr>
 						<td>and run</td>
-						<td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sUntil={Until}</pre></td>
+						<td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --sUntil={sUntil}</pre></td>
 					</tr>
 					<tr>
 						<td>and show</td>

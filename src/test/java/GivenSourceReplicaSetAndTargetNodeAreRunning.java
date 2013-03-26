@@ -54,14 +54,14 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
   }
 
   public final boolean openOplogForNodeAndTravelDocumentsBackInTime(
-      final String nodeName, final int howMany) {
+      final String nodeName, final int howMany, final String keyToSave) {
     Node node = Node.valueOf(nodeName.toUpperCase(), connector);
     MongoClient mongo = node.getMongo();
     DBCursor cursor = null;
     try {
       DBCollection collection = mongo.getDB("local").getCollection("oplog.rs");
       cursor = collection.find().skip((int) collection.count() - howMany);
-      parameters.add("{Until}", JSON.serialize(cursor.next().get("ts"))
+      parameters.add(keyToSave, JSON.serialize(cursor.next().get("ts"))
               .replaceAll("[\" ]", ""));
     } catch (MongoException problem) {
       throw new FitFailureException(problem.getMessage());

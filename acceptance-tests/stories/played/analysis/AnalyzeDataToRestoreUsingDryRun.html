@@ -249,59 +249,37 @@
           </li>
         </ul>
        </h5></i></p>
+       <br>
        <h4 >8a. 1st Restore all correct documents until error.</h4>
         <table>
           <tr>
             <td>Open oplog for node</td>
             <td><pre>source</pre></td>
             <td>and travel</td>
-            <td>7</td>
-            <td>documents back in time</td>
+            <td>6</td>
+            <td>documents back in time and save timestamp in</td>
+            <td><pre>{sSince}</pre></td>
           </tr>
         </table>
         <br>
-        <table>
-          <tr class="headingTableRow">
-            <td colspan="4">Open terminal</td>
-          </tr>
-          <tr>
-            <td>and run</td>
-            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sUntil={Until}</pre></td>
-          </tr>
-          <tr>
-            <td>and show</td>
-            <td colspan="3"><pre>stdout</pre></td>
-          </tr>
-          <tr>
-            <td>and show</td>
-            <td colspan="3"><pre>stderr</pre></td>
-          </tr>
-          <tr>
-            <td>and ensure</td>
-            <td><pre>stdout</pre></td>
-            <td>contains</td>
-            <td>Process started</td>
-          </tr>
-        </table>
-        <h4>8b. 2nd Restore all correct documents after error.</h4>
         <table>
           <tr>
             <td>Open oplog for node</td>
             <td><pre>source</pre></td>
             <td>and travel</td>
             <td>5</td>
-            <td>documents back in time</td>
+            <td>documents back in time and save timestamp in</td>
+            <td><pre>{sUntil}</pre></td>
           </tr>
         </table>
         <br>
-
         <table>
           <tr class="headingTableRow">
             <td colspan="4">Open terminal</td>
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sExclude --sUntil={Until}</pre></td>
+            <td colspan="3"><pre>restore -d {targetNode} --port={targetPort} -f {file} --sExclude --sUntil={sUntil} --sSince={sSince}</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -318,7 +296,7 @@
             <td>Process started</td>
           </tr>
         </table>
-        <br>
+        
         <h4>9. Ensure Target does not contains corrupt data</h4>
         <table>
           <tr>
