@@ -28,7 +28,7 @@ public enum Environment {
 
     abstract NamedParameters get();
 
-    NamedParameters parameters = null;
+    transient NamedParameters parameters = null;
 
 
     NamedParameters load(final String propertiesFile) {

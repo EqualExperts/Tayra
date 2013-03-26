@@ -50,6 +50,9 @@ project.ext {
   acceptanceTestDir = 'acceptance-tests'
   acceptanceTestStoriesDir = "$projectDir/$acceptanceTestDir/stories/played"
   acceptanceTestReportsDir = "$reporting.baseDir/$acceptanceTestDir"
+  smokeTestDir = "$acceptanceTestStoriesDir/cud"
+
+  explodedDir = "$project.buildDir/exploded"
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
@@ -64,6 +67,7 @@ repositories {
 configurations {
 	cobertura
 	compile
+    tests
 }
 
 dependencies {
@@ -81,11 +85,11 @@ jar {
 	}
 
 	doLast {
-		copy {
-			from (configurations.compile.asPath.split(File.pathSeparator))
-			into "$libsDir"
-		}
-	}
+        copy {
+            from (configurations.compile.asPath.split(File.pathSeparator))
+            into "$libsDir"
+        }
+    }
 }
 
 clean << {
@@ -117,27 +121,49 @@ test {
 		}
 		ant.'cobertura-check'(totalbranchrate:project.ext.branchCoverageBaseline, totallinerate:project.ext.lineCoverageBaseline)
 		setClasspath(originalClasspath)
-		
-		runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
 	}
 }
 
-// For individual use only, assumes you have binaries existing already. 
-task 'acceptance-test' << {
-  runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
+// For individual use only, assumes you have binaries existing already.
+task ('smoke-test', dependsOn: ['testJar', 'unzip']) << {
+    println "Running FIT Smoke Test..."
+    runAcceptanceTests(project.ext.smokeTestDir, project.ext.acceptanceTestReportsDir)
+}
+
+// For individual use only, assumes you have binaries existing already.
+task ('acceptance-test', dependsOn: ['testJar', 'unzip']) << {
+    println "Running FIT Acceptance Tests..."
+    runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
 }
 
 def runAcceptanceTests(String srcFolder, String reportsFolder) {
-	println "Running FIT Acceptance Tests..."
-	def accTestReportsDir = new File("$project.ext.acceptanceTestReportsDir")
+    def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
+    runtimeClasspath = runtimeClasspath + fileTree(dir: project.ext.unmanagedTestLibDir, include: '*.jar')
+    runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
+
+    def accTestReportsDir = new File("$project.ext.acceptanceTestReportsDir")
 	if(!accTestReportsDir.exists()) {
 		accTestReportsDir.mkdirs()
 	}
 	javaexec {
 	    main = 'fitlibrary.runner.FolderRunner'
-	    classpath = sourceSets.test.runtimeClasspath
+	    classpath = runtimeClasspath
 	    args = ["$srcFolder", "$reportsFolder"]
 	}
+}
+
+task unzip(type: Copy) {
+    def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+    def outputDir = file(project.ext.explodedDir)
+
+    from zipTree(zipFile)
+    into outputDir
+}
+
+task testJar(type: Jar, dependsOn: test) {
+  baseName = "${project.archivesBaseName}-test"
+  destinationDir = project.distsDir
+  from sourceSets.test.output
 }
 
 task distribute(type:Zip, dependsOn: 'assemble') {
@@ -184,4 +210,6 @@ def prepareExecutables() {
 	}
 }
 
-build.dependsOn = ['check', 'distribute']
+//jar.dependsOn << 'testJar'
+//"smoke-test".dependsOn = ['testJar']
+build.dependsOn = ['check', 'distribute', 'smoke-test']
