@@ -55,4 +55,7 @@ error.log
 acceptance-tests/stories/files/
 .idea
 out
+target
+.settings
+acceptance-tests/stories/played/cud/files
 
