@@ -4,7 +4,7 @@ import com.ee.tayra.io.ProgressReporter;
 
 import spock.lang.*
 
-public class RestoreProgressReporterSpecs extends Specification{
+public class RestoreProgressReporterSpecs extends Specification {
 
 	private Writer mockExceptionDocumentsWriter
 

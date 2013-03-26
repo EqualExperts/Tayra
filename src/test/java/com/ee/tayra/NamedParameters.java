@@ -1,4 +1,4 @@
-package com.ee.tayra.fixtures.support;
+package com.ee.tayra;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,5 +27,4 @@ public class NamedParameters {
   public final Set<Entry<String, String>> entrySet() {
     return namedParams.entrySet();
   }
-
 }

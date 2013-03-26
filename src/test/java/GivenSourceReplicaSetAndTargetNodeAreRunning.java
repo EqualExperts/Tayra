@@ -1,14 +1,12 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Map.Entry;
-import java.util.Properties;
 
+import com.ee.tayra.Environment;
 import com.ee.tayra.fixtures.AssertMongoFixture;
 import com.ee.tayra.fixtures.MongoSourceAndTargetConnector;
 import com.ee.tayra.fixtures.RunnerFixture;
-import com.ee.tayra.fixtures.support.NamedParameters;
+import com.ee.tayra.NamedParameters;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.Mongo;
@@ -22,61 +20,23 @@ import fit.exception.MissingCellsFailureException;
 import fitlibrary.DoFixture;
 
 public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
-  public enum Environment {
-    DEV {
-      @Override
-      public String getConfiguration() {
-        return "dev.properties";
-      }
-    },
-    TEST {
-      @Override
-      public String getConfiguration() {
-        return "test.properties";
-      }
-    };
 
-    public abstract String getConfiguration();
-  };
 
   private static final int SLEEP_TIME = 800;
   private MongoSourceAndTargetConnector connector;
-  private NamedParameters namedParams;
+  private NamedParameters parameters;
 
   public GivenSourceReplicaSetAndTargetNodeAreRunning()
       throws UnknownHostException {
-    namedParams = new NamedParameters();
-    loadProperties();
-    connector = new MongoSourceAndTargetConnector(namedParams);
+    parameters = Environment.settings();
+    parameters.add("{file}", "test.out");
+    connector = new MongoSourceAndTargetConnector(parameters);
   }
 
-  private void loadProperties() {
-    Properties properties = new Properties();
-    try {
-      properties.load(new FileInputStream(getPropertyFile()));
-      add(properties);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
 
-  private void add(final Properties properties) {
-    namedParams.add("{sourceNode}", properties.getProperty("sourceNode"));
-    namedParams.add("{sourcePort}", properties.getProperty("sourcePort"));
-    namedParams.add("{targetNode}", properties.getProperty("targetNode"));
-    namedParams.add("{targetPort}", properties.getProperty("targetPort"));
-    namedParams.add("{file}", properties.getProperty("file"));
-  }
-
-  private String getPropertyFile() {
-    String env = System.getProperty("env", "dev").toUpperCase();
-    return Environment.valueOf(env).getConfiguration();
-  }
 
   public final Fixture openTerminal() {
-    return new RunnerFixture(namedParams);
+    return new RunnerFixture(parameters);
   }
 
   public final void sleep(final int duration) {
@@ -107,8 +67,8 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
       DBCollection collection = mongo.getDB("local").getCollection(
           "oplog.rs");
       cursor = collection.find().skip((int) collection.count() - howMany);
-      namedParams.add("{Until}", JSON.serialize(cursor.next().get("ts"))
-          .replaceAll("[\" ]", ""));
+      parameters.add("{Until}", JSON.serialize(cursor.next().get("ts"))
+              .replaceAll("[\" ]", ""));
     } catch (MongoException problem) {
       throw new FitFailureException(problem.getMessage());
     } finally {
@@ -129,7 +89,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
           + " requires an argument");
     }
     String cmdString = args.text();
-    cmdString = injectValuesIn(cmdString, namedParams);
+    cmdString = injectValuesIn(cmdString, parameters);
     args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
     args.addToBody("<pre/>" + cmdString + "</pre>");
   }

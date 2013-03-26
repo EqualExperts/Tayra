@@ -54,4 +54,5 @@
     <suppress checks="DesignForExtension" files="[\\/]Copier.java" />
     <suppress checks="DesignForExtension" files="[\\/]SelectiveOplogReplayer.java" />
     <suppress checks="MethodName" files="[\\/]DropIndex.java" />
+    <suppress checks="VisibilityModifierCheck" files="Environment.java" />
 </suppressions>

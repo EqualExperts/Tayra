@@ -2,7 +2,7 @@ package com.ee.tayra.fixtures;
 
 import java.net.UnknownHostException;
 
-import com.ee.tayra.fixtures.support.NamedParameters;
+import com.ee.tayra.NamedParameters;
 import com.mongodb.MongoClient;
 
 public class MongoSourceAndTargetConnector {

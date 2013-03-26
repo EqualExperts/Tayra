@@ -36,7 +36,7 @@ _$*
 _svn
 svn-commit*.tmp
 .~lock
-.settings
+.get
 build
 .gradle
 bin

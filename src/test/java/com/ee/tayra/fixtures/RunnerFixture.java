@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
 
-import com.ee.tayra.fixtures.support.NamedParameters;
+import com.ee.tayra.NamedParameters;
 import com.ee.tayra.runner.Runner;
 
 import fit.Parse;
