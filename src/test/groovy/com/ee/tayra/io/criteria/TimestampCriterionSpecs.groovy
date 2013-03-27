@@ -1,12 +1,8 @@
 package com.ee.tayra.io.criteria
 
-import java.text.SimpleDateFormat
-
-import com.ee.tayra.io.criteria.TimestampCriteria;
-
 import spock.lang.Specification
 
-class TimestampCriteriaSpecs extends Specification {
+class TimestampCriterionSpecs extends Specification {
 
 	def returnsTrueIfDocumentIsEarlierThanTimestamp () {
 		
@@ -15,7 +11,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			criteria.isSatisfiedBy(document)
@@ -29,7 +25,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			! criteria.isSatisfiedBy(document)
@@ -43,7 +39,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1356515303,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			criteria.isSatisfiedBy(document)
@@ -57,7 +53,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$ts:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 		
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
 								
 		then: 'it returns true if the document is older than the timestamp'
 			!criteria.isSatisfiedBy(document)
@@ -68,7 +64,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def invalidTimeStamp = '{ts:{$s:1357801207,$inc:1}}'
 
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(invalidTimeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(invalidTimeStamp)
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -79,7 +75,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def invalidTimeStamp = '2012-12-2615:19:40Z'
 
 		when: 'timestamp criteria is applied to the document'
-			TimestampCriteria criteria = new TimestampCriteria(invalidTimeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(invalidTimeStamp)
 
 		then: 'it shouts'
 			thrown RuntimeException
@@ -93,7 +89,7 @@ class TimestampCriteriaSpecs extends Specification {
 			def document = '{ts:{$s:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
 		and: 'a timestamp criteria'
-			TimestampCriteria criteria = new TimestampCriteria(timeStamp)
+			TimestampCriterion criteria = new TimestampCriterion(timeStamp)
 
 		when: 'timestamp criteria is applied to the document'
 			criteria.isSatisfiedBy(document)

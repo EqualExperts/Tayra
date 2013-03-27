@@ -33,7 +33,7 @@ package com.ee.tayra.io.criteria;
 public abstract class OperationType {
 
   private static final String DOT = "\\.";
-private static final String SYSTEM_INDEXES = "system.indexes";
+  private static final String SYSTEM_INDEXES = "system.indexes";
   private static final String CMD = "$cmd";
   static final String BLANK = "";
   public static OperationType create(final String documentNamespace) {

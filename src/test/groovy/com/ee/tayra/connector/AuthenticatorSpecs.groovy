@@ -2,7 +2,7 @@ package com.ee.tayra.connector
 
 import spock.lang.Specification
 
-import com.ee.tayra.parameters.EnvironmentProperties
+import static com.ee.tayra.support.Resources.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
@@ -11,8 +11,8 @@ class AuthenticatorSpecs extends Specification {
 
 	private MongoAuthenticator authenticator
 	static MongoClient secured
-	static final String HOST = EnvironmentProperties.secureStandaloneNode
-	static final int PORT = EnvironmentProperties.secureStandalonePort
+	static final String HOST = secureStandaloneNode
+	static final int PORT = secureStandalonePort
 	
 	def setupSpec() throws UnknownHostException, MongoException {
 		ServerAddress server = new ServerAddress(HOST, PORT)
@@ -42,15 +42,15 @@ class AuthenticatorSpecs extends Specification {
 	def shoutsWhenIncorrectCredentialsAreSupplied() {
 		expect: 'it does not authenticate'
 		    try {
-				authenticator.authenticate(username, password)
+				authenticator.authenticate(user, passwd)
 		    } catch (MongoException problem) {
 		    	problem.message == "Authentication Failed to $secured.address.host"
 		    }
 	
 		where: 'username and password are given as'
-			  username   |    password
-			 'incorrect' |   'password'
-			 'admin'     |   'incorrect'
+		      user   |    passwd
+         'incorrect' |   'password'
+		 'admin'     |   'incorrect'
 	}
 	
 	def authenticatesAgainstSecureAndUnsecureDB() {

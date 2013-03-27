@@ -2,17 +2,17 @@ package com.ee.tayra.io.criteria
 
 import spock.lang.Specification;
 
-class SExcludeSpecs extends Specification {
+class SExcludeCriterionSpecs extends Specification {
 
-	SExclude sExclude
-	Criterion mockCriterion
+	private SExcludeCriterion sExclude
+	private Criterion mockCriterion
 	def document = '''{ts:{$ts:1357537752,$inc:1} , "h" : -2719432537158937612 ,
       "v" : 2 , "op" : "i" , "ns" : "test.things" ,
       "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'''
 
 	def setup() {
 		mockCriterion = Mock(Criterion)
-		sExclude = new SExclude(mockCriterion)
+		sExclude = new SExcludeCriterion(mockCriterion)
 	}
 
 	def excludesDocumentIfItSatisfiesCriteria() {

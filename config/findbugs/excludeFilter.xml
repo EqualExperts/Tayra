@@ -168,7 +168,7 @@
     </Not>
   </Match>
   <Match>
-    <Class name="com.ee.tayra.io.criteria.NamespaceCriteria"/>
+    <Class name="com.ee.tayra.io.criteria.NamespaceCriterion"/>
     <Not>
       <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
     </Not>

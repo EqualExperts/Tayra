@@ -30,20 +30,17 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria
 
-import java.util.ArrayList
-import java.util.List
-
 public class CriteriaBuilder {
 
   private Criterion multiCriteria = new MultiCriteria()
   private boolean excludeEnabled = false
 
   public void usingUntil(String timestamp) {
-    multiCriteria.addCriteria(new TimestampCriteria(timestamp));
+    multiCriteria.addCriteria(new TimestampCriterion(timestamp));
   }
 
   public void usingNamespace(String namespace) {
-    multiCriteria.addCriteria(new NamespaceCriteria(namespace));
+    multiCriteria.addCriteria(new NamespaceCriterion(namespace));
   }
 
   public void usingExclude() {
@@ -52,6 +49,6 @@ public class CriteriaBuilder {
 
   public Criterion build(Closure closure = {}) {
     with closure
-    excludeEnabled ? new SExclude(multiCriteria) : multiCriteria
+    excludeEnabled ? new SExcludeCriterion(multiCriteria) : multiCriteria
   }
 }

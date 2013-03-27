@@ -2,7 +2,7 @@ package com.ee.tayra.io.criteria
 
 import spock.lang.Specification
 
-class DbNamespaceCriteriaSpecs extends Specification {
+class DbNamespaceCriterionSpecs extends Specification {
 
   static eelabsCreateCollectionEntry = ''' "op" : "c", "ns" : "eelabs.$cmd",
         "o" : { "create" : "countries", "capped" : null, "size" : null } }'''
@@ -63,7 +63,7 @@ class DbNamespaceCriteriaSpecs extends Specification {
   def document
 
   def satisfiesDatabaseCriteria(){
-      criteria = new NamespaceCriteria (namespace)
+      criteria = new NamespaceCriterion (namespace)
 
     expect: 'criteria is satisfied for documents belonging to eelabs db'
       outcome == criteria.isSatisfiedBy(document)
@@ -83,7 +83,7 @@ class DbNamespaceCriteriaSpecs extends Specification {
   }
 
   def doesNotSatisfyDatabaseCriteria() {
-    criteria = new NamespaceCriteria(namespace)
+    criteria = new NamespaceCriterion(namespace)
 
     expect: 'criteria is not satisfied for documents not belonging to eelabs db'
     outcome == criteria.isSatisfiedBy(document)
@@ -95,7 +95,7 @@ class DbNamespaceCriteriaSpecs extends Specification {
   }
 
   def satisfiesMultipleDatabaseCriteria(){
-    criteria = new NamespaceCriteria (multipleDBnamespace)
+    criteria = new NamespaceCriterion (multipleDBnamespace)
 
     expect: '''criteria is satisfied for documents belonging to ee, tayra, DL
            dbs and not eelabs'''

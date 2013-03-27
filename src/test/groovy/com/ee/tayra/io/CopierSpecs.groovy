@@ -4,7 +4,7 @@ import spock.lang.*
 
 import com.ee.tayra.domain.NotAReplicaSetNode
 import com.ee.tayra.domain.Oplog
-import com.ee.tayra.parameters.EnvironmentProperties
+import static com.ee.tayra.support.Resources.*
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBObject
@@ -14,8 +14,8 @@ import com.mongodb.MongoException
 public class CopierSpecs extends Specification {
 
 	private static MongoClient replicaSet
-	private static final String HOST = EnvironmentProperties.secureSrcNode
-	private static final int PORT = EnvironmentProperties.secureSrcPort
+	private static final String HOST = secureSrcNode
+	private static final int PORT = secureSrcPort
 	private DB local
 	private Copier copier
 	private static final CharSequence NEW_LINE = System.getProperty("line.separator")
@@ -34,7 +34,7 @@ public class CopierSpecs extends Specification {
 
 	def setup() {
 		copier = new Copier()
-		replicaSet.getDB("admin").authenticate(EnvironmentProperties.username, EnvironmentProperties.password.toCharArray())
+		replicaSet.getDB("admin").authenticate(username, password.toCharArray())
 		local = replicaSet.getDB("local")
 		boolean oplogExists = local.collectionExists("oplog.rs")
 		if (!oplogExists) {

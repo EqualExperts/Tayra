@@ -20,8 +20,8 @@ class CriteriaBuilderSpecs extends Specification{
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build()
 
-		then: 'Criterion should be an instance of NamespaceCriteria'
-			criterion.criteria[0].getClass() == NamespaceCriteria
+		then: 'Criterion should be an instance of NamespaceCriterion'
+			criterion.criteria[0].getClass() == NamespaceCriterion
 	}
 
 	def producesTimestampCriteria() {
@@ -32,8 +32,8 @@ class CriteriaBuilderSpecs extends Specification{
 		when: 'criteria is built'
 			def criterion = criteriaBuilder.build()
 
-		then: 'Criterion should be an instance of TimestampCriteria'
-			criterion.criteria()[0].getClass() == TimestampCriteria
+		then: 'Criterion should be an instance of TimestampCriterion'
+			criterion.criteria()[0].getClass() == TimestampCriterion
 	}
 
 	def producesTimestampCriteriaUsingWithClosure() {
@@ -46,7 +46,7 @@ class CriteriaBuilderSpecs extends Specification{
 			}
 
 		then: 'Criterion should be an instance of DbCriteria'
-			criterion.criteria()[0].getClass() == TimestampCriteria
+			criterion.criteria()[0].getClass() == TimestampCriterion
 	}
 
 	def producesNamespaceCriteriaWithClosure() {
@@ -58,8 +58,8 @@ class CriteriaBuilderSpecs extends Specification{
 				usingNamespace namespace
 			}
 
-		then: 'Criterion should be an instance of NamespaceCriteria'
-			criterion.criteria()[0].getClass() == NamespaceCriteria
+		then: 'Criterion should be an instance of NamespaceCriterion'
+			criterion.criteria()[0].getClass() == NamespaceCriterion
 	}
 
 	def producesExcludeCriteria() {
@@ -73,7 +73,7 @@ class CriteriaBuilderSpecs extends Specification{
 			}
 
 		then: 'Criterion returned should be an instance of sExclude'
-			criterion.getClass() == SExclude
+			criterion.getClass() == SExcludeCriterion
 	}
 
 	def producesMultiCriteriaWithoutSExclude() {

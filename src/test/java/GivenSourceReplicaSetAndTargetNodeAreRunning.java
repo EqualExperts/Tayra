@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Map.Entry;
 
 import com.ee.tayra.Environment;
 import com.ee.tayra.NamedParameters;
@@ -32,8 +31,6 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     parameters.add("{file}", "test.out");
   }
 
-
-
   public final Fixture openTerminal() {
     return new RunnerFixture(parameters);
   }
@@ -63,8 +60,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     MongoClient mongo = node.getMongo();
     DBCursor cursor = null;
     try {
-      DBCollection collection = mongo.getDB("local").getCollection(
-          "oplog.rs");
+      DBCollection collection = mongo.getDB("local").getCollection("oplog.rs");
       cursor = collection.find().skip((int) collection.count() - howMany);
       parameters.add("{Until}", JSON.serialize(cursor.next().get("ts"))
               .replaceAll("[\" ]", ""));
@@ -89,20 +85,9 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     }
     String cmdString = args.text();
     connector = new MongoSourceAndTargetConnector(cmdString, parameters);
-    cmdString = injectValuesIn(cmdString, parameters);
+    cmdString = parameters.substitueValuesIn(cmdString);
     args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
     args.addToBody("<pre/>" + cmdString + "</pre>");
-  }
-
-  private String injectValuesIn(final String cmdString,
-      final NamedParameters namedParams) {
-    String result = new String(cmdString);
-    for (Entry<String, String> nameValue : namedParams.entrySet()) {
-      String key = nameValue.getKey();
-      String value = nameValue.getValue();
-      result = result.replace(key, value);
-    }
-    return result;
   }
 
   @Override

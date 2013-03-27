@@ -1,9 +1,9 @@
-package com.ee.tayra.parameters
+package com.ee.tayra.support
 
 import com.ee.tayra.Environment
 import com.ee.tayra.NamedParameters
 
-class EnvironmentProperties {
+class Resources {
 	def static NamedParameters parameters = Environment.settings()
 	def static secureSrcNode = parameters.get("{secureSrcNode}")
 	def static secureSrcPort = Integer.parseInt(parameters.get("{secureSrcPort}"))

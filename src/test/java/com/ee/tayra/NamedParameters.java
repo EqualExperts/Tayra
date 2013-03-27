@@ -2,11 +2,9 @@ package com.ee.tayra;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public class NamedParameters {
-  private Map<String, String> namedParams;
+  private final Map<String, String> namedParams;
 
   public NamedParameters() {
     namedParams = new HashMap<String, String>();
@@ -24,7 +22,13 @@ public class NamedParameters {
     return namedParams.get(key);
   }
 
-  public final Set<Entry<String, String>> entrySet() {
-    return namedParams.entrySet();
+  public final String substitueValuesIn(final String data) {
+    String result = data;
+    for (Map.Entry<String, String> nameValue : namedParams.entrySet()) {
+      String key = nameValue.getKey();
+      String value = nameValue.getValue();
+      result = result.replace(key, value);
+    }
+    return result;
   }
 }

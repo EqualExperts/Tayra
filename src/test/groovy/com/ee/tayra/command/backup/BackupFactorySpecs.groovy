@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.io.*
-import com.ee.tayra.parameters.EnvironmentProperties
+import static com.ee.tayra.support.Resources.*
 
 class BackupFactorySpecs extends Specification {
   private BackupCmdDefaults config
@@ -14,8 +14,8 @@ class BackupFactorySpecs extends Specification {
   def setup() {
     config = new BackupCmdDefaults()
     config.recordToFile = 'test.out'
-    config.port = EnvironmentProperties.unsecureSrcPort
-  console = Mock(PrintWriter)
+    config.port = unsecureSrcPort
+    console = Mock(PrintWriter)
   }
 
   def createsSelectiveOplogReaderWhenCriteriaIsGiven() {

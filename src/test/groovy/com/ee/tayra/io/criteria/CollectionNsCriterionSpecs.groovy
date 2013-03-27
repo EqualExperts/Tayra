@@ -2,7 +2,7 @@ package com.ee.tayra.io.criteria
 
 import spock.lang.Specification
 
-class CollectionNsCriteriaSpecs extends Specification {
+class CollectionNsCriterionSpecs extends Specification {
 
   static eelabsCreateCollectionEntry = ''' "op" : "c", "ns" : "eelabs.$cmd",
         "o" : { "create" : "countries", "capped" : null, "size" : null } }'''
@@ -56,7 +56,7 @@ class CollectionNsCriteriaSpecs extends Specification {
   def document
 
   def satisfiesDatabaseAndCollectionCriteria(){
-    criteria = new NamespaceCriteria (dBAndCollectionNamespace)
+    criteria = new NamespaceCriterion (dBAndCollectionNamespace)
 
     expect: '''criteria is satisfied for documents belonging to eelabs db
            and countries collection'''
@@ -76,7 +76,7 @@ class CollectionNsCriteriaSpecs extends Specification {
 }
 
   def doesNotSatisfyDatabaseAndCollectionCriteria() {
-    criteria = new NamespaceCriteria(dBAndCollectionNamespace)
+    criteria = new NamespaceCriterion(dBAndCollectionNamespace)
 
     expect: '''criteria is not satisfied for documents belonging to other than
            eelabs db and countries collection'''
@@ -90,7 +90,7 @@ class CollectionNsCriteriaSpecs extends Specification {
   }
 
   def satisfiesMultipleDatabaseAndCollectionCriteria(){
-    criteria = new NamespaceCriteria (multipleDBAndCollectionNamespace)
+    criteria = new NamespaceCriterion (multipleDBAndCollectionNamespace)
 
     expect: '''criteria is satisfied for documents belonging to ee.people.addresses,
         eelabs.countries, tayra.project collections and not others'''

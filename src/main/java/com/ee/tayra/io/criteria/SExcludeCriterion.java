@@ -30,46 +30,16 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria;
 
-import java.util.Arrays;
-import java.util.List;
+public class SExcludeCriterion implements Criterion {
 
-public class NamespaceCriteria implements Criterion {
-  private static final String COMMA = ",";
-  private static final String BLANK = "";
-  private List<String> incomingNamespaces;
+  private final Criterion criterion;
 
-  public NamespaceCriteria(final String ns) {
-    this.incomingNamespaces = getNamespaces(ns);
-  }
-
-  private List<String> getNamespaces(final String ns) {
-    return Arrays.asList(ns.split(COMMA));
+  public SExcludeCriterion(final Criterion criterion) {
+    this.criterion = criterion;
   }
 
   @Override
   public final boolean isSatisfiedBy(final String document) {
-    String documentNamespace = getNamespace(document);
-    if (BLANK.equals(documentNamespace)) {
-      return false;
-    }
-      return isSatisfiedByEachCriteria(document, documentNamespace);
-  }
-
-  private boolean isSatisfiedByEachCriteria(final String document,
-        final String documentNamespace) {
-    OperationType type = OperationType.create(documentNamespace);
-    for (String incomingNS : incomingNamespaces) {
-      if (type.match(document, documentNamespace, incomingNS)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private String getNamespace(final String document) {
-    int startIndex = document.indexOf("ns") - 1;
-    int endIndex = document.indexOf(COMMA, startIndex);
-    String namespace = document.substring(startIndex, endIndex).split(":") [1];
-    return namespace.replaceAll("\"", BLANK).trim();
+    return !criterion.isSatisfiedBy(document);
   }
 }

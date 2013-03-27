@@ -3,7 +3,6 @@ package com.ee.tayra.fixtures;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Map;
 
 import com.ee.tayra.NamedParameters;
 import com.ee.tayra.runner.Runner;
@@ -44,12 +43,9 @@ public class RunnerFixture extends DoFixture {
   private void runCommandWith(final Parse args) {
     Binding context = new Binding();
     String cmdString = args.text();
-    if (needsValueInjectionIn(cmdString)) {
-      cmdString = injectValuesIn(cmdString, namedParams);
-      args.addToBody("<hr/>" + label("Substituted Values Output")
-          + "<hr/>");
-      args.addToBody("<pre/>" + cmdString + "</pre>");
-    }
+    cmdString = namedParams.substitueValuesIn(cmdString);
+    args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
+    args.addToBody("<pre/>" + cmdString + "</pre>");
     context.setVariable("args", cmdString.split(" "));
     System.setOut(stdout);
     System.setErr(stderr);
@@ -68,20 +64,20 @@ public class RunnerFixture extends DoFixture {
     }
   }
 
-  private String injectValuesIn(final String cmdString,
-      final NamedParameters namedParams) {
-    String result = new String(cmdString);
-    for (Map.Entry<String, String> nameValue : namedParams.entrySet()) {
-      String key = nameValue.getKey();
-      String value = nameValue.getValue();
-      result = result.replace(key, value);
-    }
-    return result;
-  }
+//  private String injectValuesIn(final String cmdString,
+//      final NamedParameters namedParams) {
+//    String result = new String(cmdString);
+//    for (Map.Entry<String, String> nameValue : namedParams.entrySet()) {
+//      String key = nameValue.getKey();
+//      String value = nameValue.getValue();
+//      result = result.replace(key, value);
+//    }
+//    return result;
+//  }
 
-  private boolean needsValueInjectionIn(final String args) {
-    return args.matches(".*\\{.*\\}.*");
-  }
+//  private boolean needsValueInjectionIn(final String args) {
+//    return args.matches(".*\\{.*\\}.*");
+//  }
 
   public final void andShow(final Parse cells) {
     Parse stream = cells.more;

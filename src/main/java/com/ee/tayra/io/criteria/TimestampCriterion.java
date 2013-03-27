@@ -34,7 +34,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class TimestampCriteria implements Criterion {
+public class TimestampCriterion implements Criterion {
 
   private static final String TS_IDENTIFIER = "$ts:";
   private static final String INC_IDENTIFIER = "$inc:";
@@ -43,7 +43,7 @@ public class TimestampCriteria implements Criterion {
   private final Date timeStampUntil;
   private final int increment;
 
-  public TimestampCriteria(final String filter) {
+  public TimestampCriterion(final String filter) {
     this.timeStampUntil = getTimestampFrom(filter);
     this.increment = getIncrementFrom(filter);
   }

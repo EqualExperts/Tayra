@@ -1,11 +1,9 @@
 package com.ee.tayra.command.restore
 
-import com.ee.tayra.command.restore.DefaultFactory;
-import com.ee.tayra.command.restore.RestoreCmdDefaults;
 import com.ee.tayra.io.RestoreProgressReporter
 import com.ee.tayra.io.SelectiveOplogReplayer
 import com.ee.tayra.io.OplogReplayer
-import com.ee.tayra.parameters.EnvironmentProperties;
+import static com.ee.tayra.support.Resources.*;
 import com.mongodb.MongoClient
 import spock.lang.Specification
 
@@ -18,10 +16,10 @@ class DefaultFactorySpecs extends Specification {
 
 	def setup() {
 		config = new RestoreCmdDefaults()
-		config.destination = EnvironmentProperties.secureSrcNode
-		config.port = EnvironmentProperties.secureSrcPort
-		config.username = EnvironmentProperties.username
-		config.password = EnvironmentProperties.password
+		config.destination = secureSrcNode
+		config.port = secureSrcPort
+		config.username = username
+		config.password = password
 		config.exceptionFile = 'exception.documents'
 		factory =  new DefaultFactory(config, ignoreMongo, ignoreConsole)
 	}

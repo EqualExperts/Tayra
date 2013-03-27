@@ -2,7 +2,7 @@ package com.ee.tayra.domain.operation
 
 import spock.lang.*
 
-import com.ee.tayra.parameters.EnvironmentProperties
+import static com.ee.tayra.support.Resources.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
@@ -15,8 +15,8 @@ abstract class RequiresMongoConnection extends Specification {
 
   def setupSpec() throws UnknownHostException,
   MongoException {
-    HOST = EnvironmentProperties.secureStandaloneNode
-    PORT = EnvironmentProperties.secureStandalonePort
+    HOST = secureStandaloneNode
+    PORT = secureStandalonePort
     ServerAddress server = new ServerAddress(HOST, PORT)
     standalone = new MongoClient(server);
     standalone.getDB('admin').authenticate('admin', 'admin'.toCharArray())

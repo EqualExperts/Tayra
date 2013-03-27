@@ -1,7 +1,7 @@
 package com.ee.tayra.domain
 
 import com.ee.tayra.domain.operation.RequiresMongoConnection
-import com.ee.tayra.parameters.EnvironmentProperties
+import static com.ee.tayra.support.Resources.*
 import com.mongodb.DB
 import com.mongodb.DBCursor
 import com.mongodb.DBObject
@@ -12,10 +12,10 @@ import com.mongodb.util.JSON
 public class OplogSpecs extends RequiresMongoConnection {
 
 	private static MongoClient replicaSet
-	private static final String HOST = EnvironmentProperties.secureSrcNode
-	private static final int PORT = EnvironmentProperties.secureSrcPort
-	private static final String USERNAME = EnvironmentProperties.username
-	private static final String PASSWORD = EnvironmentProperties.password
+	private static final String HOST = secureSrcNode
+	private static final int PORT = secureSrcPort
+	private static final String USERNAME = username
+	private static final String PASSWORD = password
 	private MongoCollection oplog
 	private DB local
 	private String query = null
