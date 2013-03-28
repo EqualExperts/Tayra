@@ -2,16 +2,13 @@ package com.ee.tayra.command.restore
 
 import spock.lang.*
 
-import com.ee.tayra.io.ConsoleReplayer;
-import com.ee.tayra.io.CopyListener;
-import com.ee.tayra.io.DeafAndDumbReporter;
+import com.ee.tayra.command.backup.Backup;
+import com.ee.tayra.connector.Authenticator
+import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.Replayer
-import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.Reporter
-import com.ee.tayra.io.SelectiveOplogReplayer
-import com.ee.tayra.command.restore.Restore;
-import com.ee.tayra.connector.Authenticator;
 import com.mongodb.MongoException
+import static com.ee.tayra.support.Resources.*
 
 class RestoreSpecs extends Specification {
 
@@ -21,9 +18,6 @@ class RestoreSpecs extends Specification {
 	private CopyListener mockListener
 	private Reporter mockReporter
 	private def context
-
-	private String username = 'admin'
-	private String password = 'admin'
 
 	def setupSpec() {
 		ExpandoMetaClass.enableGlobally()
@@ -68,7 +62,7 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenNoOutputFileIsSupplied() {
 		given: 'argument list does not contain output file option -f'
-			context.setVariable('args', ['-d', 'localhost'])
+			context.setVariable('args', ['-d', secureSrcNode])
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -79,7 +73,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForSecuredStandalone() {
 		given:'arguments contains -d, -f, -u and -p options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile, '-u', username, '-p', password])
 
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -94,7 +88,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
 		given:'arguments contains -d, -port and -f options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out'])
+			context.setVariable('args', ['-d', unsecureStandaloneNode, "--port=$unsecureStandalonePort", '-f', backupFile])
 
 		and: 'the reader and writer is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -109,7 +103,7 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenNoUsernameIsGivenForSecuredStandalone() {
 		given:'arguments contains -d, -f and --port options but not --username'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out'])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -125,7 +119,7 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -d, --port, -f, -u and -p option'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', 'incorrect', '-p', password])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile, '-u', 'incorrect', '-p', password])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -141,7 +135,7 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -d, --port, -f and -u option'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', 'incorrect'])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile, '-u', username, '-p', 'incorrect'])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -157,7 +151,7 @@ class RestoreSpecs extends Specification {
 
 	def shoutsWhenMongoDBUrlIsIncorrect() {
 		given: 'the destination host is incorrect or does not exist'
-			context.setVariable('args', ['-d', 'nonexistentHost', '-f', 'test.out'])
+			context.setVariable('args', ['-d', 'nonexistentHost', '-f', backupFile])
 
 		when: 'restore runs'
 			new Restore(context).run()
@@ -168,7 +162,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenSelectNamespaceOptionIsSupplied() {
 		given:'arguments contains -d, --port and -f and --sNs options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27021', '-f', 'test.out','--sNs=test'])
+			context.setVariable('args', ['-d', unsecureStandaloneNode, "--port=$unsecureStandalonePort", '-f', backupFile, '--sNs=test'])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -183,7 +177,7 @@ class RestoreSpecs extends Specification {
 
 	def notifiesListenerOnSuccessfulReadOperation() {
 		given:'arguments contain all essential options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile, '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -201,7 +195,7 @@ class RestoreSpecs extends Specification {
 
 	def reportsSummary() {
 		given:'arguments contain all essential options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile, '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -216,7 +210,7 @@ class RestoreSpecs extends Specification {
 
 	def reportsStartTime() {
 		given:'arguments contain all essential options'
-			context.setVariable('args', ['-d', 'localhost', '--port=27020', '-f', 'test.out', '-u', username, '-p', password])
+			context.setVariable('args', ['-d', secureStandaloneNode, "--port=$secureStandalonePort", '-f', backupFile, '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -231,7 +225,7 @@ class RestoreSpecs extends Specification {
 
 	def notifiesListenerOnSuccessfulReadOperationWithDryrun() {
 		given:'arguments contains -f and -dry-run options'
-			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
+			context.setVariable('args', ['-f', backupFile, '--dry-run'])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -253,7 +247,7 @@ class RestoreSpecs extends Specification {
 
 	def ignoresMandatoryDestinationOptionWhenDryRunOptionIsGiven() {
 		given:'arguments contains -f and --dry-run options'
-			context.setVariable('args', ['-f', 'test.out', '--dry-run'])
+			context.setVariable('args', ['-f', backupFile, '--dry-run'])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -268,7 +262,7 @@ class RestoreSpecs extends Specification {
 
 	def setsDefaultValuesOfOptions() {
 		given: 'arguments contain all essential options and not -d, --port, -u, -p'
-			context.setVariable('args', ['-f', 'test.out'])
+			context.setVariable('args', ['-f', backupFile])
 		
 		when: 'restore runs'
 			new Restore(context).run()
@@ -284,7 +278,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenTimeStampOptionIsSupplied() {
 		given:'arguments contains -f, -u, -p and --sUntil options'
-			context.setVariable('args', ['-f', 'test.out','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+			context.setVariable('args', ['-f', backupFile,'--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -299,7 +293,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenSExcludeOptionIsGiven() {
 		given:'arguments contains -f, -u, -p, --sUntil, --sNs and --sExclude options'
-			context.setVariable('args', ['-f', 'test.out','--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+			context.setVariable('args', ['-f', backupFile,'--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
 			
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -314,7 +308,7 @@ class RestoreSpecs extends Specification {
 	
 	def returnsNoDocumentWhenOnlySExcludeOptionIsGiven() {
 		given:'arguments contains -f, -u, -p,--sExclude options'
-			context.setVariable('args', ['-f', 'test.out','--sExclude', '-u', username, '-p', password])
+			context.setVariable('args', ['-f', backupFile,'--sExclude', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -330,7 +324,7 @@ class RestoreSpecs extends Specification {
 	def shoutsWhenWrongArgumentsAreSupplied() {
 		given:'arguments contains -d, -f valid options and --sNssss: not valid option'
 			def context = new Binding()
-			context.setVariable('args', ['-d', 'localhost', '--port=27021','-f', 'test.out', '--sNsss=users'])
+			context.setVariable('args', ['-d', unsecureStandaloneNode, "--port=$unsecureStandalonePort", '-f', backupFile, '--sNsss=users'])
 			
 		when: 'backup runs with above args'
 			new Restore(context).run()
