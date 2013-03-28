@@ -141,6 +141,10 @@ task ('acceptance-test', dependsOn: ['testJar', 'unzip']) << {
 }
 
 def runAcceptanceTests(String srcFolder, String reportsFolder) {
+    def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+    if(!zipFile.exists()) {
+        throw new RuntimeException(">>> Please run gradle to build the binary distributable ${project.archivesBaseName}.zip first!")
+    }
     def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
     runtimeClasspath = runtimeClasspath + fileTree(dir: project.ext.unmanagedTestLibDir, include: '*.jar')
     runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
