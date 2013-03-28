@@ -64,6 +64,7 @@ public enum Environment {
 
     public static NamedParameters settings() {
         String env = System.getProperty("env", "dev").toUpperCase();
+        System.out.println("Running tests in Environment: " + env);
         return Environment.valueOf(env).get();
     }
 }
