@@ -8,15 +8,13 @@ import com.mongodb.MongoException
 import com.mongodb.ServerAddress
 
 abstract class RequiresMongoConnection extends Specification {
-  static String HOST
-  static int PORT
+  static String HOST = secureStandaloneNode
+  static int PORT = secureStandalonePort
   static MongoClient standalone
   String dbName = 'tayra'
 
   def setupSpec() throws UnknownHostException,
   MongoException {
-    HOST = secureStandaloneNode
-    PORT = secureStandalonePort
     ServerAddress server = new ServerAddress(HOST, PORT)
     standalone = new MongoClient(server);
     standalone.getDB('admin').authenticate('admin', 'admin'.toCharArray())

@@ -11,11 +11,9 @@ class AuthenticatorSpecs extends Specification {
 
 	private MongoAuthenticator authenticator
 	static MongoClient secured
-	static final String HOST = secureStandaloneNode
-	static final int PORT = secureStandalonePort
-	
+
 	def setupSpec() throws UnknownHostException, MongoException {
-		ServerAddress server = new ServerAddress(HOST, PORT)
+		ServerAddress server = new ServerAddress(secureStandaloneNode, secureStandalonePort)
 		secured = new MongoClient(server);
 	}
 	public void setup() {
@@ -59,7 +57,7 @@ class AuthenticatorSpecs extends Specification {
 		    if('Secure') {
 		    	authenticator = new MongoAuthenticator(secured)
 			} else {
-				def unsecured = new MongoClient(new ServerAddress(HOST, 27021))
+				def unsecured = new MongoClient(new ServerAddress(unsecureSrcNode, unsecureSrcPort))
 				authenticator = new MongoAuthenticator(unsecured)
 			}
 			

@@ -262,7 +262,7 @@ class RestoreSpecs extends Specification {
 
 	def setsDefaultValuesOfOptions() {
 		given: 'arguments contain all essential options and not -d, --port, -u, -p'
-			context.setVariable('args', ['-f', backupFile])
+			context.setVariable('args', ["--port=$unsecureStandalonePort", '-f', backupFile])
 		
 		when: 'restore runs'
 			new Restore(context).run()
@@ -270,7 +270,6 @@ class RestoreSpecs extends Specification {
 		then: 'following variables get default values'
 			def config = context.getVariable('config')
 			config.destination == 'localhost'
-			config.port == 27017
 			config.username == ''
 			config.password == ''
 			config.exceptionFile == 'exception.documents'
@@ -278,7 +277,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenTimeStampOptionIsSupplied() {
 		given:'arguments contains -f, -u, -p and --sUntil options'
-			context.setVariable('args', ['-f', backupFile,'--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+			context.setVariable('args', ["--port=$secureStandalonePort", '-f', backupFile,'--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -293,7 +292,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenTimestampForSinceIsSupplied() {
 		given:'arguments contains -f, -u, -p and --sSince options'
-			context.setVariable('args', ['-f', 'test.out','--sSince={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+			context.setVariable('args', ["--port=$secureSrcPort", '-f', 'test.out','--sSince={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -308,7 +307,7 @@ class RestoreSpecs extends Specification {
 
 	def invokesRestoreWhenSExcludeOptionIsGiven() {
 		given:'arguments contains -f, -u, -p, --sUntil, --sNs and --sExclude options'
-			context.setVariable('args', ['-f', backupFile,'--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
+			context.setVariable('args', ["--port=$secureSrcPort", '-f', backupFile,'--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
 			
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
@@ -323,7 +322,7 @@ class RestoreSpecs extends Specification {
 	
 	def returnsNoDocumentWhenOnlySExcludeOptionIsGiven() {
 		given:'arguments contains -f, -u, -p,--sExclude options'
-			context.setVariable('args', ['-f', backupFile,'--sExclude', '-u', username, '-p', password])
+			context.setVariable('args', ["--port=$secureSrcPort", '-f', backupFile,'--sExclude', '-u', username, '-p', password])
 
 		and: 'the reader is injected'
 			def source = new BufferedReader(new StringReader('"ts"' + NEW_LINE))

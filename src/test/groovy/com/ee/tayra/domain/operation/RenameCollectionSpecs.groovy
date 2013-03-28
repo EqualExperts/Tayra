@@ -4,6 +4,7 @@ import com.ee.tayra.domain.operation.RenameCollection;
 import com.ee.tayra.domain.operation.RenameCollectionFailed;
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
+import static com.ee.tayra.support.Resources.*
 
 class RenameCollectionSpecs extends RequiresMongoConnection {
 	def collectionName = 'games'
@@ -58,7 +59,7 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 			
 		then: 'it complains with the proper error'
 			def problem = thrown(RenameCollectionFailed)
-			problem.message == 'command failed [renameCollection]: { "serverUsed" : "localhost/127.0.0.1:27020" , "errmsg" : "exception: source namespace does not exist" , "code" : 10026 , "ok" : 0.0}'
+			problem.message == """command failed [renameCollection]: { "serverUsed" : "localhost/127.0.0.1:${secureStandalonePort}" , "errmsg" : "exception: source namespace does not exist" , "code" : 10026 , "ok" : 0.0}"""
 	}
 	
 	def dropsTargetWhileRenaming() {
@@ -95,6 +96,6 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 			
 		then:
 			def problem = thrown(RenameCollectionFailed)
-			problem.message == 'command failed [renameCollection]: { "serverUsed" : "localhost/127.0.0.1:27020" , "errmsg" : "exception: target namespace exists" , "code" : 10027 , "ok" : 0.0}'
+			problem.message == """command failed [renameCollection]: { "serverUsed" : "localhost/127.0.0.1:${secureStandalonePort}" , "errmsg" : "exception: target namespace exists" , "code" : 10027 , "ok" : 0.0}"""
 	}
 }

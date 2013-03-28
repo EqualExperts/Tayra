@@ -99,7 +99,7 @@ clean << {
 }
 
 test {
-    println "Executing tests in $project.ext.executionEnv Environment"
+    println "Utilizing properties from $project.ext.executionEnv Environment"
     systemProperties['env'] = project.ext.executionEnv
 	def originalClasspath = getClasspath()
 	doFirst {

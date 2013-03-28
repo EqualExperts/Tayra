@@ -85,7 +85,7 @@ public class BackupSpecs extends Specification {
 
 	def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecuredConnection() {
 		given:'arguments contains -s, -f, -u and -p options'
-			context.setVariable('args', ['-s', secureSrcNode, '-f', backupFile, '-u', username, '-p', password])
+			context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
 
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
@@ -125,7 +125,7 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenNoUsernameIsGivenForSecuredReplicaSet() {
 		given:'arguments contains -s, -f options but not --username'
-			context.setVariable('args', ['-s', secureSrcNode, '-f', backupFile])
+			context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -141,7 +141,7 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenIncorrectPasswordIsSupplied() {
 		given:'arguments contains -s and -f option'
-			context.setVariable('args', ['-s', secureSrcNode, '-f', backupFile, '-u', username, '-p', 'incorrect'])
+			context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', 'incorrect'])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -158,7 +158,7 @@ public class BackupSpecs extends Specification {
 	def shoutsWhenIncorrectUsernameIsSupplied() {
 		given:'arguments contains -s and -f option'
 			def context = new Binding()
-			context.setVariable('args', ['-s', secureSrcNode, '-f', backupFile, '-u', 'incorrect', '-p', password])
+			context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', 'incorrect', '-p', password])
 
 		and: 'have a authenticator that does not authenticate'
 			def mockAuthenticator = Mock(Authenticator)
@@ -174,7 +174,7 @@ public class BackupSpecs extends Specification {
 
 	def setsDefaultValuesOfOptions() {
 		given: 'arguments contain all essential options and not -s, --port, -u, -p'
-			context.setVariable('args', ['-f', backupFile])
+			context.setVariable('args', ["--port=$secureSrcPort", '-f', backupFile])
 
 		when: 'backup runs'
 			new Backup(context).run()
@@ -182,14 +182,13 @@ public class BackupSpecs extends Specification {
 		then: 'following variables get default values'
 			def config = context.getVariable('config')
 			config.source == 'localhost'
-			config.port == 27017
 			config.username == ''
 			config.password == ''
 	}
 
 	def summarizesOnFinishingBackupProcess() {
 		given:'arguments contains -s, -f, -u and -p options'
-			context.setVariable('args', ['-s', secureSrcNode, '-f', backupFile, '-u', username, '-p', password])
+			context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
 
 		and: 'a reporter is injected'
 			def mockProgressReporter = Mock(ProgressReporter)
@@ -204,7 +203,7 @@ public class BackupSpecs extends Specification {
 	
 	def backsUpNoDocumentWhenOnlySExcludeOptionIsGiven() {
 		given:'arguments contains -s, -f, -u, -p and --sExclude options'
-			context.setVariable('args', ['-s', secureSrcNode, '-f',backupFile, '--sExclude', backupFile,  '-u', username, '-p', password])
+			context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f',backupFile, '--sExclude', backupFile,  '-u', username, '-p', password])
 
 		and: 'a result captor is injected'
 			def writer = new StringWriter()
@@ -220,7 +219,7 @@ public class BackupSpecs extends Specification {
 	def shoutsWhenWrongArgumentsAreSupplied() {
 		given:'arguments contains -s, -f valid options and --sNssss a not valid option'
 			def context = new Binding()
-			context.setVariable('args', ['-s', unsecureSrcNode, '-f', backupFile, '--sNssss=users'])
+			context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile, '--sNssss=users'])
 			
 		when: 'backup runs with above args'
 			new Backup(context).run()
