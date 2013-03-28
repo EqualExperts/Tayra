@@ -1,5 +1,5 @@
 package com.ee.tayra.io.criteria
-import static TimestampCriteria.*;
+import static TimestampCriterion.*;
 import spock.lang.Specification
 class TimestampCriteriaSpecs extends Specification {
 
@@ -8,10 +8,10 @@ class TimestampCriteriaSpecs extends Specification {
 	def producesAppropriateTimestampCriteria () {
 				def timestamp = '{ts:{$ts:1357537752,$inc:2}}'
 		expect :
-				klass == TimestampCriteria.create(timeLimit,timestamp).getClass()
+				klass == TimestampCriterion.create(timeLimit,timestamp).getClass()
 		where :
 				timeLimit   |   klass
-				sinceTime   |   TimestampCriteria.Since
-				untilTime   |   TimestampCriteria.Until
+				sinceTime   |   TimestampCriterion.Since
+				untilTime   |   TimestampCriterion.Until
 		}
 }

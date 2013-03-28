@@ -53,7 +53,8 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     return new AssertMongoFixture(connector);
   }
 
-  public final boolean openOplogForNodeAndTravelDocumentsBackInTime(
+  public final boolean
+    openOplogForNodeAndTravelDocumentsBackInTimeAndSaveTimestampIn(
       final String nodeName, final int howMany, final String keyToSave) {
     Node node = Node.valueOf(nodeName.toUpperCase(), connector);
     MongoClient mongo = node.getMongo();

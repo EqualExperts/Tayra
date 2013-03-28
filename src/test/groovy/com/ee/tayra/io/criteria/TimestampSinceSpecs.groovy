@@ -1,7 +1,7 @@
 package com.ee.tayra.io.criteria;
 
 import spock.lang.Specification;
-import static TimestampCriteria.*;
+import static TimestampCriterion.*;
 public class TimestampSinceSpecs extends Specification{
 
 	static def afterDocument = '{ts:{$ts:1357537755,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
@@ -10,7 +10,7 @@ public class TimestampSinceSpecs extends Specification{
 	def satisfiesSinceCriteriaWithJSONTimestamp () {
 
 		def timestamp = '{ts:{$ts:1357537752,$inc:2}}'
-		def criteria = TimestampCriteria.create(SINCE_TIME,timestamp)
+		def criteria = TimestampCriterion.create(SINCE_TIME,timestamp)
 		
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
@@ -24,7 +24,7 @@ public class TimestampSinceSpecs extends Specification{
 	def satisfiesSinceCriteriaWithISOTimestamp () {
 		
 		def timestamp = '2013-01-07T11:19:12Z'
-		def criteria = TimestampCriteria.create(SINCE_TIME,timestamp)
+		def criteria = TimestampCriterion.create(SINCE_TIME,timestamp)
 
 		expect:
 			outcome == criteria.isSatisfiedBy(document)
@@ -40,7 +40,7 @@ public class TimestampSinceSpecs extends Specification{
 			def invalidTimeStamp = '{ts:{$s:1357801207,$inc:1}}'
 
 		when: 'timestamp criteria is applied to the document'
-			def criteria = TimestampCriteria.create(SINCE_TIME,invalidTimeStamp)
+			def criteria = TimestampCriterion.create(SINCE_TIME,invalidTimeStamp)
 		then: 'it shouts'
 			thrown RuntimeException
 	}
@@ -50,7 +50,7 @@ public class TimestampSinceSpecs extends Specification{
 			def invalidTimeStamp = '2012-12-2615:19:40Z'
 
 		when: 'timestamp criteria is applied to the document'
-			def criteria = TimestampCriteria.create(SINCE_TIME,invalidTimeStamp)
+			def criteria = TimestampCriterion.create(SINCE_TIME,invalidTimeStamp)
 		then: 'it shouts'
 			thrown RuntimeException
 	}
@@ -63,7 +63,7 @@ public class TimestampSinceSpecs extends Specification{
 			def document = '{ts:{$s:1357801207,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
 		and: 'a timestamp criteria'
-			def criteria = TimestampCriteria.create(SINCE_TIME,timeStamp)
+			def criteria = TimestampCriterion.create(SINCE_TIME,timeStamp)
 		when: 'timestamp criteria is applied to the document'
 			criteria.isSatisfiedBy(document)
 
