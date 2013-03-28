@@ -53,6 +53,8 @@ project.ext {
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
 
   explodedDir = "$project.buildDir/exploded"
+  executionEnv = "${System.getProperty('env', 'dev')}"
+
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
@@ -97,9 +99,8 @@ clean << {
 }
 
 test {
-    def environment = "${System.getProperty('env', 'dev')}"
-    println "Executing tests in $environment Environment"
-    systemProperties['env'] = environment
+    println "Executing tests in $project.ext.executionEnv Environment"
+    systemProperties['env'] = project.ext.executionEnv
 	def originalClasspath = getClasspath()
 	doFirst {
 		ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
@@ -149,6 +150,7 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 		accTestReportsDir.mkdirs()
 	}
 	javaexec {
+        systemProperties['env'] = project.ext.executionEnv
 	    main = 'fitlibrary.runner.FolderRunner'
 	    classpath = runtimeClasspath
 	    args = ["$srcFolder", "$reportsFolder"]
