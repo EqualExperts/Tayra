@@ -129,13 +129,13 @@ test {
 }
 
 // For individual use only, assumes you have binaries existing already.
-task ('smoke-test', dependsOn: ['testJar', 'unzip']) << {
+task ('smoke-test', dependsOn: 'unzip') << {
     println "Running FIT Smoke Test..."
     runAcceptanceTests(project.ext.smokeTestDir, project.ext.acceptanceTestReportsDir)
 }
 
 // For individual use only, assumes you have binaries existing already.
-task ('acceptance-test', dependsOn: ['testJar', 'unzip']) << {
+task ('acceptance-test', dependsOn: 'unzip') << {
     println "Running FIT Acceptance Tests..."
     runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
 }
@@ -160,6 +160,11 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	    args = ["$srcFolder", "$reportsFolder"]
 	}
 }
+task createTestJar(type: Jar) {
+    baseName = "${project.archivesBaseName}-test"
+    destinationDir = project.distsDir
+    from sourceSets.test.output
+}
 
 task unzip(type: Copy) {
     def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
@@ -167,13 +172,6 @@ task unzip(type: Copy) {
 
     from zipTree(zipFile)
     into outputDir
-}
-
-// For individual use only, assumes you have binaries existing already.
-task testJar(type: Jar) {
-  baseName = "${project.archivesBaseName}-test"
-  destinationDir = project.distsDir
-  from sourceSets.test.output
 }
 
 task distribute(type:Zip, dependsOn: 'assemble') {
@@ -220,4 +218,4 @@ def prepareExecutables() {
 	}
 }
 
-build.dependsOn = ['check', 'distribute', 'smoke-test']
+build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
