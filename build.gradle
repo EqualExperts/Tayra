@@ -97,6 +97,7 @@ clean << {
 }
 
 test {
+    systemProperties['env'] = "${System.getProperty('env', 'dev')}"
 	def originalClasspath = getClasspath()
 	doFirst {
 		ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
