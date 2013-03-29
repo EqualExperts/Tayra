@@ -1,7 +1,8 @@
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import com.ee.tayra.Environment;
+import com.ee.tayra.ConnectionData;
+import com.ee.tayra.MongoSourceTargetPair;
 import com.ee.tayra.NamedParameters;
 import com.ee.tayra.fixtures.AssertMongoFixture;
 import com.ee.tayra.fixtures.MongoSourceAndTargetConnector;
@@ -26,7 +27,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
 
   public GivenSourceReplicaSetAndTargetNodeAreRunning()
       throws UnknownHostException {
-    parameters = Environment.settings();
+    parameters = ConnectionData.instance().settings();
     parameters.add("{file}", "test.out");
   }
 
@@ -67,7 +68,6 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     } catch (MongoException problem) {
       throw new FitFailureException(problem.getMessage());
     } finally {
-      System.out.println("closing cursor");
       cursor.close();
     }
     return true;
@@ -84,9 +84,11 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
           + " requires an argument");
     }
     String cmdString = args.text();
-    connector = new MongoSourceAndTargetConnector(cmdString, parameters);
+    MongoSourceTargetPair details =
+         new MongoSourceTargetPair(cmdString, parameters);
+    connector = new MongoSourceAndTargetConnector(details);
     cmdString = parameters.substitueValuesIn(cmdString);
-    args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
+    args.addToBody("<hr/>" + label("Substituted Output") + "<hr/>");
     args.addToBody("<pre/>" + cmdString + "</pre>");
   }
 

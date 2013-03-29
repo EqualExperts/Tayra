@@ -64,17 +64,6 @@ public class RunnerFixture extends DoFixture {
     }
   }
 
-//  private String injectValuesIn(final String cmdString,
-//      final NamedParameters namedParams) {
-//    String result = new String(cmdString);
-//    for (Map.Entry<String, String> nameValue : namedParams.entrySet()) {
-//      String key = nameValue.getKey();
-//      String value = nameValue.getValue();
-//      result = result.replace(key, value);
-//    }
-//    return result;
-//  }
-
 //  private boolean needsValueInjectionIn(final String args) {
 //    return args.matches(".*\\{.*\\}.*");
 //  }

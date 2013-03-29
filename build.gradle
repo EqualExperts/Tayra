@@ -53,7 +53,7 @@ project.ext {
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
 
   explodedDir = "$project.buildDir/exploded"
-  executionEnv = "${System.getProperty('env', 'dev')}"
+  mongoVersion = "${System.getProperty('mongoVersion', '')}"
 
 }
 
@@ -99,8 +99,8 @@ clean << {
 }
 
 test {
-    println "Utilizing properties from $project.ext.executionEnv Environment"
-    systemProperties['env'] = project.ext.executionEnv
+    println "Running tests for Mongo Version $project.ext.mongoVersion"
+    systemProperties['mongoVersion'] = project.ext.mongoVersion
 	def originalClasspath = getClasspath()
 	doFirst {
 		ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
@@ -154,12 +154,13 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 		accTestReportsDir.mkdirs()
 	}
 	javaexec {
-        systemProperties['env'] = project.ext.executionEnv
+        systemProperties['mongoVersion'] = project.ext.mongoVersion
 	    main = 'fitlibrary.runner.FolderRunner'
 	    classpath = runtimeClasspath
 	    args = ["$srcFolder", "$reportsFolder"]
 	}
 }
+
 task createTestJar(type: Jar) {
     baseName = "${project.archivesBaseName}-test"
     destinationDir = project.distsDir
