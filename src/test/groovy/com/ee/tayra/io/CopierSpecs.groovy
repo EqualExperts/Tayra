@@ -4,7 +4,7 @@ import spock.lang.*
 
 import com.ee.tayra.domain.NotAReplicaSetNode
 import com.ee.tayra.domain.Oplog
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBObject

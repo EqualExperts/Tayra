@@ -2,7 +2,7 @@ package com.ee.tayra.connector
 
 import spock.lang.Specification
 
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
@@ -13,7 +13,7 @@ class AuthenticatorSpecs extends Specification {
 	static MongoClient secured
 
 	def setupSpec() throws UnknownHostException, MongoException {
-		ServerAddress server = new ServerAddress(secureStandaloneNode, secureStandalonePort)
+		ServerAddress server = new ServerAddress(secureTgtNode, secureTgtPort)
 		secured = new MongoClient(server);
 	}
 	public void setup() {

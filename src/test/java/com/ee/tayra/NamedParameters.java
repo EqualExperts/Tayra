@@ -22,7 +22,7 @@ public class NamedParameters {
     return namedParams.get(key);
   }
 
-  public final String substitueValuesIn(final String data) {
+  public final String replaceValuesIn(final String data) {
     String result = data;
     for (Map.Entry<String, String> nameValue : namedParams.entrySet()) {
       String key = nameValue.getKey();

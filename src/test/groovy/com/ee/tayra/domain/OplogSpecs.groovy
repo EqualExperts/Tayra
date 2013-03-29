@@ -3,7 +3,7 @@ package com.ee.tayra.domain
 import com.ee.tayra.domain.operation.RequiresMongoConnection
 import spock.lang.Ignore
 
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.DB
 import com.mongodb.DBCursor
 import com.mongodb.DBObject

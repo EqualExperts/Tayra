@@ -2,7 +2,7 @@ package com.ee.tayra.connector
 
 import spock.lang.*
 
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 
@@ -95,7 +95,7 @@ public class MongoReplSetConnectionSpecs extends Specification {
 	
 	def connectsToASingleNode() {
 		given: 'Mongo replica set connection to a single node with retryable as false'
-			mongoReplsetConnection = new MongoReplSetConnection(unsecureStandaloneNode, unsecureStandalonePort, false)
+			mongoReplsetConnection = new MongoReplSetConnection(unsecureTgtNode, unsecureTgtPort, false)
 			def executeCalled = false
 			def retryCalled = false
 			def execute = { executeCalled = true	}

@@ -2,7 +2,7 @@ package com.ee.tayra.command.restore
 
 import spock.lang.Specification
 
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 
 class RestoreFactorySpecs extends Specification{

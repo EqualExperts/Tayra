@@ -2,14 +2,14 @@ package com.ee.tayra.domain.operation
 
 import spock.lang.*
 
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
 
 abstract class RequiresMongoConnection extends Specification {
-  static String HOST = secureStandaloneNode
-  static int PORT = secureStandalonePort
+  static String HOST = secureTgtNode
+  static int PORT = secureTgtPort
   static MongoClient standalone
   String dbName = 'tayra'
 

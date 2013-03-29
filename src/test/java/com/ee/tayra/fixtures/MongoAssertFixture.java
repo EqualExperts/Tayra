@@ -13,35 +13,34 @@ import fit.Fixture;
 import fitlibrary.DoFixture;
 import fitlibrary.SetFixture;
 
-public class AssertMongoFixture extends DoFixture {
+public class MongoAssertFixture extends DoFixture {
 
   private static final DBObject IGNORE_FIELDS =
                               (DBObject) JSON.parse("{ _id : 0 }");
   private final MongoClient src;
-  private final MongoClient dest;
+  private final MongoClient tgt;
 
-  public AssertMongoFixture(
-  final MongoSourceAndTargetConnector connector) {
-    src = connector.getSource();
-    dest = connector.getDestination();
+  public MongoAssertFixture(final MongoClient src, final MongoClient tgt) {
+    this.src = src;
+    this.tgt = tgt;
   }
 
   public final Fixture runInDatabaseQueryAndCleanupDatabases(
   final String database, final String query, final boolean cleanupDB) {
     DB srcDB = getDB(src, database);
-    DB destDB = getDB(dest, database);
+    DB tgtDB = getDB(tgt, database);
     Number srcResult = (Number) srcDB.eval(query);
-    Number destResult = (Number) destDB.eval(query);
+    Number tgtResult = (Number) tgtDB.eval(query);
     if (cleanupDB) {
-      cleanupDBs(srcDB, destDB);
+      cleanupDBs(srcDB, tgtDB);
     }
-    Result result = new Result(srcResult.longValue(), destResult.longValue());
+    Result result = new Result(srcResult.longValue(), tgtResult.longValue());
     return new SetFixture(Collections.singletonList(result));
   }
 
-  private void cleanupDBs(final DB srcDB, final DB destDB) {
+  private void cleanupDBs(final DB srcDB, final DB tgtDB) {
     srcDB.dropDatabase();
-    destDB.dropDatabase();
+    tgtDB.dropDatabase();
   }
 
   public final Fixture
@@ -56,13 +55,13 @@ public class AssertMongoFixture extends DoFixture {
     List<String> srcDocs =
         documentsInCollection(srcDB, collection, predicates);
 
-    DB destDB = getDB(dest, database);
+    DB tgtDB = getDB(tgt, database);
     List<String> destDocs =
-        documentsInCollection(destDB, collection, predicates);
+        documentsInCollection(tgtDB, collection, predicates);
 
     List<Result> results = allDocuments(srcDocs, destDocs);
     if (cleanupDatabase) {
-      cleanupDBs(srcDB, destDB);
+      cleanupDBs(srcDB, tgtDB);
     }
     return new SetFixture(results);
   }
@@ -78,19 +77,19 @@ public class AssertMongoFixture extends DoFixture {
   }
 
   private List<Result> allDocuments(final List<String> srcDocs,
-  final List<String> destDocs) {
+  final List<String> tgtDocs) {
     List<Result> results = new ArrayList<Result>();
     List<String> target = srcDocs;
-    if (srcDocs.size() > destDocs.size()) {
+    if (srcDocs.size() > tgtDocs.size()) {
       target = srcDocs;
     }
-    if (srcDocs.size() < destDocs.size()) {
-      target = destDocs;
+    if (srcDocs.size() < tgtDocs.size()) {
+      target = tgtDocs;
     }
     for (int index = 0; index < target.size(); index++) {
       String srcValue = getValueOrNullAt(srcDocs, index);
-      String destValue = getValueOrNullAt(destDocs, index);
-      results.add(new Result(srcValue, destValue));
+      String tgtValue = getValueOrNullAt(tgtDocs, index);
+      results.add(new Result(srcValue, tgtValue));
     }
     return results;
   }

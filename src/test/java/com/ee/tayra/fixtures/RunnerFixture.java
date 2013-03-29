@@ -43,7 +43,7 @@ public class RunnerFixture extends DoFixture {
   private void runCommandWith(final Parse args) {
     Binding context = new Binding();
     String cmdString = args.text();
-    cmdString = namedParams.substitueValuesIn(cmdString);
+    cmdString = namedParams.replaceValuesIn(cmdString);
     args.addToBody("<hr/>" + label("Substituted Values Output") + "<hr/>");
     args.addToBody("<pre/>" + cmdString + "</pre>");
     context.setVariable("args", cmdString.split(" "));
@@ -63,10 +63,6 @@ public class RunnerFixture extends DoFixture {
       stderr.close();
     }
   }
-
-//  private boolean needsValueInjectionIn(final String args) {
-//    return args.matches(".*\\{.*\\}.*");
-//  }
 
   public final void andShow(final Parse cells) {
     Parse stream = cells.more;

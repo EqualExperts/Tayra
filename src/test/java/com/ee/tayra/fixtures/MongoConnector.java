@@ -1,26 +1,29 @@
 package com.ee.tayra.fixtures;
 
+import com.ee.tayra.connector.MongoAuthenticator;
+import com.mongodb.MongoClient;
+import fit.Fixture;
+
 import java.net.UnknownHostException;
 
-import com.mongodb.MongoClient;
-
 public class MongoConnector {
+  private final MongoClient mongo;
 
-  private MongoClient source;
-  private MongoClient destination;
-
-  public MongoConnector(final String srcHost, final int srcPort,
-      final String destHost, final int destPort)
-      throws UnknownHostException {
-    source = new MongoClient(srcHost, srcPort);
-    destination = new MongoClient(destHost, destPort);
+  public MongoConnector(final String name, final int port,
+  final String username, final String password) throws UnknownHostException {
+    mongo = new MongoClient(name, port);
+    new MongoAuthenticator(mongo).authenticate(username, password);
   }
 
-  public final MongoClient getSource() {
-    return source;
+  public final MongoClient getMongo() {
+    return mongo;
   }
 
-  public final MongoClient getDestination() {
-    return destination;
+  public final Fixture createMongoFixture() {
+    return new MongoCommandFixture(mongo);
+  }
+
+  public final void close() {
+    mongo.close();
   }
 }

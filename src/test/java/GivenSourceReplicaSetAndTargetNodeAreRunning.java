@@ -1,11 +1,10 @@
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import com.ee.tayra.ConnectionData;
-import com.ee.tayra.MongoSourceTargetPair;
+import com.ee.tayra.ConnectionFactory;
 import com.ee.tayra.NamedParameters;
-import com.ee.tayra.fixtures.AssertMongoFixture;
-import com.ee.tayra.fixtures.MongoSourceAndTargetConnector;
+import com.ee.tayra.fixtures.MongoAssertFixture;
+import com.ee.tayra.fixtures.MongoConnectorPair;
 import com.ee.tayra.fixtures.RunnerFixture;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -22,12 +21,13 @@ import fitlibrary.DoFixture;
 public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
 
   private static final int SLEEP_TIME = 800;
-  private MongoSourceAndTargetConnector connector;
-  private NamedParameters parameters;
+  private final ConnectionFactory factory = ConnectionFactory.instance();
+  private final NamedParameters parameters;
+  private MongoConnectorPair connector;
 
   public GivenSourceReplicaSetAndTargetNodeAreRunning()
-      throws UnknownHostException {
-    parameters = ConnectionData.instance().settings();
+  throws UnknownHostException {
+    parameters = factory.settings();
     parameters.add("{file}", "test.out");
   }
 
@@ -43,22 +43,23 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     }
   }
 
-  public final Fixture runMongoCommandOn(final String nodeName)
+  public final Fixture runMongoCommandOn(final String node)
       throws UnknownHostException {
-    Node node = Node.valueOf(nodeName.toUpperCase(), connector);
-    return node.getMongoFixture();
+    return connector.get(node).createMongoFixture();
   }
 
   public final Fixture ensuringTargetIsConsistentWithSource() {
+    //FIXME: Get rid of this sleep!!
     sleep(SLEEP_TIME);
-    return new AssertMongoFixture(connector);
+    final MongoClient source = connector.getSource().getMongo();
+    final MongoClient target = connector.getTarget().getMongo();
+    return new MongoAssertFixture(source, target);
   }
 
   public final boolean
-    openOplogForNodeAndTravelDocumentsBackInTimeAndSaveTimestampIn(
-      final String nodeName, final int howMany, final String keyToSave) {
-    Node node = Node.valueOf(nodeName.toUpperCase(), connector);
-    MongoClient mongo = node.getMongo();
+  openOplogForNodeAndTravelDocumentsBackInTimeAndSaveTimestampIn(
+    final String node, final int howMany, final String keyToSave) {
+    final MongoClient mongo = connector.get(node).getMongo();
     DBCursor cursor = null;
     try {
       DBCollection collection = mongo.getDB("local").getCollection("oplog.rs");
@@ -84,10 +85,8 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
           + " requires an argument");
     }
     String cmdString = args.text();
-    MongoSourceTargetPair details =
-         new MongoSourceTargetPair(cmdString, parameters);
-    connector = new MongoSourceAndTargetConnector(details);
-    cmdString = parameters.substitueValuesIn(cmdString);
+    connector = factory.createMongoSourceTargetConnector(cmdString);
+    cmdString = parameters.replaceValuesIn(cmdString);
     args.addToBody("<hr/>" + label("Substituted Output") + "<hr/>");
     args.addToBody("<pre/>" + cmdString + "</pre>");
   }

@@ -6,13 +6,13 @@ import com.ee.tayra.connector.Authenticator
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.ProgressReporter
 import com.ee.tayra.io.Reporter
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
 
 public class BackupSpecs extends Specification {
-
+    private static String backupFile = 'test.out'
 	private static StringBuilder result
 	private CopyListener mockListener
 	private Reporter mockReporter
@@ -74,7 +74,7 @@ public class BackupSpecs extends Specification {
 
 	def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
 		given: 'localhost not belonging to replica set'
-			context.setVariable('args', ['-s', unsecureStandaloneNode, '-f', backupFile, "--port=$unsecureStandalonePort"])
+			context.setVariable('args', ['-s', unsecureTgtNode, '-f', backupFile, "--port=$unsecureTgtPort"])
 
 		when: 'backup runs with above args'
 			new Backup(context).run()

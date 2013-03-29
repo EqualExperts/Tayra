@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.io.*
-import static com.ee.tayra.support.Resources.*
+import static com.ee.tayra.ConnectionFactory.*
 
 class BackupFactorySpecs extends Specification {
   private BackupCmdDefaults config
