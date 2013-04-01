@@ -65,7 +65,7 @@ class CriteriaBuilderSpecs extends Specification{
 			}
 
 		then: 'Criterion returned should be an instance of sExclude'
-			criterion.getClass() == SExcludeCriterion
+			criterion.getClass() == ExcludeCriterion
 	}
 
 	def producesMultiCriteriaWithoutSExclude() {
