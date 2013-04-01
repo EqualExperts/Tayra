@@ -58,4 +58,5 @@ out
 target
 .settings
 acceptance-tests/stories/played/cud/files
+acceptance-tests/index.html
 
