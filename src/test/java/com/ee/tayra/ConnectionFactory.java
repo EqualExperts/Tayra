@@ -59,11 +59,11 @@ public final class ConnectionFactory {
   final NamedParameters params, final Properties props, final String prefix) {
     for (String propertyName : props.stringPropertyNames()) {
       String value = props.getProperty(propertyName);
-      params.add("{" + propertyName + "}", replace(value, prefix));
+      params.add("{" + propertyName + "}", substitute(value, prefix));
     }
   }
 
-  private static String replace(final String data, final String prefix) {
+  private static String substitute(final String data, final String prefix) {
     return data.replaceAll(PORT_PREFIX, prefix);
   }
 

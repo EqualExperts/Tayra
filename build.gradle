@@ -179,10 +179,12 @@ task distribute(type:Zip, dependsOn: 'assemble') {
 	doFirst {
 		ant.mkdir(dir:"$distsBinDir")
 		prepareExecutables()
+        prepareTOCForDocumentation()
 	}
-	from "$project.ext.distsBinDir"
-	from ("$project.ext.distsTemplateDir") { include ('**/*.txt', '**/*.document', '**/*.rtf') }
-	from("$libsDir") { into('libs') }
+	from project.ext.distsBinDir
+	from (project.ext.distsTemplateDir) { include ('**/*.txt', '**/*.document', '**/*.rtf') }
+	from ("$libsDir") { into ('libs') }
+    from (project.ext.acceptanceTestStoriesDir) { into ('docs') }
 }
 
 findbugs {
@@ -217,6 +219,14 @@ def prepareExecutables() {
 			}
 		}
 	}
+}
+
+def prepareTOCForDocumentation() {
+    //Prepare index.html containing TOC inside acceptance-tests dir
+    def htmlBuilder = new groovy.xml.MarkupBuilder()
+    htmlBuilder.html {
+
+    }
 }
 
 build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
