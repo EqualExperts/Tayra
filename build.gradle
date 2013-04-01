@@ -128,13 +128,13 @@ test {
 	}
 }
 
-// For individual use only, assumes you have binaries existing already.
+// For individual use assumes you have binaries existing already.
 task ('smoke-test', dependsOn: 'unzip') << {
     println "Running FIT Smoke Test..."
     runAcceptanceTests(project.ext.smokeTestDir, project.ext.acceptanceTestReportsDir)
 }
 
-// For individual use only, assumes you have binaries existing already.
+// For individual use assumes you have binaries existing already.
 task ('acceptance-test', dependsOn: 'unzip') << {
     println "Running FIT Acceptance Tests..."
     runAcceptanceTests(project.ext.acceptanceTestStoriesDir, project.ext.acceptanceTestReportsDir)
