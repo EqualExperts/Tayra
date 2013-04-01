@@ -77,7 +77,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			backupFile.exists()
 	}
 
-	def writesDataToMultipleFilesOfSpecifiedSize() {
+	def writesDataToSingleFileOfSpecifiedSize() {
 		given: 'file name, Size and Rotation Limit of Files'
 			nameOfFile = 'test.log'
 			rotatingFileWriter = new RotatingFileWriter(nameOfFile)

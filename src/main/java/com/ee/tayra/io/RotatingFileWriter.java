@@ -41,10 +41,10 @@ import org.apache.log4j.RollingFileAppender;
 public class RotatingFileWriter extends Writer {
 
   private static final String DEFAULT_FILESIZE = "512MB";
-  private static final int DEFAULT_FILEMAX = 20;
+  private static final int DEFAULT_FILEMAX = 0;
 
   private String fileSize = DEFAULT_FILESIZE;
-  private int fileMax = 0;
+  private int fileMax = DEFAULT_FILEMAX;
 
   private final PatternLayout layout;
   private RollingFileAppender appender;
@@ -60,9 +60,6 @@ public class RotatingFileWriter extends Writer {
 
   public final void setFileSize(final String fileSize) throws IOException {
     this.fileSize = fileSize;
-    if (fileMax == 0) {
-      fileMax = DEFAULT_FILEMAX;
-    }
     configure();
   }
 
@@ -71,7 +68,7 @@ public class RotatingFileWriter extends Writer {
     configure();
   }
 
-  private void configure() throws IOException {
+   private void configure() throws IOException {
     appender = new RollingFileAppender(layout, recordToFile, false);
     logger = Logger.getLogger(recordToFile);
     appender.setMaxFileSize(fileSize);

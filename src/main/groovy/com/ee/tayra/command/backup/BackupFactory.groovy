@@ -49,13 +49,11 @@ class BackupFactory {
   private final def timestamp
   private final String timestampFileName = 'timestamp.out'
 
-  public BackupFactory (config, console) {
+  public BackupFactory (BackupCmdDefaults config, console) {
     this.config = config
-    Writer rfWriter = new RotatingFileWriter(config.recordToFile)
-    rfWriter.with {
-      fileSize = config.fileSize
-      fileMax = config.fileMax
-    }
+    RotatingFileWriter rfWriter = new RotatingFileWriter(config.recordToFile)
+    rfWriter.fileSize = config.fileSize
+    rfWriter.fileMax = config.fileMax
     writer = new TimestampRecorder(rfWriter)
 
     listeningReporter = new ProgressReporter(console)

@@ -36,8 +36,8 @@ class BackupCmdDefaults {
   public String username = ''
   public String password = ''
   public String recordToFile = ''
-  public String fileSize
-  public int fileMax
+  public String fileSize = '512MB'
+  public int fileMax = 0
   public boolean isContinuous = false
   public String sNs = ''
   public boolean sExclude = false
