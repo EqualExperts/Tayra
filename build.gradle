@@ -1,3 +1,5 @@
+import groovy.io.FileType
+
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -51,10 +53,10 @@ project.ext {
   acceptanceTestStoriesDir = "$projectDir/$acceptanceTestDir/stories/played"
   acceptanceTestReportsDir = "$reporting.baseDir/$acceptanceTestDir"
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
+  tocTemplateFile = new File("$acceptanceTestDir/toc.html")
 
   explodedDir = "$project.buildDir/exploded"
   mongoVersion = "${System.getProperty('mongoVersion', '')}"
-
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
@@ -221,12 +223,41 @@ def prepareExecutables() {
 	}
 }
 
+task document << {
+    prepareTOCForDocumentation()
+}
+
 def prepareTOCForDocumentation() {
     //Prepare index.html containing TOC inside acceptance-tests dir
-    def htmlBuilder = new groovy.xml.MarkupBuilder()
-    htmlBuilder.html {
-
+  def toc = new StringWriter()
+  def html = new groovy.xml.MarkupBuilder(toc)
+  def tocLineNumber = 1
+  new File(acceptanceTestStoriesDir).eachFileRecurse(FileType.FILES) { file ->
+    if (file.isFile() && file.name.endsWith('html')) {
+      def indexEntry = toSentence(file.name.replaceFirst('\\.html', ''))
+      html.h4 {
+            span tocLineNumber++
+            a (href:"stories/played/$file.parentFile.name/$file.name") {
+              text indexEntry
+            }
+      }
     }
+  }
+  new File("$acceptanceTestDir/index.html").withWriter { writer ->
+      def content = project.ext.tocTemplateFile.text.replace('##TABLE_OF_CONTENTS##', toc.toString())
+      writer.write content
+  }
+}
+
+def toSentence(String name) {
+  def sentence = new StringBuilder()
+  name.each { character ->
+     if (character.toCharArray()[0].isUpperCase()) {
+       sentence << ' '
+     }
+     sentence << character
+  }
+  sentence.toString()
 }
 
 build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
