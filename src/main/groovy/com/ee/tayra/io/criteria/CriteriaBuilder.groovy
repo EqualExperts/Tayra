@@ -30,8 +30,6 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria
 
-import java.util.ArrayList
-import java.util.List
 import static com.ee.tayra.io.criteria.TimestampCriterion.*
 
 public class CriteriaBuilder {
@@ -57,6 +55,6 @@ public class CriteriaBuilder {
 
   public Criterion build(Closure closure = {}) {
     with closure
-    excludeEnabled ? new SExcludeCriterion(multiCriteria) : multiCriteria
+    excludeEnabled ? new ExcludeCriterion(multiCriteria) : multiCriteria
   }
 }

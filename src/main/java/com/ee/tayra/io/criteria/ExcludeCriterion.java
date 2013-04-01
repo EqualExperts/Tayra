@@ -30,11 +30,11 @@
  ******************************************************************************/
 package com.ee.tayra.io.criteria;
 
-public class SExcludeCriterion implements Criterion {
+public class ExcludeCriterion implements Criterion {
 
   private final Criterion criterion;
 
-  public SExcludeCriterion(final Criterion criterion) {
+  public ExcludeCriterion(final Criterion criterion) {
     this.criterion = criterion;
   }
 
