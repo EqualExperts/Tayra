@@ -128,6 +128,10 @@ public final class ConnectionFactory {
     return parameters.get("{password}");
   }
 
+  public static String getBackupFile() {
+    return parameters.get("{file}");
+  }
+
   public MongoConnectorPair createMongoSourceTargetConnector(
   final String cmdString) throws UnknownHostException {
     MongoConnector src = createConnector("Src", cmdString);

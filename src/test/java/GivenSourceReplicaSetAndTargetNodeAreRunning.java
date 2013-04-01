@@ -35,7 +35,7 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     return new RunnerFixture(parameters);
   }
 
-  public final void sleep(final int duration) {
+  public static final void sleep(final int duration) {
     try {
       Thread.sleep(duration);
     } catch (InterruptedException e) {
