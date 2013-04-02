@@ -295,6 +295,7 @@ task deploy(dependsOn: [backupCurrentDeployScripts]) << {
 
   killFirst('com.ee.tayra.runner.Runner backup')
   //restart new backup version
+  /*
   def backup = "${project.ext.deployDir}/backup.sh"
   println "Restarting Backup from $backup"
   def mongoVersion = System.getProperty('mongoVersion' , '270')
@@ -315,7 +316,7 @@ task deploy(dependsOn: [backupCurrentDeployScripts]) << {
   program.in.eachLine {
       println it
   }
-
+  */
 }
 
 def killFirst(def processName) {
