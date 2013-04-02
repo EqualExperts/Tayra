@@ -57,6 +57,8 @@ project.ext {
 
   explodedDir = "$project.buildDir/exploded"
   mongoVersion = "${System.getProperty('mongoVersion', '')}"
+
+  deployDir = 'deploy'
 }
 
 project.archivesBaseName = project.ext.appConfig.product.distribution.name
