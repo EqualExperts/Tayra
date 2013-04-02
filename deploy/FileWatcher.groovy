@@ -17,12 +17,12 @@ backupDir = Paths.get("../backup")
 restoreDir = Paths.get("../toBeRestored")
 restoreCompleteDir = Paths.get("../restored")
 restoreFailedDir = Paths.get("../notRestored")
-fileName = 'test.out'
+fileName = args[0]
+destMongo = args[1]
+destPort = args[2]
+username = args[3]
+password = args[4]
 errorFile = 'fileWatcherError.txt'
-destMongo = 'localhost'
-destPort = '27021'
-username = 'admin'
-password = 'admin'
 
 Map<WatchKey, Path> keyMap = new HashMap<WatchKey, Path>()
 
@@ -55,7 +55,7 @@ try {
 
 			if(eventDir == restoreDir) {
 				println "\n\nstarting restore"
-				String restore = "restore.bat -d $destMongo --port=$destPort -f $restoreDir/$fileName.$backupFileCounter"
+				String restore = "restore.bat -d $destMongo --port=$destPort -f $restoreDir/$fileName.$backupFileCounter -u $username -p $password"
 				println "\n\n" + restore.execute().text
 				println "restore complete"
 				println "\n\n"

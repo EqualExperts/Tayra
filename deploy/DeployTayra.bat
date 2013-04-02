@@ -1,5 +1,5 @@
-taskkill /fi "WINDOWTITLE eq Generating Data"
-taskkill /fi "WINDOWTITLE eq Auto Restore"
+REM taskkill /fi "WINDOWTITLE eq Generating Data"
+REM taskkill /fi "WINDOWTITLE eq Auto Restore"
 taskkill /fi "WINDOWTITLE eq Backup Running*"
 
 SET backupFiles=backup
@@ -7,6 +7,14 @@ SET notRestoredFiles=notRestored
 SET restoredFiles=restored
 SET toBeRestoredFiles=toBeRestored
 SET deployFiles=deploy
+
+SET backupFile=test.out
+SET target=localhost
+SET target_port=27020
+SET source=localhost
+SET source_port=27017
+SET username=admin
+SET password=admin
 
 ECHO "Cleaning existing directories"
 rmdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestoredFiles% /s /q
@@ -17,7 +25,7 @@ mkdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestored
 START "Generating Data" groovy -cp %CD%\libs\* .\DataGenerator.groovy
 ECHO "DataGenerator Started"
 
-START "Auto Restore" groovy .\FileWatcher.groovy
+START "Auto Restore" groovy .\FileWatcher.groovy %backupFile% %target% %target_port% %username% %password%
 ECHO "FileWatcher Started"
 
-START "Backup Running" backup.bat -s localhost -f %CD%\..\%backupFiles%\test.out -u admin -p admin -t --fSize=500KB --fMax=1
+START "Backup Running" backup.bat -s %source% --port=%source_port% -f %CD%\..\%backupFiles%\%backupFile% -u %username% -p %password% -t --fSize=500KB --fMax=1
