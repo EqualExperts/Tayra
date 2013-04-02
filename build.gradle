@@ -273,7 +273,7 @@ def toSentence(String name) {
   sentence.toString()
 }
 
-task backupCurrentDeployScripts(type: Zip) {
+task backupCurrentDeployScripts(type: Zip) << {
   println "Backing up existing deploy scripts from ${project.ext.deployDir}"
   println "to Dir ${project.ext.backupDeployScriptsDir}"
   println "with Archive name: ${project.ext.previousArchiveName}.zip"
