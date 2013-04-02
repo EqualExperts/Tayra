@@ -262,4 +262,7 @@ def toSentence(String name) {
   sentence.toString()
 }
 
+task deploy(dependsOn: 'unzip') {
+}
+
 build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
