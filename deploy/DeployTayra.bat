@@ -22,10 +22,10 @@ rmdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestored
 ECHO "Making new directories"
 mkdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestoredFiles%
 
-START "Generating Data" groovy -cp %CD%\libs\* .\DataGenerator.groovy
+START "Generating Data" groovy -cp %CD%\libs\* .\DataGenerator.groovy --source=%source% --port=%source_port% -u %username% -p %password%
 ECHO "DataGenerator Started"
 
-START "Auto Restore" groovy .\FileWatcher.groovy %backupFile% %target% %target_port% %username% %password%
+START "Auto Restore" groovy .\FileWatcher.groovy -f %backupFile% --target=%target% --port=%target_port% -u %username% -p %password%
 ECHO "FileWatcher Started"
 
 START "Backup Running" backup.bat -s %source% --port=%source_port% -f %CD%\..\%backupFiles%\%backupFile% -u %username% -p %password% -t --fSize=500KB --fMax=1
