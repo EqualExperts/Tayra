@@ -264,13 +264,13 @@
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.exploratory.DryRunExploratoryTest$_setupSpec_closure1"/>
+  <Class name="com.ee.tayra.exploratory.RestoreExploratoryTest$_setupSpec_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.exploratory.ExploratoryTestForCombinationsOfCriteria$_$spock_feature_1_0_closure1"/>
+  <Class name="com.ee.tayra.exploratory.BackupExploratoryTest$_$spock_feature_1_0_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
