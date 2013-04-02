@@ -20,7 +20,6 @@ import fitlibrary.DoFixture;
 
 public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
 
-  private static final int SLEEP_TIME = 800;
   private final ConnectionFactory factory = ConnectionFactory.instance();
   private final NamedParameters parameters;
   private MongoConnectorPair connector;
@@ -35,22 +34,12 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     return new RunnerFixture(parameters);
   }
 
-  public final void sleep(final int duration) {
-    try {
-      Thread.sleep(duration);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
-
   public final Fixture runMongoCommandOn(final String node)
       throws UnknownHostException {
     return connector.get(node).createMongoFixture();
   }
 
   public final Fixture ensuringTargetIsConsistentWithSource() {
-    //FIXME: Get rid of this sleep!!
-    sleep(SLEEP_TIME);
     final MongoClient source = connector.getSource().getMongo();
     final MongoClient target = connector.getTarget().getMongo();
     return new MongoAssertFixture(source, target);
