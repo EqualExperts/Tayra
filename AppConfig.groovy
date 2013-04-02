@@ -55,11 +55,14 @@ configuration {
 			qualifier {
 				alphaNumeric = 'Beta1' //Alpha# or Beta# or CR# or GA, or SP#
 			}
+            previous = '0.6.0.Beta1'
 			complete = toCompleteVersion()
 		}
 
 		distribution {
 			name = product.name + '-' + toCompleteVersion()
+
+            previousArchiveName = product.name + '-' + product.version.previous
 
 			jar {
 				name = product.name
