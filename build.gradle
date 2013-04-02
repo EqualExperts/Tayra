@@ -14,12 +14,15 @@ defaultTasks 'clean', 'build'
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 
+
 project.ext {
 
   //App Config
   appConfigUrl = new URL("file:///${projectDir}/AppConfig.groovy")
   appConfig = new ConfigSlurper('configuration').parse(appConfigUrl).configuration
   manifest = project.ext.appConfig.product.distribution.jar.manifest.details
+  project.archivesBaseName = project.ext.appConfig.product.distribution.name
+  previousArchiveName = project.ext.appConfig.product.distribution.previousArchiveName
 
   //libs
   mongoDriver = 'org.mongodb:mongo-java-driver:2.10.1'
@@ -56,10 +59,15 @@ project.ext {
   tocTemplateFile = new File("$acceptanceTestDir/toc.html")
 
   explodedDir = "$project.buildDir/exploded"
-  mongoVersion = "${System.getProperty('mongoVersion', '')}"
+  mongoVersion = System.getProperty('mongoVersion', '')
+
+  deployScriptsDir = 'deploy-scripts'
+  deployScriptsZip = "${project.archivesBaseName}-deployScripts"
+  backupDeployScriptsDir = new File(System.getProperty('backupDeployScriptsTo', "$project.buildDir/rollback-deploy-scripts"))
+  defaultDeployDir = 'deployed'
+  deployDir = new File(System.getProperty('deployTo', "$project.buildDir/$defaultDeployDir"))
 }
 
-project.archivesBaseName = project.ext.appConfig.product.distribution.name
 
 repositories {
   mavenCentral()
@@ -169,15 +177,20 @@ task createTestJar(type: Jar) {
     from sourceSets.test.output
 }
 
-task unzip(type: Copy) {
-    def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
-    def outputDir = file(project.ext.explodedDir)
-
-    from zipTree(zipFile)
-    into outputDir
+task createDeployZip(type: Zip) {
+  baseName = project.ext.deployScriptsZip
+  destinationDir = project.distsDir
+  from (project.ext.deployScriptsDir)
 }
 
-task distribute(type:Zip, dependsOn: 'assemble') {
+task unzip(type: Copy) {
+  def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+  def outputDir = file(project.ext.explodedDir)
+  from zipTree(zipFile)
+  into outputDir
+}
+
+task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
 	doFirst {
 		ant.mkdir(dir:"$distsBinDir")
 		prepareExecutables()
@@ -228,7 +241,7 @@ task document << {
 }
 
 def prepareTOCForDocumentation() {
-    //Prepare index.html containing TOC inside acceptance-tests dir
+  //Prepare index.html containing TOC inside acceptance-tests dir
   def toc = new StringWriter()
   def html = new groovy.xml.MarkupBuilder(toc)
   def tocLineNumber = 1
@@ -258,6 +271,72 @@ def toSentence(String name) {
      sentence << character
   }
   sentence.toString()
+}
+
+task backupCurrentDeployScripts(type: Zip) {
+  println "Backing up existing deploy scripts from ${project.ext.deployDir}"
+  println "to Dir ${project.ext.backupDeployScriptsDir}"
+  println "with Archive name: ${project.ext.previousArchiveName}.zip"
+
+  baseName = project.ext.previousArchiveName
+  destinationDir = project.ext.backupDeployScriptsDir
+  from project.ext.deployDir
+}
+
+task deploy(dependsOn: [backupCurrentDeployScripts]) << {
+  def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+  copy {
+      from zipTree(zipFile)
+      into project.ext.deployDir
+  }
+  ant.chmod (perm : 'a+x') {
+     fileset (dir: project.ext.deployDir, includes : '*.sh')
+  }
+
+  killFirst('com.ee.tayra.runner.Runner backup')
+  //restart new backup version
+  /*
+  def backup = "${project.ext.deployDir}/backup.sh"
+  println "Restarting Backup from $backup"
+  def mongoVersion = System.getProperty('mongoVersion' , '270')
+  def args = [
+          '-s', 'localhost',
+          "--port=${mongoVersion.replace('.','')}17",
+          '-f', 'test.out',
+          '--username=admin',
+          '--password=admin',
+          '-t'
+  ]
+  println "Args --> $args"
+  def env = []
+  def program = "$backup ${args.join(' ')}".execute(env, project.ext.deployDir)
+  program.err.eachLine {
+      println it
+  }
+  program.in.eachLine {
+      println it
+  }
+  */
+}
+
+def killFirst(def processName) {
+    def os = System.getProperty("os.name")
+    def listProcessCmd = os == /Win*/ ? 'tasklist' : 'ps -ef'
+    println "Executing $listProcessCmd on $os..."
+    def process = listProcessCmd.execute()
+    def killableProcesses = process.in.filterLine {
+        it.contains("$processName")
+    }
+    def args = "$killableProcesses".split() as List
+    if(args) {
+      println "Killable Processes --> $args"
+      def processIdToKill = args[1]
+      def killProcessCmd = os == /Win*/ ? "taskkill $processIdToKill" : "kill -9 $processIdToKill"
+      println "Executing $killProcessCmd on $os..."
+      killProcessCmd.execute().in.eachLine { println it }
+    } else {
+      println "Nothing to kill by name $processName"
+    }
 }
 
 build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
