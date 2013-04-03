@@ -15,8 +15,11 @@
  * Secured and unsecured backup/restore
 <br>
 
+## Documentation
+Please find the documentation [here](http://htmlpreview.github.com/?https://github.com/EqualExperts/Tayra/blob/master/acceptance-tests/index.html).  Additionally, you can refer to the `ReadMe.txt` within binary distribution for features and `Tayra Usage.rtf` for usage
+
 ## Binary Distributions
-**[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**.  Please refer to the `ReadMe.txt` within it for Tayra's features and `Tayra Usage.rtf` for usage
+**[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**.  
 
 ## Build Info
 We are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
