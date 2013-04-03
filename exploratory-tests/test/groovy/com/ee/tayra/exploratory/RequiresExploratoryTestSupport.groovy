@@ -85,40 +85,4 @@ public class RequiresExploratoryTestSupport extends Specification {
     mongoNode.getDB("Tayra").dropDatabase()
     mongoNode.getDB("EELab").dropDatabase()
   }
-
-//  protected void addExtraDataTo(MongoClient mongoNode) {
-//    DB ExtraDb = mongoNode.getDB("Extra")
-//    run('db.thing.insert({name:"One"})', ExtraDb)
-//    run('db.thing.insert({name:"Two"})', ExtraDb)
-//    run('db.thing.insert({name:"Three"})', ExtraDb)
-//    run('db.thing.insert({name:"Four"})', ExtraDb)
-//    run('db.thing.insert({name:"Five"})', ExtraDb)
-//    run('db.thing.insert({name:"Six"})', ExtraDb)
-//  }
-//  
-//  protected void deleteExtraDataFrom(MongoClient mongoNode) {
-//    mongoNode.getDB("Extra").dropDatabase()
-//  }
-
-//  protected void deleteBackupFiles() {
-//    def files=findBackupFilesInDirectory(backupFile)
-//    println 'before delete '+files
-//    files.each { File f ->
-////      new File(it.toString()).delete()
-//      println f.absolutePath
-//      println 'text '+f.text
-//	  
-////	  file = new File(it.toString())
-//	  f.delete()
-//   }
-//    files=findBackupFilesInDirectory(backupFile)
-//    println 'after '+ files
-//  }
-//
-//  def findBackupFilesInDirectory(def fileNameRegex) {
-//    File backupFile = new File(fileNameRegex)
-//    File directory = backupFile.getAbsoluteFile().getParentFile()
-//    directory.listFiles().findAll{!it.isDirectory() && it.name.startsWith(fileNameRegex) }
-//  }
-
 }

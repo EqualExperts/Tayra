@@ -91,33 +91,6 @@ class RestoreExploratoryTest extends RequiresExploratoryTestSupport {
       assertTargetNodeContainsAllDocuments()
   }
 
-//  def allBackupFilesAreReadWhenFAllIsGivenWithDryRunOption() {
-//    given:'Backup is taken'
-//      addExtraDataTo(src)
-//      Binding backupContext = new Binding()
-//      backupContext.setVariable('args', ['-s', srcHOST, "--port=$srcPORT", '-f', backupFile, '--fSize=1KB', '--fMax=5'])
-//      new Backup(backupContext).run()
-//
-//    and:'arguments for restore contains -d, --port, -f, --dry-run options'
-//      context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--fAll', '--dry-run'])
-//
-//    when: 'restore runs with above args'
-//      result << restoreAndCaptureConsoleOutput(context)
-//
-//    then: 'the result should contain all documents'
-//      result.toString().contains('"ns" : "Tayra.thing"')
-//      result.toString().contains('"ns" : "Tayra.profile"')
-//      result.toString().contains('"ns" : "EELab.thing')
-//      result.toString().contains('"ns" : "EELab.profile')
-//      result.toString().contains('"ns" : "DL.thing')
-//      result.toString().contains('"ns" : "DL.profile')
-//      result.toString().contains('"ns" : "Extra.')
-//
-//    cleanup: 'delete extra data and backup files'
-//      deleteExtraDataFrom(src)
-//      deleteBackupFiles(5)
-//  }
-
   private assertTargetNodeContainsAllDocuments() {
     tgt.getDB("DL").getCollection("profile").count == 1 && 
     tgt.getDB("DL").getCollection("thing").count() == 1 &&
