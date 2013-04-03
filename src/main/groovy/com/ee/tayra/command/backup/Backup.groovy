@@ -171,6 +171,7 @@ try {
     }
   }
 }
+
 normalExecution = true
 
 def getAuthenticator(mongo) {
