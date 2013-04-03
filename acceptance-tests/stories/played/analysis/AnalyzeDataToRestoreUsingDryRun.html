@@ -164,43 +164,83 @@
           </tr>
           <tr>
             <td colspan="2">use database</td>
+            <td colspan="2">transactions</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.orders.insert({orderNo:456})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.orders.save({orderNo:457})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
             <td colspan="2">users</td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.createCollection("location")</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.location.insert({place:"UK"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.location.save({place:"India"})</pre></td>
           </tr>
            <tr>
             <td colspan="2">run</td>
             <td colspan="2"><pre>db.profile.update({name:"One"},{$set:{type:"public"}})</pre></td>
           </tr>
           <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">visible</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.list.insert({userName:"One"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">transactions</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.orders.insert({orderNo:458})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">visible</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.details.save({viewedLinks:3})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">users</td>
+          </tr>
+          <tr>
             <td colspan="2">run</td>
             <td colspan="2"><pre>db.profile.update({name:"Two"},{$set:{type:"public"}})</pre></td>
           </tr>
           <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">visible</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.profile.list.insert({userName:"Two"})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">transactions</td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.orders.insert({orderNo:459})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td colspan="2"><pre>db.orders.save({orderNo:460})</pre></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td colspan="2">users</td>
+          </tr>
+          <tr>
             <td colspan="2">run</td>
             <td colspan="2"><pre>db.profile.insert({name:"Five",type:"private"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.save({name:"Six",type:"private"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.insert({name:"Seven",type:"public"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.save({name:"Eight",type:"public"})</pre></td>
           </tr>
         </table>
         <br>
@@ -260,7 +300,7 @@
             <td>Open oplog for node</td>
             <td><pre>source</pre></td>
             <td>and travel</td>
-            <td>6</td>
+            <td>9</td>
             <td>documents back in time and save timestamp in</td>
             <td><pre>{sSince}</pre></td>
           </tr>
@@ -271,7 +311,7 @@
             <td>Open oplog for node</td>
             <td><pre>source</pre></td>
             <td>and travel</td>
-            <td>5</td>
+            <td>4</td>
             <td>documents back in time and save timestamp in</td>
             <td><pre>{sUntil}</pre></td>
           </tr>
@@ -283,7 +323,7 @@
           </tr>
           <tr>
             <td>and run</td>
-            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sExclude --sUntil={sUntil} --sSince={sSince}</pre></td>
+            <td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file} --sExclude --sUntil={sUntil} --sSince={sSince} --sNs=users.profile,visible</pre></td>
           </tr>
           <tr>
             <td>and show</td>
@@ -316,7 +356,7 @@
             <td>where</td>
             <td><pre>null</pre></td>
             <td>and cleanup databases </td>
-            <td>false</td>
+            <td>true</td>
           </tr>
           <tr>
             <td colspan="4">source value</td><td colspan="4">destination value</td>
@@ -336,15 +376,6 @@
           <tr>
             <td colspan="4"><pre>{ "name" : "Five" , "type" : "private"} </pre></td><td colspan="4"><pre>{ "name" : "Five" , "type" : "private"}</pre></td>
           </tr>
-          <tr>
-            <td colspan="4"><pre>{ "name" : "Six" , "type" : "private"}</pre></td><td colspan="4"><pre>{ "name" : "Six" , "type" : "private"}</pre></td>
-          </tr>
-          <tr>
-            <td colspan="4"><pre>{ "name" : "Seven" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Seven" , "type" : "public"}</pre></td>
-          </tr>
-          <tr>
-            <td colspan="4"><pre>{ "name" : "Eight" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Eight" , "type" : "public"}</pre></td>
-          </tr>
         </table>
         <br>
          <table>
@@ -355,9 +386,9 @@
           </tr>
           <tr>
             <td>find documents for collection</td>
-            <td><pre>location</pre></td>
+            <td><pre>orders</pre></td>
             <td>in database</td>
-            <td><pre>users</pre></td>
+            <td><pre>transactions</pre></td>
             <td>where</td>
             <td><pre>null</pre></td>
             <td>and cleanup databases </td>
@@ -367,10 +398,64 @@
             <td colspan="4">source value</td><td colspan="4">destination value</td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "place" : "UK"} </pre></td><td colspan="4"><pre>{ "place" : "UK"}</pre></td>
+            <td colspan="4"><pre>{ "orderNo" : 456.0} </pre></td><td colspan="4"><pre>{ "orderNo" : 456.0}</pre></td>
           </tr>
           <tr>
-            <td colspan="4"><pre>{ "place" : "India"}</pre></td><td colspan="4"><pre>{ "place" : "India"}</pre></td>
+            <td colspan="4"><pre>{ "orderNo" : 457.0} </pre></td><td colspan="4"><pre>{ "orderNo" : 457.0}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "orderNo" : 458.0} </pre></td><td colspan="4"><pre>{ "orderNo" : 458.0}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "orderNo" : 459.0} </pre></td><td colspan="4"><pre>{ "orderNo" : 459.0}</pre></td>
+          </tr>
+          <tr>
+            <td colspan="4"><pre>{ "orderNo" : 460.0} </pre></td><td colspan="4"><pre>{ "orderNo" : 460.0}</pre></td>
+          </tr>
+        </table>
+        <br>
+        <h5>Checking documents of database 'visible' in source is not restored to target</h5>
+        <table>
+          <tr>
+            <td colspan="8">
+              Ensure source and target has
+            </td>
+          </tr>
+          <tr>
+            <td>run in database</td>
+            <td colspan="2"><pre>visible</pre></td>
+            <td>query</td>
+            <td colspan="2"><pre>db.profile.list.count()</pre></td>
+            <td>and cleanup databases</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4">2</td><td colspan="4">0</td>
+          </tr>
+          </table>
+          <br>
+          <table>
+          <tr>
+            <td colspan="8">
+              Ensure source and target has
+            </td>
+          </tr>
+          <tr>
+            <td>run in database</td>
+            <td colspan="2"><pre>visible</pre></td>
+            <td>query</td>
+            <td colspan="2"><pre>db.details.count()</pre></td>
+            <td>and cleanup databases</td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td colspan="4">source value</td><td colspan="4">destination value</td>
+          </tr>
+          <tr>
+            <td colspan="4">1</td><td colspan="4">0</td>
           </tr>
         </table>
 			</div>
