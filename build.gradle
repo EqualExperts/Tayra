@@ -58,7 +58,7 @@ project.ext {
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
   tocTemplateFile = new File("$acceptanceTestDir/toc.html")
 
-  explodedDir = "$project.buildDir/exploded"
+    explodedDir = "$project.buildDir/exploded"
   mongoVersion = System.getProperty('mongoVersion', '')
 
   deployScriptsDir = 'deploy-scripts'
@@ -67,7 +67,6 @@ project.ext {
   defaultDeployDir = 'deployed'
   deployDir = new File(System.getProperty('deployTo', "$project.buildDir/$defaultDeployDir"))
 }
-
 
 repositories {
   mavenCentral()
@@ -242,6 +241,7 @@ task document << {
 
 def prepareTOCForDocumentation() {
   //Prepare index.html containing TOC inside acceptance-tests dir
+
   def toc = new StringWriter()
   def html = new groovy.xml.MarkupBuilder(toc)
   def tocLineNumber = 1

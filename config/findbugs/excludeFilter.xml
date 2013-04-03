@@ -263,4 +263,16 @@
       <Bug code="NP_NULL_ON_SOME_PATH_EXCEPTION" />
     </Not>
   </Match>
+  <Match>
+  <Class name="com.ee.tayra.exploratory.RestoreExploratoryTest$_setupSpec_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.exploratory.BackupExploratoryTest$_$spock_feature_1_0_closure1"/>
+    <Not>
+      <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
 </FindBugsFilter>
