@@ -163,8 +163,8 @@ try {
 		new Copier().copy(reader, writer, progressListener, exceptionBubbler)
 	} {
 		if(writer && writer.timestamp.length() > 0){
-			factory.createTimestampFile().append(writer.timestamp).close()
-			timestamp = writer.timestamp
+			factory.createTimestampFile().append(writer.timestamp)?.close()
+			factory.timestamp = writer.timestamp
 		}
 		console.println "Attempting to resume Backup On: ${new Date()}"
 	}

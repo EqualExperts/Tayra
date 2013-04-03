@@ -46,8 +46,8 @@ class BackupFactory {
   private final def listeningReporter
   private final def writer
   private final def criteria
-  private final def timestamp
   private final String timestampFileName = 'timestamp.out'
+  def timestamp
 
   public BackupFactory (BackupCmdDefaults config, console) {
     this.config = config
@@ -104,6 +104,6 @@ class BackupFactory {
   }
 
   public def createTimestampFile() {
-    new File(timestampFileName)
+    new FileWriter(timestampFileName)
   }
 }
