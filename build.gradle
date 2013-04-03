@@ -283,40 +283,17 @@ task backupCurrentDeployScripts(type: Zip) << {
   from project.ext.deployDir
 }
 
-task deploy(dependsOn: [backupCurrentDeployScripts]) << {
-  def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
-  copy {
+task deploy(dependsOn: backupCurrentDeployScripts) << {
+    killFirst('com.ee.tayra.runner.Runner backup')
+    def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+    copy {
       from zipTree(zipFile)
       into project.ext.deployDir
   }
-  ant.chmod (perm : 'a+x') {
-     fileset (dir: project.ext.deployDir, includes : '*.sh')
+    ant.chmod (perm : 'a+x') {
+      fileset (dir: project.ext.deployDir, includes : '*.sh')
   }
 
-  killFirst('com.ee.tayra.runner.Runner backup')
-  //restart new backup version
-  /*
-  def backup = "${project.ext.deployDir}/backup.sh"
-  println "Restarting Backup from $backup"
-  def mongoVersion = System.getProperty('mongoVersion' , '270')
-  def args = [
-          '-s', 'localhost',
-          "--port=${mongoVersion.replace('.','')}17",
-          '-f', 'test.out',
-          '--username=admin',
-          '--password=admin',
-          '-t'
-  ]
-  println "Args --> $args"
-  def env = []
-  def program = "$backup ${args.join(' ')}".execute(env, project.ext.deployDir)
-  program.err.eachLine {
-      println it
-  }
-  program.in.eachLine {
-      println it
-  }
-  */
 }
 
 def killFirst(def processName) {
