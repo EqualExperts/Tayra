@@ -19,11 +19,12 @@
 						IncyWincyWebApp stores some of its persistent data on MongoDB.  On a not so
                         great day, Oliver, the Ops guy, issues an accidental query that updated the
                         <b>profile</b> collection in <b>users</b> database making status of private profiles
-                        public.  In his attempt to restore those documents to original state,
-                        he contacts Adam, the Admin and describes what happened.
+                        public and also changing the related <b>visible</b> database in the process.
+                        In his attempt to restore those documents to original state, he contacts
+                        Adam, the Admin and describes what happened.
 					</p>
 					<p>
-						<b>Adam:</b>  "Oliver, Do you know the time when this query was issued?
+						<b>Adam:</b> "Oliver, Do you know the time when this query was issued?
 						<br>
 						<br>
 						<b>Oliver:</b> "Around 1 o'clock today afternoon"
@@ -31,6 +32,12 @@
 						<br>
 						<b>Adam:</b> "Would it help if I did not restore the portion of log pertaining to that accidental update?"
 						<br>
+						<br>
+            <b>Oliver:</b> "Yes but I also have important documents belonging to <b>transaction</b> database in that time duration"
+            <br>
+            <br>
+            <b>Adam:</b> "Ok, I will exclude only the documents belonging to <b>profile</b> collection and <b>visible</b> database within that time window and retain <b>transaction</b> database"
+            <br>
 						<br>
 						<b>Oliver:</b> "Yes, that would work!"
 					</p>
@@ -45,206 +52,141 @@
 					</tr>
 				</table>
 				<br>
-				<h4>1. Some CUD Operations were done</h4>
-				<table>
-					<tr class="headingTableRow">
-						<td colspan="2">run mongo command on</td>
-						<td colspan="2"><pre>source</pre></td>
-					</tr>
-					<tr>
-						<td colspan="2">use database</td>
-						<td colspan="2">users</td>
-					</tr>
-					<tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.createCollection("profile")</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.insert({name:"One",type:"private"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.save({name:"Two",type:"private"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.insert({name:"Three",type:"public"})</pre></td>
-          </tr>
-          <tr>
-            <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.save({name:"Four",type:"public"})</pre></td>
-          </tr>
-
-				</table>
-				<br>
-				<h4>2. Run Backup Utility</h4>
-				<table>
-					<tr class="headingTableRow">
-						<td colspan="4">Open terminal</td>
-					</tr>
-					<tr>
-						<td>and run</td>
-						<td colspan="3"><pre>backup -s {unsecureSrcNode} --port={unsecureSrcPort} -f {file}</pre></td>
-					</tr>
-					<tr>
-						<td>and show</td>
-						<td colspan="3"><pre>stdout</pre></td>
-					</tr>
-					<tr>
-						<td>and ensure</td>
-						<td><pre>stdout</pre></td>
-						<td>contains</td>
-						<td>Process started</td>
-					</tr>
-				</table>
-				<br>
-				<h4>3. Run Restore Utility</h4>
-				<table>
-					<tr class="headingTableRow">
-						<td colspan="4">Open terminal</td>
-					</tr>
-					<tr>
-						<td>and run</td>
-						<td colspan="3"><pre>restore -d {unsecureTgtNode} --port={unsecureTgtPort} -f {file}</pre></td>
-					</tr>
-					<tr>
-						<td>and show</td>
-						<td colspan="3"><pre>stdout</pre></td>
-					</tr>
-					<tr>
-						<td>and ensure</td>
-						<td><pre>stdout</pre></td>
-						<td>contains</td>
-						<td>Process started</td>
-					</tr>
-				</table>
-				<br>
-				<h4>4. Ensure Source and Target have same State</h4>
-				<br>
-				<table>
-					<tr>
-						<td colspan="8" class="headingTableRow">
-							Ensuring target is consistent with source
-						</td>
-					</tr>
-					<tr>
-						<td>find documents for collection</td>
-						<td><pre>profile</pre></td>
-						<td>in database</td>
-						<td><pre>users</pre></td>
-						<td>where</td>
-						<td><pre>null</pre></td>
-						<td>and cleanup databases </td>
-						<td>false</td>
-					</tr>
-					<tr>
-						<td colspan="4">source value</td><td colspan="4">destination value</td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "One" , "type" : "private"} </pre></td><td colspan="4"><pre>{ "name" : "One" , "type" : "private"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td><td colspan="4"><pre>{ "name" : "Two" , "type" : "private"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Three" , "type" : "public"}</pre></td>
-					</tr>
-					<tr>
-						<td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td><td colspan="4"><pre>{ "name" : "Four" , "type" : "public"}</pre></td>
-					</tr>
-				</table>
-				<br>
-
-				<h4>5. Some More CUD Operations were done and a Wrong update was made</h4>
+        <h4>1. Some CUD Operations were done and a Wrong update was made</h4>
         <table>
           <tr class="headingTableRow">
             <td colspan="2">run mongo command on</td>
-            <td colspan="2"><pre>source</pre></td>
+            <td><pre>source</pre></td>
+            <td>Comments</td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">transactions</td>
+            <td>users</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.orders.insert({orderNo:456})</pre></td>
+            <td><pre>db.profile.insert({name:"One",type:"private"})</pre></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.orders.save({orderNo:457})</pre></td>
+            <td><pre>db.profile.save({name:"Two",type:"private"})</pre></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td><pre>db.profile.insert({name:"Three",type:"public"})</pre></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td><pre>db.profile.save({name:"Four",type:"public"})</pre></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">users</td>
+            <td>transactions</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td><pre>db.orders.insert({orderNo:456})</pre></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2">run</td>
+            <td><pre>db.orders.save({orderNo:457})</pre></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2">use database</td>
+            <td>users</td>
+            <td></td>
           </tr>
            <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.update({name:"One"},{$set:{type:"public"}})</pre></td>
+            <td><pre>db.profile.update({name:"One"},{$set:{type:"public"}})</pre></td>
+            <td>&laquo;-- Wrong update</td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">visible</td>
+            <td>visible</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.list.insert({userName:"One"})</pre></td>
+            <td><pre>db.profile.list.insert({userName:"One"})</pre></td>
+            <td>&laquo;-- Cascaded wrong change</td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">transactions</td>
+            <td>transactions</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.orders.insert({orderNo:458})</pre></td>
+            <td><pre>db.orders.insert({orderNo:458})</pre></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">visible</td>
+            <td>visible</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.details.save({viewedLinks:3})</pre></td>
+            <td><pre>db.details.save({viewedLinks:3})</pre></td>
+            <td>&laquo;-- Cascaded wrong change</td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">users</td>
+            <td>users</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.update({name:"Two"},{$set:{type:"public"}})</pre></td>
+            <td><pre>db.profile.update({name:"Two"},{$set:{type:"public"}})</pre></td>
+            <td>&laquo;-- Wrong update</td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">visible</td>
+            <td>visible</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.list.insert({userName:"Two"})</pre></td>
+            <td><pre>db.profile.list.insert({userName:"Two"})</pre></td>
+            <td>&laquo;-- Cascaded wrong change</td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">transactions</td>
+            <td>transactions</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.orders.insert({orderNo:459})</pre></td>
+            <td><pre>db.orders.insert({orderNo:459})</pre></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.orders.save({orderNo:460})</pre></td>
+            <td><pre>db.orders.save({orderNo:460})</pre></td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">use database</td>
-            <td colspan="2">users</td>
+            <td>users</td>
+            <td></td>
           </tr>
           <tr>
             <td colspan="2">run</td>
-            <td colspan="2"><pre>db.profile.insert({name:"Five",type:"private"})</pre></td>
+            <td><pre>db.profile.insert({name:"Five",type:"private"})</pre></td>
+            <td></td>
           </tr>
         </table>
         <br>
-        <h4>6. Run Backup Utility</h4>
+        <h4>2. Run Backup Utility</h4>
         <table>
           <tr class="headingTableRow">
             <td colspan="4">Open terminal</td>
@@ -265,7 +207,7 @@
           </tr>
         </table>
         <br>
-        <h4>7. Run Restore Utility With Dry run to analyze the corrupt data</h4>
+        <h4>3. Run Restore Utility With Dry run to analyze the corrupt data</h4>
         <table>
           <tr class="headingTableRow">
             <td colspan="4">Open terminal</td>
@@ -281,7 +223,7 @@
         </table>
         <br>
         <br>
-        <h4>8. Run Restore Utility to exclude corrupt data after analysis is done</h4>
+        <h4>4. Run Restore Utility to exclude corrupt data after analysis is done</h4>
         <p><i><h5>
         <ul>
           <li>Dry-run indicates that wrong update query was fired at 6th document from last.
@@ -294,7 +236,7 @@
         </ul>
        </h5></i></p>
        <br>
-       <h4 >8a. 1st Restore all correct documents until error.</h4>
+       <h4 >4a. 1st Restore all correct documents until error.</h4>
         <table>
           <tr>
             <td>Open oplog for node</td>
@@ -341,7 +283,7 @@
           </tr>
         </table>
         
-        <h4>9. Ensure Target does not contains corrupt data</h4>
+        <h4>5. Ensure Target does not contains corrupt data</h4>
         <table>
           <tr>
             <td colspan="8" class="headingTableRow">
@@ -378,6 +320,7 @@
           </tr>
         </table>
         <br>
+        <h5>Checking transactions database is intact</h5>
          <table>
           <tr>
             <td colspan="8" class="headingTableRow">
