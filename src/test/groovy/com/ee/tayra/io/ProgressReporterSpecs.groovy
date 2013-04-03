@@ -82,4 +82,15 @@ public class ProgressReporterSpecs extends Specification{
 			1 * mockConsole.printf("===> Unable to Read Documents: %s\r", problem.message)
 	}
 
+	def reportsWaitingWhenNoDocumentIsRead() {
+		given: 'a document is read'
+			String document = ''
+
+		when: 'it starts reading document'
+			reporter.onReadStart(document)
+
+		then: 'waiting for document is not reported'
+			1 * mockConsole.printf('%s Waiting for documents\r', ['/'])
+	}
+
 }

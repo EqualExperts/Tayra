@@ -282,4 +282,28 @@ public class CopierSpecs extends Specification {
 			0 * mockCopyListener.onWriteSuccess(_)
 	}
 
+	def notifiesWriteStartWhenADocumentIsRead(){
+		given: 'a collection reader and a writer'
+			BufferedReader mockReader = Mock(BufferedReader)
+			Replayer mockWriter = Mock(Replayer)
+			copier = new Copier() {
+				@Override
+				BufferedReader createBufferedReader(Reader reader) {
+					mockReader
+				}
+			}
+
+		and: 'a copy listener'
+			mockCopyListener = Mock(CopyListener.class)
+
+		and: 'reader reads a document'
+			mockReader.readLine() >> document >> null
+			mockWriter.replay(document) >> false
+
+		when: 'the document is copied'
+			copier.copy(mockReader, mockWriter, mockCopyListener)
+
+		then: 'it notifies a successful write'
+			1 * mockCopyListener.onWriteStart(document)
+	}
 }

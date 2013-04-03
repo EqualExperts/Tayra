@@ -80,4 +80,22 @@ public class Notifier {
     });
   }
 
+  public final void notifyReadStart(final String document) {
+    list(listeners).foreach(new Effect<CopyListener>() {
+      @Override
+      public void e(final CopyListener listener) {
+        listener.onReadStart(document);
+      }
+    });
+  }
+
+  public final void notifyWriteStart(final String document) {
+    list(listeners).foreach(new Effect<CopyListener>() {
+      @Override
+      public void e(final CopyListener listener) {
+        listener.onWriteStart(document);
+      }
+    });
+  }
+
 }

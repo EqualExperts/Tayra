@@ -59,4 +59,12 @@ public class DeafAndDumbReporter implements CopyListener, Reporter {
   @Override
   public void writeStartTimeTo(final Writer writer) {
   }
+
+  @Override
+  public void onReadStart(final String document) {
+  }
+
+  @Override
+  public void onWriteStart(final String document) {
+  }
 }

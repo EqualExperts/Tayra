@@ -41,6 +41,7 @@ public class Copier {
       final CopyListener... listeners) {
     Notifier notifier = new Notifier(listeners);
     try {
+      notifier.notifyReadStart("");
       while (from.hasDocument()) {
         String document = from.readDocument();
         if (document.isEmpty()) {
@@ -54,6 +55,7 @@ public class Copier {
         } catch (IOException problem) {
           notifier.notifyWriteFailure(document, problem);
         }
+        notifier.notifyReadStart("Fetching Document...");
       }
     } catch (RuntimeException problem) {
       notifier.notifyReadFailure(null, problem);
@@ -69,6 +71,7 @@ public class Copier {
       while ((document = from.readLine()) != null) {
         notifier.notifyReadSuccess(document);
         try {
+          notifier.notifyWriteStart(document);
           if (to.replay(document)) {
             notifier.notifyWriteSuccess(document);
           }

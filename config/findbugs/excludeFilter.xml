@@ -155,7 +155,7 @@
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
-   <Match>
+  <Match>
     <Class name="com.ee.tayra.io.criteria.OperationStrategy$1"/>
     <Not>
       <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
@@ -173,92 +173,92 @@
       <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
     </Not>
   </Match>
-   <Match>
-  <Class name="com.ee.tayra.io.criteria.DDLOperation"/>
-    <Not>
-      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
-    </Not>
-  </Match>
-   <Match>
-  <Class name="com.ee.tayra.io.criteria.DMLOperation"/>
+  <Match>
+    <Class name="com.ee.tayra.io.criteria.DDLOperation"/>
     <Not>
       <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.domain.operation.DeleteDocumentBuilder$_documentStructure_closure1"/>
+    <Class name="com.ee.tayra.io.criteria.DMLOperation"/>
+    <Not>
+      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Not>
+  </Match>
+  <Match>
+    <Class name="com.ee.tayra.domain.operation.DeleteDocumentBuilder$_documentStructure_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.domain.operation.DocumentBuilder$_documentStructure_closure1"/>
+    <Class name="com.ee.tayra.domain.operation.DocumentBuilder$_documentStructure_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.domain.operation.UpdateDocumentBuilder$_documentStructure_closure1"/>
+    <Class name="com.ee.tayra.domain.operation.UpdateDocumentBuilder$_documentStructure_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.fixtures.RunnerFixture"/>
+    <Class name="com.ee.tayra.fixtures.RunnerFixture"/>
     <Not>
       <Bug code="DM_DEFAULT_ENCODING" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.restore.Restore$_run_closure2"/>
+    <Class name="com.ee.tayra.command.restore.Restore$_run_closure2"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.backup.BackupFactory$_closure1"/>
+    <Class name="com.ee.tayra.command.backup.BackupFactory$_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.backup.BackupFactory$_closure2"/>
+    <Class name="com.ee.tayra.command.backup.BackupFactory$_closure2"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.restore.RestoreFactory$_closure1"/>
+    <Class name="com.ee.tayra.command.restore.RestoreFactory$_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.restore.RestoreFactory$_createCriteria_closure1"/>
+    <Class name="com.ee.tayra.command.restore.RestoreFactory$_createCriteria_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure5"/>
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure5"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.io.SelectiveOplogReader"/>
+    <Class name="com.ee.tayra.io.SelectiveOplogReader"/>
     <Not>
       <Bug code="DM_STRING_CTOR" />
     </Not>
   </Match>
   <Match>
-  <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure6"/>
+    <Class name="com.ee.tayra.command.backup.Backup$_run_closure2_closure6"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
   </Match>
   <Match>
-  <Class name="GivenSourceReplicaSetAndTargetNodeAreRunning"/>
+    <Class name="GivenSourceReplicaSetAndTargetNodeAreRunning"/>
     <Not>
       <Bug code="NP_NULL_ON_SOME_PATH_EXCEPTION" />
     </Not>
@@ -273,6 +273,12 @@
   <Class name="com.ee.tayra.exploratory.BackupExploratoryTest$_$spock_feature_1_0_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
+    </Not>
+  </Match>
+  <Match>
+  <Class name="com.ee.tayra.io.ProgressReporter"/>
+    <Not>
+      <Bug code="VA_FORMAT_STRING_MISSING_ARGUMENT" />
     </Not>
   </Match>
 </FindBugsFilter>

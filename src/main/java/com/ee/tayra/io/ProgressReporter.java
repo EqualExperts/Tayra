@@ -90,7 +90,8 @@ class ProgressReporter implements CopyListener, Reporter {
     try {
       writeln(writer, "");
       writeln(writer, "Completed in : "
-          + (new Date().getTime() - startTime) / MS_TO_SECONDS + " seconds");
+          + (new Date().getTime() - startTime) / MS_TO_SECONDS
+          + " seconds");
       writeln(writer, "---------------------------------");
       writeln(writer, "             Summary             ");
       writeln(writer, "---------------------------------");
@@ -122,4 +123,19 @@ class ProgressReporter implements CopyListener, Reporter {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void onReadStart(final String document) {
+    if (document.isEmpty()) {
+       getProgressWriter().printf("%s Waiting for documents\r",
+            spinner[documentsWritten % spinner.length]);
+    }
+  }
+
+  @Override
+  public void onWriteStart(final String document) {
+    getProgressWriter().printf("%s Pushing Document...\r",
+        spinner[documentsWritten % spinner.length]);
+  }
+
 }
