@@ -104,15 +104,15 @@ jar {
 }
 
 clean << {
-	ant.delete(file:"$coverageDataFile")
+  ant.delete(file:"$coverageDataFile")
 }
 
 test {
-    println "Running tests for Mongo Version $project.ext.mongoVersion"
     systemProperties['mongoVersion'] = project.ext.mongoVersion
 	def originalClasspath = getClasspath()
 	doFirst {
-		ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
+        println "Running tests for Mongo Version $project.ext.mongoVersion"
+        ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
 		//Note the classpath order: instrumented classes are before the original
 		//uninstrumented classes.  This is important
 		setClasspath(files("$instrumentedClassesDir") + originalClasspath)
@@ -198,7 +198,10 @@ task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
 	from project.ext.distsBinDir
 	from (project.ext.distsTemplateDir) { include ('**/*.txt', '**/*.document', '**/*.rtf') }
 	from ("$libsDir") { into ('libs') }
-    from (project.ext.acceptanceTestStoriesDir) { into ('docs') }
+    from (project.ext.acceptanceTestDir) {
+      into ('docs')
+      exclude ('not-played', 'files', '**/toc.html')
+    }
 }
 
 findbugs {
@@ -240,8 +243,6 @@ task document << {
 }
 
 def prepareTOCForDocumentation() {
-  //Prepare index.html containing TOC inside acceptance-tests dir
-
   def toc = new StringWriter()
   def html = new groovy.xml.MarkupBuilder(toc)
   def tocLineNumber = 1
@@ -273,35 +274,43 @@ def toSentence(String name) {
   sentence.toString()
 }
 
-task backupCurrentDeployScripts(type: Zip) << {
-  println "Backing up existing deploy scripts from ${project.ext.deployDir}"
-  println "to Dir ${project.ext.backupDeployScriptsDir}"
-  println "with Archive name: ${project.ext.previousArchiveName}.zip"
+task setupDeploy << {
+  ant.mkdir(dir: project.ext.backupDeployScriptsDir)
+  ant.mkdir(dir: project.ext.deployDir)
+}
 
+task backupCurrentDeployScripts(type: Zip, dependsOn: setupDeploy) {
+  doFirst{
+      killFirst('com.ee.tayra.runner.Runner backup')
+      println "Backing up existing deploy scripts from ${project.ext.deployDir}"
+      println "To Dir ${project.ext.backupDeployScriptsDir}"
+      println "With Archive name: ${project.ext.previousArchiveName}.zip"
+  }
   baseName = project.ext.previousArchiveName
   destinationDir = project.ext.backupDeployScriptsDir
   from project.ext.deployDir
 }
 
-task deploy(dependsOn: backupCurrentDeployScripts) << {
-    killFirst('com.ee.tayra.runner.Runner backup')
+task deploy (dependsOn: backupCurrentDeployScripts) {
+  doLast {
     def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
     copy {
       from zipTree(zipFile)
       into project.ext.deployDir
-  }
+    }
     ant.chmod (perm : 'a+x') {
       fileset (dir: project.ext.deployDir, includes : '*.sh')
+    }
   }
-
 }
 
 def killFirst(def processName) {
     def os = System.getProperty("os.name")
-    def listProcessCmd = os == /Win*/ ? 'tasklist' : 'ps -ef'
+    def listProcessCmd = os ==~ /Win.*/ ? 'tasklist' : 'ps -ef'
     println "Executing $listProcessCmd on $os..."
     def process = listProcessCmd.execute()
     def killableProcesses = process.in.filterLine {
+//        it ==~ /(.*|[0-9]+.*):portprefix17/
         it.contains("$processName")
     }
     def args = "$killableProcesses".split() as List
