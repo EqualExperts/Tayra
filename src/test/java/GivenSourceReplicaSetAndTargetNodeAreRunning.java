@@ -34,8 +34,8 @@ public class GivenSourceReplicaSetAndTargetNodeAreRunning extends DoFixture {
     return new RunnerFixture(parameters);
   }
 
-  public final Fixture runMongoCommandOn(final String node)
-      throws UnknownHostException {
+  public final Fixture runMongoCommandOnComments(final String node)
+  throws UnknownHostException {
     return connector.get(node).createMongoFixture();
   }
 
