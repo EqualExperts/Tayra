@@ -83,7 +83,7 @@ if (isString(options.fSize)) {
 }
 
 if (isString(options.fMax)) {
-	config.fileMax = options.fMax
+	config.fileMax = Integer.parseInt(options.fMax)
 }
 
 if(options.port) {
