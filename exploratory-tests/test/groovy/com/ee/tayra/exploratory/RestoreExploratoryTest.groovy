@@ -1,10 +1,9 @@
 package com.ee.tayra.exploratory
 
-import com.ee.tayra.command.backup.Backup
 import com.ee.tayra.command.restore.Restore
 import com.mongodb.MongoClient;
 
-class RestoreExploratoryTest extends ExploratoryTestSupport {
+class RestoreExploratoryTest extends RequiresExploratoryTestSupport {
 
   private def context
   static StringBuilder result
@@ -23,7 +22,7 @@ class RestoreExploratoryTest extends ExploratoryTestSupport {
   }
 
   def restoresOnNonAuthenticatedStandaloneWhenCredentialsAreGiven() {
-    given: 'arguments for restore contains -d, --port, -f, --sExclude, --sNs options'
+    given: 'arguments for restore contains -d, --port, -f, -u, -p options'
       context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '-u', USERNAME, '-p', PASSWORD])
 
     when: 'restore runs with above args'
@@ -44,8 +43,8 @@ class RestoreExploratoryTest extends ExploratoryTestSupport {
       !assertTargetNodeContainsAllDocuments()
   }
 
-  def criteriaIsAppliedWhenSNsAndSExcludeIsGivenWithDryRunOption() {
-    given: 'arguments for restore contains -d, --port, -f, --dry-run options'
+  def excludesDocumentsForGivenNamespacesWithDryRun() {
+    given: 'arguments for restore contains -d, --port, -f, --sExclude, --sNs, --dry-run options'
       context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--sExclude', '--sNs=Tayra,EELab.thing', '--dry-run'])
 
     when: 'restore runs with above args'
@@ -58,7 +57,7 @@ class RestoreExploratoryTest extends ExploratoryTestSupport {
       result.toString().contains('"ns" : "DL.')
   }
 
-  def excludesDocumentsbelongingToMultipleNsWithSExcludeWhileRestore() {
+  def excludesDocumentsForGivenNamespacesWhenRestoring() {
     given: 'arguments for restore contains -d, --port, -f, --sExclude, --sNs options'
       context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--sExclude', '--sNs=DL,EELab.thing'])
 
@@ -70,8 +69,8 @@ class RestoreExploratoryTest extends ExploratoryTestSupport {
       tgt.getDB("EELab").getCollection("thing").count() == 0
   }
 
-  def noCriteriaIsAppliedWhenNoValueIsGivenforSns() {
-    given:'arguments contains -s, --port, -f, --sNs options'
+  def allDocumentsAreRestoredWhenNoValueIsGivenforSNs() {
+    given:'arguments contains -d, --port, -f, --sNs options'
       context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--sNs='])
 
     when: 'Restore runs'
@@ -82,7 +81,7 @@ class RestoreExploratoryTest extends ExploratoryTestSupport {
   }
 
   def allDocumentsAreRestoredWhenNoValueIsGivenforSUntil() {
-    given: 'arguments for restore contains -f, -d, --port, -f, --sUntil options'
+    given: 'arguments for restore contains -d, --port, -f, --sUntil options'
       context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--sUntil='])
 
     when: 'restore runs'
@@ -92,38 +91,39 @@ class RestoreExploratoryTest extends ExploratoryTestSupport {
       assertTargetNodeContainsAllDocuments()
   }
 
-  def allBackupFilesAreReadWhenFAlleIsGivenWithDryRunOption() {
-    given:'Backup is taken'
-      addExtraDataTo(src)
-      Binding backupContext = new Binding()
-      backupContext.setVariable('args', ['-s', srcHOST, "--port=$srcPORT", '-f', backupFile, '--fSize=1KB', '--fMax=5'])
-      new Backup(backupContext).run()
-
-    and:'arguments for restore contains -d, --port, -f, --dry-run options'
-      context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--fAll', '--dry-run'])
-
-    when: 'restore runs with above args'
-      result << restoreAndCaptureConsoleOutput(context)
-
-    then: 'the result should contain all documents'
-      result.toString().contains('"ns" : "Tayra.thing"')
-      result.toString().contains('"ns" : "Tayra.profile"')
-      result.toString().contains('"ns" : "EELab.thing')
-      result.toString().contains('"ns" : "EELab.profile')
-      result.toString().contains('"ns" : "DL.thing')
-      result.toString().contains('"ns" : "DL.profile')
-
-    cleanup: 'delete extra data and backup files'
-      deleteExtraDataFrom(src)
-      deleteBackupFiles(5)
-  }
+//  def allBackupFilesAreReadWhenFAllIsGivenWithDryRunOption() {
+//    given:'Backup is taken'
+//      addExtraDataTo(src)
+//      Binding backupContext = new Binding()
+//      backupContext.setVariable('args', ['-s', srcHOST, "--port=$srcPORT", '-f', backupFile, '--fSize=1KB', '--fMax=5'])
+//      new Backup(backupContext).run()
+//
+//    and:'arguments for restore contains -d, --port, -f, --dry-run options'
+//      context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--fAll', '--dry-run'])
+//
+//    when: 'restore runs with above args'
+//      result << restoreAndCaptureConsoleOutput(context)
+//
+//    then: 'the result should contain all documents'
+//      result.toString().contains('"ns" : "Tayra.thing"')
+//      result.toString().contains('"ns" : "Tayra.profile"')
+//      result.toString().contains('"ns" : "EELab.thing')
+//      result.toString().contains('"ns" : "EELab.profile')
+//      result.toString().contains('"ns" : "DL.thing')
+//      result.toString().contains('"ns" : "DL.profile')
+//      result.toString().contains('"ns" : "Extra.')
+//
+//    cleanup: 'delete extra data and backup files'
+//      deleteExtraDataFrom(src)
+//      deleteBackupFiles(5)
+//  }
 
   private assertTargetNodeContainsAllDocuments() {
-    tgt.getDB("DL").getCollection("profile").count == 1
-    tgt.getDB("DL").getCollection("thing").count() == 1
-    tgt.getDB("Tayra").getCollection("profile").count() == 1
-    tgt.getDB("Tayra").getCollection("thing").count() == 1
-    tgt.getDB("EELab").getCollection("profile").count() == 1
+    tgt.getDB("DL").getCollection("profile").count == 1 && 
+    tgt.getDB("DL").getCollection("thing").count() == 1 &&
+    tgt.getDB("Tayra").getCollection("profile").count() == 1 &&
+    tgt.getDB("Tayra").getCollection("thing").count() == 1 &&
+    tgt.getDB("EELab").getCollection("profile").count() == 1 &&
     tgt.getDB("EELab").getCollection("thing").count() == 1
   }
 

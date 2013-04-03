@@ -10,8 +10,8 @@ import com.mongodb.DB
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 
-class ExploratoryTestSupport extends Specification {
-  
+public class RequiresExploratoryTestSupport extends Specification {
+
   private static final ConnectionFactory factory = ConnectionFactory.instance();
   static MongoClient src
   static MongoClient tgt
@@ -40,13 +40,10 @@ class ExploratoryTestSupport extends Specification {
     srcPORT = src.getAddress().port
     tgtHOST = tgt.getAddress().host
     tgtPORT = tgt.getAddress().port
-
     addDataTo(src)
   }
 
   def cleanupSpec() {
-    timestampFile.delete()
-    deleteBackupFiles(0)
     deleteDataFrom(src)
     connector.close()
   }
@@ -64,10 +61,6 @@ class ExploratoryTestSupport extends Specification {
   private final void run(final String cmdString, final DB db) {
     CommandResult result = db.doEval(cmdString);
   }
-
-//  protected final void insert (final BasicDBObject doc, final DBCollection collection){
-//    collection.insert(doc)
-//  }
 
   protected final void takeBackup() {
     Binding backupContext = new Binding()
@@ -93,30 +86,39 @@ class ExploratoryTestSupport extends Specification {
     mongoNode.getDB("EELab").dropDatabase()
   }
 
-  protected void addExtraDataTo(MongoClient mongoNode) {
-    DB ExtraDb = mongoNode.getDB("Extra")
-    run('db.thing.insert({name:"One"})', ExtraDb)
-    run('db.thing.insert({name:"Two"})', ExtraDb)
-    run('db.thing.insert({name:"Three"})', ExtraDb)
-    run('db.thing.insert({name:"Four"})', ExtraDb)
-    run('db.thing.insert({name:"Five"})', ExtraDb)
-    run('db.thing.insert({name:"Six"})', ExtraDb)
-  }
-  
-  protected void deleteExtraDataFrom(MongoClient mongoNode) {
-    mongoNode.getDB("Extra").dropDatabase()
-  }
+//  protected void addExtraDataTo(MongoClient mongoNode) {
+//    DB ExtraDb = mongoNode.getDB("Extra")
+//    run('db.thing.insert({name:"One"})', ExtraDb)
+//    run('db.thing.insert({name:"Two"})', ExtraDb)
+//    run('db.thing.insert({name:"Three"})', ExtraDb)
+//    run('db.thing.insert({name:"Four"})', ExtraDb)
+//    run('db.thing.insert({name:"Five"})', ExtraDb)
+//    run('db.thing.insert({name:"Six"})', ExtraDb)
+//  }
+//  
+//  protected void deleteExtraDataFrom(MongoClient mongoNode) {
+//    mongoNode.getDB("Extra").dropDatabase()
+//  }
 
-  protected void deleteBackupFiles(int noOfFiles) {
-    File backup = new File(backupFile)
-    if(backup.exists()) {
-      backup.delete()
-    }
-    for(int i=1; i<=noOfFiles; i++) {
-      File file = new File(backupFile + "." + i)
-      if(file.exists()) {
-        file.delete()
-      }
-    }
-  }
+//  protected void deleteBackupFiles() {
+//    def files=findBackupFilesInDirectory(backupFile)
+//    println 'before delete '+files
+//    files.each { File f ->
+////      new File(it.toString()).delete()
+//      println f.absolutePath
+//      println 'text '+f.text
+//	  
+////	  file = new File(it.toString())
+//	  f.delete()
+//   }
+//    files=findBackupFilesInDirectory(backupFile)
+//    println 'after '+ files
+//  }
+//
+//  def findBackupFilesInDirectory(def fileNameRegex) {
+//    File backupFile = new File(fileNameRegex)
+//    File directory = backupFile.getAbsoluteFile().getParentFile()
+//    directory.listFiles().findAll{!it.isDirectory() && it.name.startsWith(fileNameRegex) }
+//  }
+
 }
