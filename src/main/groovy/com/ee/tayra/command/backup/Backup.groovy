@@ -70,11 +70,11 @@ if(options.s) {
 
 config.recordToFile = options.f
 
-if(options.fSize) {
+if(options.fSize != true && options.fSize == null) {
   config.fileSize = options.fSize
 }
 
-if(options.fMax) {
+if(options.fMax != true && options.fMax == null) {
   config.fileMax = Integer.parseInt(options.fMax)
 }
 

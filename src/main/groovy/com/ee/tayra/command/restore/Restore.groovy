@@ -125,6 +125,10 @@ if(options.fAll) {
   isMultiple = true
 }
 
+errorLog = 'error.log'
+def stderr = new PrintStream (new FileOutputStream(errorLog))
+System.setErr(stderr)
+
 RestoreFactory factory = null
 MongoClient mongo = null
 try {
@@ -152,8 +156,8 @@ try {
 
   progressReporter.summarizeTo console
 } catch (Throwable problem) {
-  console.println "Oops!! Could not perform restore...$problem.message"
-  problem.printStackTrace(console)
+  console.println "Oops!! Could not perform restore...$problem.message , Refer $errorLog for more details."
+  problem.printStackTrace(stderr)
 } finally {
   mongo?.close()
 }

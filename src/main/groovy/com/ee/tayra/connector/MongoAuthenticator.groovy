@@ -45,7 +45,9 @@ class MongoAuthenticator implements Authenticator {
     try {
       mongo.databaseNames
       return true
-    } catch (MongoException e) {
+    } catch (MongoException.Network problem) {
+      throw problem
+    } catch (MongoException problem) {
       return false
     }
   }

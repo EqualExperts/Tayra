@@ -69,4 +69,22 @@ class AuthenticatorSpecs extends Specification {
 			 'Secure'   | true
 			 'unSecure' | false
 	}
+	
+	def shoutsWhenInvalidPortIsGiven() {
+		given: 'Invalid port is given '
+			ServerAddress server = new ServerAddress('localhost', 34567)
+			def mongo = new MongoClient(server)
+			def username = ''
+			def password =''
+			
+		when: 'makes an authenticator with the above mongo'
+			authenticator = new MongoAuthenticator(mongo)
+			
+		and: 'authenticates with above args'
+			authenticator.authenticate(username, password)
+		
+		then: 'error message should be thrown as'
+			def problem = thrown(MongoException.Network)
+			problem.message == 'can\'t call something : localhost/127.0.0.1:34567/admin'
+	}
 }
