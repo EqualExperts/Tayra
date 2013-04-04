@@ -18,7 +18,7 @@
 <br>
 
 ## Documentation
-Please find the documentation [here](http://htmlpreview.github.com/?https://github.com/EqualExperts/Tayra/blob/master/acceptance-tests/index.html).  Additionally, you can refer to the `ReadMe.txt` within binary distribution for features and `Tayra Usage.rtf` for usage
+Please find the documentation [here](http://htmlpreview.github.com/?https://github.com/EqualExperts/Tayra/blob/master/acceptance-tests/index.html) for usage. Additionally, you can refer to the `ReadMe.txt` within binary distribution for features.
 
 ## Binary Distributions
 **[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**.  
