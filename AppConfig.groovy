@@ -50,12 +50,12 @@ configuration {
         //JBoss Versioning Convention
 		version {
 			major = 0 //number related to production release
-			minor = 7 //changes or feature additions
+			minor = 8 //changes or feature additions
 			micro = 0 //patches and bug fixes
 			qualifier {
-				alphaNumeric = 'Beta1' //Alpha# or Beta# or CR# or GA, or SP#
+				alphaNumeric = 'Beta2' //Alpha# or Beta# or CR# or GA, or SP#
 			}
-            previous = '0.6.0.Beta1'
+            previous = '0.7.0.Beta1'
 			complete = toCompleteVersion()
 		}
 
