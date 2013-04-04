@@ -9,10 +9,12 @@
  availability of service.<br>
 
 * Features Summary
- * Selective restore
+ * Selective Restore
+ * Selective Backup
  * Rotating Logs in backup and restore
  * Surviving node crash in a replica set
  * Secured and unsecured backup/restore
+ * Analyse documents to restore using Dry Run 
 <br>
 
 ## Documentation
