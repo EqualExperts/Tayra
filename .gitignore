@@ -58,3 +58,4 @@ out
 target
 .settings
 acceptance-tests/stories/played/cud/files
+exception.details

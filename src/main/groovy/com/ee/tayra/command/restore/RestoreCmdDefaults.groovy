@@ -42,6 +42,7 @@ class RestoreCmdDefaults {
   public String sUntil = ''
   public String sSince = ''
   public String exceptionFile = 'exception.documents'
+  public String exceptionDetailsFile = 'exception.details'
   public boolean dryRunRequired = false
   public boolean sExclude = false
 }

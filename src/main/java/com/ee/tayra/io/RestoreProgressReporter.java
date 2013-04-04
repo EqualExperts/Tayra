@@ -36,13 +36,16 @@ import java.io.Writer;
 
 public class RestoreProgressReporter extends ProgressReporter {
 
+  private static final String EXCEPTION_DETAILS_FILE = "exception.details";
   private final Writer exceptionDocsWriter;
   private int exceptionDocuments = 0;
+  private final Writer exceptionDetailsWriter;
 
   public RestoreProgressReporter(final Writer exceptionDocsWriter,
-      final PrintWriter progressWriter) {
+  final Writer exceptionDetailsWriter, final PrintWriter progressWriter) {
     super(progressWriter);
     this.exceptionDocsWriter = exceptionDocsWriter;
+    this.exceptionDetailsWriter = exceptionDetailsWriter;
   }
 
   @Override
@@ -54,22 +57,30 @@ public class RestoreProgressReporter extends ProgressReporter {
     }
 
     exceptionDocuments++;
-    if (exceptionDocsWriter == null) {
-      getProgressWriter().printf("===> Unable to Write Document(s) %s",
-          problem.getMessage());
+    if (exceptionDocsWriter == null || exceptionDetailsWriter == null) {
+        getProgressWriter().printf("===> Unable to Write Document(s) %s",
+                problem.getMessage());
       return;
     }
 
     try {
-      exceptionDocsWriter.append(document);
-      exceptionDocsWriter.append(NEW_LINE);
-      exceptionDocsWriter.flush();
+      writeLine(exceptionDocsWriter, document);
+      writeLine(exceptionDetailsWriter, document);
+      writeLine(exceptionDetailsWriter, problem.getMessage());
+      writeLine(exceptionDetailsWriter, "");
     } catch (IOException e) {
       getProgressWriter().printf(
           "===> Unable to Write Exceptioning Document(s) %s",
           e.getMessage());
       problem.printStackTrace(getProgressWriter());
     }
+  }
+
+  private void writeLine(final Writer writer, final String data)
+  throws IOException {
+    writer.append(data);
+    writer.append(NEW_LINE);
+    writer.flush();
   }
 
   public final int getExceptionDocuments() {
@@ -81,6 +92,13 @@ public class RestoreProgressReporter extends ProgressReporter {
     try {
       super.summarizeTo(writer);
       writeln(writer, "Exception Documents: " + exceptionDocuments);
+      if (exceptionDocuments > 0) {
+         writeln(writer, "");
+         writeln(writer, "NOTE: For further reasons for "
+           + "exceptioning documents,");
+         writeln(writer, "You may want to refer to the file: "
+           + EXCEPTION_DETAILS_FILE);
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }

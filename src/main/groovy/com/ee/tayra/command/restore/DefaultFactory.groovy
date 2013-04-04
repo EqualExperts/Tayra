@@ -48,7 +48,8 @@ class DefaultFactory extends RestoreFactory {
     super(config)
     this.mongo = mongo
     listeningReporter = new RestoreProgressReporter(new FileWriter
-        (config.exceptionFile), console)
+        (config.exceptionFile), new FileWriter
+        (config.exceptionDetailsFile), console)
   }
 
   @Override

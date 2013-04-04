@@ -1,6 +1,7 @@
 package com.ee.tayra.io
 
 import com.ee.tayra.io.ProgressReporter;
+import com.mongodb.MongoException
 
 import spock.lang.*
 
@@ -8,38 +9,43 @@ public class RestoreProgressReporterSpecs extends Specification {
 
 	private Writer mockExceptionDocumentsWriter
 
+	private Writer mockExceptionDetailsWriter
+
 	private PrintWriter mockConsole
 
 	private ProgressReporter reporter
 
 	def setup() {
 		mockExceptionDocumentsWriter = Mock(Writer)
+		mockExceptionDetailsWriter = Mock(Writer)
 		mockConsole = Mock(PrintWriter)
-		reporter = new RestoreProgressReporter(mockExceptionDocumentsWriter, mockConsole)
+		reporter = new RestoreProgressReporter(mockExceptionDocumentsWriter, mockExceptionDetailsWriter, mockConsole)
 	}
 
 
 	def writesExceptioningDocuments() throws IOException {
 		given: 'an empty document'
 			String document = "{}"
-			Throwable problem = null
+			Throwable problem = new Throwable()
 
 		when: 'it fails to write the document'
 			reporter.onWriteFailure(document , problem)
 
 		then: 'an exception document is written'
 			1 * mockExceptionDocumentsWriter.append(document)
+			1 * mockExceptionDetailsWriter.append(document)
+			1 * mockExceptionDetailsWriter.append(problem.message)
 			0 * mockConsole.printf("")
 	}
 
 
-		def incrementsExceptionDocumentsCountAfterAFailedWrite() {
+	def incrementsExceptionDocumentsCountAfterAFailedWrite() {
 		given: 'an empty document'
 			String document = "{}"
-			Throwable ignore = null
+			Throwable ignore =  new Throwable()
 
 		when: 'it fails to write the document'
-			reporter.onWriteFailure(document , ignore)
+			reporter.onWriteFailure(document, ignore)
 
 		then: 'exception documents count is incremented'
 			reporter.getExceptionDocuments() == 1
@@ -103,7 +109,8 @@ public class RestoreProgressReporterSpecs extends Specification {
 
 	def writesDocumentsOnlyWhenExceptionsWriterIsDefined() throws Exception {
 		given: 'a progress reporter without exception document writer'
-			reporter = new RestoreProgressReporter(null, mockConsole)
+		    def ignoreWriter = null
+			reporter = new RestoreProgressReporter(mockExceptionDocumentsWriter, ignoreWriter, mockConsole)
 
 		and: 'an empty document'
 			String document = "{}"
@@ -115,6 +122,41 @@ public class RestoreProgressReporterSpecs extends Specification {
 			reporter.onWriteFailure(document , problem)
 
 		then: 'error message should be shown as'
-			mockConsole.printf("===> Unable to Write Document(s) %s", problem.message)
+			1 * mockConsole.printf("===> Unable to Write Document(s) %s", problem.message)
+	}
+
+	def writesDocumentsOnlyWhenExceptionDetailsWriterIsDefined() throws Exception {
+		given: 'a progress reporter without exception details writer'
+			def ignoreWriter = null
+			reporter = new RestoreProgressReporter(ignoreWriter, mockExceptionDetailsWriter, mockConsole)
+
+		and: 'an empty document'
+			String document = "{}"
+
+		and: 'a problem occurs'
+			IOException problem = new IOException("Disk full")
+
+		when: 'it fails to write the document'
+			reporter.onWriteFailure(document , problem)
+
+		then: 'error message should be shown as'
+			1 * mockConsole.printf("===> Unable to Write Document(s) %s", problem.message)
+	}
+
+	def recordsWriteFailureWithDetails() {
+		given: 'a document'
+			String document = 'document'
+
+		and: 'a problem occurs'
+			def problem = new MongoException("Duplicate Key")
+
+		when: 'there is a write failure'
+			reporter.onWriteFailure(document , problem)
+
+		then: 'the failure details should have been recorded'
+			2 * mockExceptionDocumentsWriter.append(_)
+			1 * mockExceptionDocumentsWriter.flush()
+			6 * mockExceptionDetailsWriter.append(_)
+			3 * mockExceptionDetailsWriter.flush()
 	}
 }

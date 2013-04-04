@@ -134,7 +134,7 @@ class ProgressReporter implements CopyListener, Reporter {
 
   @Override
   public void onWriteStart(final String document) {
-    getProgressWriter().printf("%s Pushing Document...\r",
+    getProgressWriter().printf("%s Writing Document....\r",
         spinner[documentsWritten % spinner.length]);
   }
 
