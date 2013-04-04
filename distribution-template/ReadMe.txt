@@ -22,11 +22,22 @@ automatically switch over to the next similar node (primary for primary and
 secondary preferred for secondary) and will resume the backup from where it left
 without user intervention.
 
+You can also perform a backup or restore by selectively including or excluding 
+documents satisfying a certain criteria. Criteria which can be applied are 
+time-bounding documents, filtering on the basis of database and collections.
+
+You can have a dry-run to analyse the documents you have selected to be restored.
+
 Features Summary:
 * Selective restore
 * Rotating Logs in backup and restore
 * Surviving node crash in a replica set
 * Secured and unsecured backup/restore
+* Dry-run
+* Selective backup
+* More granular selection criteria for backup and restore
+  -multiple dbs and collections
+  -exclude the criteria given
 
 Pre-Requisites
 * It assumes that you have JDK1.6 or 1.7 installed and you have java
@@ -44,6 +55,5 @@ Running Tayra
   entries farthest in history.
 
 What may Future releases include?
-* Allow more granular control over backup and restore
-  (e.g multiple DBs, collections).
-* Selective backup to take backup of only selected DBs or collections.
+* Filter out documents on the basis of operation performed
+* Globs for database and collection names

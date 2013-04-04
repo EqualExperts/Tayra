@@ -16,8 +16,13 @@ MongoDB Java Driver (http://docs.mongodb.org/ecosystem/drivers/#java)
 
 It uses the following other software:
 JUnit (http://www.junit.org/)
+Mockito (https://code.google.com/p/mockito/)
 Hamcrest (http://code.google.com/p/hamcrest/)
 Spock (http://code.google.com/p/spock/)
 Gradle (http://www.gradle.org/)
+Fit (http://fit.c2.com/)
+Cobertura (http://cobertura.sourceforge.net/)
+Checkstyle (http://checkstyle.sourceforge.net/)
+FindBugs (http://findbugs.sourceforge.net/)
 
 For licenses see the LICENSE.txt file.
