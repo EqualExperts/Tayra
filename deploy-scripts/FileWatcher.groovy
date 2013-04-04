@@ -88,7 +88,7 @@ try {
 
 			if(eventDir == restoreDir) {
 				println "\n\nstarting restore"
-				String restore = "restore.bat -d $destMongo --port=$destPort -f $restoreDir/$fileName.1 -u $username -p $password"
+				String restore = os ==~ /Win.*/? "restore.bat -d $destMongo --port=$destPort -f $restoreDir/$fileName.1 -u $username -p $password" : "./restore.sh -d $destMongo --port=$destPort -f $restoreDir/$fileName.1 -u $username -p $password"
 				println "\n\n" + restore.execute().text
 				println "restore complete"
 				println "\n\n"

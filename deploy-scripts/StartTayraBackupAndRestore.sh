@@ -1,31 +1,32 @@
-REM taskkill /fi "WINDOWTITLE eq Generating Data"
-REM taskkill /fi "WINDOWTITLE eq Auto Restore"
-taskkill /fi "WINDOWTITLE eq Backup Running*"
+#!/bin/sh 
 
-SET backupFiles=backup
-SET notRestoredFiles=notRestored
-SET restoredFiles=restored
-SET toBeRestoredFiles=toBeRestored
-SET deployFiles=deploy
+HOME=/home/lion/tayra
+GROOVY_HOME=/home/lion/Documents/bin/groovy-2.0.6
 
-SET backupFile=test.out
-SET target=localhost
-SET target_port=27020
-SET source=localhost
-SET source_port=27017
-SET username=admin
-SET password=admin
+backupFiles=$HOME/data_files/backup
+notRestoredFiles=$HOME/data_files/notRestored
+restoredFiles=$HOME/data_files/restored
+toBeRestoredFiles=$HOME/data_files/toBeRestored
+deployFiles=$HOME/deployed/current
 
-ECHO "Cleaning existing directories"
-rmdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestoredFiles% /s /q
+backupFile=test.out
+target=localhost
+target_port=22320
+source=localhost
+source_port=22317
+username=admin  
+password=admin
 
-ECHO "Making new directories"
-mkdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestoredFiles%
+echo "Cleaning existing directories"
+rm -rf  $backupFiles/ $notRestoredFiles/ $restoredFiles/ $toBeRestoredFiles/
 
-START "Generating Data" groovy -cp %CD%\libs\* .\DataGenerator.groovy --source=%source% --port=%source_port% -u %username% -p %password%
-ECHO "DataGenerator Started"
+echo "Making new directories"
+mkdir $backupFiles/ $notRestoredFiles/ $restoredFiles/  $toBeRestoredFiles/
 
-START "Auto Restore" groovy .\FileWatcher.groovy -f %backupFile% --target=%target% --port=%target_port% -u %username% -p %password%
-ECHO "FileWatcher Started"
+gnome-terminal -t "Generator" -x $GROOVY_HOME/bin/groovy -cp ./libs/*: ./DataGenerator.groovy --source=$source --port=$source_port -u $username -p $password --feedInterval=5 &
 
-START "Backup Running" backup.bat -s %source% --port=%source_port% -f %CD%\..\%backupFiles%\%backupFile% -u %username% -p %password% -t --fSize=500KB --fMax=1
+echo "DataGenerator Started"
+gnome-terminal -t "Watcher" -x $GROOVY_HOME/bin/groovy -cp ./libs/*: ./FileWatcher.groovy -f $backupFiles/$backupFile --target=$target  --port=$target_port -u $username -p $password &
+
+echo "FileWatcher Started"
+gnome-terminal -t "Backup" -x ./backup.sh -s $source --port=$source_port -f $backupFiles/$backupFile -u $username -p $password -t --fSize=500KB --fMax=1 &

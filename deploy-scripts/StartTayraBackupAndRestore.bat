@@ -1,6 +1,3 @@
-REM taskkill /fi "WINDOWTITLE eq Generating Data"
-REM taskkill /fi "WINDOWTITLE eq Auto Restore"
-taskkill /fi "WINDOWTITLE eq Backup Running*"
 
 SET backupFiles=backup
 SET notRestoredFiles=notRestored
@@ -22,10 +19,10 @@ rmdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestored
 ECHO "Making new directories"
 mkdir ..\%backupFiles% ..\%notRestoredFiles% ..\%restoredFiles% ..\%toBeRestoredFiles%
 
-START "Generating Data" groovy -cp %CD%\libs\* .\DataGenerator.groovy --source=%source% --port=%source_port% -u %username% -p %password%
+START "Generator" groovy -cp %CD%\libs\* .\DataGenerator.groovy --source=%source% --port=%source_port% -u %username% -p %password% --feedInterval=5
 ECHO "DataGenerator Started"
 
-START "Auto Restore" groovy .\FileWatcher.groovy -f %backupFile% --target=%target% --port=%target_port% -u %username% -p %password%
+START "Watcher" groovy .\FileWatcher.groovy -f %backupFile% --target=%target% --port=%target_port% -u %username% -p %password%
 ECHO "FileWatcher Started"
 
-START "Backup Running" backup.bat -s %source% --port=%source_port% -f %CD%\..\%backupFiles%\%backupFile% -u %username% -p %password% -t --fSize=500KB --fMax=1
+START "Backup" backup.bat -s %source% --port=%source_port% -f %CD%\..\%backupFiles%\%backupFile% -u %username% -p %password% -t --fSize=500KB --fMax=1
