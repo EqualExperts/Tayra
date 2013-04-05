@@ -1,17 +1,5 @@
 <FindBugsFilter>
   <Match>
-    <Class name="com.ee.tayra.io.Criteria" />
-    <Not>
-      <Bug code="EC_NULL_ARG" />
-    </Not>
-  </Match>
-  <Match>
-    <Class name="com.ee.tayra.io.RotatingFileReader" />
-    <Not>
-      <Bug code="DM_DEFAULT_ENCODING" />
-    </Not>
-  </Match>
-  <Match>
     <Class name="com.ee.tayra.io.Copier" />
     <Not>
       <Bug code="EC_UNRELATED_CLASS_AND_INTERFACE" />
@@ -23,7 +11,7 @@
       <Bug code="IL_INFINITE_RECURSIVE_LOOP" />
     </Not>
   </Match>
-  <Match>
+    <Match>
     <Class name="com.ee.tayra.io.RotatingFileCollection$_withFile_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
@@ -43,12 +31,6 @@
   </Match>
   <Match>
     <Class name="com.ee.tayra.command.Restore$_run_closure2" />
-    <Not>
-      <Bug code="SE_NO_SERIALVERSIONID" />
-    </Not>
-  </Match>
-  <Match>
-    <Class name="com.ee.tayra.io.FileCollection$_each_closure1" />
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
     </Not>
@@ -153,18 +135,6 @@
     <Class name="com.ee.tayra.io.criteria.CriteriaBuilder$_build_closure1"/>
     <Not>
       <Bug code="SE_NO_SERIALVERSIONID" />
-    </Not>
-  </Match>
-  <Match>
-    <Class name="com.ee.tayra.io.criteria.OperationStrategy$1"/>
-    <Not>
-      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
-    </Not>
-  </Match>
-  <Match>
-    <Class name="com.ee.tayra.io.criteria.OperationStrategy$2"/>
-    <Not>
-      <Bug code="ES_COMPARING_STRINGS_WITH_EQ" />
     </Not>
   </Match>
   <Match>

@@ -196,11 +196,15 @@ task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
         prepareTOCForDocumentation()
 	}
 	from project.ext.distsBinDir
-	from (project.ext.distsTemplateDir) { include ('**/*.txt', '**/*.document', '**/*.rtf') }
+	from (project.ext.distsTemplateDir) {
+		include ('**/*.txt')
+		exclude ('demo', '**/*.document')
+	}
+	from (project.ext.distsTemplateDir) { include ('demo', '**/*.document') into ('docs') }
 	from ("$libsDir") { into ('libs') }
     from (project.ext.acceptanceTestDir) {
       into ('docs')
-      exclude ('not-played', 'files', '**/toc.html')
+      exclude ('stories/not-played', 'stories/cud/files', '**/toc.html')
     }
 }
 
