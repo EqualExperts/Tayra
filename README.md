@@ -1,4 +1,4 @@
-# Tayra  <a href="http://www.equalexperts.com/eelabs/projects/tayra/"><img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right"></a>
+# Tayra  <a href="http://www.eelabs.co.uk/projects/tayra/"><img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right"></a>
 ***Incremental backup tool for MongoDB***
 ##Overview
 
@@ -21,7 +21,7 @@
 Please find the documentation [here](http://htmlpreview.github.com/?https://github.com/EqualExperts/Tayra/blob/master/acceptance-tests/index.html) for usage. Additionally, you can refer to the `ReadMe.txt` within binary distribution for features.
 
 ## Binary Distributions
-**[Download from here](http://www.equalexperts.com/eelabs/projects/tayra)**.  
+**[Download from here](http://www.eelabs.co.uk/projects/tayra/)**.  
 
 ## Build Info
 We are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
