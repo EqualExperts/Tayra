@@ -58,8 +58,8 @@ project.ext {
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
   tocTemplateFile = new File("$acceptanceTestDir/toc.html")
 
-    explodedDir = "$project.buildDir/exploded"
-  mongoVersion = System.getProperty('mongoVersion', '')
+  explodedDir = "$project.buildDir/exploded"
+  portPrefix = System.getProperty('portPrefix', '')
 
   deployScriptsDir = 'deploy-scripts'
   deployScriptsZip = "${project.archivesBaseName}-deployScripts"
@@ -108,10 +108,10 @@ clean << {
 }
 
 test {
-    systemProperties['mongoVersion'] = project.ext.mongoVersion
+    systemProperties['portPrefix'] = project.ext.portPrefix
 	def originalClasspath = getClasspath()
 	doFirst {
-        println "Running tests for Mongo Version $project.ext.mongoVersion"
+        println "Running tests for Mongods with port prefix $project.ext.portPrefix"
         ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
 		//Note the classpath order: instrumented classes are before the original
 		//uninstrumented classes.  This is important
@@ -163,7 +163,7 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 		accTestReportsDir.mkdirs()
 	}
 	javaexec {
-        systemProperties['mongoVersion'] = project.ext.mongoVersion
+        systemProperties['portPrefix'] = project.ext.portPrefix
 	    main = 'fitlibrary.runner.FolderRunner'
 	    classpath = runtimeClasspath
 	    args = ["$srcFolder", "$reportsFolder"]

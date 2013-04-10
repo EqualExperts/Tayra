@@ -16,7 +16,7 @@ public final class ConnectionFactory {
       ConnectionFactory.instance();
   }
 
-  public static final String MONGO_VERSION = "mongoVersion";
+  public static final String ENV_PORT_PREFIX = "portPrefix";
   public static final String PORT_PREFIX = "PORT_PREFIX";
   public static final String DEFAULT_PORT_PREFIX = "270";
   public static final String BLANK = "";
@@ -68,8 +68,9 @@ public final class ConnectionFactory {
   }
 
   public static ConnectionFactory instance() {
-    String mongoVer = System.getProperty(MONGO_VERSION, BLANK).toUpperCase();
-    String portPrefix = toPortPrefix(mongoVer);
+    String envPortPrefix = System.getProperty(ENV_PORT_PREFIX, BLANK)
+      .toUpperCase();
+    String portPrefix = toPortPrefix(envPortPrefix);
     System.out.println("Using PORTPREFIX:" + portPrefix);
     if (singleton == null) {
       singleton = new ConnectionFactory(portPrefix);
@@ -81,11 +82,11 @@ public final class ConnectionFactory {
     return parameters;
   }
 
-  private static String toPortPrefix(final String mongoVersion) {
-    if (mongoVersion.isEmpty())  {
+  private static String toPortPrefix(final String envPortPrefix) {
+    if (envPortPrefix.isEmpty())  {
       return DEFAULT_PORT_PREFIX;
     }
-    return mongoVersion.replaceAll("\\.", BLANK);
+    return envPortPrefix; //.replaceAll("\\.", BLANK);
   }
 
   public static int getSecureSrcPort() {
