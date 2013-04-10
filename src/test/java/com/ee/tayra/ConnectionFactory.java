@@ -86,7 +86,7 @@ public final class ConnectionFactory {
     if (envPortPrefix.isEmpty())  {
       return DEFAULT_PORT_PREFIX;
     }
-    return envPortPrefix; //.replaceAll("\\.", BLANK);
+    return envPortPrefix;
   }
 
   public static int getSecureSrcPort() {
