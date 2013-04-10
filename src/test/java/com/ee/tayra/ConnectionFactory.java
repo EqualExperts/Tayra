@@ -70,7 +70,7 @@ public final class ConnectionFactory {
   public static ConnectionFactory instance() {
     String envPortPrefix = System.getProperty(ENV_PORT_PREFIX, BLANK)
       .toUpperCase();
-    String portPrefix = toPortPrefix(envPortPrefix);
+    String portPrefix = getPortPrefixFrom(envPortPrefix);
     System.out.println("Using PORTPREFIX:" + portPrefix);
     if (singleton == null) {
       singleton = new ConnectionFactory(portPrefix);
@@ -82,7 +82,7 @@ public final class ConnectionFactory {
     return parameters;
   }
 
-  private static String toPortPrefix(final String envPortPrefix) {
+  private static String getPortPrefixFrom(final String envPortPrefix) {
     if (envPortPrefix.isEmpty())  {
       return DEFAULT_PORT_PREFIX;
     }
