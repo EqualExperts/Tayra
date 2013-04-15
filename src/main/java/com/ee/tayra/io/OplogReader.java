@@ -73,7 +73,7 @@ public class OplogReader implements CollectionReader {
       document = iterator.next();
       notifier.notifyReadSuccess(document);
     } catch (Exception e) {
-        notifier.notifyReadFailure(null, e);
+      notifier.notifyReadFailure(null, e);
     }
     return document;
   }
@@ -85,5 +85,4 @@ public class OplogReader implements CollectionReader {
     iterator.close();
     iterator = null;
   }
-
 }

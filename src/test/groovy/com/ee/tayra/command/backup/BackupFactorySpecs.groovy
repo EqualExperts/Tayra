@@ -41,19 +41,19 @@ class BackupFactorySpecs extends Specification {
       factory.createReader(oplog).class == OplogReader
   }
 
-  def createsMongoExceptionBubbler() {
-    when: 'factory is created'
-      factory = new BackupFactory(config, console)
-
-    then: 'reporter created is instance of EmptyProgressReporter'
-      factory.createMongoExceptionBubbler().class == MongoExceptionBubbler
-  }
-
   def createsWriter() {
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
+    then: 'writer created is instance of RotatingFileWriter'
+      factory.createDocumentWriter().class == RotatingFileWriter
+  }
+
+  def createsTimestampRecorder() {
+    when: 'factory is created'
+      factory = new BackupFactory(config, console)
+
     then: 'writer created is instance of TimestampRecorder'
-      factory.createDocumentWriter().class == TimestampRecorder
+      factory.createTimestampRecorder().class == TimestampRecorder
   }
 }

@@ -119,8 +119,8 @@ private def readPassword(output) {
 
 def factory = new BackupFactory(config, console)
 
-def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener')
-		: factory.createListener()
+//def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener')
+//		: factory.createListener()
 
 def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
 		: factory.createReporter()
@@ -128,7 +128,7 @@ def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('re
 def writer =  binding.hasVariable('writer') ? binding.getVariable('writer')
 		: factory.createDocumentWriter()
 
-def timestamp = factory.timestamp
+def timestampRecorder = factory.createTimestampRecorder()
 
 def reader = null
 boolean normalExecution = false
@@ -140,11 +140,13 @@ addShutdownHook {
 		reader?.close()
 	} catch (RuntimeException e) {
 	}
-	if(writer.class == TimestampRecorder) {
-		if(writer && writer.timestamp.length() > 0) {
-			factory.createTimestampFile().withWriter { it.write writer.timestamp }
-		}
-	}
+    timestampRecorder.stop()
+//TODO: This logic goes in TimestampRecorder
+//	if(writer.class == TimestampRecorder) {
+//		if(writer && writer.timestamp.length() > 0) {
+//			factory.createTimestampFile().withWriter { it.write writer.timestamp }
+//		}
+//	}
 	progressReporter?.summarizeTo console
 }
 
@@ -158,24 +160,27 @@ try {
 		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
 		reader = factory.createReader(oplog)
-//		def exceptionBubbler = factory.createMongoExceptionBubbler()
 		new Copier().copy(reader, writer)
 	} {
-		if(writer && writer.timestamp.length() > 0){
-			factory.createTimestampFile().append(writer.timestamp)?.close()
-			factory.timestamp = writer.timestamp
-		}
+        timestampRecorder.stop()
+        //TODO: This logic goes in TimestampRecorder
+//        if(writer && writer.timestamp.length() > 0){
+//			factory.createTimestampFile().append(writer.timestamp)?.close()
+//			factory.timestamp = writer.timestamp
+//		}
 		console.println "Attempting to resume Backup On: ${new Date()}"
 	}
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {
 	reader?.close()
-	if(writer.class == TimestampRecorder) {
-		if(writer && writer.timestamp.length() > 0) {
-			factory.createTimestampFile().withWriter { it.write writer.timestamp }
-		}
-	}
+    timestampRecorder.stop()
+    //TODO: This logic goes in TimestampRecorder
+//	if(writer.class == TimestampRecorder) {
+//		if(writer && writer.timestamp.length() > 0) {
+//			factory.createTimestampFile().withWriter { it.write writer.timestamp }
+//		}
+//	}
 }
 
 normalExecution = true

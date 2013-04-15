@@ -30,16 +30,39 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
-import java.io.IOException;
+import java.io.*;
 
-public class TimestampRecorder implements DocumentWriter {
+public class TimestampRecorder implements CopyListener {
 
-  private final StringBuilder timestamp;
-  private final DocumentWriter delegate;
+  private final StringBuilder timestamp; //for performance
+  private final File timestampFile;
+  private String lastTimestamp;
 
-  public TimestampRecorder(final DocumentWriter delegate) {
+  public TimestampRecorder(final File timestampFile, final PrintWriter console)
+  throws IOException {
     timestamp = new StringBuilder();
-    this.delegate = delegate;
+    this.timestampFile = timestampFile;
+
+    if (timestampFile.isDirectory()) {
+      console.println("Expecting " + timestampFile.getName()
+              + " to be a File, but found Directory");
+      System.exit(1);
+    }
+
+    if (timestampFile.exists()) {
+      if (timestampFile.canRead() && timestampFile.length() > 0) {
+          lastTimestamp = readLastTimestamp(timestampFile);
+      } else {
+        console.println("Unable to read " + timestampFile.getName());
+      }
+    }
+  }
+
+  String readLastTimestamp(File timestampFile) throws IOException {
+    final BufferedReader reader = new BufferedReader(new FileReader(timestampFile));
+    final String timestamp = reader.readLine();
+    reader.close();
+    return timestamp;
   }
 
   public final String getTimestamp() {
@@ -51,21 +74,54 @@ public class TimestampRecorder implements DocumentWriter {
       timestamp.delete(0, timestamp.length());
       timestamp.append("{ " + timestampFrom(document) + " }");
     }
-}
+  }
 
   private String timestampFrom(final String data) {
     return data.substring(data.indexOf("\"ts\""), data.indexOf("}") + 1);
   }
 
-  @Override
-  public final void writeDocument(final String document) {
-    delegate.writeDocument(document);
-    registerTimestampFrom(document);
+  public void stop() throws IOException {
+    if (timestamp.length() > 0) {
+        persistTimestamp(getTimestamp());
+    }
+  }
+
+  private void persistTimestamp(String tstamp) throws IOException {
+    final FileWriter fileWriter = new FileWriter(timestampFile);
+    fileWriter.write(tstamp);
+    fileWriter.flush();
+    fileWriter.close();
+  }
+
+  public String getLastTimestamp() {
+    return lastTimestamp;
   }
 
   @Override
-  public final void close() throws IOException {
-    delegate.close();
+  public final void onReadSuccess(final String document) {
+     registerTimestampFrom(document);
   }
 
+  @Override
+  public final void onWriteSuccess(final String document) {
+    lastTimestamp = getTimestamp();
+  }
+
+  @Override
+  public final void onWriteFailure(
+  final String document, final Throwable problem) {
+  }
+
+  @Override
+  public final void onReadFailure(
+  final String document, final Throwable problem) {
+  }
+
+  @Override
+  public final void onReadStart(final String document) {
+  }
+
+  @Override
+  public final void onWriteStart(final String document) {
+  }
 }
