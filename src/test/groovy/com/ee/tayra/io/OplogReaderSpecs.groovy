@@ -1,5 +1,6 @@
 package com.ee.tayra.io
 
+import com.mongodb.MongoException
 import org.bson.types.ObjectId
 
 import spock.lang.*
@@ -168,4 +169,70 @@ public class OplogReaderSpecs extends Specification {
 			problem.message == "Reader Already Closed"
 	}
 
+    def notifiesWhenReadingADocumentFromOplogBegins()
+    throws Exception {
+      given: 'a read notifier'
+        ReadNotifier mockNotifier = Mock(ReadNotifier)
+        reader.notifier = mockNotifier
+
+      and: 'oplog iterator signals availability of document'
+        mockOplogCollectionIterator.hasNext() >> true
+
+      when: 'the document availability is checked for'
+        reader.hasDocument()
+
+      then: 'it notifies start of read'
+        1 * mockNotifier.notifyReadStart("")
+    }
+
+    def notifiesWhenReadingADocumentFromOplogIsSuccessful()
+    throws Exception {
+      given: 'a collection reader and a writer'
+        ReadNotifier mockNotifier = Mock(ReadNotifier)
+        reader.notifier = mockNotifier
+
+      and: 'oplog iterator returns the document'
+        def document = MongoUtils.createCollection(dbName, collectionName) as String
+        mockOplogCollectionIterator.next() >> document
+
+      when: 'the document is read'
+        reader.readDocument()
+
+      then: 'it notifies a successful read'
+        1 * mockNotifier.notifyReadSuccess(document)
+    }
+
+    def notifiesWhenReadingDocumentFromOplogFails() throws Exception {
+      given: 'a collection reader and a writer'
+        ReadNotifier mockNotifier = Mock(ReadNotifier)
+        reader.notifier = mockNotifier
+
+      and: 'oplog iterator throws an exception'
+        RuntimeException problem = new MongoException("Connection Lost!")
+        mockOplogCollectionIterator.next() >> { throw problem }
+
+      when: 'the document is read'
+        reader.readDocument()
+
+      then: 'it notifies a failed read'
+        problem.getClass() == MongoException
+        1 * mockNotifier.notifyReadFailure(null, problem)
+    }
+
+    def notifiesWhenIteratingOnOplogFails() throws Exception {
+      given: 'a collection reader and a writer'
+        ReadNotifier mockNotifier = Mock(ReadNotifier)
+        reader.notifier = mockNotifier
+
+      and: 'oplog iterator throws a exception on availability of next document'
+        RuntimeException problem = new MongoException("Connection Lost!")
+        mockOplogCollectionIterator.hasNext() >> { throw problem }
+
+      when: 'the document availability is checked'
+        reader.hasDocument()
+
+      then: 'it notifies a failed read'
+        problem.getClass() == MongoException
+        1 * mockNotifier.notifyReadFailure(null, problem)
+    }
 }

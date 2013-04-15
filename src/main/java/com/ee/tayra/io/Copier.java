@@ -35,34 +35,24 @@ import java.io.IOException;
 import java.io.Reader;
 
 public class Copier {
-  public final void copy(final CollectionReader from, final DocumentWriter to,
-                           final CopyListener... listeners) {
-    Notifier notifier = new Notifier(listeners);
-    try {
-        notifier.notifyReadStart("");
-        while (from.hasDocument()) {
-            String document = from.readDocument();
-            if (document.isEmpty()) {
-                continue;
-            }
-            notifier.notifyReadSuccess(document);
-            try {
-                to.writeDocument(document);
-                to.flush();
-                notifier.notifyWriteSuccess(document);
-            } catch (IOException problem) {
-                notifier.notifyWriteFailure(document, problem);
-            }
-            notifier.notifyReadStart("Fetching Document...");
+  public final void copy(final CollectionReader from, final DocumentWriter to) {
+    while (from.hasDocument()) {
+        String document = from.readDocument();
+        if (document.isEmpty()) {
+            continue;
         }
-    } catch (RuntimeException problem) {
-        notifier.notifyReadFailure(null, problem);
+        to.writeDocument(document);
+        to.flush();
     }
   }
 
-  public final void copy(final Reader reader, final Replayer to,
+    private Notifier createNotifier(final CopyListener[] listeners) {
+        return new Notifier(listeners);
+    }
+
+    public final void copy(final Reader reader, final Replayer to,
       final CopyListener... listeners) {
-    Notifier notifier = new Notifier(listeners);
+    Notifier notifier = createNotifier(listeners);
     BufferedReader from = createBufferedReader(reader);
     String document = null;
     try {

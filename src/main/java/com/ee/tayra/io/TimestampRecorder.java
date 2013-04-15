@@ -46,7 +46,7 @@ public class TimestampRecorder implements DocumentWriter {
     return timestamp.toString();
   }
 
-  private void registerTimestampFrom(final String document) throws IOException {
+  private void registerTimestampFrom(final String document) {
     if (document.contains("\"ts\"")) {
       timestamp.delete(0, timestamp.length());
       timestamp.append("{ " + timestampFrom(document) + " }");
@@ -58,12 +58,12 @@ public class TimestampRecorder implements DocumentWriter {
   }
 
   @Override
-  public final void flush() throws IOException {
+  public final void flush() {
     delegate.flush();
   }
 
   @Override
-  public final void writeDocument(final String document) throws IOException {
+  public final void writeDocument(final String document) {
     delegate.writeDocument(document);
     registerTimestampFrom(document);
   }

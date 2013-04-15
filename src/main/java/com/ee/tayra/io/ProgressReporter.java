@@ -60,7 +60,8 @@ class ProgressReporter implements CopyListener, Reporter {
   @Override
   public final void onWriteSuccess(final String document) {
     ++documentsWritten;
-    getProgressWriter().printf("%s Wrote %d Document(s)\r",
+    getProgressWriter().printf(
+        "%s Wrote %d Document(s)                                         \r",
         spinner[documentsWritten % spinner.length], documentsWritten);
   }
 
@@ -127,8 +128,9 @@ class ProgressReporter implements CopyListener, Reporter {
   @Override
   public void onReadStart(final String document) {
     if (document.isEmpty()) {
-       getProgressWriter().printf("%s Waiting for documents\r",
-            spinner[documentsWritten % spinner.length]);
+      getProgressWriter().printf(
+            "%s Wrote %d Document(s). Waiting for documents...\r",
+            spinner[documentsWritten % spinner.length], documentsWritten);
     }
   }
 

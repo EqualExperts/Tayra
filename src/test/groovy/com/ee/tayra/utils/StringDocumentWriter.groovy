@@ -1,4 +1,4 @@
-package com.ee.tayra.command.backup
+package com.ee.tayra.utils
 
 import com.ee.tayra.io.DocumentWriter
 
@@ -9,7 +9,7 @@ class StringDocumentWriter implements DocumentWriter {
         result = new StringBuilder()
     }
     @Override
-    void writeDocument(String document) throws IOException {
+    void writeDocument(String document) {
       result << document
     }
 
@@ -18,7 +18,7 @@ class StringDocumentWriter implements DocumentWriter {
     }
 
     @Override
-    void flush() throws IOException {
+    void flush() {
     }
 
     @Override

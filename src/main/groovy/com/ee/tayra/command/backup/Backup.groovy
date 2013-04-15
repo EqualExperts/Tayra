@@ -159,8 +159,8 @@ try {
 		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
 		reader = factory.createReader(oplog)
-		def exceptionBubbler = factory.createMongoExceptionBubbler()
-		new Copier().copy(reader, writer, progressListener, exceptionBubbler)
+//		def exceptionBubbler = factory.createMongoExceptionBubbler()
+		new Copier().copy(reader, writer)
 	} {
 		if(writer && writer.timestamp.length() > 0){
 			factory.createTimestampFile().append(writer.timestamp)?.close()

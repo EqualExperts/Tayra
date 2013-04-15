@@ -90,7 +90,7 @@ public class ProgressReporterSpecs extends Specification{
 			reporter.onReadStart(document)
 
 		then: 'waiting for document is not reported'
-			1 * mockConsole.printf('%s Waiting for documents\r', ['/'])
+			1 * mockConsole.printf('%s Wrote %d Document(s). Waiting for documents...\r', '/', 0)
 	}
 
 }

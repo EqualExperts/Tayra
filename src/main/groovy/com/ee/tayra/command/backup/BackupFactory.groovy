@@ -33,6 +33,7 @@ package com.ee.tayra.command.backup
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.DocumentWriter
 import com.ee.tayra.io.MongoExceptionBubbler
+import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.OplogReader
 import com.ee.tayra.io.ProgressReporter
 import com.ee.tayra.io.Reporter
@@ -52,12 +53,14 @@ class BackupFactory {
 
   public BackupFactory (BackupCmdDefaults config, console) {
     this.config = config
+    listeningReporter = new ProgressReporter(console)
     RotatingFileWriter rfWriter = new RotatingFileWriter(config.recordToFile)
     rfWriter.fileSize = config.fileSize
     rfWriter.fileMax = config.fileMax
+    def listeners = [createListener(), createMongoExceptionBubbler()]
+    rfWriter.notifier = createNotifier(*listeners)
     writer = new TimestampRecorder(rfWriter)
 
-    listeningReporter = new ProgressReporter(console)
     if(config.sNs || config.sExclude){
       criteria = new CriteriaBuilder().build {
         if(config.sNs) {
@@ -106,5 +109,9 @@ class BackupFactory {
 
   public def createTimestampFile() {
     new FileWriter(timestampFileName)
+  }
+
+  private Notifier createNotifier(CopyListener ...listeners) {
+    return new Notifier(listeners);
   }
 }

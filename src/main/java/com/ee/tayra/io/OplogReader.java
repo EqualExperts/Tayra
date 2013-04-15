@@ -36,10 +36,16 @@ import com.ee.tayra.domain.MongoCollectionIterator;
 public class OplogReader implements CollectionReader {
 
   private MongoCollectionIterator<String> iterator;
+  private ReadNotifier notifier;
 
   public OplogReader(final MongoCollection collection,
     final String fromDocument, final boolean tailable) {
     iterator = collection.find(fromDocument, tailable);
+    notifier = ReadNotifier.NONE;
+  }
+
+  public final void setNotifier(final ReadNotifier notifier) {
+    this.notifier = notifier;
   }
 
   @Override
@@ -47,7 +53,14 @@ public class OplogReader implements CollectionReader {
     if (iterator == null) {
         throw new ReaderAlreadyClosed("Reader Already Closed");
     }
-    return iterator.hasNext();
+    boolean hasNext = false;
+    try {
+      notifier.notifyReadStart("");
+      hasNext = iterator.hasNext();
+    } catch (Exception e) {
+      notifier.notifyReadFailure(null, e);
+    }
+    return hasNext;
   }
 
   @Override
@@ -55,7 +68,14 @@ public class OplogReader implements CollectionReader {
     if (iterator == null) {
       throw new ReaderAlreadyClosed("Reader Already Closed");
     }
-    return iterator.next();
+    String document = null;
+    try {
+      document = iterator.next();
+      notifier.notifyReadSuccess(document);
+    } catch (Exception e) {
+        notifier.notifyReadFailure(null, e);
+    }
+    return document;
   }
 
   public final void close() {

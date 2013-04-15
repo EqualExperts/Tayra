@@ -4,9 +4,9 @@ import java.io.IOException;
 
 public interface DocumentWriter {
 
-  void writeDocument(String document) throws IOException;
+  void writeDocument(String document);
 
   void close() throws IOException;
 
-  void flush() throws IOException;
+  void flush();
 }

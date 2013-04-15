@@ -34,7 +34,7 @@ import static fj.data.List.list;
 
 import fj.Effect;
 
-public class Notifier {
+public class Notifier implements ReadNotifier, WriteNotifier {
 
   private final CopyListener[] listeners;
 
@@ -42,6 +42,7 @@ public class Notifier {
     this.listeners = listeners;
   }
 
+  @Override
   public final void notifyReadSuccess(final String document) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
@@ -51,6 +52,7 @@ public class Notifier {
     });
   }
 
+  @Override
   public final void notifyWriteSuccess(final String document) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
@@ -60,8 +62,9 @@ public class Notifier {
     });
   }
 
+  @Override
   public final void notifyWriteFailure(final String document,
-      final Throwable problem) {
+                                       final Throwable problem) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
       public void e(final CopyListener listener) {
@@ -70,8 +73,9 @@ public class Notifier {
     });
   }
 
+  @Override
   public final void notifyReadFailure(final String document,
-      final Throwable problem) {
+                                      final Throwable problem) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
       public void e(final CopyListener listener) {
@@ -80,6 +84,7 @@ public class Notifier {
     });
   }
 
+  @Override
   public final void notifyReadStart(final String document) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
@@ -89,6 +94,7 @@ public class Notifier {
     });
   }
 
+  @Override
   public final void notifyWriteStart(final String document) {
     list(listeners).foreach(new Effect<CopyListener>() {
       @Override
@@ -97,5 +103,4 @@ public class Notifier {
       }
     });
   }
-
 }

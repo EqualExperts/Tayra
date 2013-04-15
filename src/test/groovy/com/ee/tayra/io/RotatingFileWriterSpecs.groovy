@@ -1,20 +1,23 @@
 package com.ee.tayra.io
 
-import com.ee.tayra.io.RotatingFileWriter;
-
+import org.apache.log4j.Logger
 import spock.lang.Specification
 
-public class RotatingFileWriterSpecs extends Specification{
+public class RotatingFileWriterSpecs extends Specification {
 
 	private String workingDirectory = System.getProperty("user.dir")
 	private RotatingFileWriter rotatingFileWriter
 	private String data = '1234567890'
 	private String nameOfFile
+    private Logger mockLogger
+
+    def setup() {
+        nameOfFile = 'test.log'
+        rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+        mockLogger = Mock(Logger)
+    }
 
 	def itCreatesAFileUsingRotatingFileWriter() {
-		given: 'name of file'
-			nameOfFile = 'test.log'
-
 		when: 'I invoke Writer with file name'
 			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
 			File file = new File(nameOfFile)
@@ -27,10 +30,6 @@ public class RotatingFileWriterSpecs extends Specification{
 		given: 'some data'
 			String data = data
 
-		and: 'filename of file to record'
-			nameOfFile = 'test.log'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
-
 		when: 'it writes the data'
 			rotatingFileWriter.writeDocument(data)
 
@@ -41,11 +40,7 @@ public class RotatingFileWriterSpecs extends Specification{
 	}
 
 	def writesDataToASingleFileOnly() {
-		given: 'file name, Size and Rotation Limit of Files'
-			nameOfFile = 'test.log'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
-
-		and: 'some data'
+		given: 'some data'
 			String data = data
 
 		when: 'it writes data'
@@ -59,9 +54,7 @@ public class RotatingFileWriterSpecs extends Specification{
 	}
 
 	def writesDataInSpecifiedNumberOfFilesOfDefaultSize() {
-		given: 'file name, Size and Rotation Limit of Files'
-			nameOfFile = 'test.log'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+		given: 'Rotation Limit of Files'
 			rotatingFileWriter.setFileMax(3)
 
 		and: 'some data'
@@ -78,9 +71,7 @@ public class RotatingFileWriterSpecs extends Specification{
 	}
 
 	def writesDataToSingleFileOfSpecifiedSize() {
-		given: 'file name, Size and Rotation Limit of Files'
-			nameOfFile = 'test.log'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+		given: 'Size of Files'
 			rotatingFileWriter.setFileSize('2KB')
 
 		and: 'some data'
@@ -97,9 +88,7 @@ public class RotatingFileWriterSpecs extends Specification{
 	}
 
 	def writesDataToFileOfSpecifiedSizeAndSpecifiedRotationLimit() {
-		given: 'file name, Size and Rotation Limit of Files'
-			nameOfFile = 'test.log'
-			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
+		given: 'Size and Rotation Limit of Files'
 			rotatingFileWriter.setFileSize('16KB')
 			rotatingFileWriter.setFileMax(4)
 
@@ -115,8 +104,57 @@ public class RotatingFileWriterSpecs extends Specification{
 			def backupFile = new File(workingDirectory + File.separator + nameOfFile)
 			backupFile.exists()
 	}
+  def notifiesWhenItAboutToStartWritingADocument()
+    throws Exception {
+      given: 'a notifier'
+        WriteNotifier mockNotifier = Mock(WriteNotifier)
+        rotatingFileWriter.setNotifier(mockNotifier)
 
-	def cleanup() {
+      when: 'the document is written'
+        rotatingFileWriter.writeDocument(data)
+
+      then: 'it notifies a successful write'
+        1 * mockNotifier.notifyWriteStart(data)
+  }
+
+  def notifiesWhenWritingADocumentToWriterIsSuccessful()
+    throws Exception {
+      given: 'a notifier'
+        WriteNotifier mockNotifier = Mock(WriteNotifier)
+        rotatingFileWriter.setNotifier(mockNotifier)
+
+      when: 'the document is written'
+        rotatingFileWriter.writeDocument(data)
+
+      then: 'it notifies a successful write'
+        1 * mockNotifier.notifyWriteSuccess(data)
+    }
+
+    def notifiesWhenWriterFailsToWrite() {
+      given: 'a rotating file writer'
+        def rotatingFileWriter = new RotatingFileWriter(nameOfFile) {
+          Logger createLogger() {
+              mockLogger
+          }
+        }
+
+      and: 'a notifier'
+        WriteNotifier mockNotifier = Mock(WriteNotifier)
+        rotatingFileWriter.setNotifier(mockNotifier)
+
+      and: 'a problem occurs while writing'
+        final IOException problem = new IOException("Disk Full")
+        mockLogger.info(data) >> {throw problem}
+
+      when: 'the document is copied'
+        rotatingFileWriter.writeDocument(data)
+
+      then: 'a failed write'
+        1 * mockNotifier.notifyWriteStart(data)
+        1 * mockNotifier.notifyWriteFailure(data, problem)
+    }
+
+    def cleanup() {
 		rotatingFileWriter.close()
 		def directory = new File(workingDirectory)
 		for(File f : directory.listFiles()) {

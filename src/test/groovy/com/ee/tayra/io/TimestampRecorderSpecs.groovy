@@ -5,7 +5,6 @@ import org.bson.types.ObjectId
 import spock.lang.*
 
 import com.ee.tayra.domain.operation.MongoUtils
-import com.ee.tayra.io.TimestampRecorder;
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 
@@ -72,27 +71,27 @@ public class TimestampRecorderSpecs extends Specification {
 			timestampRecorder.getTimestamp() == ('{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }')
 	}
 
-	def doesNotWriteTimestampWhenDelegateWriterFails() throws IOException {
-		given: 'two insert document oplog entries'
-			String documentOne = getDocumentString(objId)
-			String documentTwo = getDocumentString(anotherObjId)
-
-		and: 'document one is already written'
-			timestampRecorder.writeDocument(documentOne)
-
-		and: 'destination holds its timestamp'
-			String lastRecordedTimestamp = timestampRecorder.getTimestamp()
-
-		and: 'delegate writer fails to write document two'
-			mockTargetWriter.writeDocument(documentTwo) >> {throw new IOException("Disk Full")}
-
-		when: 'it tries to write document two'
-			timestampRecorder.writeDocument(documentTwo)
-
-		then: 'destination should have timestamp of latest successful write'
-			timestampRecorder.getTimestamp() == lastRecordedTimestamp
-			thrown(IOException)
-	}
+//	def doesNotWriteTimestampWhenDelegateWriterFails() throws IOException {
+//		given: 'two insert document oplog entries'
+//			String documentOne = getDocumentString(objId)
+//			String documentTwo = getDocumentString(anotherObjId)
+//
+//		and: 'document one is already written'
+//			timestampRecorder.writeDocument(documentOne)
+//
+//		and: 'destination holds its timestamp'
+//			String lastRecordedTimestamp = timestampRecorder.getTimestamp()
+//
+//		and: 'delegate writer fails to write document two'
+//			mockTargetWriter.writeDocument(documentTwo) >> {throw new IOException("Disk Full")}
+//
+//		when: 'it tries to write document two'
+//			timestampRecorder.writeDocument(documentTwo)
+//
+//		then: 'destination should have timestamp of latest successful write'
+//			timestampRecorder.getTimestamp() == lastRecordedTimestamp
+//			thrown(IOException)
+//	}
 
 	def writesTimestampOnlyIfDocumentHasTimestampEntry() throws Exception {
 		given: 'a document without timestamp'

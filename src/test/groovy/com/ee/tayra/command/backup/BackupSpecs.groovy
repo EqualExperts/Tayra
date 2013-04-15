@@ -1,6 +1,7 @@
 package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.DocumentWriter
+import com.ee.tayra.utils.StringDocumentWriter
 import spock.lang.*
 
 import com.ee.tayra.connector.Authenticator

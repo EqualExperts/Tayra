@@ -49,10 +49,12 @@ public class RotatingFileWriter implements DocumentWriter {
   private RollingFileAppender appender;
   private Logger logger;
   private final String recordToFile;
+  private WriteNotifier notifier;
 
   public RotatingFileWriter(final String recordToFile) throws IOException {
     super();
     this.recordToFile = recordToFile;
+    notifier = WriteNotifier.NONE;
     layout = new PatternLayout();
     configure();
   }
@@ -67,9 +69,13 @@ public class RotatingFileWriter implements DocumentWriter {
     configure();
   }
 
+  public final void setNotifier(final WriteNotifier notifier) {
+    this.notifier = notifier;
+  }
+
   private void configure() throws IOException {
     appender = new RollingFileAppender(layout, recordToFile, false);
-    logger = Logger.getLogger(recordToFile);
+    logger = createLogger();
     appender.setMaxFileSize(fileSize);
     appender.setMaxBackupIndex(fileMax);
     appender.setImmediateFlush(true);
@@ -79,8 +85,12 @@ public class RotatingFileWriter implements DocumentWriter {
     logger.addAppender(appender);
   }
 
+  Logger createLogger() {
+    return Logger.getLogger(recordToFile);
+  }
+
   @Override
-  public final void flush() throws IOException {
+  public final void flush() {
   }
 
   @Override
@@ -89,7 +99,13 @@ public class RotatingFileWriter implements DocumentWriter {
   }
 
   @Override
-  public final void writeDocument(final String document) throws IOException {
-    logger.info(document);
+  public final void writeDocument(final String document) {
+    notifier.notifyWriteStart(document);
+    try {
+      logger.info(document);
+      notifier.notifyWriteSuccess(document);
+    } catch (Exception e) {
+      notifier.notifyWriteFailure(document, e);
+    }
   }
 }
