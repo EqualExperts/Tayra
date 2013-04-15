@@ -31,23 +31,15 @@
 package com.ee.tayra.io;
 
 import java.io.IOException;
-import java.io.Writer;
 
-public class TimestampRecorder extends Writer {
+public class TimestampRecorder implements DocumentWriter {
 
   private final StringBuilder timestamp;
-  private final Writer delegate;
+  private final DocumentWriter delegate;
 
-  public TimestampRecorder(final Writer delegate) {
+  public TimestampRecorder(final DocumentWriter delegate) {
     timestamp = new StringBuilder();
     this.delegate = delegate;
-  }
-
-  @Override
-  public final void write(final String document, final int off, final int len)
-    throws IOException {
-    delegate.append(document, off, len);
-    registerTimestampFrom(document);
   }
 
   public final String getTimestamp() {
@@ -71,14 +63,14 @@ public class TimestampRecorder extends Writer {
   }
 
   @Override
-  public final void close() throws IOException {
-    delegate.close();
+  public final void writeDocument(final String document) throws IOException {
+    delegate.writeDocument(document);
+    registerTimestampFrom(document);
   }
 
   @Override
-  public final void write(final char[] data, final int off, final int len)
-  throws IOException {
-    delegate.write(data, off, len);
+  public final void close() throws IOException {
+    delegate.close();
   }
 
 }

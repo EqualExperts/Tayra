@@ -1,5 +1,6 @@
 package com.ee.tayra.command.backup
 
+import com.ee.tayra.io.DocumentWriter
 import spock.lang.*
 
 import com.ee.tayra.connector.Authenticator
@@ -16,7 +17,7 @@ public class BackupSpecs extends Specification {
   private static StringBuilder result
   private CopyListener mockListener
   private Reporter mockReporter
-  private Writer mockWriter
+  private DocumentWriter mockDocumentWriter
   private def context
 
   def setupSpec() {
@@ -33,10 +34,10 @@ public class BackupSpecs extends Specification {
     context = new Binding()
     mockListener = Mock(CopyListener)
     mockReporter = Mock(Reporter)
-    mockWriter = Mock(Writer)
+    mockDocumentWriter = Mock(DocumentWriter)
     context.setVariable('listener', mockListener)
     context.setVariable('reporter', mockReporter)
-    context.setVariable('writer', mockWriter)
+    context.setVariable('writer', mockDocumentWriter)
   }
 
   def shoutsWhenNoMandatoryArgsAreSupplied() {
@@ -88,7 +89,7 @@ public class BackupSpecs extends Specification {
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
 
     and: 'a result captor is injected'
-      def writer = new StringWriter()
+      def writer = new StringDocumentWriter()
       context.setVariable('writer', writer)
 
     when: 'backup runs with above args'
@@ -103,7 +104,7 @@ public class BackupSpecs extends Specification {
       context.setVariable('args', ['-s', unsecureSrcNode, '-f', backupFile, "--port=$unsecureSrcPort"])
 
     and: 'a result captor is injected'
-      def writer = new StringWriter()
+      def writer = new StringDocumentWriter()
       context.setVariable('writer', writer)
       new File('timestamp.out').delete()
 
@@ -206,7 +207,7 @@ public class BackupSpecs extends Specification {
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f',backupFile, '--sExclude', backupFile,  '-u', username, '-p', password])
 
     and: 'a result captor is injected'
-      def writer = new StringWriter()
+      def writer = new StringDocumentWriter()
       context.setVariable('writer', writer)
 
     when: 'backup runs with above args'

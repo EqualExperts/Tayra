@@ -11,7 +11,7 @@ import com.mongodb.BasicDBObjectBuilder
 
 public class TimestampRecorderSpecs extends Specification {
 
-	private Writer mockTargetWriter
+	private DocumentWriter mockTargetWriter
 
 	private TimestampRecorder timestampRecorder
 	private String dbName = 'tayra'
@@ -21,7 +21,7 @@ public class TimestampRecorderSpecs extends Specification {
 	def anotherObjId = new ObjectId()
 
 	def setup() {
-		mockTargetWriter = Mock(Writer)
+		mockTargetWriter = Mock(DocumentWriter)
 		timestampRecorder = new TimestampRecorder(mockTargetWriter)
 	}
 
@@ -40,7 +40,7 @@ public class TimestampRecorderSpecs extends Specification {
 			String document = getDocumentString(objId)
 
 		when: 'it writes the document'
-			timestampRecorder.write(document, 0, document.length())
+			timestampRecorder.writeDocument(document)
 
 		then: 'destination should have the expected timestamp'
 			timestampRecorder.getTimestamp() == ('{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }')
@@ -51,10 +51,10 @@ public class TimestampRecorderSpecs extends Specification {
 			String document = getDocumentString(objId)
 
 		when: 'it writes the document'
-			timestampRecorder.write(document, 0, document.length())
+			timestampRecorder.writeDocument(document)
 
 		then: 'the delegate writer should write the document'
-			1 * mockTargetWriter.append(document, 0, document.length())
+			1 * mockTargetWriter.writeDocument(document)
 	}
 
 	def writesTimestampOfLastDocumentReadToDestination() throws IOException {
@@ -63,10 +63,10 @@ public class TimestampRecorderSpecs extends Specification {
 			String documentTwo = getDocumentString(anotherObjId)
 
 		and: 'document one is already written'
-			timestampRecorder.write(documentOne, 0, documentOne.length())
+			timestampRecorder.writeDocument(documentOne)
 
 		when: 'it writes document two'
-			timestampRecorder.write(documentTwo, 0, documentTwo.length())
+			timestampRecorder.writeDocument(documentTwo)
 
 		then: 'destination should have timestamp of document two'
 			timestampRecorder.getTimestamp() == ('{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }')
@@ -78,16 +78,16 @@ public class TimestampRecorderSpecs extends Specification {
 			String documentTwo = getDocumentString(anotherObjId)
 
 		and: 'document one is already written'
-			timestampRecorder.write(documentOne, 0, documentOne.length())
+			timestampRecorder.writeDocument(documentOne)
 
 		and: 'destination holds its timestamp'
 			String lastRecordedTimestamp = timestampRecorder.getTimestamp()
 
 		and: 'delegate writer fails to write document two'
-			mockTargetWriter.append(documentTwo, 0, documentTwo.length()) >> {throw new IOException("Disk Full")}
+			mockTargetWriter.writeDocument(documentTwo) >> {throw new IOException("Disk Full")}
 
 		when: 'it tries to write document two'
-			timestampRecorder.write(documentTwo, 0, documentTwo.length())
+			timestampRecorder.writeDocument(documentTwo)
 
 		then: 'destination should have timestamp of latest successful write'
 			timestampRecorder.getTimestamp() == lastRecordedTimestamp
@@ -103,7 +103,7 @@ public class TimestampRecorderSpecs extends Specification {
 								.toString()
 
 		when: 'it writes the document'
-			timestampRecorder.write(document , 0, document.length())
+			timestampRecorder.writeDocument(document)
 
 		then: 'no timestamp should be written to destination'
 			timestampRecorder.getTimestamp() == ""

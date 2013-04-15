@@ -54,6 +54,6 @@ class BackupFactorySpecs extends Specification {
       factory = new BackupFactory(config, console)
 
     then: 'writer created is instance of TimestampRecorder'
-      factory.createWriter().class == TimestampRecorder
+      factory.createDocumentWriter().class == TimestampRecorder
   }
 }

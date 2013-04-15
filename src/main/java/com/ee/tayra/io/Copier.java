@@ -33,32 +33,30 @@ package com.ee.tayra.io;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 
 public class Copier {
-
-  public final void copy(final CollectionReader from, final Writer to,
-      final CopyListener... listeners) {
+  public final void copy(final CollectionReader from, final DocumentWriter to,
+                           final CopyListener... listeners) {
     Notifier notifier = new Notifier(listeners);
     try {
-      notifier.notifyReadStart("");
-      while (from.hasDocument()) {
-        String document = from.readDocument();
-        if (document.isEmpty()) {
-          continue;
+        notifier.notifyReadStart("");
+        while (from.hasDocument()) {
+            String document = from.readDocument();
+            if (document.isEmpty()) {
+                continue;
+            }
+            notifier.notifyReadSuccess(document);
+            try {
+                to.writeDocument(document);
+                to.flush();
+                notifier.notifyWriteSuccess(document);
+            } catch (IOException problem) {
+                notifier.notifyWriteFailure(document, problem);
+            }
+            notifier.notifyReadStart("Fetching Document...");
         }
-        notifier.notifyReadSuccess(document);
-        try {
-          to.append(document);
-          to.flush();
-          notifier.notifyWriteSuccess(document);
-        } catch (IOException problem) {
-          notifier.notifyWriteFailure(document, problem);
-        }
-        notifier.notifyReadStart("Fetching Document...");
-      }
     } catch (RuntimeException problem) {
-      notifier.notifyReadFailure(null, problem);
+        notifier.notifyReadFailure(null, problem);
     }
   }
 

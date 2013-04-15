@@ -31,6 +31,7 @@
 package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.DocumentWriter
 import com.ee.tayra.io.MongoExceptionBubbler
 import com.ee.tayra.io.OplogReader
 import com.ee.tayra.io.ProgressReporter
@@ -87,7 +88,7 @@ class BackupFactory {
         : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
-  public TimestampRecorder createWriter(){
+  public DocumentWriter createDocumentWriter() {
     writer
   }
 

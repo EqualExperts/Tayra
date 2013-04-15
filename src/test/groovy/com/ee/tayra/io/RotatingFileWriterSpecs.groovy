@@ -32,7 +32,7 @@ public class RotatingFileWriterSpecs extends Specification{
 			rotatingFileWriter = new RotatingFileWriter(nameOfFile)
 
 		when: 'it writes the data'
-			rotatingFileWriter.write(data)
+			rotatingFileWriter.writeDocument(data)
 
 		then: 'destination should have the document'
 			FileReader fileReader = new FileReader(new File(nameOfFile))
@@ -50,7 +50,7 @@ public class RotatingFileWriterSpecs extends Specification{
 
 		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(data)
+				rotatingFileWriter.writeDocument(data)
 			}
 
 		then: 'the file containing data should exist'
@@ -69,7 +69,7 @@ public class RotatingFileWriterSpecs extends Specification{
 
 		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(data)
+				rotatingFileWriter.writeDocument(data)
 			}
 
 		then: 'the file containing data should exist'
@@ -88,7 +88,7 @@ public class RotatingFileWriterSpecs extends Specification{
 
 		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(data)
+				rotatingFileWriter.writeDocument(data)
 			}
 
 		then: 'the file containing data should exist'
@@ -108,7 +108,7 @@ public class RotatingFileWriterSpecs extends Specification{
 
 		when: 'it writes data'
 			200.times {
-				rotatingFileWriter.write(data)
+				rotatingFileWriter.writeDocument(data)
 			}
 
 		then: 'the file containing data should exist'

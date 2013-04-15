@@ -126,7 +126,7 @@ def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('re
 		: factory.createReporter()
 
 def writer =  binding.hasVariable('writer') ? binding.getVariable('writer')
-		: factory.createWriter()
+		: factory.createDocumentWriter()
 
 def timestamp = factory.timestamp
 

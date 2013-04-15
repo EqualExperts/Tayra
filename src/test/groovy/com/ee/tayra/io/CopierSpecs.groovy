@@ -1,5 +1,6 @@
 package com.ee.tayra.io
 
+import com.ee.tayra.command.backup.StringDocumentWriter
 import spock.lang.*
 
 import com.ee.tayra.domain.NotAReplicaSetNode
@@ -45,7 +46,7 @@ public class CopierSpecs extends Specification {
 
 	def writesOplogToDestination() throws Exception {
 		given:'a writer and an oplog reader'
-			Writer writer = new StringWriter()
+			DocumentWriter writer = new StringDocumentWriter()
 			DBObject dbObject = local.getCollection("oplog.rs").find().next();
 			DBObject query = new BasicDBObjectBuilder()
 							.start()
@@ -56,7 +57,7 @@ public class CopierSpecs extends Specification {
 		when: 'document is copied'
 			copier.copy(reader, writer)
 
-		then: 'destination writer should contatin proper document'
+		then: 'destination writer should contain proper document'
 			writer.toString().contains("ts")
 	}
 
@@ -171,7 +172,7 @@ public class CopierSpecs extends Specification {
 			throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
-			Writer mockWriter = Mock(Writer)
+			DocumentWriter mockWriter = Mock(DocumentWriter)
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
@@ -193,7 +194,7 @@ public class CopierSpecs extends Specification {
 			throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
-			Writer mockWriter = Mock(Writer)
+			DocumentWriter mockWriter = Mock(DocumentWriter)
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener.class)
@@ -213,7 +214,7 @@ public class CopierSpecs extends Specification {
 	def notifiesWhenWriterFailsToWrite() throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
-			Writer mockWriter = Mock(Writer)
+			DocumentWriter mockWriter = Mock(DocumentWriter)
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
@@ -224,7 +225,7 @@ public class CopierSpecs extends Specification {
 
 		and: 'a problem occurs while writing'
 			final IOException problem = new IOException("Disk Full")
-			mockWriter.append(document) >> {throw problem}
+			mockWriter.writeDocument(document) >> {throw problem}
 
 		when: 'the document is copied'
 			copier.copy(mockReader, mockWriter, mockCopyListener)
@@ -242,7 +243,7 @@ public class CopierSpecs extends Specification {
 	def notifiesWhenReadingDocumentFromOplogFails() throws Exception {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
-			Writer mockWriter = Mock(Writer)
+            DocumentWriter mockWriter = Mock(DocumentWriter)
 
 		and: 'a copy listener'
 			mockCopyListener = Mock(CopyListener)
@@ -265,7 +266,7 @@ public class CopierSpecs extends Specification {
 	def reportsNeitherReadSuccessNorWriteSuccessWhenCriteriaFails () {
 		given: 'a collection reader and a writer'
 			CollectionReader mockReader = Mock(CollectionReader)
-			Writer mockWriter = Mock(Writer)
+            DocumentWriter mockWriter = Mock(DocumentWriter)
 
 		and: 'documents do not satisfy criteria'
 			mockReader.hasDocument() >> true >> false

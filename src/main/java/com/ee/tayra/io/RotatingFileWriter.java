@@ -30,15 +30,14 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
-public class RotatingFileWriter extends Writer {
+import java.io.IOException;
+
+public class RotatingFileWriter implements DocumentWriter {
 
   private static final String DEFAULT_FILESIZE = "512MB";
   private static final int DEFAULT_FILEMAX = 0;
@@ -68,7 +67,7 @@ public class RotatingFileWriter extends Writer {
     configure();
   }
 
-   private void configure() throws IOException {
+  private void configure() throws IOException {
     appender = new RollingFileAppender(layout, recordToFile, false);
     logger = Logger.getLogger(recordToFile);
     appender.setMaxFileSize(fileSize);
@@ -81,12 +80,6 @@ public class RotatingFileWriter extends Writer {
   }
 
   @Override
-  public final void write(final String document, final int off, final int len)
-      throws IOException {
-    logger.info(document);
-  }
-
-  @Override
   public final void flush() throws IOException {
   }
 
@@ -96,8 +89,7 @@ public class RotatingFileWriter extends Writer {
   }
 
   @Override
-  public final void write(final char[] document, final int off, final int len)
-      throws IOException {
-    write(document, off, len);
+  public final void writeDocument(final String document) throws IOException {
+    logger.info(document);
   }
 }
