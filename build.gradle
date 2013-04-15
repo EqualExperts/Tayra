@@ -285,7 +285,7 @@ task setupDeploy << {
 
 task backupCurrentDeployScripts(type: Zip, dependsOn: setupDeploy) {
   doFirst{
-      killFirst('com.ee.tayra.runner.Runner backup')
+      killFirst('com.ee.tayra.runner.Runner "backup"')
       println "Backing up existing deploy scripts from ${project.ext.deployDir}"
       println "To Dir ${project.ext.backupDeployScriptsDir}"
       println "With Archive name: ${project.ext.previousArchiveName}.zip"
@@ -309,24 +309,32 @@ task deploy (dependsOn: backupCurrentDeployScripts) {
 }
 
 def killFirst(def processName) {
-    def os = System.getProperty("os.name")
-    def listProcessCmd = os ==~ /Win.*/ ? 'tasklist' : 'ps -ef'
-    println "Executing $listProcessCmd on $os..."
-    def process = listProcessCmd.execute()
-    def killableProcesses = process.in.filterLine {
-//        it ==~ /(.*|[0-9]+.*):portprefix17/
-        it.contains("$processName")
-    }
-    def args = "$killableProcesses".split() as List
-    if(args) {
-      println "Killable Processes --> $args"
-      def processIdToKill = args[1]
-      def killProcessCmd = os == /Win*/ ? "taskkill $processIdToKill" : "kill -9 $processIdToKill"
-      println "Executing $killProcessCmd on $os..."
-      killProcessCmd.execute().in.eachLine { println it }
-    } else {
-      println "Nothing to kill by name $processName"
-    }
+  def processIdToKill = getProcessId(processName)
+  def os = System.getProperty("os.name")
+  if(!processIdToKill.isEmpty()) {
+    println "Killing the process $processName with processId: $processIdToKill"
+    def killProcessCmd = os ==~ /Win.*/ ? "taskkill /pid $processIdToKill /f" : "kill -9 $processIdToKill"
+    println "Executing $killProcessCmd on $os..."
+    killProcessCmd.execute().in.eachLine { println it }
+  } else {
+    println "Nothing to kill by name $processName"
+  }
+}
+
+def getProcessId(def processName) {
+	def os = System.getProperty("os.name")
+	def winProcessCmd = "wmic process where \"name='java.exe' and commandLine like '%com.ee.tayra.runner.Runner \"backup\"%'\" get processid"
+	def processCmd = os ==~ /Win.*/ ? "$winProcessCmd " : 'ps -ef | grep $processName'
+	
+	println "Executing $processCmd on $os..."
+	def processId = processCmd.execute().in.readLines().each { it.trim() }.join(" ")
+	println "processId : adsadada $processId"
+	def args = processId.split() as List
+	def processIdToKill = ''
+	if(args) {
+		processIdToKill = args[1]
+	}
+	processIdToKill
 }
 
 build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
