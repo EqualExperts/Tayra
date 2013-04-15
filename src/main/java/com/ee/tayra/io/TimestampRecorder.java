@@ -58,11 +58,6 @@ public class TimestampRecorder implements DocumentWriter {
   }
 
   @Override
-  public final void flush() {
-    delegate.flush();
-  }
-
-  @Override
   public final void writeDocument(final String document) {
     delegate.writeDocument(document);
     registerTimestampFrom(document);

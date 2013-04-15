@@ -6,7 +6,7 @@ class StringDocumentWriter implements DocumentWriter {
     private StringBuilder result
 
     public StringDocumentWriter() {
-        result = new StringBuilder()
+      result = new StringBuilder()
     }
     @Override
     void writeDocument(String document) {
@@ -15,10 +15,6 @@ class StringDocumentWriter implements DocumentWriter {
 
     @Override
     void close() throws IOException {
-    }
-
-    @Override
-    void flush() {
     }
 
     @Override

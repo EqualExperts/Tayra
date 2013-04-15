@@ -140,7 +140,6 @@ addShutdownHook {
 		reader?.close()
 	} catch (RuntimeException e) {
 	}
-	writer?.flush()
 	if(writer.class == TimestampRecorder) {
 		if(writer && writer.timestamp.length() > 0) {
 			factory.createTimestampFile().withWriter { it.write writer.timestamp }
@@ -172,7 +171,6 @@ try {
 	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {
 	reader?.close()
-	writer?.flush()
 	if(writer.class == TimestampRecorder) {
 		if(writer && writer.timestamp.length() > 0) {
 			factory.createTimestampFile().withWriter { it.write writer.timestamp }

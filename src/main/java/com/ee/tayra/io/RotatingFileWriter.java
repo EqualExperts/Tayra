@@ -90,10 +90,6 @@ public class RotatingFileWriter implements DocumentWriter {
   }
 
   @Override
-  public final void flush() {
-  }
-
-  @Override
   public final void close() throws IOException {
     appender.close();
   }

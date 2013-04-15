@@ -37,12 +37,11 @@ import java.io.Reader;
 public class Copier {
   public final void copy(final CollectionReader from, final DocumentWriter to) {
     while (from.hasDocument()) {
-        String document = from.readDocument();
-        if (document.isEmpty()) {
-            continue;
-        }
-        to.writeDocument(document);
-        to.flush();
+      String document = from.readDocument();
+      if (document.isEmpty()) {
+        continue;
+      }
+      to.writeDocument(document);
     }
   }
 
