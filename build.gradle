@@ -1,5 +1,5 @@
 import groovy.io.FileType
-
+apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -13,7 +13,6 @@ defaultTasks 'clean', 'build'
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
-
 
 project.ext {
 
@@ -53,13 +52,15 @@ project.ext {
   //Distribution settings
   distsTemplateDir = 'distribution-template'
   distsBinDir = "$distsDir/bin"
-  
+
   //Acceptance Tests
   acceptanceTestDir = 'acceptance-tests'
   acceptanceTestStoriesDir = "$projectDir/$acceptanceTestDir/stories/played"
   acceptanceTestReportsDir = "$reporting.baseDir/$acceptanceTestDir"
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
   tocTemplateFile = new File("$acceptanceTestDir/toc.html")
+  exploratoryTestSrcDir = "$projectDir/bin/com/ee/tayra/exploratory"
+  exploratoryTestDestDir = "$project.buildDir/classes/test/com/ee/tayra/exploratory"
 
   explodedDir = "$project.buildDir/exploded"
   portPrefix = System.getProperty('portPrefix', '')
@@ -69,6 +70,19 @@ project.ext {
   backupDeployScriptsDir = new File(System.getProperty('backupDeployScriptsTo', "$project.buildDir/rollback-deploy-scripts"))
   defaultDeployDir = 'deployed'
   deployDir = new File(System.getProperty('deployTo', "$project.buildDir/$defaultDeployDir"))
+}
+
+eclipse {
+	classpath {
+		file {
+			beforeMerged { classpath ->
+				withXml {
+					def node = it.asNode()
+					node.appendNode('classpathentry', [kind: 'src', path: 'exploratory-tests/test/groovy'])
+				}
+			}
+		}
+	}
 }
 
 repositories {
@@ -81,7 +95,7 @@ repositories {
 configurations {
 	cobertura
 	compile
-    tests
+	tests
 }
 
 dependencies {
@@ -140,6 +154,10 @@ test {
 	}
 }
 
+task 'exploratory-test'(type:Test) {
+    include("**/exploratory/*Test*.class")
+}
+
 // For individual use assumes you have binaries existing already.
 task ('smoke-test', dependsOn: 'unzip') << {
     println "Running FIT Smoke Test..."
@@ -173,10 +191,18 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	}
 }
 
-task createTestJar(type: Jar) {
-    baseName = "${project.archivesBaseName}-test"
-    destinationDir = project.distsDir
-    from sourceSets.test.output
+task createTestJar(type: Jar, dependsOn: [test]) {
+	doFirst {
+		copy {
+			from ("${project.ext.exploratoryTestSrcDir}") {
+				include ('**/*.class')
+			}
+			into ("${project.ext.exploratoryTestDestDir}")
+		}
+		baseName = "${project.archivesBaseName}-test"
+		destinationDir = project.distsDir
+		from sourceSets.test.output
+	}
 }
 
 task createDeployZip(type: Zip) {
@@ -196,7 +222,7 @@ task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
 	doFirst {
 		ant.mkdir(dir:"$distsBinDir")
 		prepareExecutables()
-        prepareTOCForDocumentation()
+		prepareTOCForDocumentation()
 	}
 	from project.ext.distsBinDir
 	from (project.ext.distsTemplateDir) {
