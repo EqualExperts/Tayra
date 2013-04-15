@@ -1,4 +1,4 @@
-package generator
+package perf.generator
 
 import static java.io.File.*
 

@@ -1,6 +1,6 @@
-package generator
+package perf.usingio
 
-fileSizes = [
+files = [
 	new Tuple(1, 'mb'),
 	new Tuple(2, 'mb'),
 	new Tuple(4, 'mb'),
@@ -15,12 +15,11 @@ fileSizes = [
 	new Tuple(2, 'gb'),
 	new Tuple(4, 'gb')
 ]
-
-fileSizes.each { tuple ->
+files.each { tuple ->
 	def fileSize = tuple[0]
 	def unit = tuple[1]
 	def binding = new Binding()
-	def args = ['-f', "test.$fileSize$unit", '-s', "$fileSize", '-u', "$unit"]
-	binding.setVariable('args', args)
-	new Generate(binding).run()
+	def file = new File(System.getProperty('java.io.tmpdir'), "test.$fileSize$unit")
+	RegularIOWriter.main("$file.path", "$fileSize", "$unit")
 }
+

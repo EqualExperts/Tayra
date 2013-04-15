@@ -1,6 +1,6 @@
-package usingnioandio
+package perf.generator
 
-files = [
+fileSizes = [
 	new Tuple(1, 'mb'),
 	new Tuple(2, 'mb'),
 	new Tuple(4, 'mb'),
@@ -13,13 +13,14 @@ files = [
 	new Tuple(512, 'mb'),
 	new Tuple(1, 'gb'),
 	new Tuple(2, 'gb'),
-	new Tuple(4, 'gb'),
+	new Tuple(4, 'gb')
 ]
-files.each { tuple ->
+
+fileSizes.each { tuple ->
 	def fileSize = tuple[0]
 	def unit = tuple[1]
 	def binding = new Binding()
-	def file = new File(System.getProperty('java.io.tmpdir'),
-		 "test.$fileSize$unit")
-	new NIOReaderAndRegularIOWriter().main("$file.path", "$fileSize", "$unit")
+	def args = ['-f', "test.$fileSize$unit", '-s', "$fileSize", '-u', "$unit"]
+	binding.setVariable('args', args)
+	new Generate(binding).run()
 }

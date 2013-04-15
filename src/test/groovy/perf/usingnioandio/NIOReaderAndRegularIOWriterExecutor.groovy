@@ -1,4 +1,4 @@
-package usingnio
+package perf.usingnioandio
 
 files = [
 	new Tuple(1, 'mb'),
@@ -21,5 +21,5 @@ files.each { tuple ->
 	def binding = new Binding()
 	def file = new File(System.getProperty('java.io.tmpdir'),
 		 "test.$fileSize$unit")
-	new MemoryMappedWriter().main("$file.path", "$fileSize", "$unit")
+	new NIOReaderAndRegularIOWriter().main("$file.path", "$fileSize", "$unit")
 }

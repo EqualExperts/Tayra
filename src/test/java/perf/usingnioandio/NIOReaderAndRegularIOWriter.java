@@ -1,4 +1,4 @@
-package usingnioandio;
+package perf.usingnioandio;
 
 import java.io.BufferedWriter;
 import java.io.File;

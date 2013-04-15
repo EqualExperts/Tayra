@@ -1,4 +1,4 @@
-package usingio
+package perf.usingnio
 
 files = [
 	new Tuple(1, 'mb'),
@@ -13,13 +13,13 @@ files = [
 	new Tuple(512, 'mb'),
 	new Tuple(1, 'gb'),
 	new Tuple(2, 'gb'),
-	new Tuple(4, 'gb')
+	new Tuple(4, 'gb'),
 ]
 files.each { tuple ->
 	def fileSize = tuple[0]
 	def unit = tuple[1]
 	def binding = new Binding()
-	def file = new File(System.getProperty('java.io.tmpdir'), "test.$fileSize$unit")
-	RegularIOWriter.main("$file.path", "$fileSize", "$unit")
+	def file = new File(System.getProperty('java.io.tmpdir'),
+		 "test.$fileSize$unit")
+	new MemoryMappedWriter().main("$file.path", "$fileSize", "$unit")
 }
-
