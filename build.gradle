@@ -309,11 +309,11 @@ task deploy (dependsOn: backupCurrentDeployScripts) {
 }
 
 def killFirst(def processName) {
-  def processIdToKill = getProcessId(processName)
   def os = System.getProperty("os.name")
+  def processIdToKill = getProcessId(processName, os)
   if(!processIdToKill.isEmpty()) {
     println "Killing the process $processName with processId: $processIdToKill"
-    def killProcessCmd = os ==~ /Win.*/ ? "taskkill /pid $processIdToKill /f" : "kill -9 $processIdToKill"
+    def killProcessCmd = os ==~ /Win.*/ ? "taskkill /pid $processIdToKill /f" : "kill -15 $processIdToKill"
     println "Executing $killProcessCmd on $os..."
     killProcessCmd.execute().in.eachLine { println it }
   } else {
@@ -321,27 +321,20 @@ def killFirst(def processName) {
   }
 }
 
-def getProcessId(def processName) {
-	def os = System.getProperty("os.name")
-	def winProcessCmd = "wmic process where \"name='java.exe' and commandLine like '%com.ee.tayra.runner.Runner \"backup\"%'\" get processid"
+def getProcessId(def processName, def os) {
+	def winProcessCmd = "wmic process where \"name='java.exe' and commandLine like '%$processName%'\" get processid"
 	def processCmd = os ==~ /Win.*/ ? "$winProcessCmd " : 'ps -ef'
 	def killableProcessId = null
 	println "Executing $processCmd on $os..."
-	if (os ==~ /Win.*/) {
-		killableProcessId = processCmd.execute().in.readLines().each { it.trim() }.join(" ")
-	}
-	else {
-		killableProcessId = processCmd.execute().in.filterLine {
-			it.contains("$processName".replaceAll('\"',''))
+	killableProcessId = os ==~ /Win.*/ ? 
+			  processCmd.execute().in.readLines().each { it.trim() }.join(" ")
+			: processCmd.execute().in.filterLine {it.contains("$processName".replaceAll('\"',''))
 		}
-	}
 	def args = "$killableProcessId".split() as List
 	def processIdToKill = ''
-	println "Args are $args"
 	if(args) {
 		processIdToKill = args[1]
 	}
-	
 	processIdToKill
 }
 
