@@ -112,6 +112,11 @@ sourceSets {
 			srcDir "$exploratoryTestSrcDir"
 		}
 	}
+	main {
+		groovy {
+			srcDir "src/main/groovy"
+		}
+	}
 }
 
 clean << {
