@@ -179,4 +179,16 @@
             <Bug code="SE_NO_SERIALVERSIONID" />
         </Not>
     </Match>
+    <Match>
+        <Class name="com.ee.tayra.exploratory.BackupExploratoryTest$_$spock_feature_1_0_closure1" />
+        <Not>
+            <Bug code="SE_NO_SERIALVERSIONID" />
+        </Not>
+    </Match>
+    <Match>
+        <Class name="com.ee.tayra.exploratory.RequiresExploratoryTestSupport" />
+        <Not>
+            <Bug code="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+        </Not>
+    </Match>
 </FindBugsFilter>
