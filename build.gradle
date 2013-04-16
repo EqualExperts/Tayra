@@ -184,7 +184,16 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 }
 
 task 'exploratory-test'(type:Test) {
-	include("**/exploratory/*Test*.class")
+	def originalClasspath = getClasspath()
+	doFirst{
+		def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
+		runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
+		setClasspath(runtimeClasspath + originalClasspath)
+		include("**/exploratory/*Test*.class")
+	}
+	doLast{
+		setClasspath(originalClasspath)
+	}
 }
 
 task createTestJar(type: Jar, dependsOn: [test]) {
@@ -345,7 +354,7 @@ def getProcessId(def processName, def os) {
 	def processCmd = os ==~ /Win.*/ ? "$winProcessCmd " : 'ps -ef'
 	def killableProcessId = null
 	println "Executing $processCmd on $os..."
-	killableProcessId = os ==~ /Win.*/ ? 
+	killableProcessId = os ==~ /Win.*/ ?
 			  processCmd.execute().in.readLines().each { it.trim() }.join(" ")
 			: processCmd.execute().in.filterLine {it.contains("$processName".replaceAll('\"',''))
 		}
