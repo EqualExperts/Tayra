@@ -30,49 +30,29 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
-import java.io.*;
+import java.io.IOException;
 
 public class TimestampRecorder implements CopyListener {
 
-  private final StringBuilder timestamp; //for performance
-  private final File timestampFile;
-  private String lastTimestamp;
+  private final StringBuilder documentTimestamp; //for performance
+  private String lastDocumentTimestamp;
+  private final TimestampRepository timestampRepository;
 
-  public TimestampRecorder(final File timestampFile, final PrintWriter console)
+  public TimestampRecorder(final TimestampRepository timestampRepository)
   throws IOException {
-    timestamp = new StringBuilder();
-    this.timestampFile = timestampFile;
-
-    if (timestampFile.isDirectory()) {
-      console.println("Expecting " + timestampFile.getName()
-              + " to be a File, but found Directory");
-      System.exit(1);
-    }
-
-    if (timestampFile.exists()) {
-      if (timestampFile.canRead() && timestampFile.length() > 0) {
-          lastTimestamp = readLastTimestamp(timestampFile);
-      } else {
-        console.println("Unable to read " + timestampFile.getName());
-      }
-    }
+    this.timestampRepository = timestampRepository;
+    documentTimestamp = new StringBuilder();
+    lastDocumentTimestamp = timestampRepository.retrieve();
   }
 
-  String readLastTimestamp(File timestampFile) throws IOException {
-    final BufferedReader reader = new BufferedReader(new FileReader(timestampFile));
-    final String timestamp = reader.readLine();
-    reader.close();
-    return timestamp;
-  }
-
-  public final String getTimestamp() {
-    return timestamp.toString();
+  public final String getDocumentTimestamp() {
+    return documentTimestamp.toString();
   }
 
   private void registerTimestampFrom(final String document) {
     if (document.contains("\"ts\"")) {
-      timestamp.delete(0, timestamp.length());
-      timestamp.append("{ " + timestampFrom(document) + " }");
+      documentTimestamp.delete(0, documentTimestamp.length());
+      documentTimestamp.append("{ " + timestampFrom(document) + " }");
     }
   }
 
@@ -80,21 +60,14 @@ public class TimestampRecorder implements CopyListener {
     return data.substring(data.indexOf("\"ts\""), data.indexOf("}") + 1);
   }
 
-  public void stop() throws IOException {
-    if (timestamp.length() > 0) {
-        persistTimestamp(getTimestamp());
+  public final void stop() throws IOException {
+    if (documentTimestamp.length() > 0) {
+      timestampRepository.save(getDocumentTimestamp());
     }
   }
 
-  private void persistTimestamp(String tstamp) throws IOException {
-    final FileWriter fileWriter = new FileWriter(timestampFile);
-    fileWriter.write(tstamp);
-    fileWriter.flush();
-    fileWriter.close();
-  }
-
-  public String getLastTimestamp() {
-    return lastTimestamp;
+  public final String getLastDocumentTimestamp() {
+    return lastDocumentTimestamp;
   }
 
   @Override
@@ -104,7 +77,7 @@ public class TimestampRecorder implements CopyListener {
 
   @Override
   public final void onWriteSuccess(final String document) {
-    lastTimestamp = getTimestamp();
+    lastDocumentTimestamp = getDocumentTimestamp();
   }
 
   @Override

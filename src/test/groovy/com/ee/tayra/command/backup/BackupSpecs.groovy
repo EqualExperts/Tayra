@@ -85,7 +85,7 @@ public class BackupSpecs extends Specification {
       result.toString().contains('Oops!! Could not perform backup...node is not a part of ReplicaSet')
   }
 
-  def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecuredConnection() {
+  def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecureReplicaSet() {
     given:'arguments contains -s, -f, -u and -p options'
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
 

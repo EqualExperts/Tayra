@@ -32,6 +32,7 @@ package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.DocumentWriter
+import com.ee.tayra.io.FileBasedTimestampRepository
 import com.ee.tayra.io.MongoExceptionBubbler
 import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.OplogReader
@@ -52,7 +53,8 @@ class BackupFactory {
   public BackupFactory (BackupCmdDefaults config, console) {
     this.config = config
     listeningReporter = new ProgressReporter(console)
-    timestampRecorder = new TimestampRecorder(new File(timestampFileName), console)
+    def timestampRepository = new FileBasedTimestampRepository(new File(timestampFileName), console)
+    timestampRecorder = new TimestampRecorder(timestampRepository)
 
     if(config.sNs || config.sExclude){
       criteria = new CriteriaBuilder().build {
@@ -67,7 +69,7 @@ class BackupFactory {
   }
 
   public def createReader(def oplog) {
-    String timestamp = timestampRecorder.lastTimestamp
+    String timestamp = timestampRecorder.lastDocumentTimestamp
     criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
         : new OplogReader(oplog, timestamp, config.isContinuous)
   }

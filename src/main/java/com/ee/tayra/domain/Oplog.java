@@ -63,7 +63,7 @@ public class Oplog implements MongoCollection {
   }
 
   private DBObject createQuery(final String fromDocument) {
-    if (fromDocument == null) {
+    if (fromDocument == null || "".equals(fromDocument)) {
       return null;
     }
 
