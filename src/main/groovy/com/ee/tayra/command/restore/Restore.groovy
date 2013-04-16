@@ -150,8 +150,9 @@ try {
   progressReporter.writeStartTimeTo console
 
   files.withFile {
-    def reader = binding.hasVariable('reader') ? binding.getVariable('reader') : new FileReader(it)
-    copier.copy(reader, writer, progressListener)
+    FileDocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
+	reader.notifier = factory.createNotifier()
+	copier.copy(reader, writer, progressListener)
   }
 
   progressReporter.summarizeTo console

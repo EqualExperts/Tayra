@@ -45,18 +45,39 @@ public class Copier {
     }
   }
 
-    private Notifier createNotifier(final CopyListener[] listeners) {
-        return new Notifier(listeners);
-    }
+  private Notifier createNotifier(final CopyListener[] listeners) {
+    return new Notifier(listeners);
+  }
 
-    public final void copy(final Reader reader, final Replayer to,
+//  public final void copy(final Reader reader, final Replayer to,
+//      final CopyListener... listeners) {
+//    Notifier notifier = createNotifier(listeners);
+//    BufferedReader from = createBufferedReader(reader);
+//    String document = null;
+//    try {
+//      while ((document = from.readLine()) != null) {
+//        notifier.notifyReadSuccess(document);
+//        try {
+//          notifier.notifyWriteStart(document);
+//          if (to.replay(document)) {
+//            notifier.notifyWriteSuccess(document);
+//          }
+//        } catch (RuntimeException problem) {
+//          notifier.notifyWriteFailure(document, problem);
+//        }
+//      }
+//    } catch (IOException ioe) {
+//      notifier.notifyReadFailure(null, ioe);
+//    }
+//  }
+
+  public final void copy(final DocumentReader from, final Replayer to,
       final CopyListener... listeners) {
-    Notifier notifier = createNotifier(listeners);
-    BufferedReader from = createBufferedReader(reader);
+    WriteNotifier notifier = createNotifier(listeners);
     String document = null;
-    try {
+//    try {
       while ((document = from.readLine()) != null) {
-        notifier.notifyReadSuccess(document);
+//        notifier.notifyReadSuccess(document);
         try {
           notifier.notifyWriteStart(document);
           if (to.replay(document)) {
@@ -66,12 +87,13 @@ public class Copier {
           notifier.notifyWriteFailure(document, problem);
         }
       }
-    } catch (IOException ioe) {
-      notifier.notifyReadFailure(null, ioe);
-    }
+//    } catch (IOException ioe) {
+//      notifier.notifyReadFailure(null, ioe);
+//    }
   }
 
-  BufferedReader createBufferedReader(final Reader reader) {
-    return new BufferedReader(reader);
-  }
+//  BufferedReader createBufferedReader(final Reader reader) {
+//    return new BufferedReader(reader);
+//  }
+
 }

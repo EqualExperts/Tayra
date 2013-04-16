@@ -31,11 +31,13 @@
 package com.ee.tayra.command.restore
 
 import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.DocumentReader
+import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.criteria.CriteriaBuilder
 import com.ee.tayra.io.criteria.Criterion
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClient
 
 abstract class RestoreFactory {
   
@@ -68,9 +70,14 @@ abstract class RestoreFactory {
     }
   }
 
+  public abstract DocumentReader createReader(File file)
+
   public abstract Replayer createWriter()
 
   public abstract CopyListener createListener()
+  
+  public abstract Notifier createNotifier()
 
   public abstract Reporter createReporter()
+
 }
