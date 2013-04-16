@@ -32,40 +32,69 @@ package com.ee.tayra.io;
 
 import java.io.IOException;
 
-public class TimestampRecorder implements DocumentWriter {
+public class TimestampRecorder implements CopyListener {
 
-  private final StringBuilder timestamp;
-  private final DocumentWriter delegate;
+  private final StringBuilder documentTimestamp; //for performance
+  private String lastDocumentTimestamp;
+  private final TimestampRepository timestampRepository;
 
-  public TimestampRecorder(final DocumentWriter delegate) {
-    timestamp = new StringBuilder();
-    this.delegate = delegate;
+  public TimestampRecorder(final TimestampRepository timestampRepository)
+  throws IOException {
+    this.timestampRepository = timestampRepository;
+    documentTimestamp = new StringBuilder();
+    lastDocumentTimestamp = timestampRepository.retrieve();
   }
 
-  public final String getTimestamp() {
-    return timestamp.toString();
+  public final String getDocumentTimestamp() {
+    return documentTimestamp.toString();
   }
 
   private void registerTimestampFrom(final String document) {
     if (document.contains("\"ts\"")) {
-      timestamp.delete(0, timestamp.length());
-      timestamp.append("{ " + timestampFrom(document) + " }");
+      documentTimestamp.delete(0, documentTimestamp.length());
+      documentTimestamp.append("{ " + timestampFrom(document) + " }");
     }
-}
+  }
 
   private String timestampFrom(final String data) {
     return data.substring(data.indexOf("\"ts\""), data.indexOf("}") + 1);
   }
 
-  @Override
-  public final void writeDocument(final String document) {
-    delegate.writeDocument(document);
-    registerTimestampFrom(document);
+  public final void stop() throws IOException {
+    if (documentTimestamp.length() > 0) {
+      timestampRepository.save(getDocumentTimestamp());
+    }
+  }
+
+  public final String getLastDocumentTimestamp() {
+    return lastDocumentTimestamp;
   }
 
   @Override
-  public final void close() throws IOException {
-    delegate.close();
+  public final void onReadSuccess(final String document) {
+     registerTimestampFrom(document);
   }
 
+  @Override
+  public final void onWriteSuccess(final String document) {
+    lastDocumentTimestamp = getDocumentTimestamp();
+  }
+
+  @Override
+  public final void onWriteFailure(
+  final String document, final Throwable problem) {
+  }
+
+  @Override
+  public final void onReadFailure(
+  final String document, final Throwable problem) {
+  }
+
+  @Override
+  public final void onReadStart(final String document) {
+  }
+
+  @Override
+  public final void onWriteStart(final String document) {
+  }
 }

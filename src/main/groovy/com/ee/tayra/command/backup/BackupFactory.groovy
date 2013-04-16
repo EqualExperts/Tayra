@@ -32,6 +32,7 @@ package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.DocumentWriter
+import com.ee.tayra.io.FileBasedTimestampRepository
 import com.ee.tayra.io.MongoExceptionBubbler
 import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.OplogReader
@@ -41,25 +42,19 @@ import com.ee.tayra.io.RotatingFileWriter
 import com.ee.tayra.io.SelectiveOplogReader
 import com.ee.tayra.io.TimestampRecorder
 import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.mongodb.MongoException
 
 class BackupFactory {
   private final BackupCmdDefaults config
   private final def listeningReporter
-  private final def writer
   private final def criteria
   private final String timestampFileName = 'timestamp.out'
-  def timestamp
+  private final TimestampRecorder timestampRecorder
 
   public BackupFactory (BackupCmdDefaults config, console) {
     this.config = config
     listeningReporter = new ProgressReporter(console)
-    RotatingFileWriter rfWriter = new RotatingFileWriter(config.recordToFile)
-    rfWriter.fileSize = config.fileSize
-    rfWriter.fileMax = config.fileMax
-    def listeners = [createListener(), createMongoExceptionBubbler()]
-    rfWriter.notifier = createNotifier(*listeners)
-    writer = new TimestampRecorder(rfWriter)
+    def timestampRepository = new FileBasedTimestampRepository(new File(timestampFileName), console)
+    timestampRecorder = new TimestampRecorder(timestampRepository)
 
     if(config.sNs || config.sExclude){
       criteria = new CriteriaBuilder().build {
@@ -71,47 +66,31 @@ class BackupFactory {
         }
       }
     }
-
-    File timestampFile = new File(timestampFileName)
-    if(timestampFile.isDirectory()) {
-      console.println("Expecting $timestampFile.name to be a File, but found Directory")
-      System.exit(1)
-    }
-    if(timestampFile.exists()) {
-      if(timestampFile.canRead() && timestampFile.length() > 0) {
-        timestamp = timestampFile.text
-      } else {
-        console.println("Unable to read $timestampFile.name")
-      }
-    }
   }
 
   public def createReader(def oplog) {
+    String timestamp = timestampRecorder.lastDocumentTimestamp
     criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
         : new OplogReader(oplog, timestamp, config.isContinuous)
   }
 
   public DocumentWriter createDocumentWriter() {
+    def writer = new RotatingFileWriter(config.recordToFile)
+    writer.fileSize = config.fileSize
+    writer.fileMax = config.fileMax
+    writer.notifier = new Notifier(timestampRecorder, createListener(), new MongoExceptionBubbler())
     writer
   }
 
-  public def createListener(){
+  public def createListener() {
     (CopyListener)listeningReporter
   }
 
-  public def createReporter(){
+  public def createReporter() {
     (Reporter)listeningReporter
   }
 
-  public def createMongoExceptionBubbler() {
-    new MongoExceptionBubbler()
-  }
-
-  public def createTimestampFile() {
-    new FileWriter(timestampFileName)
-  }
-
-  private Notifier createNotifier(CopyListener ...listeners) {
-    return new Notifier(listeners);
+  public def createTimestampRecorder() {
+    timestampRecorder
   }
 }

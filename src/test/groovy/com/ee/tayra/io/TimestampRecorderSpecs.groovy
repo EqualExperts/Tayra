@@ -1,111 +1,205 @@
 package com.ee.tayra.io
 
-import org.bson.types.ObjectId
-
+import com.ee.tayra.domain.operation.DocumentBuilder
+import org.bson.types.BSONTimestamp
 import spock.lang.*
 
-import com.ee.tayra.domain.operation.MongoUtils
-import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder
 
 public class TimestampRecorderSpecs extends Specification {
 
-	private DocumentWriter mockTargetWriter
-
-	private TimestampRecorder timestampRecorder
-	private String dbName = 'tayra'
-	private String collectionName = 'home'
-	private String name = '[Test Name]'
-	def objId = new ObjectId()
-	def anotherObjId = new ObjectId()
+    private TimestampRepository mockRepository
+    def timestampRecorder
+    private final String timestamp = '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
 
 	def setup() {
-		mockTargetWriter = Mock(DocumentWriter)
-		timestampRecorder = new TimestampRecorder(mockTargetWriter)
+      mockRepository = Mock(TimestampRepository)
+      mockRepository.retrieve() >> { timestamp }
+      timestampRecorder = new TimestampRecorder(mockRepository)
 	}
 
-	def getDocumentString(ObjectId objId) {
-		def o = new BasicDBObjectBuilder()
-					.start()
-						.add( "_id" , new BasicDBObject('$oid', objId))
-						.add( "name" , name)
-					.get()
-
-		MongoUtils.insertDocument(dbName,collectionName, o) as String
+	def getDocumentString(def tstamp = 1352105652) {
+        new DocumentBuilder(
+                ts: new BSONTimestamp(tstamp, 1),
+                h :'3493050463814977392',
+                op :'c',
+                ns : 'tayra.$cmd',
+                o : new BasicDBObjectBuilder()
+                        .start()
+                        .add('create', 'home')
+                        .get()
+        ) as String
 	}
 
-	def writesTimestampToDestination() throws IOException {
-		given: 'an insert document oplog entry'
-			String document = getDocumentString(objId)
+    def savesTimestamp() {
+      given: 'an insert document oplog entry'
+        String document = getDocumentString()
 
-		when: 'it writes the document'
-			timestampRecorder.writeDocument(document)
+      and: 'document is already written'
+        timestampRecorder.onReadSuccess(document)
+        timestampRecorder.onWriteSuccess(document)
 
-		then: 'destination should have the expected timestamp'
-			timestampRecorder.getTimestamp() == ('{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }')
+      when: 'stop is called...'
+        timestampRecorder.stop()
+
+      then:
+        1 * mockRepository.save(timestamp)
+    }
+
+    def recordsDocumentTimestampOnReadSuccess() {
+      given: 'an insert document oplog entry'
+        String document = getDocumentString()
+
+     when: 'a successful read has occurred'
+        timestampRecorder.onReadSuccess(document)
+
+     then: 'recorder should have the timestamp of the document'
+        timestampRecorder.getDocumentTimestamp() == timestamp
+    }
+
+    def preservesLastDocumentTimestampOnReadSuccess() {
+      given: 'an insert document oplog entry'
+        String document = getDocumentString(1352105653)
+
+      when: 'a successful read has occurred'
+        timestampRecorder.onReadSuccess(document)
+
+      then: 'recorder should preserve timestamp of the last document'
+        timestampRecorder.getLastDocumentTimestamp() == timestamp
+    }
+
+    def preservesDocumentTimestampsOnReadFailure() {
+      given: 'an insert document oplog entry'
+        String document = getDocumentString(1352105652)
+
+      and: 'a document was already written'
+        timestampRecorder.onReadSuccess(document)
+        timestampRecorder.onWriteSuccess(document)
+
+      when: 'a read failure has occurred'
+        timestampRecorder.onReadFailure(null, new IOException("Disk Full!"))
+
+      then: 'recorder should have timestamp of the previous document'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+
+      and: 'recorder should preserve timestamp of the last document'
+        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+    }
+
+    def preservesDocumentTimestampOnWriteSuccess() {
+	  given: 'an insert document oplog entry'
+	    String document = getDocumentString()
+
+      and: 'a successful read has already occurred'
+        timestampRecorder.onReadSuccess(document)
+
+      when: 'a successful write notification is received'
+        timestampRecorder.onWriteSuccess(document)
+
+      then: 'recorder should preserve timestamp of the current document'
+        timestampRecorder.getDocumentTimestamp() == timestamp
 	}
 
-	def delegatesWritesToTargetWriter() throws IOException {
-		given: 'an insert document oplog entry'
-			String document = getDocumentString(objId)
+    def updatesLastDocumentTimestampOnWriteSuccess() {
+      given: 'an insert document oplog entry'
+        String document = getDocumentString()
 
-		when: 'it writes the document'
-			timestampRecorder.writeDocument(document)
+      and: 'a successful read has already occurred'
+        timestampRecorder.onReadSuccess(document)
 
-		then: 'the delegate writer should write the document'
-			1 * mockTargetWriter.writeDocument(document)
+      when: 'a successful write notification is received'
+        timestampRecorder.onWriteSuccess(document)
+
+      then: 'recorder should update last timestamp with timestamp of current document '
+        timestampRecorder.getLastDocumentTimestamp() == timestamp
+    }
+
+    def preservesLastDocumentTimestampOnWriteFailure() throws IOException {
+	  given: 'two insert document oplog entries'
+	    String documentOne = getDocumentString(1352105652)
+	    String documentTwo = getDocumentString(1352105653)
+
+      and: 'document one is already written'
+	    timestampRecorder.onReadSuccess(documentOne)
+	    timestampRecorder.onWriteSuccess(documentOne)
+
+      and: 'document two is read successfully'
+        timestampRecorder.onReadSuccess(documentTwo)
+
+      when: 'it receives write failure notification for document two'
+        timestampRecorder.onWriteFailure(documentTwo, new IOException("Disk Full"))
+
+      then: 'recorder should preserve timestamp of the current document'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105653 , \\"$inc\\" : 1} }'
+
+      and: 'recorder should preserve timestamp of latest successful write'
+	    timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
 	}
 
-	def writesTimestampOfLastDocumentReadToDestination() throws IOException {
-		given: 'two insert document oplog entries'
-			String documentOne = getDocumentString(objId)
-			String documentTwo = getDocumentString(anotherObjId)
+	def preservesDocumentTimestampsWhenIncomingDocumentDoesNotHaveTimestampEntry() {
+	  given: 'a document without timestamp'
+        String documentOne = getDocumentString(1352105652)
+		String documentWithoutTS = new BasicDBObjectBuilder()
+							.start()
+								.add("name", "test")
+							.get()
+							.toString()
 
-		and: 'document one is already written'
-			timestampRecorder.writeDocument(documentOne)
+	  and: 'document one was already written successfully'
+		timestampRecorder.onReadSuccess(documentOne)
+        timestampRecorder.onWriteSuccess(documentOne)
 
-		when: 'it writes document two'
-			timestampRecorder.writeDocument(documentTwo)
+      and: 'document without timestamp is read successfully'
+        timestampRecorder.onReadSuccess(documentWithoutTS)
 
-		then: 'destination should have timestamp of document two'
-			timestampRecorder.getTimestamp() == ('{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }')
+      when: 'it receives notification for successful write for document without timestamp'
+        timestampRecorder.onWriteSuccess(documentWithoutTS)
+
+      then: 'recorder ignores recording document without timestamp'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+
+      and: 'recorder preserves timestamp of last document containing timestamp'
+		timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
 	}
 
-//	def doesNotWriteTimestampWhenDelegateWriterFails() throws IOException {
-//		given: 'two insert document oplog entries'
-//			String documentOne = getDocumentString(objId)
-//			String documentTwo = getDocumentString(anotherObjId)
-//
-//		and: 'document one is already written'
-//			timestampRecorder.writeDocument(documentOne)
-//
-//		and: 'destination holds its timestamp'
-//			String lastRecordedTimestamp = timestampRecorder.getTimestamp()
-//
-//		and: 'delegate writer fails to write document two'
-//			mockTargetWriter.writeDocument(documentTwo) >> {throw new IOException("Disk Full")}
-//
-//		when: 'it tries to write document two'
-//			timestampRecorder.writeDocument(documentTwo)
-//
-//		then: 'destination should have timestamp of latest successful write'
-//			timestampRecorder.getTimestamp() == lastRecordedTimestamp
-//			thrown(IOException)
-//	}
+    def doesNothingOnReadStart() {
+      given: 'an insert document oplog entry'
+        String documentOne = getDocumentString(1352105652)
+        String documentTwo = getDocumentString(1352105653)
 
-	def writesTimestampOnlyIfDocumentHasTimestampEntry() throws Exception {
-		given: 'a document without timestamp'
-			String document = new BasicDBObjectBuilder()
-								.start()
-									.add("name", "test")
-								.get()
-								.toString()
+      and: 'a document was already written'
+        timestampRecorder.onReadSuccess(documentOne)
+        timestampRecorder.onWriteSuccess(documentOne)
 
-		when: 'it writes the document'
-			timestampRecorder.writeDocument(document)
+      when: 'a read start notification is received'
+        timestampRecorder.onReadStart(documentTwo)
 
-		then: 'no timestamp should be written to destination'
-			timestampRecorder.getTimestamp() == ""
-	}
+      then: 'recorder should preserve timestamp of the current document'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
 
+      and: 'recorder should preserve timestamp of last document'
+        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+    }
+
+    def doesNothingOnWriteStart() {
+      given: 'an insert document oplog entry'
+        String documentOne = getDocumentString(1352105652)
+        String documentTwo = getDocumentString(1352105653)
+
+      and: 'a document was already written'
+        timestampRecorder.onReadSuccess(documentOne)
+        timestampRecorder.onWriteSuccess(documentOne)
+
+      and: 'second document was read successfully'
+        timestampRecorder.onReadSuccess(documentTwo)
+
+      when: 'a write start notification is received'
+        timestampRecorder.onWriteStart(documentTwo)
+
+      then: 'recorder should preserve timestamp of the current document'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105653 , \\"$inc\\" : 1} }'
+
+      and: 'recorder should preserve timestamp of last document'
+        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+    }
 }

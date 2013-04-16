@@ -159,6 +159,38 @@ public class OplogSpecs extends RequiresMongoConnection {
 			nextDocument == previousIterator.next()
 	}
 
+    def startsBackupFromOplogHeadWithNoQueryClause() {
+      given: 'backup starts...'
+        def documentsRead = 0
+        Iterator<String> iterator = oplog.find(null, false)
+
+      when: 'all documents in the oplog are read'
+        while (iterator.hasNext()) {
+            iterator.next()
+            documentsRead++
+        }
+        iterator.close()
+
+      then: 'documents are read'
+        documentsRead > 0
+    }
+
+    def startsBackupFromOplogHeadWithEmptyQueryClause() {
+      given: 'backup starts...'
+        def documentsRead = 0
+        Iterator<String> iterator = oplog.find('', false)
+
+      when: 'all documents in the oplog are read'
+        while (iterator.hasNext()) {
+            iterator.next()
+            documentsRead++
+        }
+        iterator.close()
+
+      then: 'documents are read'
+        documentsRead > 0
+    }
+
 	private extractTimestamp(String document) {
 		"{ " +  document.substring(document.indexOf("\"ts\""),
 			document.indexOf("}") + 1) + " }"

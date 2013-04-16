@@ -191,4 +191,10 @@
             <Bug code="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
         </Not>
     </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.FileBasedTimestampRepository" />
+        <Not>
+            <Bug code="DM_DEFAULT_ENCODING" />
+        </Not>
+    </Match>
 </FindBugsFilter>
