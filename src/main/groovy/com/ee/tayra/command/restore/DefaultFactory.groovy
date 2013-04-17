@@ -57,8 +57,10 @@ class DefaultFactory extends RestoreFactory {
 
   @Override
   public Replayer createWriter() {
-    criteria ? new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo))) :
-        new OplogReplayer(new Operations(mongo))
+    OplogReplayer oplogReplayer = new OplogReplayer(new Operations(mongo))
+	oplogReplayer.notifier = createNotifier()
+    criteria ? new SelectiveOplogReplayer(criteria, oplogReplayer) :
+        oplogReplayer
   }
 
   @Override
@@ -72,13 +74,19 @@ class DefaultFactory extends RestoreFactory {
   }
 
   @Override
-  public DocumentReader createReader(final File file){
-	new FileDocumentReader(new BufferedReader(new FileReader(file)))
-  }
-  
-  @Override
-  public Notifier createNotifier() {
-    return new Notifier(createListener());
+  public DocumentReader createReader(final String fileName){
+    File file = new File(fileName)
+    FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
+	reader.notifier = createNotifier()
+	reader
   }
 
+//  @Override
+//  public Notifier createNotifier() {
+//    return new Notifier(createListener());
+//  }
+
+  private Notifier createNotifier() {
+    return new Notifier(createListener());
+  }
 }

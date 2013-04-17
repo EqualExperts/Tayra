@@ -66,12 +66,19 @@ class DryRunFactory extends RestoreFactory {
   }
 
   @Override
-  public DocumentReader createReader(File file){
-    new FileDocumentReader(new BufferedReader(new FileReader(file)))
+  public DocumentReader createReader(final String fileName) {
+    File file = new File(fileName)
+	FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
+	reader.notifier = createNotifier()
+	reader
   }
 
-  @Override
-  public Notifier createNotifier() {
+//  @Override
+//  public Notifier createNotifier() {
+//	  return new Notifier(createListener());
+//  }
+
+  private Notifier createNotifier() {
     return new Notifier(createListener());
   }
 

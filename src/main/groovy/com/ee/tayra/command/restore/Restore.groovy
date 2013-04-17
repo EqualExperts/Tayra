@@ -141,7 +141,7 @@ try {
   factory = RestoreFactory.createFactory(config, mongo, console)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
-  def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
+//  def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener') : factory.createListener()
   def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
 
   def files = new RotatingFileCollection(restoreFromFile, isMultiple)
@@ -150,9 +150,9 @@ try {
   progressReporter.writeStartTimeTo console
 
   files.withFile {
+    println "file name class" +it.class
     FileDocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
-	reader.notifier = factory.createNotifier()
-	copier.copy(reader, writer, progressListener)
+    copier.copy(reader, writer)
   }
 
   progressReporter.summarizeTo console

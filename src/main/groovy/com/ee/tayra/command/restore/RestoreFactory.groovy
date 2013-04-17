@@ -70,13 +70,13 @@ abstract class RestoreFactory {
     }
   }
 
-  public abstract DocumentReader createReader(File file)
+  public abstract DocumentReader createReader(String fileName)
 
   public abstract Replayer createWriter()
 
   public abstract CopyListener createListener()
-  
-  public abstract Notifier createNotifier()
+//  
+//  public abstract Notifier createNotifier()
 
   public abstract Reporter createReporter()
 

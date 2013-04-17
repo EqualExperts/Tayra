@@ -36,25 +36,37 @@ import com.ee.tayra.domain.operation.OperationsFactory;
 public class OplogReplayer implements Replayer {
 
   private final OperationsFactory operations;
+  private WriteNotifier notifier;
 
   public OplogReplayer(final OperationsFactory operations) {
     this.operations = operations;
+    notifier = WriteNotifier.NONE;
+  }
+
+  public final void setNotifier(final WriteNotifier notifier) {
+    this.notifier = notifier;
   }
 
   @Override
-  public boolean replay(final String document) {
-    final String operationCode = extractOpcode(document);
-    Operation operation = operations.get(operationCode);
-    operation.execute(document);
-    return true;
+  public void replay(final String document) {
+    try {
+      notifier.notifyWriteStart(document);
+      final String operationCode = extractOpcode(document);
+      Operation operation = operations.get(operationCode);
+      operation.execute(document);
+      notifier.notifyWriteSuccess(document);
+    } catch (RuntimeException problem) {
+      notifier.notifyWriteFailure(document, problem);
+    }
+    // return true;
   }
 
   private String extractOpcode(final String document) {
     int opcodeStartIndex = document.indexOf("op") - 1;
     int opcodeEndIndex = document.indexOf(",", opcodeStartIndex);
-    String opcodeSpec = document.substring(opcodeStartIndex, opcodeEndIndex);
+    String opcodeSpec = document
+        .substring(opcodeStartIndex, opcodeEndIndex);
     String quotedOpcode = opcodeSpec.split(":")[1];
     return quotedOpcode.replaceAll("\"", "").trim();
   }
 }
-
