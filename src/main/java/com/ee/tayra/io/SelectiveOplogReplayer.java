@@ -45,9 +45,7 @@ public class SelectiveOplogReplayer implements Replayer {
   @Override
   public void replay(final String document) {
     if (criterion.isSatisfiedBy(document)) {
-//    return target.replay(document);
       target.replay(document);
     }
-//    return false;
   }
 }

@@ -58,7 +58,6 @@ public class OplogReplayer implements Replayer {
     } catch (RuntimeException problem) {
       notifier.notifyWriteFailure(document, problem);
     }
-    // return true;
   }
 
   private String extractOpcode(final String document) {

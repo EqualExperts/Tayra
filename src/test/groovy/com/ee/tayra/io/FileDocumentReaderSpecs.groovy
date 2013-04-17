@@ -17,7 +17,18 @@ public class FileDocumentReaderSpecs extends Specification {
 		fileDocumentReader.notifier = mockNotifier
 	}
 
-	def notifiesWhenReadingADocumentIsSuccessful() throws Exception {
+	def notifiesBeforeStartingToReadADocument() {
+		given: 'a document is read'
+			mockDelegate.readLine() >> {document}
+			
+		when: 'document is read'
+			fileDocumentReader.readLine()
+				
+		then: 'a notification of successful read is given'
+			1 * mockNotifier.notifyReadStart("")
+	}
+
+	def notifiesWhenReadingADocumentIsSuccessful() {
 		given: 'a document is read'
 			mockDelegate.readLine() >> {document}
 

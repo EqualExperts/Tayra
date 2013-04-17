@@ -42,55 +42,10 @@ public class Copier {
     }
   }
 
-  private Notifier createNotifier(final CopyListener[] listeners) {
-    return new Notifier(listeners);
-  }
-
-//  public final void copy(final Reader reader, final Replayer to,
-//      final CopyListener... listeners) {
-//    Notifier notifier = createNotifier(listeners);
-//    BufferedReader from = createBufferedReader(reader);
-//    String document = null;
-//    try {
-//      while ((document = from.readLine()) != null) {
-//        notifier.notifyReadSuccess(document);
-//        try {
-//          notifier.notifyWriteStart(document);
-//          if (to.replay(document)) {
-//            notifier.notifyWriteSuccess(document);
-//          }
-//        } catch (RuntimeException problem) {
-//          notifier.notifyWriteFailure(document, problem);
-//        }
-//      }
-//    } catch (IOException ioe) {
-//      notifier.notifyReadFailure(null, ioe);
-//    }
-//  }
-
   public final void copy(final DocumentReader from, final Replayer to) {
-//    WriteNotifier notifier = createNotifier(listeners);
     String document = null;
-//    try {
-      while ((document = from.readLine()) != null) {
-//        notifier.notifyReadSuccess(document);
-//        try {
-//          notifier.notifyWriteStart(document);
-//          if (to.replay(document)) {
-          to.replay(document);
-//            notifier.notifyWriteSuccess(document);
-//          }
-//        } catch (RuntimeException problem) {
-//          notifier.notifyWriteFailure(document, problem);
-//        }
-      }
-//    } catch (IOException ioe) {
-//      notifier.notifyReadFailure(null, ioe);
-//    }
+    while ((document = from.readLine()) != null) {
+      to.replay(document);
+    }
   }
-
-//  BufferedReader createBufferedReader(final Reader reader) {
-//    return new BufferedReader(reader);
-//  }
-
 }
