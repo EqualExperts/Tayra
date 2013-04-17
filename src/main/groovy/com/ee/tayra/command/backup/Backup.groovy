@@ -119,9 +119,6 @@ private def readPassword(output) {
 
 def factory = new BackupFactory(config, console)
 
-//def progressListener = binding.hasVariable('listener') ? binding.getVariable('listener')
-//		: factory.createListener()
-
 def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter')
 		: factory.createReporter()
 
@@ -141,12 +138,6 @@ addShutdownHook {
 	} catch (RuntimeException e) {
 	}
     timestampRecorder.stop()
-//TODO: This logic goes in TimestampRecorder
-//	if(writer.class == TimestampRecorder) {
-//		if(writer && writer.timestamp.length() > 0) {
-//			factory.createTimestampFile().withWriter { it.write writer.timestamp }
-//		}
-//	}
 	progressReporter?.summarizeTo console
 }
 
@@ -163,11 +154,6 @@ try {
 		new Copier().copy(reader, writer)
 	} {
         timestampRecorder.stop()
-        //TODO: This logic goes in TimestampRecorder
-//        if(writer && writer.timestamp.length() > 0){
-//			factory.createTimestampFile().append(writer.timestamp)?.close()
-//			factory.timestamp = writer.timestamp
-//		}
 		console.println "Attempting to resume Backup On: ${new Date()}"
 	}
 } catch (Throwable problem) {
@@ -175,12 +161,6 @@ try {
 } finally {
 	reader?.close()
     timestampRecorder.stop()
-    //TODO: This logic goes in TimestampRecorder
-//	if(writer.class == TimestampRecorder) {
-//		if(writer && writer.timestamp.length() > 0) {
-//			factory.createTimestampFile().withWriter { it.write writer.timestamp }
-//		}
-//	}
 }
 
 normalExecution = true
