@@ -240,4 +240,18 @@ public class BackupSpecs extends Specification {
     then: 'the output should contain "ts"'
       result.toString().contains('Cannot Read Password Input, please use -p command line option')
   }
+
+  def itCreatesTimestampFile() {
+    given:'arguments contains -s, -f and --port'
+      def context = new Binding()
+      context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile])
+
+    when: 'backup runs with above args'
+      new Backup(context).run()
+
+    then: 'timestamp file should be created'
+      def timestampFile = new File('timestamp.out')
+      timestampFile.exists()
+      timestampFile.text.contains('ts')
+  }
 }

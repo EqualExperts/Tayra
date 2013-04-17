@@ -55,7 +55,6 @@ class BackupFactory {
     listeningReporter = new ProgressReporter(console)
     def timestampRepository = new FileBasedTimestampRepository(new File(timestampFileName), console)
     timestampRecorder = new TimestampRecorder(timestampRepository)
-
     if(config.sNs || config.sExclude){
       criteria = new CriteriaBuilder().build {
         if(config.sNs) {
@@ -70,15 +69,17 @@ class BackupFactory {
 
   public def createReader(def oplog) {
     String timestamp = timestampRecorder.lastDocumentTimestamp
-    criteria ? new SelectiveOplogReader(new OplogReader(oplog, timestamp, config.isContinuous), criteria)
-        : new OplogReader(oplog, timestamp, config.isContinuous)
+    OplogReader oplogReader = new OplogReader(oplog, timestamp, config.isContinuous)
+    oplogReader.notifier = new Notifier(timestampRecorder, createListener(), new MongoExceptionBubbler())
+    criteria ? new SelectiveOplogReader(oplogReader, criteria)
+        : oplogReader
   }
 
   public DocumentWriter createDocumentWriter() {
     def writer = new RotatingFileWriter(config.recordToFile)
     writer.fileSize = config.fileSize
     writer.fileMax = config.fileMax
-    writer.notifier = new Notifier(timestampRecorder, createListener(), new MongoExceptionBubbler())
+    writer.notifier = new Notifier(timestampRecorder, createListener())
     writer
   }
 

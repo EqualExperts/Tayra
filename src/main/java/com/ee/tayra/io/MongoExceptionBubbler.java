@@ -34,16 +34,20 @@ import com.mongodb.MongoException;
 
 public class MongoExceptionBubbler implements CopyListener {
 
+  @Override
   public final void onReadSuccess(final String document) {
   }
 
+  @Override
   public final void onWriteSuccess(final String document) {
   }
 
+  @Override
   public final void onWriteFailure(final String document,
       final Throwable problem) {
   }
 
+  @Override
   public final void onReadFailure(final String document,
       final Throwable problem) {
     if (problem instanceof MongoException) {
