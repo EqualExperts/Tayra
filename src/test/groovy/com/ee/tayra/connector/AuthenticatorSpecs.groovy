@@ -85,6 +85,6 @@ class AuthenticatorSpecs extends Specification {
 		
 		then: 'error message should be thrown as'
 			def problem = thrown(MongoException.Network)
-			problem.message == 'can\'t call something : localhost/127.0.0.1:34567/admin'
+			problem.message == 'Read operation to server localhost/127.0.0.1:34567 failed on database admin'
 	}
 }

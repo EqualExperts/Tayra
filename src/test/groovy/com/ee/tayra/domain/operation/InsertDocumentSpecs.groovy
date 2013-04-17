@@ -149,6 +149,7 @@ class InsertDocumentSpecs extends RequiresMongoConnection {
 			
 		then: 'it complains that the document cannot be inserted again'
 			def problem = thrown(InsertFailed)
-			problem.message == '''E11000 duplicate key error index: tayra.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }'''
+			println problem.message
+			problem.message.contains('''E11000 duplicate key error index: tayra.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }''')
 	}
 }
