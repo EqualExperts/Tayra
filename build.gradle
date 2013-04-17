@@ -59,7 +59,7 @@ project.ext {
   acceptanceTestReportsDir = "$reporting.baseDir/$acceptanceTestDir"
   smokeTestDir = "$acceptanceTestStoriesDir/cud"
   tocTemplateFile = new File("$acceptanceTestDir/toc.html")
-  exploratoryTestSrcDir = "$projectDir/exploratory-tests/test/groovy/com/ee/tayra/exploratory"
+  exploratoryTestSrcDir = "$projectDir/exploratory-tests/test/groovy"
 
   explodedDir = "$project.buildDir/exploded"
   portPrefix = System.getProperty('portPrefix', '')
@@ -110,11 +110,6 @@ sourceSets {
 	test {
 		groovy {
 			srcDir "$exploratoryTestSrcDir"
-		}
-	}
-	main {
-		groovy {
-			srcDir "src/main/groovy"
 		}
 	}
 }
@@ -180,6 +175,9 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	if(!accTestReportsDir.exists()) {
 		accTestReportsDir.mkdirs()
 	}
+    runtimeClasspath.each{
+    	println "acceptance test cp..." + it
+    }
 	javaexec {
         systemProperties['portPrefix'] = project.ext.portPrefix
 	    main = 'fitlibrary.runner.FolderRunner'
@@ -188,14 +186,21 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	}
 }
 
-task 'exploratory-test'(type:Test) {
+task 'exploratory-test'(type:Test, dependsOn:'unzip') {
 	def originalClasspath = getClasspath()
+	originalClasspath.each{
+		println "classpath.." + it
+	}
 	doFirst{
 		def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
 		runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
 		setClasspath(runtimeClasspath + originalClasspath)
 		include("**/exploratory/*Test*.class")
+		runtimeClasspath.each {
+			println "runtime cp..." + it
+		}
 	}
+//	testSrcDirs = project.distsDir, include: '*test.jar')
 	doLast{
 		setClasspath(originalClasspath)
 	}
