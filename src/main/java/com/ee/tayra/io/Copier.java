@@ -30,9 +30,6 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
 
 public class Copier {
   public final void copy(final CollectionReader from, final DocumentWriter to) {
