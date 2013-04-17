@@ -31,5 +31,7 @@
 package com.ee.tayra.io;
 
 public interface Replayer {
+
   void replay(String document);
+
 }

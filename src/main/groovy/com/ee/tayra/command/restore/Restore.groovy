@@ -151,6 +151,7 @@ try {
   files.withFile {
     FileDocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
     copier.copy(reader, writer)
+    reader.close()
   }
 
   progressReporter.summarizeTo console
@@ -160,7 +161,6 @@ try {
 } finally {
   mongo?.close()
 }
-
 
 def getAuthenticator(mongo) {
   binding.hasVariable('authenticator') ?

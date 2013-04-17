@@ -56,11 +56,6 @@ class DryRunFactory extends RestoreFactory {
   }
 
   @Override
-  public CopyListener createListener() {
-	  (CopyListener)listeningReporter
-  }
-
-  @Override
   public Reporter createReporter() {
     (Reporter)listeningReporter
   }
@@ -73,13 +68,11 @@ class DryRunFactory extends RestoreFactory {
 	reader
   }
 
-//  @Override
-//  public Notifier createNotifier() {
-//	  return new Notifier(createListener());
-//  }
-
   private Notifier createNotifier() {
     return new Notifier(createListener());
   }
 
+  private CopyListener createListener() {
+    (CopyListener)listeningReporter
+  }
 }

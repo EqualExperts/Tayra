@@ -18,7 +18,7 @@ public class FileDocumentReader implements DocumentReader {
   }
 
   @Override
-  public final String readLine() {
+  public final String readDocument() {
     try {
       notifier.notifyReadStart("");
       String document = delegate.readLine();
@@ -30,5 +30,10 @@ public class FileDocumentReader implements DocumentReader {
       notifier.notifyReadFailure(null, ioe);
     }
     return null;
+  }
+
+  @Override
+  public final void close() throws IOException {
+    delegate.close();
   }
 }

@@ -27,19 +27,19 @@ class DependencyTest extends Specification {
         !jdepend.containsCycles()
 
   }
-//  @Ignore
-//  def ensuresConnectorDoesNotDependOnAnyOtherTayraPackages() {
-//    given: 'connector package'
-//      def connector = jdepend.getPackage('com.ee.tayra.connector')
-//
-//    when: 'jDepend analyzes codebase'
-//      jdepend.analyze()
-//
-//    then: 'it should depend on no tayra packages'
-//      jdepend.packages.findAll {
-//        it.name ==~ /com\.ee\.tayra\..*/  || it.name ==~ /com\.ee\.tayra/
-//      }.inject (true) { initialValue, aPackage ->
-//        initialValue && !connector.dependsOn(aPackage)
-//      }
-//  }
+
+  def ensuresConnectorDoesNotDependOnAnyOtherTayraPackages() {
+    given: 'connector package'
+      def connector = jdepend.getPackage('com.ee.tayra.connector')
+
+    when: 'jDepend analyzes codebase'
+      jdepend.analyze()
+
+    then: 'it should depend on no tayra packages'
+      jdepend.packages.findAll {
+        it.name ==~ /com\.ee\.tayra\..*/  || it.name ==~ /com\.ee\.tayra/
+      }.inject (true) { initialValue, aPackage ->
+        initialValue && !connector.dependsOn(aPackage)
+      }
+  }
 }

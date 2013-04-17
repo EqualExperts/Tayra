@@ -44,7 +44,7 @@ public class Copier {
 
   public final void copy(final DocumentReader from, final Replayer to) {
     String document = null;
-    while ((document = from.readLine()) != null) {
+    while ((document = from.readDocument()) != null) {
       to.replay(document);
     }
   }

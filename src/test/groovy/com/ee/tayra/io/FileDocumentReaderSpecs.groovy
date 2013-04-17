@@ -6,7 +6,7 @@ public class FileDocumentReaderSpecs extends Specification {
 
 	private ReadNotifier mockNotifier
 	private Reader mockDelegate
-	private FileDocumentReader fileDocumentReader
+	private DocumentReader fileDocumentReader
 	private final String document = "\"ts\""
 	
 
@@ -22,7 +22,7 @@ public class FileDocumentReaderSpecs extends Specification {
 			mockDelegate.readLine() >> {document}
 			
 		when: 'document is read'
-			fileDocumentReader.readLine()
+			fileDocumentReader.readDocument()
 				
 		then: 'a notification of successful read is given'
 			1 * mockNotifier.notifyReadStart("")
@@ -33,7 +33,7 @@ public class FileDocumentReaderSpecs extends Specification {
 			mockDelegate.readLine() >> {document}
 
 		when: 'document is read'
-			fileDocumentReader.readLine()
+			fileDocumentReader.readDocument()
 
 		then: 'a notification of successful read is given'
 			1 * mockNotifier.notifyReadSuccess(document)
@@ -45,7 +45,7 @@ public class FileDocumentReaderSpecs extends Specification {
 			mockDelegate.readLine() >> {throw problem}
 
 		when: 'the document is read'
-			fileDocumentReader.readLine()
+			fileDocumentReader.readDocument()
 
 		then: 'it notifies a failed read only'
 			1 * mockNotifier.notifyReadFailure(null, problem)

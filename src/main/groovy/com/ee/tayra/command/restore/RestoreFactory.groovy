@@ -74,10 +74,5 @@ abstract class RestoreFactory {
 
   public abstract Replayer createWriter()
 
-  public abstract CopyListener createListener()
-//  
-//  public abstract Notifier createNotifier()
-
   public abstract Reporter createReporter()
-
 }
