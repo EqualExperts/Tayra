@@ -16,11 +16,14 @@ public class OplogReplayerSpecs extends Specification {
 	private OplogReplayer replayer
 	private OperationsFactory mockOperations
 	private Operation mockOperation
+	private WriteNotifier mockNotifier
 	
 	def setup() {
 		mockOperations = Mock(OperationsFactory)
 		mockOperation = Mock(Operation)
 		replayer = new OplogReplayer(mockOperations)
+		mockNotifier = Mock(WriteNotifier)
+		replayer.notifier = mockNotifier
 	}
 
 	def replaysCreateCollectionOperation() throws Exception {
@@ -83,4 +86,55 @@ public class OplogReplayerSpecs extends Specification {
 			0 * mockOperations.get('   c ')
 			mockOperation.execute(oplogDocString)
 	}
+
+	def notifiesWhenWritingADocumentToReplayerIsSuccessful() {
+		given: 'an Oplog entry'
+			def builder = new MongoUtils().createCollection('person', 'testCollection')
+			def oplogDocString = builder as String
+			
+		and: 'operations factory gets Operation'
+			mockOperations.get('c') >> mockOperation
+
+		when: 'Replayer replays an Oplog Entry String'
+			replayer.replay(oplogDocString)
+		
+		then: 'a notification of successful write is given'
+			1 * mockNotifier.notifyWriteSuccess(oplogDocString)
+	}
+
+	def notifiesWhenReplayerOperationFails() {
+		given: 'an Oplog entry'
+			def builder = new MongoUtils().createCollection('person', 'testCollection')
+			def oplogDocString = builder as String
+			
+		and: 'operations factory gets Operation'
+			mockOperations.get('c') >> mockOperation
+
+		and: 'a problem occurs when the replay fails'
+			final RuntimeException problem = new RuntimeException(
+					"Document to update does not exist")
+			mockOperation.execute(oplogDocString) >> {throw problem}
+
+		when: 'Replayer replays an Oplog Entry String'
+				replayer.replay(oplogDocString)
+
+		then: 'a failed write is notified'
+			1 * mockNotifier.notifyWriteFailure(oplogDocString, problem)
+	}
+
+	def notifiesWriteStartBeforeReplayingDocument(){
+		given: 'an Oplog entry'
+			def builder = new MongoUtils().createCollection('person', 'testCollection')
+			def oplogDocString = builder as String
+			
+		and: 'operations factory gets Operation'
+			mockOperations.get('c') >> mockOperation
+
+		when: 'Replayer replays an Oplog Entry String'
+			replayer.replay(oplogDocString)
+		
+		then: 'a notification of successful write is given'
+			1 * mockNotifier.notifyWriteStart(oplogDocString)
+	}
+
 }

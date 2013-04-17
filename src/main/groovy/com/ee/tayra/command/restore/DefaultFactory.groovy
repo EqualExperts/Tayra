@@ -32,6 +32,9 @@ package com.ee.tayra.command.restore
 
 import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
+import com.ee.tayra.io.DocumentReader
+import com.ee.tayra.io.FileDocumentReader
+import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.Replayer
 import com.ee.tayra.io.Reporter
@@ -54,17 +57,30 @@ class DefaultFactory extends RestoreFactory {
 
   @Override
   public Replayer createWriter() {
-    criteria ? new SelectiveOplogReplayer(criteria, new OplogReplayer(new Operations(mongo))) :
-        new OplogReplayer(new Operations(mongo))
-  }
-
-  @Override
-  public CopyListener createListener() {
-    (CopyListener)listeningReporter
+    OplogReplayer oplogReplayer = new OplogReplayer(new Operations(mongo))
+    oplogReplayer.notifier = createNotifier()
+    criteria ? new SelectiveOplogReplayer(criteria, oplogReplayer) :
+        oplogReplayer
   }
 
   @Override
   public Reporter createReporter() {
     (Reporter)listeningReporter
+  }
+
+  @Override
+  public DocumentReader createReader(final String fileName){
+    File file = new File(fileName)
+    FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
+    reader.notifier = createNotifier()
+    reader
+  }
+
+  private Notifier createNotifier() {
+    return new Notifier(createListener());
+  }
+
+  private CopyListener createListener() {
+    (CopyListener)listeningReporter
   }
 }

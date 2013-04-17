@@ -30,9 +30,6 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
 
 public class Copier {
   public final void copy(final CollectionReader from, final DocumentWriter to) {
@@ -45,33 +42,10 @@ public class Copier {
     }
   }
 
-    private Notifier createNotifier(final CopyListener[] listeners) {
-        return new Notifier(listeners);
-    }
-
-    public final void copy(final Reader reader, final Replayer to,
-      final CopyListener... listeners) {
-    Notifier notifier = createNotifier(listeners);
-    BufferedReader from = createBufferedReader(reader);
+  public final void copy(final DocumentReader from, final Replayer to) {
     String document = null;
-    try {
-      while ((document = from.readLine()) != null) {
-        notifier.notifyReadSuccess(document);
-        try {
-          notifier.notifyWriteStart(document);
-          if (to.replay(document)) {
-            notifier.notifyWriteSuccess(document);
-          }
-        } catch (RuntimeException problem) {
-          notifier.notifyWriteFailure(document, problem);
-        }
-      }
-    } catch (IOException ioe) {
-      notifier.notifyReadFailure(null, ioe);
+    while ((document = from.readDocument()) != null) {
+      to.replay(document);
     }
-  }
-
-  BufferedReader createBufferedReader(final Reader reader) {
-    return new BufferedReader(reader);
   }
 }

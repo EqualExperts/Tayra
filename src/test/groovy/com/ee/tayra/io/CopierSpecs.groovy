@@ -61,151 +61,16 @@ public class CopierSpecs extends Specification {
 			writer.toString().contains("ts")
 	}
 
-
 	def replaysOplog() throws Exception {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
-			BufferedReader from = new BufferedReader(new StringReader(document
-					+ NEW_LINE))
+			def bufferedReader = new BufferedReader(new StringReader(document + NEW_LINE))
+			DocumentReader from = new FileDocumentReader(bufferedReader)
 
 		when: 'document is copied'
 			copier.copy(from, mockOplogReplayer)
 
 		then: 'oplog replayer should replay the document'
 			1 * mockOplogReplayer.replay(document)
-	}
-
-
-	def notifiesWhenReadingADocumentFromReaderIsSuccessful()
-			throws Exception {
-		given: 'a reader and an oplog replayer'
-			mockOplogReplayer = Mock(OplogReplayer)
-			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
-
-		and: 'a copy listener'
-			mockCopyListener = Mock(CopyListener)
-
-		when: 'document is copied'
-			copier.copy(from, mockOplogReplayer, mockCopyListener)
-
-		then: 'a notification of successful read is given'
-			1 * mockCopyListener.onReadSuccess(document)
-	}
-
-
-	def notifiesWhenWritingADocumentToReplayerIsSuccessful()
-			throws Exception {
-		given: 'a reader and an oplog replayer'
-			mockReplayer = Stub(Replayer)
-			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
-
-		and: 'a copy listener'
-			mockCopyListener = Mock(CopyListener)
-
-		and: 'the replayer replays the document'
-			mockReplayer.replay (document) >> true
-
-		when: ' document is copied'
-			copier.copy(from, mockReplayer, mockCopyListener)
-
-		then: 'a notification of successful write is given'
-			1 * mockCopyListener.onWriteSuccess(document)
-	}
-
-
-	def notifiesWhenReplayerOperationFails() throws Exception {
-		given: 'a reader and an oplog replayer'
-			mockOplogReplayer = Mock(OplogReplayer)
-			BufferedReader from = new BufferedReader(new StringReader(document + NEW_LINE))
-
-		and: 'a copy listener'
-			mockCopyListener = Mock(CopyListener)
-
-		and: 'a problem occurs when the replay fails'
-			final RuntimeException problem = new RuntimeException(
-					"Document to update does not exist")
-			mockOplogReplayer.replay(document) >> {throw problem}
-
-		when: 'document is copied'
-			copier.copy(from, mockOplogReplayer, mockCopyListener)
-
-		then: 'notifies a successful read'
-			0 * mockCopyListener.onReadFailure(document, problem)
-			1 * mockCopyListener.onReadSuccess(document)
-
-		and: 'a failed write'
-			1 * mockCopyListener.onWriteFailure(document, problem)
-			0 * mockCopyListener.onWriteSuccess(document)
-	}
-
-
-	def notifiesWhenReadingFromReaderFails() throws Exception {
-		given: 'a reader and an oplog replayer'
-			mockOplogReplayer = Mock(OplogReplayer)
-			BufferedReader mockReader = Mock(BufferedReader)
-			copier = new Copier() {
-				@Override
-				BufferedReader createBufferedReader(Reader reader) {
-					mockReader
-				}
-			}
-
-		and: 'a copy listener'
-			mockCopyListener = Mock(CopyListener)
-
-		and: 'a problem occurs while reading'
-			final IOException problem = new IOException()
-			mockReader.readLine() >> {throw problem}
-
-		when: 'the document is copied'
-			copier.copy(mockReader, mockOplogReplayer, mockCopyListener)
-
-		then: 'it notifies a failed read only'
-			1 * mockCopyListener.onReadFailure(null, problem)
-			0 * mockCopyListener.onReadSuccess(document)
-			0 * mockCopyListener.onWriteSuccess(document)
-			0 * mockCopyListener.onWriteFailure(document, problem)
-	}
-
-
-	def doesNotWriteEmptyDocuments() {
-		given: 'a collection reader and a writer'
-			CollectionReader mockReader = Mock(CollectionReader)
-            DocumentWriter mockWriter = Mock(DocumentWriter)
-
-		and: 'documents do not satisfy criteria'
-			mockReader.hasDocument() >> true >> false
-			mockReader.readDocument() >> ""
-
-		when: 'the document is copied'
-			copier.copy(mockReader, mockWriter)
-
-		then: 'it notifies only read success'
-			0 * mockWriter.notifyWriteSuccess(_)
-	}
-
-	def notifiesWriteStartWhenADocumentIsRead(){
-		given: 'a collection reader and a writer'
-			BufferedReader mockReader = Mock(BufferedReader)
-			Replayer mockWriter = Mock(Replayer)
-			copier = new Copier() {
-				@Override
-				BufferedReader createBufferedReader(Reader reader) {
-					mockReader
-				}
-			}
-
-		and: 'a copy listener'
-			mockCopyListener = Mock(CopyListener.class)
-
-		and: 'reader reads a document'
-			mockReader.readLine() >> document >> null
-			mockWriter.replay(document) >> false
-
-		when: 'the document is copied'
-			copier.copy(mockReader, mockWriter, mockCopyListener)
-
-		then: 'it notifies a successful write'
-			1 * mockCopyListener.onWriteStart(document)
 	}
 }

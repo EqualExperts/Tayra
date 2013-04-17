@@ -1,5 +1,7 @@
 package com.ee.tayra.design
 
+import org.junit.Ignore;
+
 import jdepend.framework.JDepend
 import jdepend.framework.JavaPackage
 import spock.lang.Specification

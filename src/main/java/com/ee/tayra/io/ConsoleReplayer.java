@@ -41,9 +41,7 @@ public class ConsoleReplayer implements Replayer {
   }
 
   @Override
-  public final boolean replay(final String document) {
+  public final void replay(final String document) {
     console.println(document);
-    return true;
   }
-
 }

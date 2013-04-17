@@ -33,12 +33,12 @@ package com.ee.tayra.command.restore
 import com.ee.tayra.io.ConsoleReplayer
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.DeafAndDumbReporter
-import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.DocumentReader
+import com.ee.tayra.io.FileDocumentReader
+import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.Replayer
+import com.ee.tayra.io.Reporter
 import com.ee.tayra.io.SelectiveOplogReplayer
-import com.mongodb.Mongo
-
-import java.io.PrintWriter
 
 class DryRunFactory extends RestoreFactory {
 
@@ -56,12 +56,23 @@ class DryRunFactory extends RestoreFactory {
   }
 
   @Override
-  public CopyListener createListener() {
-    (CopyListener)listeningReporter
+  public Reporter createReporter() {
+    (Reporter)listeningReporter
   }
 
   @Override
-  public Reporter createReporter() {
-    (Reporter)listeningReporter
+  public DocumentReader createReader(final String fileName) {
+    File file = new File(fileName)
+	FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
+	reader.notifier = createNotifier()
+	reader
+  }
+
+  private Notifier createNotifier() {
+    return new Notifier(createListener());
+  }
+
+  private CopyListener createListener() {
+    (CopyListener)listeningReporter
   }
 }
