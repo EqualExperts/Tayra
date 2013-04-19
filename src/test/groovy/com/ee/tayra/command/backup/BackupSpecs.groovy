@@ -254,4 +254,34 @@ public class BackupSpecs extends Specification {
       timestampFile.exists()
       timestampFile.text.contains('ts')
   }
+
+  def notifiesUserTheStartOfBackupFromStartOFOplogWhenTimeStampFileIsNotPresent() {
+	  given:'arguments contains -s and -f option'
+		  context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile])
+
+	  and: 'timestamp.out is not present'
+		  File timestampFile = new File('timestamp.out')
+		  timestampFile.delete()
+
+	  when: 'backup runs with above args'
+		  new Backup(context).run()
+
+	  then: 'Notification message should be Shown as'
+		  result.toString().contains('Backup is starting from Start of oplog')
+  }
+
+  def notifiesUserTheStaringTimestampWhenBackupStartsAndTimeStampFileExist() {
+	  given:'arguments contains -s and -f option'
+		context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile])
+  
+	  and: 'backup runs with above args'
+		new Backup(context).run()
+
+	  when: 'backup is run again and timestamp file exists'
+		new Backup(context).run()
+  
+	  then: 'Notification message should be Shown as'
+		result.toString().contains('Backup is starting from')
+		result.toString().contains('ts')
+	}
 }
