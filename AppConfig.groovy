@@ -51,7 +51,7 @@ configuration {
 		version {
 			major = 0 //number related to production release
 			minor = 8 //changes or feature additions
-			micro = 0 //patches and bug fixes
+			micro = 1 //patches and bug fixes
 			qualifier {
 				alphaNumeric = 'Beta2' //Alpha# or Beta# or CR# or GA, or SP#
 			}
