@@ -147,20 +147,22 @@ System.setErr(stderr)
 
 try {
 	progressReporter.writeStartTimeTo console
+	printTimestampCaution(timestampRecorder, console)
 	new MongoReplSetConnection(config.source, config.port).using { mongo ->
 		getAuthenticator(mongo).authenticate(config.username, config.password)
 		def oplog = new Oplog(mongo)
 		reader = factory.createReader(oplog)
 		new Copier().copy(reader, writer)
 	} {
-        timestampRecorder.stop()
+		timestampRecorder.stop()
 		console.println "Attempting to resume Backup On: ${new Date()}"
+		printTimestampCaution(timestampRecorder, console)
 	}
 } catch (Throwable problem) {
 	console.println "Oops!! Could not perform backup...$problem.message"
 } finally {
 	reader?.close()
-    timestampRecorder.stop()
+	timestampRecorder.stop()
 }
 
 normalExecution = true
@@ -169,3 +171,14 @@ def getAuthenticator(mongo) {
 	binding.hasVariable('authenticator') ?
 			binding.getVariable('authenticator') : new MongoAuthenticator(mongo)
 }
+
+private printTimestampCaution(timestampRecorder, PrintWriter console) {
+	def timestamp = timestampRecorder.lastDocumentTimestamp
+	if(timestamp.isEmpty()){
+		console.println "Backup is starting from Start of oplog"
+	}
+	else {
+		console.println "Backup is starting from: $timestamp"
+	}
+}
+
