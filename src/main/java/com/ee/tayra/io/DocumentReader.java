@@ -34,7 +34,7 @@ import java.io.IOException;
 
 public interface DocumentReader {
 
-  String readDocument();
+  String readDocument() throws Exception;
 
   void close() throws IOException;
 }

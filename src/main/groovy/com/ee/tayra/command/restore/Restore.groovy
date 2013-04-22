@@ -98,7 +98,7 @@ if(options.sNs){
 if(options.sSince){
   config.sSince = options.sSince
 }
-  
+
 if(options.sUntil){
   config.sUntil = options.sUntil
 }
@@ -149,7 +149,7 @@ try {
   progressReporter.writeStartTimeTo console
 
   files.withFile {
-    FileDocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
+    MemoryMappedFileReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
     copier.copy(reader, writer)
     reader.close()
   }
