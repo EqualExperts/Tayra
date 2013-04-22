@@ -55,7 +55,7 @@ configuration {
 			qualifier {
 				alphaNumeric = 'Beta2' //Alpha# or Beta# or CR# or GA, or SP#
 			}
-            previous = '0.7.0.Beta1'
+            previous = '0.8.0.Beta2'
 			complete = toCompleteVersion()
 		}
 
