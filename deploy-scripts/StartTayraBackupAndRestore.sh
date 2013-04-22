@@ -24,9 +24,9 @@ echo "Making new directories"
 mkdir $backupFiles/ $notRestoredFiles/ $restoredFiles/  $toBeRestoredFiles/
 
 gnome-terminal -t "Generator" -x $GROOVY_HOME/bin/groovy -cp ./libs/*: ./DataGenerator.groovy --source=$source --port=$source_port -u $username -p $password --feedInterval=5 &
-
 echo "DataGenerator Started"
-gnome-terminal -t "Watcher" -x $GROOVY_HOME/bin/groovy -cp ./libs/*: ./FileWatcher.groovy -f $backupFiles/$backupFile --target=$target  --port=$target_port -u $username -p $password &
 
+gnome-terminal -t "Watcher" -x $GROOVY_HOME/bin/groovy -cp ./libs/*: ./FileWatcher.groovy -f $backupFiles/$backupFile --target=$target  --port=$target_port -u $username -p $password --watch=$HOME/data_files &
 echo "FileWatcher Started"
+
 gnome-terminal -t "Backup" -x ./backup.sh -s $source --port=$source_port -f $backupFiles/$backupFile -u $username -p $password -t --fSize=500KB --fMax=1 &

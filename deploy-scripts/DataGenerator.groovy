@@ -4,7 +4,6 @@ import com.mongodb.DBCollection
 import com.mongodb.MongoClient
 import com.mongodb.ServerAddress
 
-
 def cli = new CliBuilder(usage:'DataGenerator --source=<MongoDB> [--port=number] [-u username] [-p password]')
 cli.with {
   _  args:1, argName: 'MongoDB Host', longOpt:'source', 'Source IP/Host (=localhost or ip)', optionalArg:true, required:true
@@ -47,6 +46,9 @@ if(options.password) {
 if(options.feedInterval) {
   feedInterval = Integer.parseInt(options.feedInterval)
 }
+
+println "Connecting to mongo"
+
 ServerAddress serverAddress = new ServerAddress(sourceMongoDB, srcPort)
 MongoClient mongoClient = new MongoClient(serverAddress)
 

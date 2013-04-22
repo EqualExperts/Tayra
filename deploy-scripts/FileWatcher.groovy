@@ -10,13 +10,6 @@ import java.nio.file.WatchEvent
 import java.nio.file.WatchKey
 import java.nio.file.WatchService
 
-Properties config = new Properties() 
-config.load(new FileInputStream("deployment.properties"))
-
-backupDir = Paths.get(config.getProperty("backupDir"))
-restoreDir = Paths.get(config.getProperty("restoreDir"))
-restoreCompleteDir = Paths.get(config.getProperty("restoreCompleteDir"))
-restoreFailedDir = Paths.get(config.getProperty("restoreFailedDir"))
 
 def cli = new CliBuilder(usage:'FileWatcher --target=<MongoDB> [--port=number] -f <file> [-u username] [-p password]')
 cli.with {
@@ -25,6 +18,7 @@ cli.with {
   f  args:1, argName: 'file', longOpt:'file', 'REQUIRED, File To Record Oplog To', required: true
   u  args:1, argName: 'username', longOpt:'username', 'username for authentication', optionalArg:true
   p  args:1, argName: 'password', longOpt:'password', 'password for authentication', optionalArg:true
+  _  args:1, argName: 'watch', longOpt:'watch', 'REQUIRED, directory To monitor', required: true
 }
 
 def options = cli.parse(args)
@@ -57,7 +51,17 @@ if(options.password) {
   password = options.password
 }
 
+watchDirHome = options.watch
+
+Properties config = new Properties() 
+config.load(new FileInputStream("deployment.properties"))
+backupDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("backupDir"))
+restoreDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("restoreDir"))
+restoreCompleteDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("restoreCompleteDir"))
+restoreFailedDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("restoreFailedDir"))
 errorFile = 'fileWatcherError.txt'
+
+os = System.getProperty("os.name")
 
 Map<WatchKey, Path> keyMap = new HashMap<WatchKey, Path>()
 
@@ -87,8 +91,9 @@ try {
 			}
 
 			if(eventDir == restoreDir) {
-				println "\n\nstarting restore"
+				println "\n\nstarting restore on $os"
 				String restore = os ==~ /Win.*/? "restore.bat -d $destMongo --port=$destPort -f $restoreDir/$fileName.1 -u $username -p $password" : "./restore.sh -d $destMongo --port=$destPort -f $restoreDir/$fileName.1 -u $username -p $password"
+				
 				println "\n\n" + restore.execute().text
 				println "restore complete"
 				println "\n\n"
