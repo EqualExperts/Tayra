@@ -197,4 +197,16 @@
             <Bug code="DM_DEFAULT_ENCODING" />
         </Not>
     </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.RotatingFileCollection$_findFilesInDirectory_closure3" />
+        <Not>
+            <Bug code="SE_NO_SERIALVERSIONID" />
+        </Not>
+    </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.RotatingFileCollection$_getAllRotatingFiles_closure4" />
+        <Not>
+            <Bug code="SE_NO_SERIALVERSIONID" />
+        </Not>
+    </Match>
 </FindBugsFilter>

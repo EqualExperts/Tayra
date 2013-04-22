@@ -54,7 +54,7 @@ public class RotatingFileCollectionSpecs extends Specification{
 
 		then: 'all file names that exist should be collected'
 			fileCollection.withFile { file ->
-			actualFiles << file.name
+			actualFiles << file
 				file instanceof File
 			}
 			actualFiles == expectedFiles

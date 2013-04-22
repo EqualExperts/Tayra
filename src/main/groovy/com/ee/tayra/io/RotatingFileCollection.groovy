@@ -43,7 +43,7 @@ class RotatingFileCollection {
   }
 
   private def findFilesInDirectory(String fileNameRegex, File directory) {
-    directory.listFiles().findAll{!it.isDirectory() && it.name.startsWith(fileNameRegex) }
+    directory.listFiles().findAll{!it.isDirectory() && it.name.startsWith(fileNameRegex)}.collect {it.name}
   }
 
   private def getAllRotatingFiles(String fileNameRegex, boolean isMultiple) throws Exception {
@@ -51,6 +51,7 @@ class RotatingFileCollection {
     files = (isMultiple ? findFilesInDirectory(file.getName(),
       file.getAbsoluteFile().getParentFile())
         : [fileNameRegex])
+	println files
     files.sort { a, b -> b.compareTo(a) }
   }
 }
