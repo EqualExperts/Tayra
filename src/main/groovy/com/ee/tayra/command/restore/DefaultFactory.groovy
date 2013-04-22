@@ -30,10 +30,13 @@
  ******************************************************************************/
 package com.ee.tayra.command.restore
 
+import perf.usingnio.MemoryMappedReader;
+
 import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.CopyListener
 import com.ee.tayra.io.DocumentReader
 import com.ee.tayra.io.FileDocumentReader
+import com.ee.tayra.io.MemoryMappedFileReader;
 import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.OplogReplayer
 import com.ee.tayra.io.Replayer
@@ -68,12 +71,20 @@ class DefaultFactory extends RestoreFactory {
     (Reporter)listeningReporter
   }
 
+//  @Override
+//  public DocumentReader createReader(final String fileName){
+//    File file = new File(fileName)
+//    FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
+//    reader.notifier = createNotifier()
+//    reader
+//  }
+
   @Override
   public DocumentReader createReader(final String fileName){
-    File file = new File(fileName)
-    FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
-    reader.notifier = createNotifier()
-    reader
+	  File file = new File(fileName)
+	  MemoryMappedFileReader reader = new MemoryMappedFileReader(fileName)
+	  reader.notifier = createNotifier()
+	  reader
   }
 
   private Notifier createNotifier() {
