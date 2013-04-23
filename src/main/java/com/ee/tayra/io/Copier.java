@@ -30,6 +30,11 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
+import com.ee.tayra.io.reader.CollectionReader;
+import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.writer.DocumentWriter;
+import com.ee.tayra.io.writer.Replayer;
+
 
 public class Copier {
   public final void copy(final CollectionReader from, final DocumentWriter to) {
@@ -42,7 +47,7 @@ public class Copier {
     }
   }
 
-  public final void copy(final DocumentReader from, final Replayer to) {
+  public final void copy(final DocumentReader from, final Replayer to) throws Exception {
     String document = null;
     while ((document = from.readDocument()) != null) {
       to.replay(document);

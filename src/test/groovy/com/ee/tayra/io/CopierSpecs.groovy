@@ -5,6 +5,14 @@ import spock.lang.*
 
 import com.ee.tayra.domain.NotAReplicaSetNode
 import com.ee.tayra.domain.Oplog
+import com.ee.tayra.io.listener.CopyListener;
+import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.reader.FileDocumentReader;
+import com.ee.tayra.io.reader.OplogReader;
+import com.ee.tayra.io.writer.DocumentWriter;
+import com.ee.tayra.io.writer.OplogReplayer;
+import com.ee.tayra.io.writer.Replayer;
+
 import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB

@@ -4,11 +4,11 @@ import static com.ee.tayra.ConnectionFactory.*
 import spock.lang.*
 
 import com.ee.tayra.connector.Authenticator
-import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.DocumentReader
-import com.ee.tayra.io.FileDocumentReader
-import com.ee.tayra.io.Replayer
-import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.listener.CopyListener;
+import com.ee.tayra.io.listener.Reporter;
+import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.reader.FileDocumentReader;
+import com.ee.tayra.io.writer.Replayer;
 import com.mongodb.MongoException
 
 class RestoreSpecs extends Specification {

@@ -28,51 +28,24 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.io.writer;
 
-import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.writer.Replayer;
-import com.mongodb.MongoClient
+import com.ee.tayra.io.criteria.Criterion;
 
-abstract class RestoreFactory {
-  
-  protected final Criterion criteria
-  
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
-    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
+public class SelectiveOplogReplayer implements Replayer {
+  private final Replayer target;
+  private final Criterion criterion;
+
+  public SelectiveOplogReplayer(final Criterion criterion,
+    final Replayer target) {
+    this.target = target;
+    this.criterion = criterion;
   }
-  
-  RestoreFactory(RestoreCmdDefaults config) {
-    criteria = createCriteria(config)
-  }
-  
-  private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
-      new CriteriaBuilder().build {
-        if(config.sUntil) {
-          usingUntil config.sUntil
-        }
-        if(config.sSince) {
-          usingSince config.sSince
-        }
-        if(config.sNs) {
-          usingNamespace config.sNs
-        }
-        if(config.sExclude) {
-             usingExclude()
-        }
-      }
+
+  @Override
+  public void replay(final String document) {
+    if (criterion.isSatisfiedBy(document)) {
+      target.replay(document);
     }
   }
-
-  public abstract DocumentReader createReader(String fileName)
-
-  public abstract Replayer createWriter()
-
-  public abstract Reporter createReporter()
 }

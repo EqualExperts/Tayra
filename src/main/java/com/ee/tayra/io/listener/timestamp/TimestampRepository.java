@@ -28,51 +28,13 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.io.listener.timestamp;
 
-import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.writer.Replayer;
-import com.mongodb.MongoClient
+import java.io.IOException;
 
-abstract class RestoreFactory {
-  
-  protected final Criterion criteria
-  
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
-    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
-  }
-  
-  RestoreFactory(RestoreCmdDefaults config) {
-    criteria = createCriteria(config)
-  }
-  
-  private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
-      new CriteriaBuilder().build {
-        if(config.sUntil) {
-          usingUntil config.sUntil
-        }
-        if(config.sSince) {
-          usingSince config.sSince
-        }
-        if(config.sNs) {
-          usingNamespace config.sNs
-        }
-        if(config.sExclude) {
-             usingExclude()
-        }
-      }
-    }
-  }
+public interface TimestampRepository {
 
-  public abstract DocumentReader createReader(String fileName)
+  void save(String timestamp) throws IOException;
 
-  public abstract Replayer createWriter()
-
-  public abstract Reporter createReporter()
+  String retrieve() throws IOException;
 }

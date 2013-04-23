@@ -28,51 +28,62 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.io.reader;
 
-import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.writer.Replayer;
-import com.mongodb.MongoClient
+import com.ee.tayra.domain.MongoCollection;
+import com.ee.tayra.domain.MongoCollectionIterator;
+import com.ee.tayra.io.ReadNotifier;
 
-abstract class RestoreFactory {
-  
-  protected final Criterion criteria
-  
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
-    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
+public class OplogReader implements CollectionReader {
+
+  private MongoCollectionIterator<String> iterator;
+  private ReadNotifier notifier;
+
+  public OplogReader(final MongoCollection collection,
+    final String fromDocument, final boolean tailable) {
+    iterator = collection.find(fromDocument, tailable);
+    notifier = ReadNotifier.NONE;
   }
-  
-  RestoreFactory(RestoreCmdDefaults config) {
-    criteria = createCriteria(config)
+
+  public final void setNotifier(final ReadNotifier notifier) {
+    this.notifier = notifier;
   }
-  
-  private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
-      new CriteriaBuilder().build {
-        if(config.sUntil) {
-          usingUntil config.sUntil
-        }
-        if(config.sSince) {
-          usingSince config.sSince
-        }
-        if(config.sNs) {
-          usingNamespace config.sNs
-        }
-        if(config.sExclude) {
-             usingExclude()
-        }
-      }
+
+  @Override
+  public final boolean hasDocument() {
+    if (iterator == null) {
+        throw new ReaderAlreadyClosed("Reader Already Closed");
     }
+    boolean hasNext = false;
+    try {
+      notifier.notifyReadStart("");
+      hasNext = iterator.hasNext();
+    } catch (Exception e) {
+      notifier.notifyReadFailure(null, e);
+    }
+    return hasNext;
   }
 
-  public abstract DocumentReader createReader(String fileName)
+  @Override
+  public final String readDocument() {
+    if (iterator == null) {
+      throw new ReaderAlreadyClosed("Reader Already Closed");
+    }
+    String document = null;
+    try {
+      document = iterator.next();
+      notifier.notifyReadSuccess(document);
+    } catch (Exception e) {
+      notifier.notifyReadFailure(null, e);
+    }
+    return document;
+  }
 
-  public abstract Replayer createWriter()
-
-  public abstract Reporter createReporter()
+  public final void close() {
+    if (iterator == null) {
+      throw new ReaderAlreadyClosed("Reader Already Closed");
+    }
+    iterator.close();
+    iterator = null;
+  }
 }

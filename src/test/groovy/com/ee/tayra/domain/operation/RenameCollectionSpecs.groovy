@@ -15,18 +15,18 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 		standalone.getDB(dbName).createCollection(targetCollectionName, null).insert(obj)
 		operation = new RenameCollection()
 	}
-	
+
 	def cleanup() {
 		standalone.getDB(dbName).getCollection(collectionName).drop()
 		standalone.getDB(dbName).getCollection(changedCollectionName).drop()
 		standalone.getDB(dbName).getCollection(targetCollectionName).drop()
 	}
-	
+
 	def assertThatCollectionIsRenamed(){
 		standalone.getDB(dbName).collectionExists(changedCollectionName) &&
 		!standalone.getDB(dbName).collectionExists(collectionName)
 	}
-	
+
 	def renamesACollection() {
 		given:'A rename collection oplog payload entry'
 			DBObject o = new BasicDBObjectBuilder()
@@ -35,14 +35,14 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 								.add('to', dbName + "." + changedCollectionName)
 								.add('dropTarget', null)
 							.get()
-							
+
 		when:'an operation runs'
 			operation.doExecute(standalone.getDB(dbName), o)
-		
+
 		then: 'the collection should be renamed'
 			assertThatCollectionIsRenamed()
 	}
-	 
+
 	def shoutsWhenSourceNamespaceDoesNotExist() {
 		given:'A rename collection oplog payload entry'
 			DBObject o = new BasicDBObjectBuilder()
@@ -51,15 +51,15 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 								.add('to', dbName + "." + targetCollectionName)
 								.add('dropTarget', null)
 							.get()
-							
-		when: 'an operation runs' 
+
+		when: 'an operation runs'
 			operation.doExecute(standalone.getDB(dbName), o)
-			
+
 		then: 'it complains with the proper error'
 			def problem = thrown(RenameCollectionFailed)
 			problem.message.contains("""{ "serverUsed" : "localhost/127.0.0.1:${secureTgtPort}" , "errmsg" : "exception: source namespace does not exist" , "code" : 10026 , "ok" : 0.0}""")
 	}
-	
+
 	def dropsTargetWhileRenaming() {
 		given:'A rename collection oplog payload entry with drop target enabled'
 			DBObject o = new BasicDBObjectBuilder()
@@ -70,14 +70,14 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 									.add('dropTarget', true)
 								.pop()
 							.get()
-						
+
 		when:'an operation runs'
 			operation.doExecute(standalone.getDB(dbName), o)
-						
+
 		then: 'the collection should be renamed'
 			standalone.getDB(dbName).collectionExists(targetCollectionName)
 	}
-	
+
 	def shoutsWhenTargetNamespaceAlreadyExists() {
 		given:'A rename collection oplog payload entry with drop target disabled'
 			DBObject o = new BasicDBObjectBuilder()
@@ -88,10 +88,10 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
 									.add('dropTarget',false)
 								.pop()
 							.get()
-							
+
 		when: 'an operation runs'
 			operation.doExecute(standalone.getDB(dbName), o)
-			
+
 		then:
 			def problem = thrown(RenameCollectionFailed)
 			problem.message == """{ "serverUsed" : "localhost/127.0.0.1:${secureTgtPort}" , "errmsg" : "exception: target namespace exists" , "code" : 10027 , "ok" : 0.0}"""

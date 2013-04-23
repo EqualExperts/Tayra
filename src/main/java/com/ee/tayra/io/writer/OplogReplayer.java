@@ -28,51 +28,45 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.io.writer;
 
-import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.writer.Replayer;
-import com.mongodb.MongoClient
+import com.ee.tayra.domain.operation.Operation;
+import com.ee.tayra.domain.operation.OperationsFactory;
+import com.ee.tayra.io.WriteNotifier;
 
-abstract class RestoreFactory {
-  
-  protected final Criterion criteria
-  
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
-    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
+public class OplogReplayer implements Replayer {
+
+  private final OperationsFactory operations;
+  private WriteNotifier notifier;
+
+  public OplogReplayer(final OperationsFactory operations) {
+    this.operations = operations;
+    notifier = WriteNotifier.NONE;
   }
-  
-  RestoreFactory(RestoreCmdDefaults config) {
-    criteria = createCriteria(config)
+
+  public final void setNotifier(final WriteNotifier notifier) {
+    this.notifier = notifier;
   }
-  
-  private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
-      new CriteriaBuilder().build {
-        if(config.sUntil) {
-          usingUntil config.sUntil
-        }
-        if(config.sSince) {
-          usingSince config.sSince
-        }
-        if(config.sNs) {
-          usingNamespace config.sNs
-        }
-        if(config.sExclude) {
-             usingExclude()
-        }
-      }
+
+  @Override
+  public void replay(final String document) {
+    try {
+      notifier.notifyWriteStart(document);
+      final String operationCode = extractOpcode(document);
+      Operation operation = operations.get(operationCode);
+      operation.execute(document);
+      notifier.notifyWriteSuccess(document);
+    } catch (RuntimeException problem) {
+      notifier.notifyWriteFailure(document, problem);
     }
   }
 
-  public abstract DocumentReader createReader(String fileName)
-
-  public abstract Replayer createWriter()
-
-  public abstract Reporter createReporter()
+  private String extractOpcode(final String document) {
+    int opcodeStartIndex = document.indexOf("op") - 1;
+    int opcodeEndIndex = document.indexOf(",", opcodeStartIndex);
+    String opcodeSpec = document
+        .substring(opcodeStartIndex, opcodeEndIndex);
+    String quotedOpcode = opcodeSpec.split(":")[1];
+    return quotedOpcode.replaceAll("\"", "").trim();
+  }
 }

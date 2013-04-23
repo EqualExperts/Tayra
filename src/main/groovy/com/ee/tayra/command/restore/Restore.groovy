@@ -33,6 +33,8 @@ package com.ee.tayra.command.restore
 import com.ee.tayra.connector.MongoAuthenticator
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
+import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader;
 import com.mongodb.MongoClient
 import com.mongodb.ServerAddress
 
@@ -149,7 +151,7 @@ try {
   progressReporter.writeStartTimeTo console
 
   files.withFile {
-    MemoryMappedFileReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
+    DocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
     copier.copy(reader, writer)
     reader.close()
   }

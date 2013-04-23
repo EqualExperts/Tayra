@@ -1,8 +1,9 @@
 package com.ee.tayra.command.restore
 
-import com.ee.tayra.io.RestoreProgressReporter
-import com.ee.tayra.io.SelectiveOplogReplayer
-import com.ee.tayra.io.OplogReplayer
+import com.ee.tayra.io.listener.RestoreProgressReporter;
+import com.ee.tayra.io.writer.OplogReplayer;
+import com.ee.tayra.io.writer.SelectiveOplogReplayer;
+
 import static com.ee.tayra.ConnectionFactory.*;
 import com.mongodb.MongoClient
 import spock.lang.Specification

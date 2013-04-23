@@ -1,6 +1,6 @@
 package com.ee.tayra.utils
 
-import com.ee.tayra.io.DocumentWriter
+import com.ee.tayra.io.writer.DocumentWriter;
 
 class StringDocumentWriter implements DocumentWriter {
     private StringBuilder result
