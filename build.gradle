@@ -106,14 +106,6 @@ jar {
     }
 }
 
-sourceSets {
-	test {
-		groovy {
-			srcDir "$exploratoryTestSrcDir"
-		}
-	}
-}
-
 clean << {
   ant.delete(file:"$coverageDataFile")
 }
@@ -183,25 +175,16 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	}
 }
 
-task 'exploratory-test'() {
-//	def originalClasspath = getClasspath()
-//	doFirst{
-//		def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
-//		runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
-//		setClasspath(runtimeClasspath + originalClasspath)
-//		include("**/exploratory/*Test*.class")
-//	}
-//	doLast{
-//		setClasspath(originalClasspath)
-//	}
-}
-
 task createTestJar(type: Jar, dependsOn: [test]) {
 	doFirst {
 		baseName = "${project.archivesBaseName}-test"
-		destinationDir = project.distsDir
-		from sourceSets.test.output
+				destinationDir = project.distsDir
+				from sourceSets.test.output
 	}
+}
+
+task 'exploratoryTest'(type: Test) {
+	include ("${project.archivesBaseName}-test.jar/com/ee/tayra/exploratory/*Test*.class")
 }
 
 task createDeployZip(type: Zip) {
