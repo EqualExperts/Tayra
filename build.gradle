@@ -308,9 +308,11 @@ task backupCurrentDeployScripts(type: Zip, dependsOn: setupDeploy) {
 
 task deploy (dependsOn: backupCurrentDeployScripts) {
   doLast {
-    def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+    def zipFile1 = file("${project.distsDir}/${project.archivesBaseName}.zip")
+	def zipFile2 = file("${project.distsDir}/${project.ext.deployScriptsZip}.zip")
     copy {
-      from zipTree(zipFile)
+      from zipTree(zipFile1)
+	  from zipTree(zipFile2)
       into project.ext.deployDir
     }
     ant.chmod (perm : 'a+x') {

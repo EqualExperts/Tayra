@@ -53,14 +53,17 @@ if(options.password) {
 
 watchDirHome = options.watch
 
+println "watching directory: $watchDirHome"
+
 Properties config = new Properties() 
 config.load(new FileInputStream("deployment.properties"))
-backupDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("backupDir"))
-restoreDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("restoreDir"))
-restoreCompleteDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("restoreCompleteDir"))
-restoreFailedDir = Paths.get(watchDirHome + File.pathSeparator + config.getProperty("restoreFailedDir"))
+backupDir = Paths.get(watchDirHome + File.separator + config.getProperty("backupDir"))
+restoreDir = Paths.get(watchDirHome + File.separator + config.getProperty("restoreDir"))
+restoreCompleteDir = Paths.get(watchDirHome + File.separator + config.getProperty("restoreCompleteDir"))
+restoreFailedDir = Paths.get(watchDirHome + File.separator + config.getProperty("restoreFailedDir"))
 errorFile = 'fileWatcherError.txt'
 
+println "Configured properties..."
 os = System.getProperty("os.name")
 
 Map<WatchKey, Path> keyMap = new HashMap<WatchKey, Path>()
@@ -68,8 +71,12 @@ Map<WatchKey, Path> keyMap = new HashMap<WatchKey, Path>()
 try {
 	FileSystem fileSystem = FileSystems.getDefault();
 	WatchService watchService = fileSystem.newWatchService()
-
+	
+	println "Initialized watch service..."
+	
 	keyMap.put(backupDir.register(watchService, ENTRY_CREATE), backupDir)
+	println "monitoring $backupDir for backup files..."
+	
 	keyMap.put(restoreDir.register(watchService, ENTRY_CREATE), restoreDir)
 
 	WatchKey watchKey
