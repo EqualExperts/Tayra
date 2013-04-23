@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 import static com.ee.tayra.ConnectionFactory.*
 
-import com.ee.tayra.io.FileDocumentReader;
+import com.ee.tayra.io.reader.FileDocumentReader;
 import com.mongodb.MongoClient
 
 class RestoreFactorySpecs extends Specification{

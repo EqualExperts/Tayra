@@ -28,51 +28,44 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.io.listener;
 
-import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.writer.Replayer;
-import com.mongodb.MongoClient
+import java.io.Writer;
 
-abstract class RestoreFactory {
-  
-  protected final Criterion criteria
-  
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
-    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
-  }
-  
-  RestoreFactory(RestoreCmdDefaults config) {
-    criteria = createCriteria(config)
-  }
-  
-  private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
-      new CriteriaBuilder().build {
-        if(config.sUntil) {
-          usingUntil config.sUntil
-        }
-        if(config.sSince) {
-          usingSince config.sSince
-        }
-        if(config.sNs) {
-          usingNamespace config.sNs
-        }
-        if(config.sExclude) {
-             usingExclude()
-        }
-      }
-    }
+
+public class DeafAndDumbReporter implements CopyListener, Reporter {
+
+  @Override
+  public final void onReadSuccess(final String document) {
   }
 
-  public abstract DocumentReader createReader(String fileName)
+  @Override
+  public final void onWriteSuccess(final String document) {
+  }
 
-  public abstract Replayer createWriter()
+  @Override
+  public final void onWriteFailure(final String document,
+      final Throwable problem) {
+  }
 
-  public abstract Reporter createReporter()
+  @Override
+  public final void onReadFailure(final String document,
+      final Throwable problem) {
+  }
+
+  @Override
+  public void summarizeTo(final Writer writer) {
+  }
+
+  @Override
+  public void writeStartTimeTo(final Writer writer) {
+  }
+
+  @Override
+  public void onReadStart(final String document) {
+  }
+
+  @Override
+  public void onWriteStart(final String document) {
+  }
 }

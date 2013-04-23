@@ -4,9 +4,9 @@ import java.io.PrintWriter;
 
 import com.ee.tayra.command.restore.DryRunFactory
 import com.ee.tayra.command.restore.RestoreCmdDefaults
-import com.ee.tayra.io.DeafAndDumbReporter
-import com.ee.tayra.io.SelectiveOplogReplayer
-import com.ee.tayra.io.ConsoleReplayer
+import com.ee.tayra.io.listener.DeafAndDumbReporter;
+import com.ee.tayra.io.writer.ConsoleReplayer;
+import com.ee.tayra.io.writer.SelectiveOplogReplayer;
 
 import spock.lang.Specification
 

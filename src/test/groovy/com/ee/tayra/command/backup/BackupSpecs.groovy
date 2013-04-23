@@ -1,13 +1,14 @@
 package com.ee.tayra.command.backup
 
-import com.ee.tayra.io.DocumentWriter
 import com.ee.tayra.utils.StringDocumentWriter
 import spock.lang.*
 
 import com.ee.tayra.connector.Authenticator
-import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.ProgressReporter
-import com.ee.tayra.io.Reporter
+import com.ee.tayra.io.listener.CopyListener;
+import com.ee.tayra.io.listener.ProgressReporter;
+import com.ee.tayra.io.listener.Reporter;
+import com.ee.tayra.io.writer.DocumentWriter;
+
 import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException

@@ -1,6 +1,6 @@
 package perf.tayraUsingNIO;
 
-import com.ee.tayra.io.DocumentReader;
+import com.ee.tayra.io.reader.DocumentReader;
 
 public class ReadDocuments {
 

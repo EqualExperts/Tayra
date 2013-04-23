@@ -28,51 +28,54 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.command.restore
+package com.ee.tayra.io.listener.timestamp;
 
-import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.writer.Replayer;
-import com.mongodb.MongoClient
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
-abstract class RestoreFactory {
-  
-  protected final Criterion criteria
-  
-  public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
-    config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
-  }
-  
-  RestoreFactory(RestoreCmdDefaults config) {
-    criteria = createCriteria(config)
-  }
-  
-  private Criterion createCriteria(RestoreCmdDefaults config) {
-    if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
-      new CriteriaBuilder().build {
-        if(config.sUntil) {
-          usingUntil config.sUntil
-        }
-        if(config.sSince) {
-          usingSince config.sSince
-        }
-        if(config.sNs) {
-          usingNamespace config.sNs
-        }
-        if(config.sExclude) {
-             usingExclude()
+
+
+public class FileBasedTimestampRepository implements TimestampRepository {
+    private final File timestampFile;
+    private PrintWriter console;
+
+    public FileBasedTimestampRepository(
+            final File timestampFile, final PrintWriter console) {
+        this.console = console;
+        if (timestampFile.isDirectory()) {
+          final String message = "Expecting " + timestampFile.getName()
+                    + " to be a File, but found Directory";
+            console.println(message);
+          throw new IllegalArgumentException(message);
+      }
+      this.timestampFile = timestampFile;
+    }
+
+    @Override
+    public final void save(final String tstamp) throws IOException {
+       final FileWriter fileWriter = new FileWriter(timestampFile);
+       fileWriter.write(tstamp);
+       fileWriter.flush();
+       fileWriter.close();
+    }
+
+    @Override
+    public final String retrieve() throws IOException {
+      if (timestampFile.exists()) {
+        if (timestampFile.canRead() && timestampFile.length() > 0) {
+          final BufferedReader reader =
+                  new BufferedReader(new FileReader(timestampFile));
+          final String timestamp = reader.readLine();
+          reader.close();
+          return timestamp;
+        } else {
+          console.println("Unable to read " + timestampFile.getName());
         }
       }
+      return "";
     }
-  }
-
-  public abstract DocumentReader createReader(String fileName)
-
-  public abstract Replayer createWriter()
-
-  public abstract Reporter createReporter()
 }

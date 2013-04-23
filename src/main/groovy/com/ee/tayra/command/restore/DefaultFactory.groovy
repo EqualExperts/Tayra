@@ -33,16 +33,17 @@ package com.ee.tayra.command.restore
 import perf.usingnio.MemoryMappedReader;
 
 import com.ee.tayra.domain.operation.Operations
-import com.ee.tayra.io.CopyListener
-import com.ee.tayra.io.DocumentReader
-import com.ee.tayra.io.FileDocumentReader
-import com.ee.tayra.io.MemoryMappedFileReader;
+import com.ee.tayra.io.OldMemoryMappedFileReader;
 import com.ee.tayra.io.Notifier
-import com.ee.tayra.io.OplogReplayer
-import com.ee.tayra.io.Replayer
-import com.ee.tayra.io.Reporter
-import com.ee.tayra.io.RestoreProgressReporter
-import com.ee.tayra.io.SelectiveOplogReplayer
+import com.ee.tayra.io.listener.CopyListener;
+import com.ee.tayra.io.listener.Reporter;
+import com.ee.tayra.io.listener.RestoreProgressReporter;
+import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.reader.FileDocumentReader;
+import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader;
+import com.ee.tayra.io.writer.OplogReplayer;
+import com.ee.tayra.io.writer.Replayer;
+import com.ee.tayra.io.writer.SelectiveOplogReplayer;
 import com.mongodb.MongoClient
 
 class DefaultFactory extends RestoreFactory {
@@ -82,7 +83,7 @@ class DefaultFactory extends RestoreFactory {
   @Override
   public DocumentReader createReader(final String fileName){
 	  File file = new File(fileName)
-	  MemoryMappedFileReader reader = new MemoryMappedFileReader(fileName)
+	  MemoryMappedDocumentReader reader = new MemoryMappedDocumentReader(fileName)
 	  reader.notifier = createNotifier()
 	  reader
   }

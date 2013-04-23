@@ -28,81 +28,76 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.io;
+package com.ee.tayra.io.listener.timestamp;
 
-import static fj.data.List.list;
+import java.io.IOException;
 
 import com.ee.tayra.io.listener.CopyListener;
 
-import fj.Effect;
 
-public class Notifier implements ReadNotifier, WriteNotifier {
+public class TimestampRecorder implements CopyListener {
 
-  private final CopyListener[] listeners;
+  private final StringBuilder documentTimestamp; //for performance
+  private String lastDocumentTimestamp;
+  private final TimestampRepository timestampRepository;
 
-  public Notifier(final CopyListener... listeners) {
-    this.listeners = listeners;
+  public TimestampRecorder(final TimestampRepository timestampRepository)
+  throws IOException {
+    this.timestampRepository = timestampRepository;
+    documentTimestamp = new StringBuilder();
+    lastDocumentTimestamp = timestampRepository.retrieve();
+  }
+
+  public final String getDocumentTimestamp() {
+    return documentTimestamp.toString();
+  }
+
+  private void registerTimestampFrom(final String document) {
+    if (document.contains("\"ts\"")) {
+      documentTimestamp.delete(0, documentTimestamp.length());
+      documentTimestamp.append("{ " + timestampFrom(document) + " }");
+    }
+  }
+
+  private String timestampFrom(final String data) {
+    return data.substring(data.indexOf("\"ts\""), data.indexOf("}") + 1);
+  }
+
+  public final void stop() throws IOException {
+    if (documentTimestamp.length() > 0) {
+      timestampRepository.save(getDocumentTimestamp());
+    }
+  }
+
+  public final String getLastDocumentTimestamp() {
+    return lastDocumentTimestamp;
   }
 
   @Override
-  public final void notifyReadSuccess(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onReadSuccess(document);
-      }
-    });
+  public final void onReadSuccess(final String document) {
+     registerTimestampFrom(document);
   }
 
   @Override
-  public final void notifyWriteSuccess(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onWriteSuccess(document);
-      }
-    });
+  public final void onWriteSuccess(final String document) {
+    lastDocumentTimestamp = getDocumentTimestamp();
   }
 
   @Override
-  public final void notifyWriteFailure(final String document,
-                                       final Throwable problem) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onWriteFailure(document, problem);
-      }
-    });
+  public final void onWriteFailure(
+  final String document, final Throwable problem) {
   }
 
   @Override
-  public final void notifyReadFailure(final String document,
-                                      final Throwable problem) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onReadFailure(document, problem);
-      }
-    });
+  public final void onReadFailure(
+  final String document, final Throwable problem) {
   }
 
   @Override
-  public final void notifyReadStart(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onReadStart(document);
-      }
-    });
+  public final void onReadStart(final String document) {
   }
 
   @Override
-  public final void notifyWriteStart(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onWriteStart(document);
-      }
-    });
+  public final void onWriteStart(final String document) {
   }
 }

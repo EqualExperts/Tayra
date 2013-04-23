@@ -4,6 +4,11 @@ import spock.lang.Specification
 
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.io.*
+import com.ee.tayra.io.listener.timestamp.TimestampRecorder;
+import com.ee.tayra.io.reader.OplogReader;
+import com.ee.tayra.io.reader.SelectiveOplogReader;
+import com.ee.tayra.io.writer.RotatingFileWriter;
+
 import static com.ee.tayra.ConnectionFactory.*
 
 class BackupFactorySpecs extends Specification {
