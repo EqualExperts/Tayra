@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
-import com.ee.tayra.io.WriteNotifier;
 
 import java.io.IOException;
 

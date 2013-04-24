@@ -251,7 +251,7 @@ checkstyleTest {
 	exclude('**/*/*Specs.java')
 }
 
-//findbugsTest.enabled = false
+findbugsTest.enabled = false
 
 def prepareExecutables() {
 	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }

@@ -32,7 +32,6 @@ package com.ee.tayra.io.writer;
 
 import com.ee.tayra.domain.operation.Operation;
 import com.ee.tayra.domain.operation.OperationsFactory;
-import com.ee.tayra.io.WriteNotifier;
 
 public class OplogReplayer implements Replayer {
 

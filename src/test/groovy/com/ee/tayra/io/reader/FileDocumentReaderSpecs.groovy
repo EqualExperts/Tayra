@@ -1,6 +1,5 @@
 package com.ee.tayra.io.reader
 
-import com.ee.tayra.io.ReadNotifier;
 import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.reader.FileDocumentReader;
 

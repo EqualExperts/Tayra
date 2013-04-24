@@ -33,6 +33,8 @@ package com.ee.tayra.io;
 import static fj.data.List.list;
 
 import com.ee.tayra.io.listener.CopyListener;
+import com.ee.tayra.io.reader.ReadNotifier;
+import com.ee.tayra.io.writer.WriteNotifier;
 
 import fj.Effect;
 

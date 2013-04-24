@@ -33,7 +33,6 @@ package com.ee.tayra.io.reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import com.ee.tayra.io.ReadNotifier;
 
 public class FileDocumentReader implements DocumentReader {
 

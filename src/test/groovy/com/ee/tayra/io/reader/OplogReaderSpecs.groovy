@@ -8,7 +8,6 @@ import spock.lang.*
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.domain.MongoCollectionIterator
 import com.ee.tayra.domain.operation.MongoUtils
-import com.ee.tayra.io.ReadNotifier;
 import com.ee.tayra.io.reader.CollectionReader;
 import com.ee.tayra.io.reader.OplogReader;
 import com.ee.tayra.io.reader.ReaderAlreadyClosed;

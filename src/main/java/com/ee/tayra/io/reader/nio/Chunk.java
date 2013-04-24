@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 import com.ee.tayra.io.reader.nio.Chunker.PartialDocumentHandler;
 
-
 public class Chunk implements Iterable<String> {
 
   private static final int ONE_KB = 1024;
@@ -20,20 +19,21 @@ public class Chunk implements Iterable<String> {
   private MappedByteBuffer chunk;
   private final PartialDocumentHandler handler;
 
-  public Chunk(FileChannel channel, long filePointer, long fileLength,
-      PartialDocumentHandler handler) throws IOException {
+  public Chunk(final FileChannel channel, final long filePointer,
+      final long fileLength, final PartialDocumentHandler handler)
+      throws IOException {
     this.handler = handler;
     readSize = (int) Math.min(SIZE, fileLength - filePointer);
     chunk = channel.map(FileChannel.MapMode.READ_ONLY, filePointer,
         readSize);
   }
 
-  public int getReadSize() {
+  public final int getReadSize() {
     return readSize;
   }
 
   @Override
-  public Iterator<String> iterator() {
+  public final Iterator<String> iterator() {
     try {
       return new DocumentIterator(chunk, handler);
     } catch (CharacterCodingException e) {
@@ -48,19 +48,19 @@ public class Chunk implements Iterable<String> {
     private int index = 0;
     private final PartialDocumentHandler handler;
 
-    public DocumentIterator(MappedByteBuffer chunk,
-        PartialDocumentHandler handler) throws CharacterCodingException {
+    public DocumentIterator(final MappedByteBuffer chunk,
+        final PartialDocumentHandler handler)
+        throws CharacterCodingException {
       this.handler = handler;
       Charset charset = Charset.defaultCharset();
       CharsetDecoder decoder = charset.newDecoder();
       this.charBuffer = decoder.decode(chunk);
-      // TODO: preferably traverse charBuffer
       documents = charBuffer.toString().split("\\n");
       documents[0] = handler.prependPartialDocumentTo(documents[0]);
     }
 
     @Override
-    public boolean hasNext() {
+    public final boolean hasNext() {
       if (isLastDocumentPartial()) {
         handler.handlePartialDocument(documents[index]);
         return false;
@@ -77,22 +77,25 @@ public class Chunk implements Iterable<String> {
       }
     }
 
-    boolean isLastDocument() {
+    final boolean isLastDocument() {
       return index == documents.length - 1;
     }
 
-    boolean isPartial(String document) {
+    final boolean isPartial(final String document) {
       return !(document.contains("{") && document.contains("}}"));
     }
 
     @Override
-    public String next() {
-      // TODO: throw new IllegalStateException when index is out of bounds
-      return documents[index++].trim();
+    public final String next() {
+      try {
+        return documents[index++].trim();
+      } catch (Exception e) {
+        throw new IllegalStateException("Index Out of Bounds");
+      }
     }
 
     @Override
-    public void remove() {
+    public final void remove() {
       throw new UnsupportedOperationException("remove not supported");
     }
   }
