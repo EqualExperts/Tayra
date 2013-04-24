@@ -267,7 +267,7 @@ public class BackupSpecs extends Specification {
 		  new Backup(context).run()
 
 	  then: 'Notification message should be Shown as'
-		  result.toString().contains('Backup is starting from Start of oplog')
+		  result.toString().contains('Backing up from start of oplog')
   }
 
   def notifiesUserTheStaringTimestampWhenBackupStartsAndTimeStampFileExist() {
@@ -280,8 +280,7 @@ public class BackupSpecs extends Specification {
 	  when: 'backup is run again and timestamp file exists'
 		new Backup(context).run()
   
-	  then: 'Notification message should be Shown as'
-		result.toString().contains('Backup is starting from')
-		result.toString().contains('ts')
+	  then: 'Notification message should be shown as'
+		result.toString().contains('Backup is starting from:')
 	}
 }

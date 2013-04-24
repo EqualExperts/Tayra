@@ -34,6 +34,8 @@ import com.ee.tayra.connector.MongoAuthenticator
 import com.ee.tayra.connector.MongoReplSetConnection
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
+import groovy.json.JsonSlurper
+import org.bson.types.BSONTimestamp
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password] [--sNs=<dbName>]')
 cli.with {
@@ -175,10 +177,14 @@ def getAuthenticator(mongo) {
 private printTimestampCaution(timestampRecorder, PrintWriter console) {
 	def timestamp = timestampRecorder.lastDocumentTimestamp
 	if(timestamp.isEmpty()){
-		console.println "Backup is starting from Start of oplog"
+		console.println "Backing up from start of oplog"
 	}
 	else {
-		console.println "Backup is starting from: $timestamp"
+		def timestampJson = new JsonSlurper().parseText(timestamp)
+		Integer time = timestampJson['ts']['$ts']
+		Integer inc = timestampJson['ts']['$inc']
+		def bsonTime = new BSONTimestamp(time, inc)
+		console.println "Backup is starting from: \n $bsonTime ==> (${timestamp})"
 	}
 }
 
