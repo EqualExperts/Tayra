@@ -32,7 +32,7 @@ class BackupFactorySpecs extends Specification {
       factory = new BackupFactory(config, console)
 
     then: 'reader created is instance of SelectiveOplogReader'
-      factory.createReader(oplog).class == SelectiveOplogReader
+      factory.createReader(oplog).getClass() == SelectiveOplogReader
   }
 
   def createsOplogReaderWhenNoCriteriaIsGiven() {
@@ -43,7 +43,7 @@ class BackupFactorySpecs extends Specification {
       factory = new BackupFactory(config, console)
 
     then: 'reader created is instance of SelectiveOplogReader'
-      factory.createReader(oplog).class == OplogReader
+      factory.createReader(oplog).getClass() == OplogReader
   }
 
   def createsWriter() {
@@ -51,7 +51,7 @@ class BackupFactorySpecs extends Specification {
       factory = new BackupFactory(config, console)
 
     then: 'writer created is instance of RotatingFileWriter'
-      factory.createDocumentWriter().class == RotatingFileWriter
+      factory.createDocumentWriter().getClass() == RotatingFileWriter
   }
 
   def createsTimestampRecorder() {
@@ -59,6 +59,6 @@ class BackupFactorySpecs extends Specification {
       factory = new BackupFactory(config, console)
 
     then: 'writer created is instance of TimestampRecorder'
-      factory.createTimestampRecorder().class == TimestampRecorder
+      factory.createTimestampRecorder().getClass() == TimestampRecorder
   }
 }

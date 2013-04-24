@@ -198,6 +198,36 @@
         </Not>
     </Match>
     <Match>
+        <Class name="com.ee.tayra.io.OldMemoryMappedFileReader" />
+        <Not>
+            <Bug code="NP_UNWRITTEN_FIELD" />
+        </Not>
+    </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.listener.timestamp.FileBasedTimestampRepository" />
+        <Not>
+            <Bug code="DM_DEFAULT_ENCODING" />
+        </Not>
+    </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.listener.timestamp.FileBasedTimestampRepository" />
+        <Not>
+            <Bug code="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" />
+        </Not>
+    </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.reader.SelectiveOplogReader" />
+        <Not>
+            <Bug code="DM_STRING_CTOR" />
+        </Not>
+    </Match>
+    <Match>
+        <Class name="com.ee.tayra.io.reader.nio.Chunker" />
+        <Not>
+            <Bug code="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+        </Not>
+    </Match>
+    <Match>
         <Class name="com.ee.tayra.io.RotatingFileCollection$_findFilesInDirectory_closure3" />
         <Not>
             <Bug code="SE_NO_SERIALVERSIONID" />

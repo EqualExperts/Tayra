@@ -6,7 +6,6 @@ import org.bson.types.ObjectId
 import spock.lang.*
 
 import com.ee.tayra.domain.operation.*
-import com.ee.tayra.io.WriteNotifier;
 import com.ee.tayra.io.writer.OplogReplayer;
 import com.mongodb.BasicDBObject
 import com.mongodb.BasicDBObjectBuilder

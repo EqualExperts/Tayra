@@ -28,27 +28,27 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.io;
+package com.ee.tayra.io.reader;
 
-public interface WriteNotifier {
-  void notifyWriteSuccess(String document);
+public interface ReadNotifier {
+  void notifyReadSuccess(String document);
 
-  void notifyWriteFailure(String document, Throwable problem);
+  void notifyReadFailure(String document, Throwable problem);
 
-  void notifyWriteStart(String document);
+  void notifyReadStart(String document);
 
-  WriteNotifier NONE = new WriteNotifier() {
-    @Override
-    public final void notifyWriteSuccess(final String document) {
-    }
+  ReadNotifier NONE = new  ReadNotifier() {
+      @Override
+      public final void notifyReadSuccess(final String document) {
+      }
 
-    @Override
-    public final void notifyWriteFailure(
-    final String document, final Throwable problem) {
-    }
+      @Override
+      public final void notifyReadFailure(
+      final String document, final Throwable problem) {
+      }
 
-    @Override
-    public final void notifyWriteStart(final String document) {
-    }
+      @Override
+      public final void notifyReadStart(final String document) {
+      }
   };
 }

@@ -35,7 +35,6 @@ import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.writer.DocumentWriter;
 import com.ee.tayra.io.writer.Replayer;
 
-
 public class Copier {
   public final void copy(final CollectionReader from, final DocumentWriter to) {
     while (from.hasDocument()) {
@@ -47,7 +46,8 @@ public class Copier {
     }
   }
 
-  public final void copy(final DocumentReader from, final Replayer to) throws Exception {
+  public final void copy(final DocumentReader from, final Replayer to)
+      throws Exception {
     String document = null;
     while ((document = from.readDocument()) != null) {
       to.replay(document);

@@ -32,7 +32,6 @@ package com.ee.tayra.io.reader;
 
 import com.ee.tayra.domain.MongoCollection;
 import com.ee.tayra.domain.MongoCollectionIterator;
-import com.ee.tayra.io.ReadNotifier;
 
 public class OplogReader implements CollectionReader {
 

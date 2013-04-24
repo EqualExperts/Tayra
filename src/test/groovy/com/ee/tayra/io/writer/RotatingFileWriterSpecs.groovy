@@ -2,7 +2,6 @@ package com.ee.tayra.io.writer
 
 import org.apache.log4j.Logger
 
-import com.ee.tayra.io.WriteNotifier;
 import com.ee.tayra.io.writer.RotatingFileWriter;
 
 import spock.lang.Specification

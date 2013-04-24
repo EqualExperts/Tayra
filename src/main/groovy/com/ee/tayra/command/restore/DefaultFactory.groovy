@@ -30,8 +30,6 @@
  ******************************************************************************/
 package com.ee.tayra.command.restore
 
-import perf.usingnio.MemoryMappedReader;
-
 import com.ee.tayra.domain.operation.Operations
 import com.ee.tayra.io.OldMemoryMappedFileReader;
 import com.ee.tayra.io.Notifier

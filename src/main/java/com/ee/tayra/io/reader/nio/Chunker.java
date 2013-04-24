@@ -11,25 +11,27 @@ public class Chunker implements Iterable<Chunk> {
   private RandomAccessFile sourceFile;
   private File source = null;
   private static long fileSize;
-  private static final PartialDocumentHandler partialDocumentHandler = new PartialDocumentHandler();
+  private static PartialDocumentHandler partialDocumentHandler =
+      new PartialDocumentHandler();
 
-  public Chunker(String fileName) throws IOException {
+  public Chunker(final String fileName) throws IOException {
     source = new File(fileName);
     sourceFile = new RandomAccessFile(source, "r");
     fileSize = sourceFile.length();
     setFilePointerTo(START_POSITION);
   }
 
-  private final void setFilePointerTo(long newPosition) throws IOException {
+  private void setFilePointerTo(final long newPosition)
+      throws IOException {
     sourceFile.seek(newPosition);
   }
 
   @Override
-  public Iterator<Chunk> iterator() {
+  public final Iterator<Chunk> iterator() {
     return new ChunkIterator(sourceFile);
   }
 
-  public void close() throws IOException {
+  public final void close() throws IOException {
     sourceFile.close();
   }
 
@@ -37,12 +39,12 @@ public class Chunker implements Iterable<Chunk> {
     private final RandomAccessFile sourceFile;
     private long filePointer;
 
-    public ChunkIterator(RandomAccessFile sourceFile) {
+    public ChunkIterator(final RandomAccessFile sourceFile) {
       this.sourceFile = sourceFile;
     }
 
     @Override
-    public boolean hasNext() {
+    public final boolean hasNext() {
       try {
         filePointer = sourceFile.getFilePointer();
       } catch (IOException e) {
@@ -51,13 +53,13 @@ public class Chunker implements Iterable<Chunk> {
       return (filePointer < fileSize);
     }
 
-    private final void setFilePointerTo(long newPosition)
+    private void setFilePointerTo(final long newPosition)
         throws IOException {
       sourceFile.seek(newPosition);
     }
 
     @Override
-    public Chunk next() {
+    public final Chunk next() {
       try {
         Chunk chunk = new Chunk(sourceFile.getChannel(), filePointer,
             fileSize, partialDocumentHandler);
@@ -69,7 +71,7 @@ public class Chunker implements Iterable<Chunk> {
     }
 
     @Override
-    public void remove() {
+    public final void remove() {
       throw new UnsupportedOperationException();
     }
 
@@ -78,11 +80,11 @@ public class Chunker implements Iterable<Chunk> {
   static class PartialDocumentHandler {
     private String partialDoc = "";
 
-    void handlePartialDocument(String partialDoc) {
+    final void handlePartialDocument(final String partialDoc) {
       this.partialDoc = partialDoc;
     }
 
-    String prependPartialDocumentTo(String document) {
+    final String prependPartialDocumentTo(final String document) {
       String completeDocument = partialDoc + document;
       partialDoc = "";
       return completeDocument;
