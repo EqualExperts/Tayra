@@ -1,6 +1,8 @@
 package com.ee.tayra.command.restore
 
 import com.ee.tayra.io.listener.RestoreProgressReporter;
+import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader;
+import com.ee.tayra.io.reader.FileDocumentReader;
 import com.ee.tayra.io.writer.OplogReplayer;
 import com.ee.tayra.io.writer.SelectiveOplogReplayer;
 
@@ -27,12 +29,12 @@ class DefaultFactorySpecs extends Specification {
 
 	def createsEmptyListener() {
 		expect: 'listener created is instance of EmptyProgressReporter'
-			factory.createListener().class == RestoreProgressReporter
+			factory.createListener().getClass() == RestoreProgressReporter
 	}
 
 	def createsEmptyReporter() {
 		expect: 'reporter created is instance of EmptyProgressReporter'
-			factory.createReporter().class == RestoreProgressReporter
+			factory.createReporter().getClass() == RestoreProgressReporter
 	}
 
 	def createsWriters() {
@@ -40,10 +42,10 @@ class DefaultFactorySpecs extends Specification {
 		    config.sNs = namespace
 			config.sUntil = untilDate
 			factory =  new DefaultFactory(config, ignoreMongo, ignoreConsole)
-			
+
 		expect: 'writer created is type of klass'
-			factory.createWriter().class == klass
-			
+			factory.createWriter().getClass() == klass
+
 		where: 'namespace and until are varied as...'
 			namespace |     untilDate        | klass
 			    ''    |         ''           | OplogReplayer
@@ -51,4 +53,18 @@ class DefaultFactorySpecs extends Specification {
 			  ''      |'2013-03-16T15:19:40Z'| SelectiveOplogReplayer
 			  'test'  |'2013-03-16T15:19:40Z'| SelectiveOplogReplayer
  	}
+
+	def createsReaders() {
+		given:'a file'
+			def fileName = 'test.out'
+			boolean isFast= fastMode
+
+		expect:'readers to be of type'
+			factory.createReader(fileName, isFast).getClass() == klass
+
+		where:''
+			fastMode | klass
+			  true   | MemoryMappedDocumentReader
+			  false  | FileDocumentReader
+	}
 }

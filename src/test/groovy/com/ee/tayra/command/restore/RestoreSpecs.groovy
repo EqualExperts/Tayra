@@ -8,6 +8,7 @@ import com.ee.tayra.io.listener.CopyListener;
 import com.ee.tayra.io.listener.Reporter;
 import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.reader.FileDocumentReader;
+import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
 import com.ee.tayra.io.writer.Replayer;
 import com.mongodb.MongoException
 
@@ -180,25 +181,6 @@ class RestoreSpecs extends Specification {
       1 * mockReplayer.replay('"ts"')
   }
 
-//  def notifiesListenerOnSuccessfulReadOperation() {
-//    given:'arguments contain all essential options'
-//      context.setVariable('args', ['-d', secureTgtNode, "--port=$secureTgtPort", '-f', backupFile, '-u', username, '-p', password])
-//
-//    and: 'the reader is injected'
-//      def bufferedReader = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
-//      DocumentReader source = new FileDocumentReader(bufferedReader)
-//      context.setVariable('reader', source)
-//
-//    when: 'restore runs'
-//      new Restore(context).run()
-//
-//    then: 'invokes Read Success on listener'
-////      1 * mockListener.onReadSuccess('"ts"')
-//      0 * mockListener.onWriteSuccess('"ts"')
-////      0 * mockListener.onReadFailure('"ts"', _)
-//      0 * mockListener.onWriteFailure('"ts"', _)
-//  }
-
   def reportsSummary() {
     given:'arguments contain all essential options'
       context.setVariable('args', ['-d', secureTgtNode, "--port=$secureTgtPort", '-f', backupFile, '-u', username, '-p', password])
@@ -231,29 +213,6 @@ class RestoreSpecs extends Specification {
       1 * mockReporter.writeStartTimeTo(_)
   }
 
-//  def notifiesListenerOnSuccessfulReadOperationWithDryrun() {
-//    given:'arguments contains -f and -dry-run options'
-//      context.setVariable('args', ['-f', backupFile, '--dry-run'])
-//
-//    and: 'the reader is injected'
-//      def bufferedReader = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
-//      DocumentReader source = new FileDocumentReader(bufferedReader)
-//      context.setVariable('reader', source)
-//
-//    and: 'an empty listener is injected'
-//      CopyListener mockEmptyListener = Mock(CopyListener)
-//      context.setVariable('listener', mockEmptyListener)
-//
-//    when: 'restore runs'
-//      new Restore(context).run()
-//
-//    then: 'invokes Read Success on listener'
-//      1 * mockEmptyListener.onReadSuccess('"ts"')
-//      0 * mockEmptyListener.onWriteSuccess('"ts"')
-//      0 * mockEmptyListener.onReadFailure('"ts"', _)
-//      0 * mockEmptyListener.onWriteFailure('"ts"', _)
-//  }
-
   def ignoresMandatoryDestinationOptionWhenDryRunOptionIsGiven() {
     given:'arguments contains -f and --dry-run options'
       context.setVariable('args', ['-f', backupFile, '--dry-run'])
@@ -273,10 +232,10 @@ class RestoreSpecs extends Specification {
   def setsDefaultValuesOfOptions() {
     given: 'arguments contain all essential options and not -d, --port, -u, -p'
       context.setVariable('args', ["--port=$unsecureTgtPort", '-f', backupFile])
-    
+
     when: 'restore runs'
       new Restore(context).run()
-      
+
     then: 'following variables get default values'
       def config = context.getVariable('config')
       config.destination == 'localhost'
@@ -320,19 +279,19 @@ class RestoreSpecs extends Specification {
   def invokesRestoreWhenSExcludeOptionIsGiven() {
     given:'arguments contains -f, -u, -p, --sUntil, --sNs and --sExclude options'
       context.setVariable('args', ["--port=$secureSrcPort", '-f', backupFile,'--sExclude','--sNs=test','--sUntil={ts:{$ts:1357537752,$inc:2}}', '-u', username, '-p', password])
-      
+
     and: 'the reader is injected'
       def bufferedReader = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
-    
+
     when: 'restore runs'
       new Restore(context).run()
-      
+
     then: 'it performs the restore operation'
       1 * mockReplayer.replay('"ts"')
   }
-  
+
   def returnsNoDocumentWhenOnlySExcludeOptionIsGiven() {
     given:'arguments contains -f, -u, -p,--sExclude options'
       context.setVariable('args', ["--port=$secureSrcPort", '-f', backupFile,'--sExclude', '-u', username, '-p', password])
@@ -348,16 +307,42 @@ class RestoreSpecs extends Specification {
     then: 'it performs the restore operation and no document is restored'
       result.toString() == ''
   }
-  
+
   def shoutsWhenWrongArgumentsAreSupplied() {
     given:'arguments contains -d, -f valid options and --sNssss: not valid option'
       def context = new Binding()
       context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--sNsss=users'])
-      
+
     when: 'backup runs with above args'
       new Restore(context).run()
-        
+
     then: 'error message should be thrown as'
       result.toString().contains('Cannot Understand [--sNsss, users]')
   }
+
+  def invokesRestoreInFastModeWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
+	  given:'arguments contains -d, -port and -f options'
+		  context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fast'])
+
+	  and: 'a backupFile is given'
+	  	  String document = '{{"ts"}}'
+		  def file = File.createTempFile('test', 'out')
+		  file.withWriter { writer ->
+			  writer.write document
+			  writer.write NEW_LINE
+		  }
+
+	  and: 'the reader is injected'
+		DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath)
+		context.setVariable('reader', source)
+
+	  when: 'restore runs'
+		new Restore(context).run()
+
+	  then: 'perform the restore operation'
+		1 * mockReplayer.replay('{{"ts"}}')
+
+	  cleanup:
+	  	file.delete()
+	}
 }

@@ -36,6 +36,7 @@ import com.ee.tayra.io.listener.DeafAndDumbReporter;
 import com.ee.tayra.io.listener.Reporter;
 import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.reader.FileDocumentReader;
+import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
 import com.ee.tayra.io.writer.ConsoleReplayer;
 import com.ee.tayra.io.writer.Replayer;
 import com.ee.tayra.io.writer.SelectiveOplogReplayer;
@@ -61,11 +62,12 @@ class DryRunFactory extends RestoreFactory {
   }
 
   @Override
-  public DocumentReader createReader(final String fileName) {
+  public DocumentReader createReader(final String fileName, final boolean fastMode){
     File file = new File(fileName)
-	FileDocumentReader reader = new FileDocumentReader(new BufferedReader(new FileReader(file)))
-	reader.notifier = createNotifier()
-	reader
+    DocumentReader reader = fastMode ? new MemoryMappedDocumentReader(fileName) :
+        new FileDocumentReader(new BufferedReader(new FileReader(file)))
+    reader.notifier = createNotifier()
+    reader
   }
 
   private Notifier createNotifier() {

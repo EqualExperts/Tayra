@@ -14,12 +14,8 @@ public class MemoryMappedDocumentReader implements DocumentReader {
 
   public MemoryMappedDocumentReader(final String fileName) throws IOException {
     notifier = ReadNotifier.NONE;
-    chunker = createChunker(fileName);
+    chunker = new Chunker(fileName);
     chunkIterator = chunker.iterator();
-  }
-
-  private Chunker createChunker(final String fileName) throws IOException {
-    return new Chunker(fileName);
   }
 
   @Override

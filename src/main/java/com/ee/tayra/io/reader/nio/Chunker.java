@@ -72,7 +72,7 @@ public class Chunker implements Iterable<Chunk> {
 
     @Override
     public final void remove() {
-      throw new UnsupportedOperationException();
+      throw new UnsupportedOperationException("remove chunk is not supported");
     }
 
   }

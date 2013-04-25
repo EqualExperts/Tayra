@@ -14,9 +14,9 @@ import spock.lang.Specification
 
 class MemoryMappedDocumentReaderSpecs extends Specification {
 
+	private static final String NEW_LINE = System.getProperty('line.separator')
 	private ReadNotifier mockNotifier
-	private String fileName = 'test.out'
-	private DocumentReader fileDocumentReader
+	private DocumentReader reader
 	private final String document = "\"ts\""
 	private Chunker mockChunker = Stub(Chunker)
 	private Chunk mockedChunk = Stub(Chunk)
@@ -25,15 +25,34 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 
 	def setup() {
 		mockNotifier = Mock(ReadNotifier)
-		fileDocumentReader = new MemoryMappedDocumentReader(fileName)
-		fileDocumentReader.notifier = mockNotifier
 	}
 
-	def notifiesBeforeStartingToReadADocument() {
-		when: 'document is read'
-			fileDocumentReader.readDocument()
+	def readsADocument() {
+		given: 'a reader for file'
+		   def file = File.createTempFile('test', 'out')
+		   file.withWriter { writer ->
+			   writer.write document
+			   writer.write NEW_LINE
+		   }
+		   reader = new MemoryMappedDocumentReader(file.absolutePath)
 
-		then: 'a notification of successful read is given'
-			1 * mockNotifier.notifyReadStart("")
+		when: 'read is invoked'
+		   String document = reader.readDocument()
+
+		then: 'the document is read'
+		    document == this.document
+
+		cleanup:
+		    reader.close()
+		    file.delete()
 	}
+
+
+//	def notifiesBeforeStartingToReadADocument() {
+//		when: 'document is read'
+//			fileDocumentReader.readDocument()
+//
+//		then: 'a notification of successful read is given'
+//			1 * mockNotifier.notifyReadStart("")
+//	}
 }

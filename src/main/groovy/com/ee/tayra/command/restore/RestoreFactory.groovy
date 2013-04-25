@@ -40,17 +40,17 @@ import com.ee.tayra.io.writer.Replayer;
 import com.mongodb.MongoClient
 
 abstract class RestoreFactory {
-  
+
   protected final Criterion criteria
-  
+
   public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
     config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
   }
-  
+
   RestoreFactory(RestoreCmdDefaults config) {
     criteria = createCriteria(config)
   }
-  
+
   private Criterion createCriteria(RestoreCmdDefaults config) {
     if(config.sNs || config.sUntil || config.sExclude || config.sSince) {
       new CriteriaBuilder().build {
@@ -70,7 +70,7 @@ abstract class RestoreFactory {
     }
   }
 
-  public abstract DocumentReader createReader(String fileName)
+  public abstract DocumentReader createReader(String fileName, boolean fastMode)
 
   public abstract Replayer createWriter()
 

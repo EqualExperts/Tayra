@@ -34,17 +34,5 @@ class RestoreFactorySpecs extends Specification{
 				true       | DryRunFactory
 				false      | DefaultFactory
 	}
-	
-//	def createsReader() {
-//		given: ''
-//			def factory = RestoreFactory.createFactory(config, ignoreMongo, ignoreConsole)
-//			def mockFile = Mock(File)
-//
-//		when: 'correct factory is created'
-//			def reader = factory.createReader(mockFile)
-//
-//		then: 'reader created is of type DocumentReader'
-//			reader.class == FileDocumentReader
-//	}
-	
+
 }

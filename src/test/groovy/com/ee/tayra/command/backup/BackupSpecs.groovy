@@ -238,7 +238,7 @@ public class BackupSpecs extends Specification {
     when: 'backup runs with above args'
       new Backup(context).run()
 
-    then: 'the output should contain "ts"'
+    then: 'error message should be thrown as'
       result.toString().contains('Cannot Read Password Input, please use -p command line option')
   }
 
@@ -274,13 +274,13 @@ public class BackupSpecs extends Specification {
   def notifiesUserTheTimestampFromWhereTheBackupStarts() {
 	  given:'arguments contains -s and -f option'
 		context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile])
-  
+
 	  and: 'backup runs with above args'
 		new Backup(context).run()
 
 	  when: 'backup is run again and timestamp file exists'
 		new Backup(context).run()
-  
+
 	  then: 'Notification message should be shown as'
 		result.toString().contains('Backup is starting from:')
 	}

@@ -54,6 +54,7 @@ cli.with  {
   _ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is all namespaces, Eg: --sNs=dbName<.collectionName>', optionalArg:true
   _ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
   _ args:1, argName:'sSince',longOpt:'sSince', 'OPTIONAL, timestamp for selective restore, default is from START, \n Eg: ISO Format --sSince=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sSince={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sSince=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
+  _ args:0, argName:'fast', longOpt:'fast', '', optionalArg: true, required: false
 }
 
 options = cli.parse(args)
@@ -127,6 +128,11 @@ if(options.fAll) {
   isMultiple = true
 }
 
+boolean fastMode = false
+if(options.fast) {
+	fastMode = true
+}
+
 errorLog = 'error.log'
 def stderr = new PrintStream (new FileOutputStream(errorLog))
 System.setErr(stderr)
@@ -151,7 +157,7 @@ try {
   progressReporter.writeStartTimeTo console
 
   files.withFile {
-    DocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
+    DocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it, fastMode)
     copier.copy(reader, writer)
     reader.close()
   }
