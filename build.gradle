@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 apply plugin: 'checkstyle' //for java code conventions
-apply plugin: 'jdepend'  //for dependency analysis
+apply plugin: 'jdepend' //for dependency analysis
 apply plugin: 'findbugs' //for static code analysis
 apply plugin: 'pmd'
 
@@ -62,7 +62,9 @@ project.ext {
   exploratoryTestSrcDir = "$projectDir/exploratory-tests/test/groovy"
 
   explodedDir = "$project.buildDir/exploded"
-  portPrefix = System.getProperty('portPrefix', '')
+
+  DEFAULT_PORT_PREFIX = 270
+  portPrefix = System.getProperty('portPrefix', "$DEFAULT_PORT_PREFIX")
 
   deployScriptsDir = 'deploy-scripts'
   deployScriptsZip = "${project.archivesBaseName}-deployScripts"
@@ -111,7 +113,7 @@ clean << {
 }
 
 test {
-    systemProperties['portPrefix'] = project.ext.portPrefix
+	systemProperties['portPrefix'] = project.ext.portPrefix
 	def originalClasspath = getClasspath()
 	doFirst {
         println "Running tests for Mongods with port prefix $project.ext.portPrefix"
@@ -175,11 +177,22 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	}
 }
 
+//task createTestJar(type: Jar, dependsOn: [test]) {
+//	doFirst {
+//		baseName = "${project.archivesBaseName}-test"
+//				destinationDir = project.distsDir
+//				from sourceSets.test.output
+//	}
+//}
+
 task createTestJar(type: Jar, dependsOn: [test]) {
 	doFirst {
 		baseName = "${project.archivesBaseName}-test"
 				destinationDir = project.distsDir
 				from sourceSets.test.output
+		manifest {
+			attributes 'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner'
+		}
 	}
 }
 

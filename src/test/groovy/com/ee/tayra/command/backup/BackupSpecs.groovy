@@ -255,7 +255,7 @@ public class BackupSpecs extends Specification {
       timestampFile.text.contains('ts')
   }
 
-  def notifiesUserTheStartOfBackupFromStartOFOplogWhenTimeStampFileIsNotPresent() {
+  def notifiesUserWhenBackupStartsFromBeginningOfOplog() {
 	  given:'arguments contains -s and -f option'
 		  context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile])
 
@@ -270,7 +270,7 @@ public class BackupSpecs extends Specification {
 		  result.toString().contains('Backing up from start of oplog')
   }
 
-  def notifiesUserTheStaringTimestampWhenBackupStartsAndTimeStampFileExist() {
+  def notifiesUserTheTimestampFromWhereTheBackupStarts() {
 	  given:'arguments contains -s and -f option'
 		context.setVariable('args', ['-s', unsecureSrcNode, "--port=$unsecureSrcPort", '-f', backupFile])
   
