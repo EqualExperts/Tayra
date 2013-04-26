@@ -1,3 +1,5 @@
+import com.sun.org.apache.bcel.internal.util.ClassPath;
+
 import groovy.io.FileType
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -8,6 +10,8 @@ apply plugin: 'checkstyle' //for java code conventions
 apply plugin: 'jdepend' //for dependency analysis
 apply plugin: 'findbugs' //for static code analysis
 apply plugin: 'pmd'
+
+apply plugin: 'application'
 
 defaultTasks 'clean', 'build'
 
@@ -108,6 +112,14 @@ jar {
     }
 }
 
+sourceSets {
+test {
+		groovy {
+			srcDir "$exploratoryTestSrcDir"
+		}
+	}
+}
+
 clean << {
   ant.delete(file:"$coverageDataFile")
 }
@@ -177,27 +189,27 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 	}
 }
 
-//task createTestJar(type: Jar, dependsOn: [test]) {
-//	doFirst {
-//		baseName = "${project.archivesBaseName}-test"
-//				destinationDir = project.distsDir
-//				from sourceSets.test.output
-//	}
-//}
-
 task createTestJar(type: Jar, dependsOn: [test]) {
-	doFirst {
-		baseName = "${project.archivesBaseName}-test"
-				destinationDir = project.distsDir
-				from sourceSets.test.output
-		manifest {
-			attributes 'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner'
-		}
-	}
-}
+	baseName = "${project.archivesBaseName}-test"
+		destinationDir = project.distsDir
+		from sourceSets.test.output
 
-task 'exploratoryTest'(type: Test) {
-	include ("${project.archivesBaseName}-test.jar/com/ee/tayra/exploratory/*Test*.class")
+	String allLibFiles = new File("$libsDir").listFiles().each {
+		"$explodedDir/libs" + it.name
+	}.join(' ')
+
+	String allTestLibFiles = new File("$unmanagedTestLibDir").listFiles().each {
+		it.absolutePath
+	}.join(' ')
+
+	String classpath = allLibFiles + " " + allTestLibFiles + " $projectDir"
+
+	manifest {
+		attributes (
+		'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner',
+		'Class-Path': classpath
+		)
+	}
 }
 
 task createDeployZip(type: Zip) {
@@ -207,10 +219,19 @@ task createDeployZip(type: Zip) {
 }
 
 task unzip(type: Copy) {
-  def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
-  def outputDir = file(project.ext.explodedDir)
-  from zipTree(zipFile)
-  into outputDir
+	def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+			def outputDir = file(project.ext.explodedDir)
+			from zipTree(zipFile)
+	into outputDir
+}
+
+task ('exploratory-test', dependsOn: unzip) << {
+	def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+	if(!zipFile.exists()) {
+		throw new RuntimeException(">>> Please run gradle to build the binary distributable ${project.archivesBaseName}.zip first!")
+	}
+	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-test.jar"))
+	javaexec { main = '-jar'; args jarPath }
 }
 
 task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
