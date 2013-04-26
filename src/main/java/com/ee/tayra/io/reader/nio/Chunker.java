@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
 
-public class Chunker implements Iterable<Chunk> {
+class Chunker implements Iterable<Chunk> {
 
   private static final long START_POSITION = 0L;
   private RandomAccessFile sourceFile;
@@ -13,10 +13,13 @@ public class Chunker implements Iterable<Chunk> {
   private static long fileSize;
   private static PartialDocumentHandler partialDocumentHandler =
       new PartialDocumentHandler();
+  private final long chunkSize;
 
-  public Chunker(final String fileName) throws IOException {
+  public Chunker(final String fileName, final long bufferSize)
+    throws IOException {
     source = new File(fileName);
     sourceFile = new RandomAccessFile(source, "r");
+    this.chunkSize = bufferSize;
     fileSize = sourceFile.length();
     setFilePointerTo(START_POSITION);
   }
@@ -28,7 +31,7 @@ public class Chunker implements Iterable<Chunk> {
 
   @Override
   public final Iterator<Chunk> iterator() {
-    return new ChunkIterator(sourceFile);
+    return new ChunkIterator(sourceFile, chunkSize);
   }
 
   public final void close() throws IOException {
@@ -38,9 +41,12 @@ public class Chunker implements Iterable<Chunk> {
   private static class ChunkIterator implements Iterator<Chunk> {
     private final RandomAccessFile sourceFile;
     private long filePointer;
+    private final long chunkSize;
 
-    public ChunkIterator(final RandomAccessFile sourceFile) {
+    public ChunkIterator(final RandomAccessFile sourceFile,
+      final long chunkSize) {
       this.sourceFile = sourceFile;
+      this.chunkSize = chunkSize;
     }
 
     @Override
@@ -62,7 +68,7 @@ public class Chunker implements Iterable<Chunk> {
     public final Chunk next() {
       try {
         Chunk chunk = new Chunk(sourceFile.getChannel(), filePointer,
-            fileSize, partialDocumentHandler);
+            fileSize, chunkSize, partialDocumentHandler);
         setFilePointerTo(filePointer + chunk.getReadSize());
         return chunk;
       } catch (IOException e) {

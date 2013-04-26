@@ -11,24 +11,23 @@ import java.util.Iterator;
 
 import com.ee.tayra.io.reader.nio.Chunker.PartialDocumentHandler;
 
-public class Chunk implements Iterable<String> {
+class Chunk implements Iterable<String> {
 
-  private static final int ONE_KB = 1024;
-  private static final int SIZE = 8 * ONE_KB * ONE_KB;
-  private int readSize;
+  private long readSize;
   private MappedByteBuffer chunk;
   private final PartialDocumentHandler handler;
 
-  public Chunk(final FileChannel channel, final long filePointer,
-      final long fileLength, final PartialDocumentHandler handler)
+  Chunk(final FileChannel channel, final long filePointer,
+        final long fileLength, final long chunkSize,
+        final PartialDocumentHandler handler)
       throws IOException {
     this.handler = handler;
-    readSize = (int) Math.min(SIZE, fileLength - filePointer);
+    readSize = Math.min(chunkSize, fileLength - filePointer);
     chunk = channel.map(FileChannel.MapMode.READ_ONLY, filePointer,
         readSize);
   }
 
-  public final int getReadSize() {
+  public final long getReadSize() {
     return readSize;
   }
 

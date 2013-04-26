@@ -3,18 +3,25 @@ package com.ee.tayra.io.reader.nio;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.log4j.helpers.OptionConverter;
+
 import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.reader.ReadNotifier;
 
 public class MemoryMappedDocumentReader implements DocumentReader {
+  private static final int ONE_KB = 1024;
+  private static final int DEFAULT_SIZE = 8 * ONE_KB;
   private final Chunker chunker;
   private Iterator<String> documentIterator;
   private Iterator<Chunk> chunkIterator;
   private ReadNotifier notifier;
 
-  public MemoryMappedDocumentReader(final String fileName) throws IOException {
+  public MemoryMappedDocumentReader(final String fileName,
+    final String memoryBufferSize) throws IOException {
     notifier = ReadNotifier.NONE;
-    chunker = new Chunker(fileName);
+    long bufferSize = OptionConverter.toFileSize(memoryBufferSize,
+    DEFAULT_SIZE);
+    chunker = new Chunker(fileName, bufferSize);
     chunkIterator = chunker.iterator();
   }
 

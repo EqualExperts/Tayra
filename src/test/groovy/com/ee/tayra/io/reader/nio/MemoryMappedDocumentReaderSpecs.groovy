@@ -22,20 +22,21 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 	private Chunk mockedChunk = Stub(Chunk)
 	private Iterator<Chunk> mockChunkIterator = Stub(ChunkIterator)
 	private Iterator<String> mockDocIterator = Stub(DocumentIterator)
+	private def file
 
 	def setup() {
 		mockNotifier = Mock(ReadNotifier)
+		file = File.createTempFile('test', 'out')
+		file.withWriter { writer ->
+			writer.write document
+			writer.write NEW_LINE
+		}
+		String bufferSize ='1KB'
+		reader = new MemoryMappedDocumentReader(file.absolutePath, bufferSize)
+		reader.notifier = mockNotifier
 	}
 
 	def readsADocument() {
-		given: 'a reader for file'
-		   def file = File.createTempFile('test', 'out')
-		   file.withWriter { writer ->
-			   writer.write document
-			   writer.write NEW_LINE
-		   }
-		   reader = new MemoryMappedDocumentReader(file.absolutePath)
-
 		when: 'read is invoked'
 		   String document = reader.readDocument()
 
@@ -47,12 +48,11 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 		    file.delete()
 	}
 
+	def notifiesBeforeStartingToReadADocument() {
+		when: 'document is read'
+			reader.readDocument()
 
-//	def notifiesBeforeStartingToReadADocument() {
-//		when: 'document is read'
-//			fileDocumentReader.readDocument()
-//
-//		then: 'a notification of successful read is given'
-//			1 * mockNotifier.notifyReadStart("")
-//	}
+		then: 'a notification of successful read is given'
+			1 * mockNotifier.notifyReadStart("")
+	}
 }

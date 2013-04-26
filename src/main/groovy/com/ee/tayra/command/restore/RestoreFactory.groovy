@@ -36,14 +36,18 @@ import com.ee.tayra.io.criteria.Criterion
 import com.ee.tayra.io.listener.CopyListener;
 import com.ee.tayra.io.listener.Reporter;
 import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.reader.FileDocumentReader
+import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
 import com.ee.tayra.io.writer.Replayer;
 import com.mongodb.MongoClient
 
 abstract class RestoreFactory {
 
   protected final Criterion criteria
+  private static String bufferSize
 
   public static RestoreFactory createFactory (RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
+    this.bufferSize = config.fBuffer
     config.dryRunRequired ? new DryRunFactory(config, console) : new DefaultFactory(config, mongo, console)
   }
 
@@ -70,7 +74,12 @@ abstract class RestoreFactory {
     }
   }
 
-  public abstract DocumentReader createReader(String fileName, boolean fastMode)
+  protected DocumentReader createReader(final String fileName){
+    File file = new File(fileName)
+    DocumentReader reader = bufferSize ? new MemoryMappedDocumentReader(fileName, bufferSize) :
+        new FileDocumentReader(new BufferedReader(new FileReader(file)))
+    reader
+  }
 
   public abstract Replayer createWriter()
 

@@ -70,10 +70,8 @@ class DefaultFactory extends RestoreFactory {
   }
 
   @Override
-  public DocumentReader createReader(final String fileName, final boolean fastMode){
-    File file = new File(fileName)
-    DocumentReader reader = fastMode ? new MemoryMappedDocumentReader(fileName) :
-        new FileDocumentReader(new BufferedReader(new FileReader(file)))
+  public DocumentReader createReader(final String fileName){
+    DocumentReader reader = super.createReader(fileName)
     reader.notifier = createNotifier()
     reader
   }

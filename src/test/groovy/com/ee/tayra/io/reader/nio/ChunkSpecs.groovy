@@ -9,7 +9,10 @@ import spock.lang.Specification;
 class ChunkSpecs extends Specification{
 
 	private static final String NEW_LINE = System.getProperty('line.separator')
+
+	private static final int ONE_KB = 1024
 	private final String document = '{"{\"ts\""}}'
+	private final long chunkSize =  ONE_KB
 	private Chunk chunk
 	private def handler
 	private Iterator<String> documentIterator
@@ -24,7 +27,7 @@ class ChunkSpecs extends Specification{
 		handler = new PartialDocumentHandler()
 		RandomAccessFile mappedFile = new RandomAccessFile(file, "r")
 		chunk = new Chunk(mappedFile.getChannel(), mappedFile.getFilePointer(),
-			mappedFile.length(), handler)
+			mappedFile.length(), chunkSize, handler)
 		documentIterator = chunk.iterator()
 	}
 

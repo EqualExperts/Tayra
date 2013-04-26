@@ -322,7 +322,7 @@ class RestoreSpecs extends Specification {
 
   def invokesRestoreInFastModeWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
 	  given:'arguments contains -d, -port and -f options'
-		  context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fast'])
+		  context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fBuffer=2MB'])
 
 	  and: 'a backupFile is given'
 	  	  String document = '{{"ts"}}'
@@ -333,7 +333,7 @@ class RestoreSpecs extends Specification {
 		  }
 
 	  and: 'the reader is injected'
-		DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath)
+		DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath, '2MB')
 		context.setVariable('reader', source)
 
 	  when: 'restore runs'

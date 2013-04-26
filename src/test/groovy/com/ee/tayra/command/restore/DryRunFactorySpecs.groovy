@@ -48,18 +48,4 @@ class DryRunFactorySpecs extends Specification{
       ''        |'2013-03-16T15:19:40Z'| SelectiveOplogReplayer
       'test'    |'2013-03-16T15:19:40Z'| SelectiveOplogReplayer
   }
-
-  def createsReaders() {
-	  given:'a file'
-		  def fileName = 'test.out'
-		  boolean isFast= fastMode
-
-	  expect:'readers to be of type'
-		  factory.createReader(fileName, isFast).getClass() == klass
-
-	  where:''
-		  fastMode | klass
-			true   | MemoryMappedDocumentReader
-			false  | FileDocumentReader
-  }
 }
