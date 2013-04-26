@@ -53,7 +53,10 @@ Finally, it is worth reading the documentation.
 
   <!-- Checks for Size Violations.                    -->
   <!-- See http://checkstyle.sf.net/config_sizes.html -->
-  <module name="FileLength"/>
+  <!-- Based on recommendations on http://erik.doernenburg.com/2008/11/how-toxic-is-your-code/ -->
+  <module name="FileLength">
+      <property name="max" value="500"/>
+  </module>
 
   <!-- Checks for whitespace                               -->
   <!-- See http://checkstyle.sf.net/config_whitespace.html -->
@@ -68,8 +71,36 @@ Finally, it is worth reading the documentation.
     <property name="message" value="Line has trailing spaces."/>
   </module>
   <module name="TreeWalker">
+    <!-- Based on recommendations on http://erik.doernenburg.com/2008/11/how-toxic-is-your-code/ -->
+    <!-- Toxocity Parameters -->
+    <module name="ClassFanOutComplexity">
+      <property name="max" value="30"/>
+    </module>
+    <module name="ClassDataAbstractionCoupling">
+      <property name="max" value="10"/>
+    </module>
+    <module name="AnonInnerLength">
+      <property name="max" value="35"/>
+    </module>
+    <module name="MethodLength">
+      <property name="max" value="30"/>
+    </module>
+    <module name="ParameterNumber">
+      <property name="max" value="6"/>
+    </module>
+    <module name="CyclomaticComplexity">
+        <property name="max" value="10"/>
+    </module>
+    <module name="NestedIfDepth">
+      <property name="max" value="3"/>
+    </module>
+    <module name="NestedTryDepth">
+      <property name="max" value="2"/>
+    </module>
+    <module name="BooleanExpressionComplexity" />
+    <module name="MissingSwitchDefault" />
 
-    <!-- Checks for Javadoc comments.                     -->
+      <!-- Checks for Javadoc comments.                     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
     <!--         <module name="JavadocMethod"/>
     <module name="JavadocType"/>
@@ -116,8 +147,6 @@ Finally, it is worth reading the documentation.
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sf.net/config_sizes.html -->
     <module name="LineLength"/>
-    <module name="MethodLength"/>
-    <module name="ParameterNumber"/>
 
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sf.net/config_whitespace.html -->
