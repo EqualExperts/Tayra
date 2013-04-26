@@ -199,7 +199,7 @@ task createTestJar(type: Jar, dependsOn: [test]) {
 	}.join(' ')
 
 	String allTestLibFiles = new File("$unmanagedTestLibDir").listFiles().each {
-		it.absolutePath
+		"$unmanagedTestLibDir" + it.name
 	}.join(' ')
 
 	String classpath = allLibFiles + " " + allTestLibFiles + " $projectDir"
