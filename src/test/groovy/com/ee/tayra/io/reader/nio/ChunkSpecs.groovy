@@ -11,12 +11,19 @@ class ChunkSpecs extends Specification{
 	private static final String NEW_LINE = System.getProperty('line.separator')
 
 	private static final int ONE_KB = 1024
-	private final String document = '{"{\"ts\""}}'
+	private final String document = '{{ts:1}}'
 	private final long chunkSize =  ONE_KB
 	private Chunk chunk
 	private def handler
 	private Iterator<String> documentIterator
-	private def file
+	private File file
+	
+	
+	static partialDocumentOne = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street}}"'
+	static partialDocumentTwo = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "123 Fake Street}}"'
+	static partialDocumentThree = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street'
+	static partialDocumentFour = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , '
+	
 
 	def setup() {
 		file = File.createTempFile('test', 'out')
@@ -39,7 +46,7 @@ class ChunkSpecs extends Specification{
 			isDocumentPresent == true
 
 		cleanup:
-			file.delete()
+			file.deleteOnExit()
 	}
 
 	def readsADocument() {
@@ -50,7 +57,7 @@ class ChunkSpecs extends Specification{
 			document == this.document
 
 		cleanup:
-			file.delete()
+			file.deleteOnExit()
 	}
 
 	def shoutsWhenDocumentIsRemoved() {
@@ -60,6 +67,18 @@ class ChunkSpecs extends Specification{
 		then:'error message should be thrown as'
 			def problem = thrown(UnsupportedOperationException)
 			problem.message == "remove not supported"
+	}
+	
+	def notifiesWhenADocumentIsPartial() {
+		expect: 'partial documents are identified'
+			isPartial == documentIterator.isPartial(document)
+	  
+		where:
+			document                       | isPartial
+			partialDocumentOne             | true
+			partialDocumentTwo             | true
+			partialDocumentThree           | true
+			partialDocumentFour            | true
 	}
 
 }

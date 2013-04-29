@@ -10,6 +10,8 @@ import java.nio.charset.CharsetDecoder;
 import java.util.Iterator;
 
 import com.ee.tayra.io.reader.nio.Chunker.PartialDocumentHandler;
+import com.mongodb.util.JSON;
+import com.mongodb.util.JSONParseException;
 
 class Chunk implements Iterable<String> {
 
@@ -18,9 +20,8 @@ class Chunk implements Iterable<String> {
   private final PartialDocumentHandler handler;
 
   Chunk(final FileChannel channel, final long filePointer,
-        final long fileLength, final long chunkSize,
-        final PartialDocumentHandler handler)
-      throws IOException {
+      final long fileLength, final long chunkSize,
+      final PartialDocumentHandler handler) throws IOException {
     this.handler = handler;
     readSize = Math.min(chunkSize, fileLength - filePointer);
     chunk = channel.map(FileChannel.MapMode.READ_ONLY, filePointer,
@@ -81,7 +82,12 @@ class Chunk implements Iterable<String> {
     }
 
     final boolean isPartial(final String document) {
-      return !(document.contains("{") && document.contains("}}"));
+      try {
+        JSON.parse(document);
+        return false;
+      } catch (JSONParseException ex) {
+        return true;
+      }
     }
 
     @Override
