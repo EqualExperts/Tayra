@@ -50,10 +50,10 @@ class ChunkSpecs extends Specification{
 	}
 
 	def readsADocument() {
-		when:''
+		when:'a document is fetched'
 			String document = documentIterator.next()
 
-		then:''
+		then:'document is obtained'
 			document == this.document
 	}
 
