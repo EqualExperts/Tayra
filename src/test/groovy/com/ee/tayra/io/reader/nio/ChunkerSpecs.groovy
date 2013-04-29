@@ -12,7 +12,7 @@ public class ChunkerSpecs extends Specification {
 	private final long chunkSize = ONE_KB
 	private Chunker chunker
 	private Iterator<Chunk> chunkIterator
-	private def file
+	private File file
 
 	def setup() {
 		file = File.createTempFile('test', 'out')
@@ -24,16 +24,17 @@ public class ChunkerSpecs extends Specification {
 		chunkIterator = chunker.iterator()
 	}
 
+	def cleanup() {
+		chunker.close()
+		file.delete()
+	}
+
 	def returnsAChunk () {
 		when:'chunk is fetched'
 			Chunk chunk = chunkIterator.next()
 
 		then:'a chunk is obtained'
 			chunk.getClass() == Chunk
-
-		cleanup:
-			chunker.close()
-			file.delete()
 	}
 
 	def notifiesNextChunkIsPresent() {
@@ -42,10 +43,6 @@ public class ChunkerSpecs extends Specification {
 
 		then:'chunk is found'
 			isNextChunkPresent == true
-
-		cleanup:
-			chunker.close()
-			file.delete()
 	}
 
 	def returnsOnlyOneChunkForFileSizeLessThanChunkSize() {
@@ -61,10 +58,6 @@ public class ChunkerSpecs extends Specification {
 
 		then:'only One chunk is created'
 			chunksRead == 1
-
-		cleanup:
-			chunker.close()
-			file.delete()
 	}
 
 	def shoutsWhenChunkIsRemoved() {

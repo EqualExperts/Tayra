@@ -9,7 +9,7 @@ import spock.lang.Specification;
 class ChunkSpecs extends Specification{
 
 	private static final String NEW_LINE = System.getProperty('line.separator')
-
+	private static String tempDirectory = System.getProperty("java.io.tmpdir")
 	private static final int ONE_KB = 1024
 	private final String document = '{{ts:1}}'
 	private final long chunkSize =  ONE_KB
@@ -17,13 +17,12 @@ class ChunkSpecs extends Specification{
 	private def handler
 	private Iterator<String> documentIterator
 	private File file
-	
-	
+
 	static partialDocumentOne = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street}}"'
 	static partialDocumentTwo = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "123 Fake Street}}"'
 	static partialDocumentThree = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street'
 	static partialDocumentFour = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , '
-	
+
 
 	def setup() {
 		file = File.createTempFile('test', 'out')
@@ -38,15 +37,16 @@ class ChunkSpecs extends Specification{
 		documentIterator = chunk.iterator()
 	}
 
+	def cleanup() {
+		file.delete()
+	}
+
 	def notifiesWhenADocumentIsAvaliable() {
 		when:'a document is looked for'
 			boolean isDocumentPresent = documentIterator.hasNext()
 
 		then:'a document is found'
 			isDocumentPresent == true
-
-		cleanup:
-			file.deleteOnExit()
 	}
 
 	def readsADocument() {
@@ -55,9 +55,6 @@ class ChunkSpecs extends Specification{
 
 		then:''
 			document == this.document
-
-		cleanup:
-			file.deleteOnExit()
 	}
 
 	def shoutsWhenDocumentIsRemoved() {
@@ -68,11 +65,11 @@ class ChunkSpecs extends Specification{
 			def problem = thrown(UnsupportedOperationException)
 			problem.message == "remove not supported"
 	}
-	
+
 	def notifiesWhenADocumentIsPartial() {
 		expect: 'partial documents are identified'
 			isPartial == documentIterator.isPartial(document)
-	  
+
 		where:
 			document                       | isPartial
 			partialDocumentOne             | true
@@ -80,5 +77,4 @@ class ChunkSpecs extends Specification{
 			partialDocumentThree           | true
 			partialDocumentFour            | true
 	}
-
 }
