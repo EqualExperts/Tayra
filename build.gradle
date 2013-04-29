@@ -190,26 +190,33 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 }
 
 task createTestJar(type: Jar, dependsOn: [test]) {
-	baseName = "${project.archivesBaseName}-test"
-		destinationDir = project.distsDir
-		from sourceSets.test.output
-
-	String allLibFiles = new File("$libsDir").listFiles().each {
-		"$explodedDir/libs" + it.name
-	}.join(' ')
-
-	String allTestLibFiles = new File("$unmanagedTestLibDir").listFiles().each {
-		"$unmanagedTestLibDir" + it.name
-	}.join(' ')
-
-	String classpath = allLibFiles + " " + allTestLibFiles + " $projectDir"
-
-	manifest {
-		attributes (
-		'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner',
-		'Class-Path': classpath
-		)
+//	doFirst {
+		baseName = "${project.archivesBaseName}-test"
+			destinationDir = project.distsDir
+			from sourceSets.test.output
+	String allLibFiles = ''
+	String allTestLibFiles = ''
+	if(new File("$libsDir").exists()) {
+		allLibFiles = new File("$libsDir").listFiles().each {
+			"$explodedDir/libs" + it.name
+		}.join(' ')
 	}
+	
+	if(new File("$unmanagedTestLibDir").exists()) {
+		allTestLibFiles = new File("$unmanagedTestLibDir").listFiles().each {
+			"$unmanagedTestLibDir" + it.name
+		}.join(' ')
+	}
+	
+		String classpath = allLibFiles + " " + allTestLibFiles + " $projectDir"
+	
+		manifest {
+			attributes (
+			'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner',
+			'Class-Path': classpath
+			)
+		}
+//	}
 }
 
 task createDeployZip(type: Zip) {
