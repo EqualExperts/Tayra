@@ -190,25 +190,13 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
 }
 
 task createTestJar(type: Jar, dependsOn: [test]) {
-//	doFirst {
 		baseName = "${project.archivesBaseName}-test"
 			destinationDir = project.distsDir
 			from sourceSets.test.output
-	String allLibFiles = ''
-	String allTestLibFiles = ''
-	if(new File("$libsDir").exists()) {
-		allLibFiles = new File("$libsDir").listFiles().each {
-			"$explodedDir/libs" + it.name
-		}.join(' ')
-	}
-	
-	if(new File("$unmanagedTestLibDir").exists()) {
-		allTestLibFiles = new File("$unmanagedTestLibDir").listFiles().each {
-			"$unmanagedTestLibDir" + it.name
-		}.join(' ')
-	}
-	
-		String classpath = allLibFiles + " " + allTestLibFiles + " $projectDir"
+
+	String classpath = fileTree(dir: "$libsDir", include: '*.jar')
+	classpath = classpath + fileTree(dir:"$unmanagedTestLibDir", include: '*.jar')
+	classpath = classpath + fileTree(dir:"$projectDir", include: '*.properties')
 	
 		manifest {
 			attributes (
@@ -216,7 +204,6 @@ task createTestJar(type: Jar, dependsOn: [test]) {
 			'Class-Path': classpath
 			)
 		}
-//	}
 }
 
 task createDeployZip(type: Zip) {
