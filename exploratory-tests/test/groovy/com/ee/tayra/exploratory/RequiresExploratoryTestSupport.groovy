@@ -9,7 +9,6 @@ import com.mongodb.CommandResult
 import com.mongodb.DB
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
-
 public class RequiresExploratoryTestSupport extends Specification {
 
   private static final ConnectionFactory factory = ConnectionFactory.instance();
@@ -80,9 +79,32 @@ public class RequiresExploratoryTestSupport extends Specification {
     run('db.thing.insert({name:"One"})', EELabDb)
   }
 
+  protected void addExtraNestedDataTo(MongoClient mongoNode) {
+    DB PeopleDb = mongoNode.getDB("People")
+    for (int index = 1; index <= 10; index++) {
+      def name = 'name:{first:"ABC",last:"XYZ"}'
+      def address = "address:{street:'MG Road',flatNo:$index}"
+      def data = "{orderNo:$index,$name,$address}"
+      def query = "db.Information.insert($data)"
+      run(query, PeopleDb)
+    }
+  }
+
   protected void deleteDataFrom(MongoClient mongoNode) {
-    mongoNode.getDB("DL").dropDatabase()
-    mongoNode.getDB("Tayra").dropDatabase()
-    mongoNode.getDB("EELab").dropDatabase()
+	  mongoNode.getDB("DL").dropDatabase()
+	  mongoNode.getDB("Tayra").dropDatabase()
+	  mongoNode.getDB("EELab").dropDatabase()
+  }
+  protected void deleteExtraDataFrom(MongoClient mongoNode) {
+    mongoNode.getDB("People").dropDatabase()
+  }
+
+  protected assertTargetNodeContainsAllDocuments() {
+    tgt.getDB("DL").getCollection("profile").count == 1 &&
+    tgt.getDB("DL").getCollection("thing").count() == 1 &&
+    tgt.getDB("Tayra").getCollection("profile").count() == 1 &&
+    tgt.getDB("Tayra").getCollection("thing").count() == 1 &&
+    tgt.getDB("EELab").getCollection("profile").count() == 1 &&
+    tgt.getDB("EELab").getCollection("thing").count() == 1
   }
 }

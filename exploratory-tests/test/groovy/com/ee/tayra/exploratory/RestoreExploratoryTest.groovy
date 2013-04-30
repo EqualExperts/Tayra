@@ -91,15 +91,6 @@ class RestoreExploratoryTest extends RequiresExploratoryTestSupport {
       assertTargetNodeContainsAllDocuments()
   }
 
-  private assertTargetNodeContainsAllDocuments() {
-    tgt.getDB("DL").getCollection("profile").count == 1 && 
-    tgt.getDB("DL").getCollection("thing").count() == 1 &&
-    tgt.getDB("Tayra").getCollection("profile").count() == 1 &&
-    tgt.getDB("Tayra").getCollection("thing").count() == 1 &&
-    tgt.getDB("EELab").getCollection("profile").count() == 1 &&
-    tgt.getDB("EELab").getCollection("thing").count() == 1
-  }
-
   private restoreAndCaptureConsoleOutput(def context) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintStream ps = new PrintStream(baos);
