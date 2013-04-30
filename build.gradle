@@ -208,28 +208,45 @@ task unzip(type: Copy) {
 	into outputDir
 }
 
-task uberjar(type: Jar, dependsOn:[test]) {
-	baseName = "${project.archivesBaseName}-uber"
+//task uberjar(type: Jar, dependsOn:[test]) {
+//	baseName = "${project.archivesBaseName}-uber"
+//
+//	from zipTree("${libsDir}/${project.archivesBaseName}.jar")
+//	from files(sourceSets.test.output)
+//	from configurations.compile.asFileTree.files.collect { zipTree(it) }
+//	from configurations.testCompile.asFileTree.files.collect { zipTree(it) }
+//	from files("${projectDir}/connection.properties")
+//
+//	destinationDir = project.distsDir
+//	manifest {
+//		attributes 'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner'
+//	}
+//}
 
-	from zipTree("${libsDir}/${project.archivesBaseName}.jar")
-	from files(sourceSets.test.output)
-	from configurations.compile.asFileTree.files.collect { zipTree(it) }
-	from configurations.testCompile.asFileTree.files.collect { zipTree(it) }
-	from files("${projectDir}/connection.properties")
+//task ('exploratory-test') << {
+//	
+//	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-uber.jar"))
+//	javaexec {
+//		systemProperties['portPrefix'] = project.ext.portPrefix
+//		main = '-jar';
+//		args jarPath }
+//}
 
-	destinationDir = project.distsDir
-	manifest {
-		attributes 'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner'
+task ('exploratory-test', dependsOn:'unzip') << {
+	def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+	if(!zipFile.exists()) {
+		throw new RuntimeException(">>> Please run gradle to build the binary distributable ${project.archivesBaseName}.zip first!")
 	}
-}
+	def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
+	runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
+	runtimeClasspath = runtimeClasspath + fileTree(dir: "$projectDir", include: 'connection.properties')
+	runtimeClasspath = runtimeClasspath + files(configurations.testCompile.asPath.split(File.pathSeparator))
 
-task ('exploratory-test') << {
-	
-	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-uber.jar"))
 	javaexec {
 		systemProperties['portPrefix'] = project.ext.portPrefix
-		main = '-jar';
-		args jarPath }
+		main = 'com.ee.tayra.exploratory.ExploratoryTestRunner'
+		classpath = runtimeClasspath
+	}
 }
 
 task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
@@ -383,4 +400,4 @@ def getProcessId(def processName, def os) {
 	processIdToKill
 }
 
-build.dependsOn = ['check', 'createTestJar', 'uberjar', 'distribute', 'smoke-test']
+build.dependsOn = ['check', 'createTestJar',/* 'uberjar',*/ 'distribute', 'smoke-test']
