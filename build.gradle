@@ -12,7 +12,7 @@ apply plugin: 'findbugs' //for static code analysis
 apply plugin: 'pmd'
 
 apply plugin: 'application'
-
+//mainClassName = 'com.ee.tayra.exploratory.ExploratoryTestRunner'
 defaultTasks 'clean', 'build'
 
 sourceCompatibility = '1.6'
@@ -193,17 +193,6 @@ task createTestJar(type: Jar, dependsOn: [test]) {
 		baseName = "${project.archivesBaseName}-test"
 			destinationDir = project.distsDir
 			from sourceSets.test.output
-
-	String classpath = fileTree(dir: "$libsDir", include: '*.jar')
-	classpath = classpath + fileTree(dir:"$unmanagedTestLibDir", include: '*.jar')
-	classpath = classpath + fileTree(dir:"$projectDir", include: '*.properties')
-	
-		manifest {
-			attributes (
-			'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner',
-			'Class-Path': classpath
-			)
-		}
 }
 
 task createDeployZip(type: Zip) {
@@ -219,12 +208,23 @@ task unzip(type: Copy) {
 	into outputDir
 }
 
-task ('exploratory-test', dependsOn: unzip) << {
-	def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
-	if(!zipFile.exists()) {
-		throw new RuntimeException(">>> Please run gradle to build the binary distributable ${project.archivesBaseName}.zip first!")
+task uberjar(type: Jar, dependsOn:[test]) {
+	baseName = "${project.archivesBaseName}-uber"
+
+	from zipTree("${libsDir}/${project.archivesBaseName}.jar")
+	from files(sourceSets.test.output)
+	from configurations.compile.asFileTree.files.collect { zipTree(it) }
+	from configurations.testCompile.asFileTree.files.collect { zipTree(it) }
+	from files("${projectDir}/connection.properties")
+
+	destinationDir = project.distsDir
+	manifest {
+		attributes 'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner'
 	}
-	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-test.jar"))
+}
+
+task ('exploratory-test') << {
+	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-uber.jar"))
 	javaexec { main = '-jar'; args jarPath }
 }
 
@@ -379,4 +379,4 @@ def getProcessId(def processName, def os) {
 	processIdToKill
 }
 
-build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
+build.dependsOn = ['check', 'createTestJar', 'uberjar', 'distribute', 'smoke-test']
