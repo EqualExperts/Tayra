@@ -1,19 +1,13 @@
 package com.ee.tayra.io.reader.nio
 
-import java.io.Reader
-import java.util.Iterator
-import com.ee.tayra.io.reader.nio.Chunk
-import com.ee.tayra.io.reader.nio.Chunker
-import com.ee.tayra.io.reader.nio.Chunker.ChunkIterator
-import com.ee.tayra.io.reader.nio.Chunk.DocumentIterator
-import com.ee.tayra.io.reader.DocumentReader
-import com.ee.tayra.io.reader.ReadNotifier
-import spock.lang.Ignore
 import spock.lang.Specification
 
+import com.ee.tayra.io.reader.DocumentReader
+import com.ee.tayra.io.reader.ReadNotifier
+import com.ee.tayra.io.reader.nio.Chunk.DocumentIterator
+import com.ee.tayra.io.reader.nio.Chunker.ChunkIterator
 
 class MemoryMappedDocumentReaderSpecs extends Specification {
-
 	private static final String NEW_LINE = System.getProperty('line.separator')
 	private ReadNotifier mockNotifier
 	private DocumentReader reader
@@ -43,10 +37,10 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 
 	def readsADocument() {
 		when: 'read is invoked'
-		   String document = reader.readDocument()
+			String document = reader.readDocument()
 
 		then: 'the document is read'
-		    document == this.document
+			document == this.document
 	}
 
 	def notifiesBeforeStartingToReadADocument() {
@@ -55,5 +49,18 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 
 		then: 'a notification of successful read is given'
 			1 * mockNotifier.notifyReadStart("")
+	}
+
+	def shoutsWhenImproperBufferSizeIsSupplied() {
+		given: 'an invalid String'
+			String improperBufferSize = 'MB1'
+
+		when: 'reader is initialized'
+			reader = new MemoryMappedDocumentReader(file.absolutePath, improperBufferSize)
+			reader.notifier = mockNotifier
+
+		then: 'exception is thrown as'
+			def problem = thrown(IllegalArgumentException)
+			problem.message == "Don't know how to represent " + improperBufferSize
 	}
 }

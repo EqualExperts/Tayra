@@ -39,6 +39,7 @@ import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.reader.FileDocumentReader
 import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
 import com.ee.tayra.io.writer.Replayer;
+import com.ee.tayra.utils.DataUnit;
 import com.mongodb.MongoClient
 
 abstract class RestoreFactory {
@@ -68,7 +69,7 @@ abstract class RestoreFactory {
           usingNamespace config.sNs
         }
         if(config.sExclude) {
-             usingExclude()
+          usingExclude()
         }
       }
     }
@@ -76,9 +77,17 @@ abstract class RestoreFactory {
 
   protected DocumentReader createReader(final String fileName){
     File file = new File(fileName)
-    DocumentReader reader = bufferSize ? new MemoryMappedDocumentReader(fileName, bufferSize) :
-        new FileDocumentReader(new BufferedReader(new FileReader(file)))
-    reader
+    if (bufferSizeSpecified()) {
+      return new MemoryMappedDocumentReader(fileName, bufferSize)
+    } else {
+      return new FileDocumentReader(new BufferedReader(new FileReader(file)))
+    }
+  }
+
+  private boolean bufferSizeSpecified() {
+    boolean bufferSpecified = (bufferSize != null &&
+      bufferSize.toString() != 'true' && (bufferSize.length() > 0))
+    return bufferSpecified
   }
 
   public abstract Replayer createWriter()

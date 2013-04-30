@@ -1,4 +1,4 @@
-package com.ee.tayra.command.restore
+ package com.ee.tayra.command.restore
 
 import spock.lang.Specification
 
@@ -46,7 +46,7 @@ class RestoreFactorySpecs extends Specification{
 		expect:'readers to be of type'
 			factory.createReader(fileName).getClass() == klass
 
-		where:''
+		where:'appropriate reader is created'
 			bufferSize | klass
 			   '8MB'   | MemoryMappedDocumentReader
 			    ''     | FileDocumentReader
