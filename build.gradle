@@ -224,8 +224,12 @@ task uberjar(type: Jar, dependsOn:[test]) {
 }
 
 task ('exploratory-test') << {
+	
 	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-uber.jar"))
-	javaexec { main = '-jar'; args jarPath }
+	javaexec {
+		systemProperties['portPrefix'] = project.ext.portPrefix
+		main = '-jar';
+		args jarPath }
 }
 
 task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
