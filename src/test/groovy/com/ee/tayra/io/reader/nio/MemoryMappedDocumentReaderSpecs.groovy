@@ -25,7 +25,7 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 			writer.write document
 			writer.write NEW_LINE
 		}
-		String bufferSize ='1KB'
+		long bufferSize = 1024
 		reader = new MemoryMappedDocumentReader(file.absolutePath, bufferSize)
 		reader.notifier = mockNotifier
 	}
@@ -51,16 +51,4 @@ class MemoryMappedDocumentReaderSpecs extends Specification {
 			1 * mockNotifier.notifyReadStart("")
 	}
 
-	def shoutsWhenImproperBufferSizeIsSupplied() {
-		given: 'an invalid String'
-			String improperBufferSize = 'MB1'
-
-		when: 'reader is initialized'
-			reader = new MemoryMappedDocumentReader(file.absolutePath, improperBufferSize)
-			reader.notifier = mockNotifier
-
-		then: 'exception is thrown as'
-			def problem = thrown(IllegalArgumentException)
-			problem.message == "Don't know how to represent " + improperBufferSize
-	}
 }

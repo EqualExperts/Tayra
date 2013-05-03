@@ -1,5 +1,7 @@
 package com.ee.tayra.utils
 
+import javax.crypto.IllegalBlockSizeException;
+
 import spock.lang.Specification
 import static DataUnit.*
 
@@ -15,11 +17,11 @@ class DataUnitSpecs extends Specification{
 			unit.toLongValue() == expectedlongValue
 
 		where:'default values to b'
-		   dataUnit |  expectedValue   | expectedByteFactor |  expectedlongValue
-			   B    |         1        |         1          |         1
-			  KB    |         1        |       1024         |       1024
-			  MB    |         1        |    1024 * 1024     |    1024 * 1024
-			  GB    |         1        | 1024 * 1024 * 1024 | 1024 * 1024 * 1024
+		 dataUnit |  expectedValue   | expectedByteFactor |  expectedlongValue
+			 B    |         1        |         1          |         1
+			KB    |         1        |       1024         |       1024
+			MB    |         1        |    1024 * 1024     |    1024 * 1024
+			GB    |         1        | 1024 * 1024 * 1024 | 1024 * 1024 * 1024
 	}
 
 	def shoutsWhenEmptyStringIsPassed() {
@@ -32,7 +34,7 @@ class DataUnitSpecs extends Specification{
 	}
 
 	def shoutsWhenNullIsPassed() {
-		when:'null is pased'
+		when:'null is passed'
 			from(null)
 
 		then:'error message should be thrown as'
@@ -46,7 +48,7 @@ class DataUnitSpecs extends Specification{
 			def unit = from('5MB')
 
 		then:'equivalent long value is obtained'
-		    unit.toLongValue() == 5 * 1024 * 1024
+			unit.toLongValue() == 5 * 1024 * 1024
 	}
 
 	def returnsAppropriateDataUnit() {
@@ -59,38 +61,50 @@ class DataUnitSpecs extends Specification{
 			unit.toLongValue() == longValue
 
 		where:'default values to b'
-			stringValue |  value  |     byteFactor     |     longValue
-			     '9B'   |    9    |         1          |         9
-			    '8KB'   |    8    |       1024         |       8 * 1024
-			    '7MB'   |    7    |    1024 * 1024     |    7 * 1024 * 1024
-			    '6GB'   |    6    | 1024 * 1024 * 1024 | 6 * 1024 * 1024 * 1024
+		  stringValue |  value  |     byteFactor     |     longValue
+			   '9B'   |    9    |         1          |         9
+			  '8KB'   |    8    |       1024         |       8 * 1024
+			  '7MB'   |    7    |    1024 * 1024     |    7 * 1024 * 1024
+			  '6GB'   |    6    | 1024 * 1024 * 1024 | 6 * 1024 * 1024 * 1024
 	}
 
-    def areEqual() {
-      given:'Data Units'
-        def unitOne = from(valueOne)
-        def unitTwo = from(valueTwo)
+	def areEqual() {
+		given:'Data Units'
+			def unitOne = from(valueOne)
+			def unitTwo = from(valueTwo)
 
-      expect:'default values are fetched'
-        unitOne.equals(unitTwo) == outcome
+		expect:'default values are fetched'
+			unitOne.equals(unitTwo) == outcome
 
-      where:'default values to b'
-        valueOne | valueTwo | outcome
-          '9B'   |    '9B'  |  true
-          '7MB'  |    '7GB' |  false
-    }
+		where:'default values to b'
+		  valueOne | valueTwo | outcome
+			'9B'   |    '9B'  |  true
+			'7MB'  |    '7GB' |  false
+	}
 
-    def areEqualUsingOperator() {
-      given:'Data Units'
-        def unitOne = from(valueOne)
-        def unitTwo = from(valueTwo)
+	def areEqualUsingOperator() {
+		given:'Data Units'
+			def unitOne = from(valueOne)
+			def unitTwo = from(valueTwo)
 
-      expect:'default values are fetched'
-        outcome == (unitOne == unitTwo)
+		expect:'default values are fetched'
+			outcome == (unitOne == unitTwo)
 
-      where:'default values to b'
-        valueOne | valueTwo | outcome
-          '9B'   |   '9B'   |  true
-          '7MB'  |   '7GB'  |  false
-    }
+		where:'default values to b'
+		  valueOne | valueTwo | outcome
+		  	'9B'   |   '9B'   |  true
+			'7MB'  |   '7GB'  |  false
+	}
+
+	def shoutsWhenImproperBufferSizeIsSupplied() {
+		given: 'invalid buffer size'
+			def invalidBufferSize = 'MB1'
+
+		when: 'invalid buffer size is passed'
+			from(invalidBufferSize)
+
+		then:'error message should be thrown as'
+			def problem = thrown(IllegalArgumentException)
+			problem.message == "Don't know how to represent " + invalidBufferSize
+	}
 }

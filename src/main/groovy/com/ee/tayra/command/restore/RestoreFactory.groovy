@@ -78,7 +78,9 @@ abstract class RestoreFactory {
   protected DocumentReader createReader(final String fileName){
     File file = new File(fileName)
     if (bufferSizeSpecified()) {
-      return new MemoryMappedDocumentReader(fileName, bufferSize)
+      DataUnit dataUnit = DataUnit.from(bufferSize);
+      long chunkSize = dataUnit.toLongValue();
+      return new MemoryMappedDocumentReader(fileName, chunkSize);
     } else {
       return new FileDocumentReader(new BufferedReader(new FileReader(file)))
     }

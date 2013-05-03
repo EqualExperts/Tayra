@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import com.ee.tayra.io.reader.DocumentReader;
 import com.ee.tayra.io.reader.ReadNotifier;
-import com.ee.tayra.utils.DataUnit;
 
 public class MemoryMappedDocumentReader implements DocumentReader {
 
@@ -15,11 +14,9 @@ public class MemoryMappedDocumentReader implements DocumentReader {
   private ReadNotifier notifier;
 
   public MemoryMappedDocumentReader(final String fileName,
-      final String memoryBufferSize) throws IOException {
+      final long chunkSize) throws IOException {
     notifier = ReadNotifier.NONE;
-    DataUnit dataUnit = DataUnit.from(memoryBufferSize);
-    long bufferSize = dataUnit.toLongValue();
-    chunker = new Chunker(fileName, bufferSize);
+    chunker = new Chunker(fileName, chunkSize);
     chunkIterator = chunker.iterator();
   }
 

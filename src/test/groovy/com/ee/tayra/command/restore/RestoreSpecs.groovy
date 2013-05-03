@@ -333,7 +333,8 @@ class RestoreSpecs extends Specification {
 		  }
 
 	  and: 'the reader is injected'
-		DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath, '2MB')
+	  	long bufferSize = 4096
+		DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath, bufferSize)
 		context.setVariable('reader', source)
 
 	  when: 'restore runs'

@@ -56,7 +56,8 @@ public class FileBasedTimestampRepository implements TimestampRepository {
     }
 
     @Override
-    public final void save(final String tstamp) throws IOException {
+    public final synchronized void save(final String tstamp)
+      throws IOException {
        final FileWriter fileWriter = new FileWriter(timestampFile);
        fileWriter.write(tstamp);
        fileWriter.flush();
