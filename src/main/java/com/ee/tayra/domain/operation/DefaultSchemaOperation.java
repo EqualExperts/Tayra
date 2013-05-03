@@ -34,7 +34,6 @@ package com.ee.tayra.domain.operation;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.util.JSON;
 
 class DefaultSchemaOperation extends Operation {
 
@@ -55,7 +54,7 @@ class DefaultSchemaOperation extends Operation {
     String dbCommand = dbInfo[1];
     if ("$cmd".equals(dbCommand)) {
       DB db = mongo.getDB(dbName);
-      DBObject spec = (DBObject) JSON.parse(document.get("o").toString());
+      DBObject spec = (DBObject) document.get("o");
       SchemaOperation schemaOperation = schemaOperationsFactory.from(spec);
       schemaOperation.doExecute(db, spec);
     }

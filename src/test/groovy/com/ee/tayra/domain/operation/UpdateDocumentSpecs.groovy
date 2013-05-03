@@ -74,10 +74,10 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -101,10 +101,10 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, prefixedCollectionName, o2, o) as DBObject
 		
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -128,10 +128,10 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(anotherDb, collectionName, o2, o) as DBObject
 
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -161,10 +161,10 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 						
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -194,10 +194,10 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 			
 		then: 'it complains that document to be updated does not exist'
 			def problem = thrown(UpdateFailed)

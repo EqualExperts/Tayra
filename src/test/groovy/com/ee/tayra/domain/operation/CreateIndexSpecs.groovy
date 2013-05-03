@@ -36,13 +36,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.pop()
 							.add('name', 'roll_1')
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 			
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)
@@ -60,13 +60,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.pop()
 							.add('name', 'name_1_age_1')
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 			
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)
@@ -83,13 +83,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.pop()
 							.add('name', 'name.fname_1')
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 			
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 			
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)
@@ -107,13 +107,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.add('name', 'roll_1')
 							.add('unique', true)
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 			
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)
@@ -132,13 +132,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.add('name', 'roll_1')
 							.add('sparse', true)
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 			
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)
@@ -157,13 +157,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.add('unique', true)
 							.add('sparse', true)
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 			
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)
@@ -182,13 +182,13 @@ class CreateIndexSpecs extends RequiresMongoConnection {
 							.add('unique', true)
 							.add('dropDups', true)
 						.get()
-			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as String
+			def indexDocument = MongoUtils.insertDocument(dbName, "system.indexes", o) as DBObject
 
 		and: 'an insert document operation to create index'
 			operation = new InsertDocument(standalone)
 			
 		when: 'the operation runs'
-			operation.execute(indexDocument)
+			operation.execute(indexDocument.toString())
 		
 		then: 'index should be created'
 			assertThatIndexIsPresentOnCollection(dbName, collectionName, o)

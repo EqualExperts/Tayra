@@ -4,6 +4,7 @@ import groovy.json.JsonBuilder
 import groovy.transform.*
 
 import org.bson.types.BSONTimestamp
+
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 import com.mongodb.util.JSON
@@ -30,7 +31,18 @@ class DocumentBuilder {
 			o JSON.serialize(o)
 		}
 	}
-
+	
+	def objectStructure() {
+		BasicDBObjectBuilder
+			.start()
+				.add('ts', ts)
+				.add('h', h)
+				.add('op', op)
+				.add('ns', ns)
+				.add('o', o)
+			.get()
+	}
+	
 	def asType(Class type) {
 		if(type == String) {
 			def builder = new JsonBuilder()
@@ -38,8 +50,9 @@ class DocumentBuilder {
 			return builder.toString()
 		}
 		if(type == DBObject) {
-			return (DBObject) JSON.parse(this as String)
+			return objectStructure()
 		}
 		throw new IllegalArgumentException("Cannot convert to $type")
 	}
+
 }

@@ -30,13 +30,9 @@
  ******************************************************************************/
 package com.ee.tayra.io;
 
-import static fj.data.List.list;
-
 import com.ee.tayra.io.listener.CopyListener;
 import com.ee.tayra.io.reader.ReadNotifier;
 import com.ee.tayra.io.writer.WriteNotifier;
-
-import fj.Effect;
 
 public class Notifier implements ReadNotifier, WriteNotifier {
 
@@ -48,63 +44,45 @@ public class Notifier implements ReadNotifier, WriteNotifier {
 
   @Override
   public final void notifyReadSuccess(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onReadSuccess(document);
-      }
-    });
+    for (CopyListener listener : listeners) {
+      listener.onReadSuccess(document);
+    }
   }
 
   @Override
   public final void notifyWriteSuccess(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onWriteSuccess(document);
-      }
-    });
+    for (CopyListener listener : listeners) {
+      listener.onWriteSuccess(document);
+    }
   }
 
   @Override
   public final void notifyWriteFailure(final String document,
                                        final Throwable problem) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onWriteFailure(document, problem);
-      }
-    });
+    for (CopyListener listener : listeners) {
+      listener.onWriteFailure(document, problem);
+    }
   }
 
   @Override
   public final void notifyReadFailure(final String document,
                                       final Throwable problem) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
+    for (CopyListener listener : listeners) {
         listener.onReadFailure(document, problem);
-      }
-    });
+    }
   }
 
   @Override
   public final void notifyReadStart(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
-        listener.onReadStart(document);
-      }
-    });
+    for (CopyListener listener : listeners) {
+      listener.onReadStart(document);
+    }
   }
 
   @Override
   public final void notifyWriteStart(final String document) {
-    list(listeners).foreach(new Effect<CopyListener>() {
-      @Override
-      public void e(final CopyListener listener) {
+    for (CopyListener listener : listeners) {
         listener.onWriteStart(document);
-      }
-    });
+    }
   }
 }

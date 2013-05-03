@@ -32,7 +32,6 @@ package com.ee.tayra.domain.operation;
 
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.util.JSON;
 
 class InsertDocument extends Operation {
 
@@ -49,8 +48,7 @@ class InsertDocument extends Operation {
   protected final void doExecute(final DBObject document) {
     final String ns = (String) document.get("ns");
     int index = ns.indexOf(".");
-    DBObject spec = (DBObject) JSON.parse(document.get("o").toString());
-
+    DBObject spec = (DBObject) document.get("o");
     if (index != -1) {
       if (ns.contains(INDEX_NAMESPACE)) {
       String indexNamespace = spec.get("ns").toString();

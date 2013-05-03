@@ -80,10 +80,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.add('name', updatedName)
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -108,10 +108,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -138,10 +138,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -166,10 +166,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()
@@ -200,10 +200,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 		
 		then: 'updated document should exist'
 			categories.add('test category')
@@ -233,10 +233,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.pop()
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 		
 		then: 'updated document should exist'
 			categories.add('test category 1')
@@ -267,10 +267,10 @@ class UpdateOperatorSpecs extends RequiresMongoConnection {
 							.pop()							
 						.get()
 			
-			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as String
+			def document = MongoUtils.updateDocument(dbName, collectionName, o2, o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'updated document should exist'
 			def expectedDocument = new BasicDBObjectBuilder()

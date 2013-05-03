@@ -33,7 +33,6 @@ package com.ee.tayra.domain.operation;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
-import com.mongodb.util.JSON;
 
 class DeleteDocument extends Operation {
 
@@ -50,7 +49,7 @@ class DeleteDocument extends Operation {
     if (index != -1) {
       String dbName = ns.substring(0, index);
       String collectionName = ns.substring(index + 1, ns.length());
-      DBObject deleteSpec = (DBObject) JSON.parse(document.get("o").toString());
+      DBObject deleteSpec = (DBObject) document.get("o");
       WriteResult writeResult = mongo.getDB(dbName)
                                      .getCollection(collectionName)
                                      .remove(deleteSpec);

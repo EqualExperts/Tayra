@@ -5,6 +5,7 @@ import org.bson.types.ObjectId
 import spock.lang.*
 
 import com.mongodb.BasicDBObjectBuilder
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient
 
 class UserSpecs extends RequiresMongoConnection {
@@ -27,13 +28,13 @@ class UserSpecs extends RequiresMongoConnection {
 						.add('readOnly', false)
 						.add('pwd', 'e78333b96cbdc20a67432095f4741222')
 					.get()
-			def document = MongoUtils.insertDocument(adminDBName, userCollection, o) as String
+			def document = MongoUtils.insertDocument(adminDBName, userCollection, o) as DBObject
 
 		and: 'an insert document operation for adding a user'
 			def operation = new InsertDocument(standalone)
 
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 			
 		then: 'the user should be able to login'
 			authStandaloneTwo.getDB(adminDBName).isAuthenticated() == false
@@ -54,7 +55,7 @@ class UserSpecs extends RequiresMongoConnection {
 						.start()
 							.add('user', username)
 						.get()
-			def document = MongoUtils.deleteDocument(adminDBName, userCollection,o) as String
+			def document = MongoUtils.deleteDocument(adminDBName, userCollection,o) as DBObject
 			
 		and: 'an delete document operation for deleting a user'
 			def operation = new DeleteDocument(standalone)
@@ -63,7 +64,7 @@ class UserSpecs extends RequiresMongoConnection {
 			standalone.getDB(adminDBName).addUser(username, password.toCharArray())
 	
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 	
 		then: 'user document should not be present'
 			standalone.getDB(adminDBName).getCollection(userCollection).findOne(o) == null

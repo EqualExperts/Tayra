@@ -52,10 +52,10 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as String
+			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
 		
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'document should not be present'
 			assertThatDocumentIsNotPresentInCollection(dbName, collectionName, documentToBeDeleted)
@@ -68,10 +68,10 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, prefixedCollectionName,o) as String
+			def document = MongoUtils.deleteDocument(dbName, prefixedCollectionName,o) as DBObject
 		
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 		
 		then: 'document should not be present'
 			assertThatDocumentIsNotPresentInCollection(dbName, prefixedCollectionName, documentToBeDeleted)
@@ -84,10 +84,10 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', objId)
 						.get()
-			def document = MongoUtils.deleteDocument(anotherDb, collectionName,o) as String
+			def document = MongoUtils.deleteDocument(anotherDb, collectionName,o) as DBObject
 			
 		when: 'the operation runs'
-			operation.execute(document)
+			operation.execute(document.toString())
 
 		then: 'document should not be present'
 			assertThatDocumentIsNotPresentInCollection(anotherDb, collectionName, documentToBeDeleted)
@@ -110,10 +110,10 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 					
 			standalone.getDB(dbName).getCollection(collectionName).insert(documentToBeDeleted)
 		
-			def document = MongoUtils.deleteDocument(dbName, collectionName, documentToBeDeleted) as String
+			def document = MongoUtils.deleteDocument(dbName, collectionName, documentToBeDeleted) as DBObject
 
 		when: 'the operation runs'
-			operation.execute(document as String)
+			operation.execute(document.toString())
 
 		then: 'document should not be present'
 			assertThatDocumentIsNotPresentInCollection(dbName, collectionName, documentToBeDeleted)
@@ -127,10 +127,10 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
 						.start()
 							.add('_id', absentObjId)
 						.get()
-			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as String
+			def document = MongoUtils.deleteDocument(dbName, collectionName,o) as DBObject
 		
 		when: 'the operation runs'
-				operation.execute(document)
+				operation.execute(document.toString())
 				
 		then: 'it complains that document to be deleted does not exist'
 			def problem = thrown(DeleteFailed)
