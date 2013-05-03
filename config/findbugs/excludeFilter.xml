@@ -239,4 +239,10 @@
             <Bug code="SE_NO_SERIALVERSIONID" />
         </Not>
     </Match>
+    <Match>
+        <Class name="com.ee.tayra.utils.DataUnit" />
+        <Not>
+            <Bug code="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" />
+        </Not>
+    </Match>
 </FindBugsFilter>

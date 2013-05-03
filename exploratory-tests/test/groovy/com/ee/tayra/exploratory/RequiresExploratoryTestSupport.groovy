@@ -9,7 +9,7 @@ import com.mongodb.CommandResult
 import com.mongodb.DB
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
-public class RequiresExploratoryTestSupport extends Specification {
+public abstract class RequiresExploratoryTestSupport extends Specification {
 
   private static final ConnectionFactory factory = ConnectionFactory.instance();
   static MongoClient src

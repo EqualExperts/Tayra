@@ -65,4 +65,32 @@ class DataUnitSpecs extends Specification{
 			    '7MB'   |    7    |    1024 * 1024     |    7 * 1024 * 1024
 			    '6GB'   |    6    | 1024 * 1024 * 1024 | 6 * 1024 * 1024 * 1024
 	}
+
+    def areEqual() {
+      given:'Data Units'
+        def unitOne = from(valueOne)
+        def unitTwo = from(valueTwo)
+
+      expect:'default values are fetched'
+        unitOne.equals(unitTwo) == outcome
+
+      where:'default values to b'
+        valueOne | valueTwo | outcome
+          '9B'   |    '9B'  |  true
+          '7MB'  |    '7GB' |  false
+    }
+
+    def areEqualUsingOperator() {
+      given:'Data Units'
+        def unitOne = from(valueOne)
+        def unitTwo = from(valueTwo)
+
+      expect:'default values are fetched'
+        outcome == (unitOne == unitTwo)
+
+      where:'default values to b'
+        valueOne | valueTwo | outcome
+          '9B'   |   '9B'   |  true
+          '7MB'  |   '7GB'  |  false
+    }
 }
