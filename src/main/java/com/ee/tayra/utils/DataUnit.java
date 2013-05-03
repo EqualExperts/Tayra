@@ -16,7 +16,7 @@ public final class DataUnit {
     public static final DataUnit MB = new DataUnit(1, 1024, KB);
     public static final DataUnit GB = new DataUnit(1, 1024, MB);
 
-    private static final String regex = "^([0-9]+)(.*)$";
+    private static final String regex = "^([0-9]+)(.+)$";
     private static final Pattern numberPattern = Pattern.compile(regex);
     public static final int PRIME = 31;
 

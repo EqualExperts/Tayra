@@ -18,11 +18,6 @@ class ChunkSpecs extends Specification{
 	private Iterator<String> documentIterator
 	private File file
 
-	static partialDocumentOne = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street}}"'
-	static partialDocumentTwo = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "123 Fake Street}}"'
-	static partialDocumentThree = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street'
-	static partialDocumentFour = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , '
-
 
 	def setup() {
 		file = File.createTempFile('test', 'out')
@@ -66,15 +61,4 @@ class ChunkSpecs extends Specification{
 			problem.message == "remove not supported"
 	}
 
-	def notifiesWhenADocumentIsPartial() {
-		expect: 'partial documents are identified'
-			isPartial == documentIterator.isPartial(document)
-
-		where:
-			document                       | isPartial
-			partialDocumentOne             | true
-			partialDocumentTwo             | true
-			partialDocumentThree           | true
-			partialDocumentFour            | true
-	}
 }

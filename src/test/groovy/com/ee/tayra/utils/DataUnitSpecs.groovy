@@ -107,4 +107,16 @@ class DataUnitSpecs extends Specification{
 			def problem = thrown(IllegalArgumentException)
 			problem.message == "Don't know how to represent " + invalidBufferSize
 	}
+
+	def test() {
+		given: 'invalid buffer size'
+			def invalidBufferSize = '8'
+
+		when: 'invalid buffer size is passed'
+			from(invalidBufferSize)
+
+		then:'error message should be thrown as'
+			def problem = thrown(IllegalArgumentException)
+			problem.message == "Don't know how to represent " + invalidBufferSize
+	}
 }

@@ -5,33 +5,62 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Iterator;
 
+import com.mongodb.util.JSON;
+import com.mongodb.util.JSONParseException;
+
 class Chunker implements Iterable<Chunk> {
 
   private static final long START_POSITION = 0L;
   private RandomAccessFile sourceFile;
   private File source = null;
   private static long fileSize;
-  private static PartialDocumentHandler partialDocumentHandler =
-      new PartialDocumentHandler();
+  private static PartialDocumentHandler handler = new PartialDocumentHandler();
   private final long chunkSize;
+  private Iterator<Chunk> chunkIterator;
+  private Iterator<String> documentIterator;
+  private String document = "";
 
   public Chunker(final String fileName, final long bufferSize)
-    throws IOException {
+      throws IOException {
     source = new File(fileName);
     sourceFile = new RandomAccessFile(source, "r");
     this.chunkSize = bufferSize;
     fileSize = sourceFile.length();
     setFilePointerTo(START_POSITION);
+    chunkIterator = iterator();
   }
 
-  private void setFilePointerTo(final long newPosition)
-      throws IOException {
+  private void setFilePointerTo(final long newPosition) throws IOException {
     sourceFile.seek(newPosition);
   }
 
   @Override
   public final Iterator<Chunk> iterator() {
     return new ChunkIterator(sourceFile, chunkSize);
+  }
+
+  public String getDocument() {
+    document = "";
+    do {
+      if (thereAreNoDocuments()) {
+        if (hasMoreChunks()) {
+          try {
+            Chunk chunk = chunkIterator.next();
+            documentIterator = chunk.iterator();
+          } catch (Exception problem) {
+            throw new RuntimeException(problem);
+          }
+        } else { // no more documents
+          return null;
+        }
+      }
+      try {
+        document += documentIterator.next();
+      } catch (Exception problem) {
+        throw new RuntimeException(problem);
+      }
+    } while (handler.isPartial(document));
+    return document.trim();
   }
 
   public final void close() throws IOException {
@@ -44,7 +73,7 @@ class Chunker implements Iterable<Chunk> {
     private final long chunkSize;
 
     public ChunkIterator(final RandomAccessFile sourceFile,
-      final long chunkSize) {
+        final long chunkSize) {
       this.sourceFile = sourceFile;
       this.chunkSize = chunkSize;
     }
@@ -68,7 +97,7 @@ class Chunker implements Iterable<Chunk> {
     public final Chunk next() {
       try {
         Chunk chunk = new Chunk(sourceFile.getChannel(), filePointer,
-            fileSize, chunkSize, partialDocumentHandler);
+            fileSize, chunkSize, handler);
         setFilePointerTo(filePointer + chunk.getReadSize());
         return chunk;
       } catch (IOException e) {
@@ -78,9 +107,17 @@ class Chunker implements Iterable<Chunk> {
 
     @Override
     public final void remove() {
-      throw new UnsupportedOperationException("remove chunk is not supported");
+      throw new UnsupportedOperationException(
+          "remove chunk is not supported");
     }
+  }
 
+  final boolean hasMoreChunks() {
+    return chunkIterator.hasNext();
+ }
+
+  final boolean thereAreNoDocuments() {
+    return (documentIterator == null || !documentIterator.hasNext());
   }
 
   static class PartialDocumentHandler {
@@ -95,6 +132,14 @@ class Chunker implements Iterable<Chunk> {
       partialDoc = "";
       return completeDocument;
     }
-  }
 
+    public boolean isPartial(final String document) {
+      try {
+        JSON.parse(document);
+        return false;
+      } catch (JSONParseException ex) {
+        return true;
+      }
+    }
+  }
 }

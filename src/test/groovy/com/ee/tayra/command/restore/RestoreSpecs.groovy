@@ -325,7 +325,7 @@ class RestoreSpecs extends Specification {
 		  context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fBuffer=2MB'])
 
 	  and: 'a backupFile is given'
-	  	  String document = '{{"ts"}}'
+	  	  String document = '{{ts:1}}'
 		  def file = File.createTempFile('test', 'out')
 		  file.withWriter { writer ->
 			  writer.write document
@@ -341,7 +341,7 @@ class RestoreSpecs extends Specification {
 		new Restore(context).run()
 
 	  then: 'perform the restore operation'
-		1 * mockReplayer.replay('{{"ts"}}')
+		1 * mockReplayer.replay('{{ts:1}}')
 
 	  cleanup:
 	  	file.delete()

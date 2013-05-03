@@ -10,8 +10,6 @@ import java.nio.charset.CharsetDecoder;
 import java.util.Iterator;
 
 import com.ee.tayra.io.reader.nio.Chunker.PartialDocumentHandler;
-import com.mongodb.util.JSON;
-import com.mongodb.util.JSONParseException;
 
 class Chunk implements Iterable<String> {
 
@@ -55,7 +53,8 @@ class Chunk implements Iterable<String> {
       Charset charset = Charset.defaultCharset();
       CharsetDecoder decoder = charset.newDecoder();
       this.charBuffer = decoder.decode(chunk);
-      documents = charBuffer.toString().split("\\n");
+      documents = charBuffer.toString().split(
+          System.getProperty("line.separator"));
       documents[0] = handler.prependPartialDocumentTo(documents[0]);
     }
 
@@ -68,10 +67,10 @@ class Chunk implements Iterable<String> {
       return documents.length > index;
     }
 
-    private boolean isLastDocumentPartial() {
+    public boolean isLastDocumentPartial() {
       if (isLastDocument()) {
         String lastDocument = documents[index];
-        return isPartial(lastDocument);
+        return handler.isPartial(lastDocument);
       } else {
         return false;
       }
@@ -81,19 +80,10 @@ class Chunk implements Iterable<String> {
       return index == documents.length - 1;
     }
 
-    final boolean isPartial(final String document) {
-      try {
-        JSON.parse(document);
-        return false;
-      } catch (JSONParseException ex) {
-        return true;
-      }
-    }
-
     @Override
     public final String next() {
       try {
-        return documents[index++].trim();
+        return documents[index++];
       } catch (Exception e) {
         throw new IllegalStateException("Index Out of Bounds");
       }
