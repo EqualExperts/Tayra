@@ -30,10 +30,10 @@
  ******************************************************************************/
 package com.ee.tayra.command.backup
 
-import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.criteria.CriteriaBuilder
 import com.ee.tayra.io.listener.CopyListener;
 import com.ee.tayra.io.listener.MongoExceptionBubbler;
+import com.ee.tayra.io.listener.Notifier;
 import com.ee.tayra.io.listener.ProgressReporter;
 import com.ee.tayra.io.listener.Reporter;
 import com.ee.tayra.io.listener.timestamp.FileBasedTimestampRepository;

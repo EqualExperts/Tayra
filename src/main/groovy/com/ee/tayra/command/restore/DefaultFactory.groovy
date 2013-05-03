@@ -31,8 +31,8 @@
 package com.ee.tayra.command.restore
 
 import com.ee.tayra.domain.operation.Operations
-import com.ee.tayra.io.Notifier
 import com.ee.tayra.io.listener.CopyListener;
+import com.ee.tayra.io.listener.Notifier;
 import com.ee.tayra.io.listener.Reporter;
 import com.ee.tayra.io.listener.RestoreProgressReporter;
 import com.ee.tayra.io.reader.DocumentReader;

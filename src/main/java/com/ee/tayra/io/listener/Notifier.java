@@ -28,9 +28,8 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
-package com.ee.tayra.io;
+package com.ee.tayra.io.listener;
 
-import com.ee.tayra.io.listener.CopyListener;
 import com.ee.tayra.io.reader.ReadNotifier;
 import com.ee.tayra.io.writer.WriteNotifier;
 
