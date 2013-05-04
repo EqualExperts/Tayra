@@ -55,7 +55,7 @@ class DataUnitSpecs extends Specification{
 		given:'Data Units'
 			def unit = from(stringValue)
 
-		expect:'default values are fetched'
+		expect:'appropriate values are fetched'
 			unit.value() == value
 			unit.bytesFactor() == byteFactor
 			unit.toLongValue() == longValue
@@ -108,7 +108,7 @@ class DataUnitSpecs extends Specification{
 			problem.message == "Don't know how to represent " + invalidBufferSize
 	}
 
-	def test() {
+	def shoutsWhenUnitIsMissing() {
 		given: 'invalid buffer size'
 			def invalidBufferSize = '8'
 

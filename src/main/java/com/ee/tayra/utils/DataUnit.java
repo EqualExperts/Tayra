@@ -6,19 +6,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class DataUnit {
-  private final int bytesFactor;
-    private final int value;
-    private static final Map<String, DataUnit> cache
-          = new HashMap<String, DataUnit>();
-    public static final DataUnit NOTHING = new DataUnit(0, 1, null);
-    public static final DataUnit  B = new DataUnit(1, 1, NOTHING);
-    public static final DataUnit KB = new DataUnit(1, 1024, B);
-    public static final DataUnit MB = new DataUnit(1, 1024, KB);
-    public static final DataUnit GB = new DataUnit(1, 1024, MB);
+  public static final DataUnit NOTHING = new DataUnit(0, 1, null);
+  public static final DataUnit  B = new DataUnit(1, 1, NOTHING);
+  public static final DataUnit KB = new DataUnit(1, 1024, B);
+  public static final DataUnit MB = new DataUnit(1, 1024, KB);
+  public static final DataUnit GB = new DataUnit(1, 1024, MB);
 
-    private static final String regex = "^([0-9]+)(.+)$";
-    private static final Pattern numberPattern = Pattern.compile(regex);
-    public static final int PRIME = 31;
+  private static final String regex = "^([0-9]+)(.+)$";
+  private static final Pattern numberPattern = Pattern.compile(regex);
+  public static final int PRIME = 31;
+  private static final Map<String, DataUnit> cache
+            = new HashMap<String, DataUnit>();
+
+  private final int bytesFactor;
+  private final int value;
 
   private DataUnit(final int value, final DataUnit unit) {
     this(value, 1, unit);
