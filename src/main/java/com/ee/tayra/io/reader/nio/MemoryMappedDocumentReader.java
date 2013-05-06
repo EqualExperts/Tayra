@@ -19,12 +19,15 @@ public class MemoryMappedDocumentReader implements DocumentReader {
   @Override
   public final String readDocument() {
     notifier.notifyReadStart("");
+    String document = "";
     try {
-    String document = chunker.getDocument();
-    notifier.notifyReadSuccess(document);
-    return document;
+    document = chunker.getDocument();
+      if (document != null) {
+        notifier.notifyReadSuccess(document);
+        return document;
+      }
     } catch (Exception problem) {
-      notifier.notifyReadFailure(null, problem);
+      notifier.notifyReadFailure(document, problem);
     }
     return null;
   }

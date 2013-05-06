@@ -5,7 +5,7 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import spock.lang.Specification;
 
-public class PartialDocumentHandlerspecs extends Specification{
+public class PartialDocumentHandlerSpecs extends Specification{
 
   private PartialDocumentHandler handler
   static partialDocumentOne = '{ "ts" : { "$ts" : 1367215856 , "$inc" : 1} , "h" : 2577419153919943492 , "v" : 2 , "op" : "u" , "ns" : "Tayra.people" , "o2" : { "_id" : "joe"} , "o" : { "_id" : "joe" , "name" : "Joe Bookreader" , "addresses" : [ { "street" : "{{123 Fake Street}}"'
@@ -43,6 +43,17 @@ public class PartialDocumentHandlerspecs extends Specification{
       partialDocumentTwo             | true
       partialDocumentThree           | true
       partialDocumentFour            | true
+  }
+
+  def identifiesEmptyDocumentAsPartial() {
+    given: 'an empty document'
+      def emptyDocument = ""
+
+    when:'it is injected in handler'
+      def isPartial = handler.isPartial(emptyDocument)
+
+    then:'it is reported as partial'
+      isPartial == true
   }
 
 }

@@ -53,8 +53,7 @@ class Chunk implements Iterable<String> {
       Charset charset = Charset.defaultCharset();
       CharsetDecoder decoder = charset.newDecoder();
       this.charBuffer = decoder.decode(chunk);
-      documents = charBuffer.toString().split(
-          System.getProperty("line.separator"));
+      documents = charBuffer.toString().split("\\n");
       documents[0] = handler.prependPartialDocumentTo(documents[0]);
     }
 

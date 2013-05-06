@@ -49,7 +49,7 @@ class ChunkSpecs extends Specification{
 			String document = documentIterator.next()
 
 		then:'document is obtained'
-			document == this.document
+			document.trim() == this.document
 	}
 
 	def shoutsWhenDocumentIsRemoved() {

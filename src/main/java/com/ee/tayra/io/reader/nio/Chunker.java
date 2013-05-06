@@ -55,12 +55,20 @@ class Chunker implements Iterable<Chunk> {
         }
       }
       try {
-        document += documentIterator.next();
+        document = document + documentIterator.next();
       } catch (Exception problem) {
         throw new RuntimeException(problem);
       }
     } while (handler.isPartial(document));
     return document.trim();
+  }
+
+  final boolean hasMoreChunks() {
+    return chunkIterator.hasNext();
+  }
+
+  final boolean thereAreNoDocuments() {
+    return (documentIterator == null || !documentIterator.hasNext());
   }
 
   public final void close() throws IOException {
@@ -112,14 +120,6 @@ class Chunker implements Iterable<Chunk> {
     }
   }
 
-  final boolean hasMoreChunks() {
-    return chunkIterator.hasNext();
- }
-
-  final boolean thereAreNoDocuments() {
-    return (documentIterator == null || !documentIterator.hasNext());
-  }
-
   static class PartialDocumentHandler {
     private String partialDoc = "";
 
@@ -133,8 +133,11 @@ class Chunker implements Iterable<Chunk> {
       return completeDocument;
     }
 
-    public boolean isPartial(final String document) {
+    boolean isPartial(final String document) {
       try {
+        if (document.trim().isEmpty()) {
+          return true;
+        }
         JSON.parse(document);
         return false;
       } catch (JSONParseException ex) {
