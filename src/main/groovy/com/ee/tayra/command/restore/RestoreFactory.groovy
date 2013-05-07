@@ -32,14 +32,12 @@ package com.ee.tayra.command.restore
 
 import com.ee.tayra.io.criteria.CriteriaBuilder
 import com.ee.tayra.io.criteria.Criterion
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Notifier;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
+import com.ee.tayra.io.listener.Reporter
+import com.ee.tayra.io.reader.DocumentReader
 import com.ee.tayra.io.reader.FileDocumentReader
 import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
-import com.ee.tayra.io.writer.Replayer;
-import com.ee.tayra.utils.DataUnit;
+import com.ee.tayra.io.writer.Replayer
+import com.ee.tayra.utils.DataUnit
 import com.mongodb.MongoClient
 
 abstract class RestoreFactory {

@@ -34,13 +34,13 @@ import com.mongodb.MongoClient
 import com.mongodb.MongoException
 
 class MongoAuthenticator implements Authenticator {
-  
-  private MongoClient mongo;
+
+  private MongoClient mongo
 
   public MongoAuthenticator(final MongoClient mongo) {
-    this.mongo = mongo;
+    this.mongo = mongo
   }
-  
+
   private boolean onUnsecureDB() {
     try {
       mongo.databaseNames
@@ -51,14 +51,14 @@ class MongoAuthenticator implements Authenticator {
       return false
     }
   }
-  
+
   public boolean authenticate(String username, String password) {
     if(onUnsecureDB()) {
       return false
     }
     if(!username) {
       throw new MongoException('Username cannot be empty')
-    } 
+    }
     if(!password) {
       throw new MongoException('Password cannot be empty')
     }

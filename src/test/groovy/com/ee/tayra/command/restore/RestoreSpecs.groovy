@@ -317,7 +317,7 @@ class RestoreSpecs extends Specification {
       new Restore(context).run()
 
     then: 'error message should be thrown as'
-      result.toString().contains('Cannot Understand [--sNsss, users]')
+      result.toString().contains('Cannot understand [--sNsss, users]')
   }
 
   def invokesRestoreInFastModeWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {

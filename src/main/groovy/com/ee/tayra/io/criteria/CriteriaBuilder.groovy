@@ -44,7 +44,7 @@ public class CriteriaBuilder {
   public void usingSince(String timestamp) {
     multiCriteria.addCriteria(create(SINCE_TIME, timestamp));
   }
-  
+
   public void usingNamespace(String namespace) {
     multiCriteria.addCriteria(new NamespaceCriterion(namespace));
   }

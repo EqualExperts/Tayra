@@ -31,16 +31,14 @@
 package com.ee.tayra.command.restore
 
 import com.ee.tayra.domain.operation.Operations
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Notifier;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.listener.RestoreProgressReporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.reader.FileDocumentReader;
-import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader;
-import com.ee.tayra.io.writer.OplogReplayer;
-import com.ee.tayra.io.writer.Replayer;
-import com.ee.tayra.io.writer.SelectiveOplogReplayer;
+import com.ee.tayra.io.listener.CopyListener
+import com.ee.tayra.io.listener.Notifier
+import com.ee.tayra.io.listener.Reporter
+import com.ee.tayra.io.listener.RestoreProgressReporter
+import com.ee.tayra.io.reader.DocumentReader
+import com.ee.tayra.io.writer.OplogReplayer
+import com.ee.tayra.io.writer.Replayer
+import com.ee.tayra.io.writer.SelectiveOplogReplayer
 import com.mongodb.MongoClient
 
 class DefaultFactory extends RestoreFactory {
@@ -51,9 +49,8 @@ class DefaultFactory extends RestoreFactory {
   public DefaultFactory(RestoreCmdDefaults config, MongoClient mongo, PrintWriter console) {
     super(config)
     this.mongo = mongo
-    listeningReporter = new RestoreProgressReporter(new FileWriter
-        (config.exceptionFile), new FileWriter
-        (config.exceptionDetailsFile), console)
+    listeningReporter = new RestoreProgressReporter(new FileWriter(config.exceptionFile),
+        new FileWriter(config.exceptionDetailsFile), console)
   }
 
   @Override

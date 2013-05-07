@@ -51,7 +51,7 @@ public class MongoReplSetConnection {
     this.retryable = retryable
   }
 
-  private getNodesWithinReplicaSet(master) {
+  private def getNodesWithinReplicaSet(master) {
     // TODO: Replace this API by different call (to investigate with mongo guys)
     String [] hosts = node.getDB("test").command("ismaster").get("hosts")
     println "Hosts are: $hosts"

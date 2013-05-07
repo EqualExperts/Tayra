@@ -30,8 +30,8 @@
  ******************************************************************************/
 package com.ee.tayra.runner
 
-import com.ee.tayra.command.backup.Backup;
-import com.ee.tayra.command.restore.Restore;
+import com.ee.tayra.command.backup.Backup
+import com.ee.tayra.command.restore.Restore
 
 def scriptName = args[0]
 Binding context = new Binding()

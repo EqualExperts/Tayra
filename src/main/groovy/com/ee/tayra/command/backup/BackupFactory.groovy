@@ -31,17 +31,17 @@
 package com.ee.tayra.command.backup
 
 import com.ee.tayra.io.criteria.CriteriaBuilder
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.MongoExceptionBubbler;
-import com.ee.tayra.io.listener.Notifier;
-import com.ee.tayra.io.listener.ProgressReporter;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.listener.timestamp.FileBasedTimestampRepository;
-import com.ee.tayra.io.listener.timestamp.TimestampRecorder;
-import com.ee.tayra.io.reader.OplogReader;
-import com.ee.tayra.io.reader.SelectiveOplogReader;
-import com.ee.tayra.io.writer.DocumentWriter;
-import com.ee.tayra.io.writer.RotatingFileWriter;
+import com.ee.tayra.io.listener.CopyListener
+import com.ee.tayra.io.listener.MongoExceptionBubbler
+import com.ee.tayra.io.listener.Notifier
+import com.ee.tayra.io.listener.ProgressReporter
+import com.ee.tayra.io.listener.Reporter
+import com.ee.tayra.io.listener.timestamp.FileBasedTimestampRepository
+import com.ee.tayra.io.listener.timestamp.TimestampRecorder
+import com.ee.tayra.io.reader.OplogReader
+import com.ee.tayra.io.reader.SelectiveOplogReader
+import com.ee.tayra.io.writer.DocumentWriter
+import com.ee.tayra.io.writer.RotatingFileWriter
 
 class BackupFactory {
   private final BackupCmdDefaults config
@@ -71,8 +71,7 @@ class BackupFactory {
     String timestamp = timestampRecorder.lastDocumentTimestamp
     OplogReader oplogReader = new OplogReader(oplog, timestamp, config.isContinuous)
     oplogReader.notifier = new Notifier(timestampRecorder, createListener(), new MongoExceptionBubbler())
-    criteria ? new SelectiveOplogReader(oplogReader, criteria)
-        : oplogReader
+    criteria ? new SelectiveOplogReader(oplogReader, criteria) : oplogReader
   }
 
   public DocumentWriter createDocumentWriter() {

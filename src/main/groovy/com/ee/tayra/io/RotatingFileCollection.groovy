@@ -49,9 +49,7 @@ class RotatingFileCollection {
   private def getAllRotatingFiles(String fileNameRegex, boolean isMultiple) throws Exception {
     final File file = new File(fileNameRegex)
     files = (isMultiple ? findFilesInDirectory(file.getName(),
-      file.getAbsoluteFile().getParentFile())
-        : [fileNameRegex])
-	println files
+        file.getAbsoluteFile().getParentFile()) : [fileNameRegex])
     files.sort { a, b -> b.compareTo(a) }
   }
 }

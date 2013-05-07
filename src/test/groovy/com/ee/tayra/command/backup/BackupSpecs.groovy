@@ -228,7 +228,7 @@ public class BackupSpecs extends Specification {
       new Backup(context).run()
 
     then: 'error message should be thrown as'
-      result.toString().contains('Cannot Understand [--sNssss, users]')
+      result.toString().contains('Cannot understand [--sNssss, users]')
   }
 
   def shoutsWhenNoPasswordIsGivenForSecuredReplicaSet() {

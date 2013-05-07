@@ -33,8 +33,7 @@ package com.ee.tayra.command.restore
 import com.ee.tayra.connector.MongoAuthenticator
 import com.ee.tayra.domain.*
 import com.ee.tayra.io.*
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader;
+import com.ee.tayra.io.reader.DocumentReader
 import com.mongodb.MongoClient
 import com.mongodb.ServerAddress
 
@@ -54,7 +53,7 @@ cli.with  {
   _ args:1, argName:'sNs',longOpt:'sNs', 'OPTIONAL, Namespace for selective restore, default is all namespaces, Eg: --sNs=dbName<.collectionName>', optionalArg:true
   _ args:0, argName:'sExclude',longOpt:'sExclude', 'OPTIONAL, Excludes the following criteria, default is include all given criteria', optionalArg:true
   _ args:1, argName:'sSince',longOpt:'sSince', 'OPTIONAL, timestamp for selective restore, default is from START, \n Eg: ISO Format --sSince=yyyy-MM-ddTHH:mm:ssZ or\n JSON Format \n --sSince={"ts":{"$ts":1358408097,"$inc":10}} on windows (remove spaces)\n --sSince=\'{ts:{$ts:1358408097,$inc:10}}\' on linux (remove space, double quotes and enclose in single quotes)' , optionalArg:true
-  _ args:1, argName:'fBuffer', longOpt:'fBuffer', 'OPTIONAL, create buffer of specified size, Default is 8KB, Usage Eg: --fBuffer=4MB', optionalArg: true
+  _ args:1, argName:'fBuffer', longOpt:'fBuffer', 'OPTIONAL, create buffer of specified size, default is 8KB, Usage Eg: --fBuffer=4MB', optionalArg: true
 }
 
 options = cli.parse(args)
@@ -65,7 +64,7 @@ if(!options) {
 PrintWriter console = new PrintWriter(System.out, true)
 
 if(options.arguments()){
-  console.println "Cannot Understand ${options.arguments()}"
+  console.println "Cannot understand ${options.arguments()}"
   cli.usage()
   return
 }
@@ -82,14 +81,12 @@ if(options.port) {
   config.port = Integer.parseInt(options.port)
 }
 
-
 def readPassword(output) {
   def input = System.console()
   if(!input) {
     output.println("Cannot Read Password Input, please use -p command line option")
     return ''
   }
-
   print "Enter password: "
   return new String(System.console().readPassword())
 }
@@ -129,7 +126,7 @@ if(options.fAll) {
 }
 
 if(options.fBuffer) {
-	config.fBuffer = options.fBuffer
+  config.fBuffer = options.fBuffer
 }
 
 errorLog = 'error.log'

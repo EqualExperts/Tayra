@@ -30,8 +30,6 @@
  ******************************************************************************/
 package com.ee.tayra.command.restore
 
-import java.io.PrintWriter;
-
 class RestoreCmdDefaults {
 
   public String destination = 'localhost'

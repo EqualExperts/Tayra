@@ -30,16 +30,14 @@
  ******************************************************************************/
 package com.ee.tayra.command.restore
 
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.DeafAndDumbReporter;
-import com.ee.tayra.io.listener.Notifier;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.reader.FileDocumentReader;
-import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
-import com.ee.tayra.io.writer.ConsoleReplayer;
-import com.ee.tayra.io.writer.Replayer;
-import com.ee.tayra.io.writer.SelectiveOplogReplayer;
+import com.ee.tayra.io.listener.CopyListener
+import com.ee.tayra.io.listener.DeafAndDumbReporter
+import com.ee.tayra.io.listener.Notifier
+import com.ee.tayra.io.listener.Reporter
+import com.ee.tayra.io.reader.DocumentReader
+import com.ee.tayra.io.writer.ConsoleReplayer
+import com.ee.tayra.io.writer.Replayer
+import com.ee.tayra.io.writer.SelectiveOplogReplayer
 
 class DryRunFactory extends RestoreFactory {
 
