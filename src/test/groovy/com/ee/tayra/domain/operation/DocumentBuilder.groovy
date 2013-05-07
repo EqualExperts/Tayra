@@ -12,47 +12,47 @@ import com.mongodb.util.JSON
 @TupleConstructor
 class DocumentBuilder {
 
-	BSONTimestamp ts
-	String h
-	String op
-	String ns
-	DBObject o
+  BSONTimestamp ts
+  String h
+  String op
+  String ns
+  DBObject o
 
-	String toString() {
-		asType String
-	}
+  String toString() {
+    asType String
+  }
 
-	Closure documentStructure() {
-		def document = {
-			ts JSON.serialize(ts)
-			h h
-			op op
-			ns ns
-			o JSON.serialize(o)
-		}
-	}
-	
-	def objectStructure() {
-		BasicDBObjectBuilder
-			.start()
-				.add('ts', ts)
-				.add('h', h)
-				.add('op', op)
-				.add('ns', ns)
-				.add('o', o)
-			.get()
-	}
-	
-	def asType(Class type) {
-		if(type == String) {
-			def builder = new JsonBuilder()
-			builder documentStructure()
-			return builder.toString()
-		}
-		if(type == DBObject) {
-			return objectStructure()
-		}
-		throw new IllegalArgumentException("Cannot convert to $type")
-	}
+  Closure documentStructure() {
+    def document = {
+      ts JSON.serialize(ts)
+      h h
+      op op
+      ns ns
+      o JSON.serialize(o)
+    }
+  }
+
+  def objectStructure() {
+    BasicDBObjectBuilder
+      .start()
+        .add('ts', ts)
+        .add('h', h)
+        .add('op', op)
+        .add('ns', ns)
+        .add('o', o)
+      .get()
+  }
+
+  def asType(Class type) {
+    if(type == String) {
+      def builder = new JsonBuilder()
+      builder documentStructure()
+      return builder.toString()
+    }
+    if(type == DBObject) {
+      return objectStructure()
+    }
+    throw new IllegalArgumentException("Cannot convert to $type")
+  }
 
 }

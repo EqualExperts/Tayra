@@ -4,12 +4,12 @@ import static com.ee.tayra.ConnectionFactory.*
 import spock.lang.*
 
 import com.ee.tayra.connector.Authenticator
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.reader.FileDocumentReader;
+import com.ee.tayra.io.listener.CopyListener
+import com.ee.tayra.io.listener.Reporter
+import com.ee.tayra.io.reader.DocumentReader
+import com.ee.tayra.io.reader.FileDocumentReader
 import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader
-import com.ee.tayra.io.writer.Replayer;
+import com.ee.tayra.io.writer.Replayer
 import com.mongodb.MongoException
 
 class RestoreSpecs extends Specification {
@@ -42,7 +42,7 @@ class RestoreSpecs extends Specification {
   }
 
   def shoutsWhenNoMandatoryArgsAreSupplied() {
-    given: 'no arguments are supplied'
+    given: 'no mandatory arguments are supplied'
       context.setVariable('args', [])
 
     when: 'restore runs'
@@ -56,18 +56,18 @@ class RestoreSpecs extends Specification {
     given: 'Invalid arguments are supplied'
       context.setVariable('args', ['-h', '-i'])
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'error message should be shown as'
       result.toString() == 'error: Missing required option: f'
   }
 
-  def shoutsWhenNoOutputFileIsSupplied() {
+  def shoutsWhenNoBackupFileIsSupplied() {
     given: 'argument list does not contain output file option -f'
       context.setVariable('args', ['-d', secureSrcNode])
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'error message should be displayed as'
@@ -83,7 +83,7 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'perform the restore operation'
@@ -99,7 +99,7 @@ class RestoreSpecs extends Specification {
 	  DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'perform the restore operation'
@@ -115,7 +115,7 @@ class RestoreSpecs extends Specification {
       context.setVariable('authenticator', mockAuthenticator)
       mockAuthenticator.authenticate('', '') >> { throw new MongoException('Username cannot be empty') }
 
-    when: 'backup runs with above args'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'error message should be thrown as'
@@ -131,7 +131,7 @@ class RestoreSpecs extends Specification {
       context.setVariable('authenticator', mockAuthenticator)
       mockAuthenticator.authenticate('incorrect', password) >> { throw new MongoException('Authentication Failed to localhost') }
 
-    when: 'backup runs with above args'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'error message should be thrown as'
@@ -147,7 +147,7 @@ class RestoreSpecs extends Specification {
       context.setVariable('authenticator', mockAuthenticator)
       mockAuthenticator.authenticate(username, 'incorrect') >> { throw new MongoException('Authentication Failed to localhost') }
 
-    when: 'backup runs with above args'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'error message should be thrown as'
@@ -158,10 +158,10 @@ class RestoreSpecs extends Specification {
     given: 'the destination host is incorrect or does not exist'
       context.setVariable('args', ['-d', 'nonexistentHost', '-f', backupFile])
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
-    then:'error message should be displayed as'
+    then:'error message should be thrown as'
       result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
   }
 
@@ -174,14 +174,14 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
-    then: 'it performs the restore operation'
+    then: 'performs the restore operation'
       1 * mockReplayer.replay('"ts"')
   }
 
-  def reportsSummary() {
+  def reportsSummaryAfterCompletion() {
     given:'arguments contain all essential options'
       context.setVariable('args', ['-d', secureTgtNode, "--port=$secureTgtPort", '-f', backupFile, '-u', username, '-p', password])
 
@@ -190,7 +190,7 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'it summarizes'
@@ -206,7 +206,7 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'it reports start time'
@@ -222,10 +222,10 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
-    then: 'it performs the restore operation'
+    then: 'performs the restore operation'
       1 * mockReplayer.replay('"ts"')
   }
 
@@ -233,7 +233,7 @@ class RestoreSpecs extends Specification {
     given: 'arguments contain all essential options and not -d, --port, -u, -p'
       context.setVariable('args', ["--port=$unsecureTgtPort", '-f', backupFile])
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'following variables get default values'
@@ -253,10 +253,10 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
-    then: 'it performs the restore operation'
+    then: 'performs the restore operation'
       1 * mockReplayer.replay('"ts"')
   }
 
@@ -269,10 +269,10 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
-    then: 'it performs the restore operation'
+    then: 'performs the restore operation'
       1 * mockReplayer.replay('"ts"')
   }
 
@@ -285,15 +285,15 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
-    then: 'it performs the restore operation'
+    then: 'performs the restore operation'
       1 * mockReplayer.replay('"ts"')
   }
 
   def returnsNoDocumentWhenOnlySExcludeOptionIsGiven() {
-    given:'arguments contains -f, -u, -p,--sExclude options'
+    given:'arguments contains -f, -u, -p, and --sExclude options'
       context.setVariable('args', ["--port=$secureSrcPort", '-f', backupFile,'--sExclude', '-u', username, '-p', password])
 
     and: 'the reader is injected'
@@ -301,7 +301,7 @@ class RestoreSpecs extends Specification {
       DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
-    when: 'restore runs'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'it performs the restore operation and no document is restored'
@@ -313,7 +313,7 @@ class RestoreSpecs extends Specification {
       def context = new Binding()
       context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--sNsss=users'])
 
-    when: 'backup runs with above args'
+    when: 'restore runs with above args'
       new Restore(context).run()
 
     then: 'error message should be thrown as'
@@ -321,29 +321,29 @@ class RestoreSpecs extends Specification {
   }
 
   def invokesRestoreInFastModeWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
-	  given:'arguments contains -d, -port and -f options'
-		  context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fBuffer=2MB'])
+    given:'arguments contains -d, -port and -f options'
+      context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fBuffer=2MB'])
 
-	  and: 'a backupFile is given'
-	  	  String document = '{{ts:1}}'
-		  def file = File.createTempFile('test', 'out')
-		  file.withWriter { writer ->
-			  writer.write document
-			  writer.write NEW_LINE
-		  }
+    and: 'a backupFile is given'
+      String document = '{{ts:1}}'
+      def file = File.createTempFile('test', 'out')
+      file.withWriter { writer ->
+      writer.write document
+      writer.write NEW_LINE
+      }
 
-	  and: 'the reader is injected'
-	  	long bufferSize = 4096
-		DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath, bufferSize)
-		context.setVariable('reader', source)
+    and: 'the reader is injected'
+      long bufferSize = 4096
+      DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath, bufferSize)
+      context.setVariable('reader', source)
 
-	  when: 'restore runs'
-		new Restore(context).run()
+    when: 'restore runs'
+      new Restore(context).run()
 
-	  then: 'perform the restore operation'
-		1 * mockReplayer.replay('{{ts:1}}')
+    then: 'perform the restore operation'
+      1 * mockReplayer.replay('{{ts:1}}')
 
-	  cleanup:
-	  	file.delete()
-	}
+    cleanup:
+      file.delete()
+  }
 }

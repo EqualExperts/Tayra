@@ -1,83 +1,83 @@
 package com.ee.tayra.io.criteria
 
+import static com.ee.tayra.io.criteria.TimestampCriterion.*
 import spock.lang.Specification
-import static TimestampCriterion.*
 
 class CriteriaBuilderSpecs extends Specification{
 
-	CriteriaBuilder criteriaBuilder
-	def setup() {
-		MultiCriteria.metaClass.has = { instance ->
-			delegate.criteria.find {
-				it.getClass() == instance.getClass()
-			}
-		}
-		criteriaBuilder = new CriteriaBuilder()
-	}
+  CriteriaBuilder criteriaBuilder
+  def setup() {
+    MultiCriteria.metaClass.has = { instance ->
+      delegate.criteria.find {
+        it.getClass() == instance.getClass()
+      }
+    }
+    criteriaBuilder = new CriteriaBuilder()
+  }
 
-	def producesTimestampCriteriaUsingWithClosure() {
-		given: 'timestamp filter'
-			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
-			
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build {
-				usingUntil timestamp
-			}
+  def producesTimestampCriteriaUsingWithClosure() {
+    given: 'timestamp filter'
+      def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
 
-		then: 'Criterion should be an instance of TimestampCriterion'
-			criterion.has(create(UNTIL_TIME, timestamp))
-	}
+    when: 'criteria is built'
+      def criterion = criteriaBuilder.build {
+        usingUntil timestamp
+      }
 
-	def producesSinceCriteriaUsingWithClosure() {
-		given: 'timestamp filter'
-			def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
+    then: 'Criterion should be an instance of TimestampCriterion'
+      criterion.has(create(UNTIL_TIME, timestamp))
+  }
 
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build {
-				usingSince timestamp
-			}
+  def producesSinceCriteriaUsingWithClosure() {
+    given: 'timestamp filter'
+      def timestamp = '{ts:{$ts:1357537752,$inc:1}}'
 
-		then: 'Criterion should be an instance of SinceCriteria'
-			criterion.has(create(SINCE_TIME, timestamp))
-	}
+    when: 'criteria is built'
+      def criterion = criteriaBuilder.build {
+        usingSince timestamp
+      }
 
-	def producesNamespaceCriteriaWithClosure() {
-		given: 'namespace filter'
-			def namespace = 'test'
+    then: 'Criterion should be an instance of SinceCriteria'
+      criterion.has(create(SINCE_TIME, timestamp))
+  }
 
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build {
-				usingNamespace namespace
-			}
+  def producesNamespaceCriteriaWithClosure() {
+    given: 'namespace filter'
+      def namespace = 'test'
 
-		then: 'Criterion should be an instance of NamespaceCriterion'
-			criterion.has(new NamespaceCriterion(''))
-	}
+    when: 'criteria is built'
+      def criterion = criteriaBuilder.build {
+        usingNamespace namespace
+      }
 
-	def producesExcludeCriteriaWithClosure() {
-		given: 'a namespace filter'
-			def namespace = 'test'
+    then: 'Criterion should be an instance of NamespaceCriterion'
+      criterion.has(new NamespaceCriterion(''))
+  }
 
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build {
-				usingNamespace namespace
-				usingExclude()
-			}
+  def producesExcludeCriteriaWithClosure() {
+    given: 'a namespace filter'
+      def namespace = 'test'
 
-		then: 'Criterion returned should be an instance of sExclude'
-			criterion.getClass() == ExcludeCriterion
-	}
+    when: 'criteria is built'
+      def criterion = criteriaBuilder.build {
+        usingNamespace namespace
+        usingExclude()
+      }
 
-	def producesMultiCriteriaWithoutSExclude() {
-		given: 'a namespace filter'
-			def namespace = 'test'
+    then: 'Criterion returned should be an instance of sExclude'
+      criterion.getClass() == ExcludeCriterion
+  }
 
-		when: 'criteria is built'
-			def criterion = criteriaBuilder.build {
-				usingNamespace namespace
-			}
+  def producesMultiCriteriaWithoutSExclude() {
+    given: 'a namespace filter'
+      def namespace = 'test'
 
-		then: 'Criterion returned should be an instance of MultiCriteria'
-			criterion.getClass() == MultiCriteria
-	}
+    when: 'criteria is built'
+      def criterion = criteriaBuilder.build {
+        usingNamespace namespace
+      }
+
+    then: 'Criterion returned should be an instance of MultiCriteria'
+      criterion.getClass() == MultiCriteria
+  }
 }

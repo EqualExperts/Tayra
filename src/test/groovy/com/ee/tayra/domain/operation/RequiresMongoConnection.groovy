@@ -1,8 +1,8 @@
 package com.ee.tayra.domain.operation
 
+import static com.ee.tayra.ConnectionFactory.*
 import spock.lang.*
 
-import static com.ee.tayra.ConnectionFactory.*
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress

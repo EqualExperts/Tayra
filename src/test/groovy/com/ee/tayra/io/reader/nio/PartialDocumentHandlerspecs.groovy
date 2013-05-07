@@ -1,9 +1,8 @@
 package com.ee.tayra.io.reader.nio
 
-import com.ee.tayra.io.reader.nio.Chunker.PartialDocumentHandler;
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import spock.lang.Specification
 
-import spock.lang.Specification;
+import com.ee.tayra.io.reader.nio.Chunker.PartialDocumentHandler
 
 public class PartialDocumentHandlerSpecs extends Specification{
 

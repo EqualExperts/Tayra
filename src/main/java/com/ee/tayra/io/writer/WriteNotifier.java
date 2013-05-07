@@ -44,7 +44,7 @@ public interface WriteNotifier {
 
     @Override
     public final void notifyWriteFailure(
-    final String document, final Throwable problem) {
+      final String document, final Throwable problem) {
     }
 
     @Override

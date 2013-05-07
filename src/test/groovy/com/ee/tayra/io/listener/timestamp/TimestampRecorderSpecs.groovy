@@ -1,12 +1,10 @@
 package com.ee.tayra.io.listener.timestamp
 
-import com.ee.tayra.domain.operation.DocumentBuilder
-import com.ee.tayra.io.listener.timestamp.TimestampRecorder;
-import com.ee.tayra.io.listener.timestamp.TimestampRepository;
-
 import org.bson.types.BSONTimestamp
+
 import spock.lang.*
 
+import com.ee.tayra.domain.operation.DocumentBuilder
 import com.mongodb.BasicDBObjectBuilder
 
 public class TimestampRecorderSpecs extends Specification {
@@ -15,13 +13,13 @@ public class TimestampRecorderSpecs extends Specification {
     def timestampRecorder
     private final String timestamp = '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
 
-	def setup() {
+  def setup() {
       mockRepository = Mock(TimestampRepository)
       mockRepository.retrieve() >> { timestamp }
       timestampRecorder = new TimestampRecorder(mockRepository)
-	}
+  }
 
-	def getDocumentString(def tstamp = 1352105652) {
+  def getDocumentString(def tstamp = 1352105652) {
         new DocumentBuilder(
                 ts: new BSONTimestamp(tstamp, 1),
                 h :'3493050463814977392',
@@ -32,7 +30,7 @@ public class TimestampRecorderSpecs extends Specification {
                         .add('create', 'home')
                         .get()
         ) as String
-	}
+  }
 
     def savesTimestamp() {
       given: 'an insert document oplog entry'
@@ -90,8 +88,8 @@ public class TimestampRecorderSpecs extends Specification {
     }
 
     def preservesDocumentTimestampOnWriteSuccess() {
-	  given: 'an insert document oplog entry'
-	    String document = getDocumentString()
+    given: 'an insert document oplog entry'
+      String document = getDocumentString()
 
       and: 'a successful read has already occurred'
         timestampRecorder.onReadSuccess(document)
@@ -101,7 +99,7 @@ public class TimestampRecorderSpecs extends Specification {
 
       then: 'recorder should preserve timestamp of the current document'
         timestampRecorder.getDocumentTimestamp() == timestamp
-	}
+  }
 
     def updatesLastDocumentTimestampOnWriteSuccess() {
       given: 'an insert document oplog entry'
@@ -118,13 +116,13 @@ public class TimestampRecorderSpecs extends Specification {
     }
 
     def preservesLastDocumentTimestampOnWriteFailure() throws IOException {
-	  given: 'two insert document oplog entries'
-	    String documentOne = getDocumentString(1352105652)
-	    String documentTwo = getDocumentString(1352105653)
+    given: 'two insert document oplog entries'
+      String documentOne = getDocumentString(1352105652)
+      String documentTwo = getDocumentString(1352105653)
 
       and: 'document one is already written'
-	    timestampRecorder.onReadSuccess(documentOne)
-	    timestampRecorder.onWriteSuccess(documentOne)
+      timestampRecorder.onReadSuccess(documentOne)
+      timestampRecorder.onWriteSuccess(documentOne)
 
       and: 'document two is read successfully'
         timestampRecorder.onReadSuccess(documentTwo)
@@ -136,20 +134,20 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105653 , \\"$inc\\" : 1} }'
 
       and: 'recorder should preserve timestamp of latest successful write'
-	    timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
-	}
+      timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+  }
 
-	def preservesDocumentTimestampsWhenIncomingDocumentDoesNotHaveTimestampEntry() {
-	  given: 'a document without timestamp'
+  def preservesDocumentTimestampsWhenIncomingDocumentDoesNotHaveTimestampEntry() {
+    given: 'a document without timestamp'
         String documentOne = getDocumentString(1352105652)
-		String documentWithoutTS = new BasicDBObjectBuilder()
-							.start()
-								.add("name", "test")
-							.get()
-							.toString()
+    String documentWithoutTS = new BasicDBObjectBuilder()
+              .start()
+                .add("name", "test")
+              .get()
+              .toString()
 
-	  and: 'document one was already written successfully'
-		timestampRecorder.onReadSuccess(documentOne)
+    and: 'document one was already written successfully'
+    timestampRecorder.onReadSuccess(documentOne)
         timestampRecorder.onWriteSuccess(documentOne)
 
       and: 'document without timestamp is read successfully'
@@ -162,8 +160,8 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
 
       and: 'recorder preserves timestamp of last document containing timestamp'
-		timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
-	}
+    timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+  }
 
     def doesNothingOnReadStart() {
       given: 'an insert document oplog entry'

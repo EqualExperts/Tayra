@@ -1,7 +1,5 @@
 package com.ee.tayra.design
 
-import org.junit.Ignore;
-
 import jdepend.framework.JDepend
 import jdepend.framework.JavaPackage
 import spock.lang.Specification
@@ -10,21 +8,21 @@ class DependencyTest extends Specification {
   private static JDepend jdepend
 
   def setupSpec() {
-      JavaPackage.metaClass.dependsOn = { JavaPackage dependent ->
-        delegate.efferents.contains(dependent)
-      }
+    JavaPackage.metaClass.dependsOn = { JavaPackage dependent ->
+      delegate.efferents.contains(dependent)
+    }
 
-      jdepend = new JDepend()
-      //given 'directory where classes are compiled using Gradle build'
-      jdepend.addDirectory('build/classes/main/')
+    jdepend = new JDepend()
+    //given 'directory where classes are compiled using Gradle build'
+    jdepend.addDirectory('build/classes/main/')
   }
 
   def ensuresThereAreNoCyclicDependencies() {
-      when: 'jDepend analyzes codebase'
-        jdepend.analyze()
+    when: 'jDepend analyzes codebase'
+      jdepend.analyze()
 
-      then:  'there are no cyclic dependencies'
-        !jdepend.containsCycles()
+    then:  'there are no cyclic dependencies'
+      !jdepend.containsCycles()
 
   }
 

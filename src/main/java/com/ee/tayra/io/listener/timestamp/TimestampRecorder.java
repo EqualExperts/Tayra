@@ -74,7 +74,7 @@ public class TimestampRecorder implements CopyListener {
 
   @Override
   public final void onReadSuccess(final String document) {
-     registerTimestampFrom(document);
+    registerTimestampFrom(document);
   }
 
   @Override
@@ -84,12 +84,12 @@ public class TimestampRecorder implements CopyListener {
 
   @Override
   public final void onWriteFailure(
-  final String document, final Throwable problem) {
+    final String document, final Throwable problem) {
   }
 
   @Override
   public final void onReadFailure(
-  final String document, final Throwable problem) {
+    final String document, final Throwable problem) {
   }
 
   @Override

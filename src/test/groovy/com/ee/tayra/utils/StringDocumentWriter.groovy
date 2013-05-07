@@ -30,7 +30,7 @@
  ******************************************************************************/
 package com.ee.tayra.utils
 
-import com.ee.tayra.io.writer.DocumentWriter;
+import com.ee.tayra.io.writer.DocumentWriter
 
 class StringDocumentWriter implements DocumentWriter {
     private StringBuilder result
@@ -38,6 +38,7 @@ class StringDocumentWriter implements DocumentWriter {
     public StringDocumentWriter() {
       result = new StringBuilder()
     }
+
     @Override
     void writeDocument(String document) {
       result << document

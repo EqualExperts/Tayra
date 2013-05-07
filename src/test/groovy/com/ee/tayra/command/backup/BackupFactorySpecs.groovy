@@ -1,15 +1,14 @@
 package com.ee.tayra.command.backup
 
+import static com.ee.tayra.ConnectionFactory.*
 import spock.lang.Specification
 
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.io.*
-import com.ee.tayra.io.listener.timestamp.TimestampRecorder;
-import com.ee.tayra.io.reader.OplogReader;
-import com.ee.tayra.io.reader.SelectiveOplogReader;
-import com.ee.tayra.io.writer.RotatingFileWriter;
-
-import static com.ee.tayra.ConnectionFactory.*
+import com.ee.tayra.io.listener.timestamp.TimestampRecorder
+import com.ee.tayra.io.reader.OplogReader
+import com.ee.tayra.io.reader.SelectiveOplogReader
+import com.ee.tayra.io.writer.RotatingFileWriter
 
 class BackupFactorySpecs extends Specification {
   private BackupCmdDefaults config
@@ -36,17 +35,17 @@ class BackupFactorySpecs extends Specification {
   }
 
   def createsOplogReaderWhenNoCriteriaIsGiven() {
-    given: 'command arguments contains no criteria'
+    given: 'command arguments contain no criteria'
       def oplog = Mock(MongoCollection)
 
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
-    then: 'reader created is instance of SelectiveOplogReader'
+    then: 'reader created is instance of OplogReader'
       factory.createReader(oplog).getClass() == OplogReader
   }
 
-  def createsWriter() {
+  def createsRotatingFileWriter() {
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
@@ -58,7 +57,7 @@ class BackupFactorySpecs extends Specification {
     when: 'factory is created'
       factory = new BackupFactory(config, console)
 
-    then: 'writer created is instance of TimestampRecorder'
+    then: 'recorder created is instance of TimestampRecorder'
       factory.createTimestampRecorder().getClass() == TimestampRecorder
   }
 }

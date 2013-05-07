@@ -31,7 +31,6 @@
 package com.ee.tayra.command.restore
 
 class RestoreCmdDefaults {
-
   public String destination = 'localhost'
   public int port = 27017
   public String username = ''

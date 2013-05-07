@@ -50,10 +50,10 @@ class MemoryMappedRestoreExploratoryTest extends RequiresExploratoryTestSupport 
   def restoresOnStandaloneWhenBufferSizeIsGivenWithExcludingCriteria() {
     given: 'arguments for restore contains -d, --port, -f, --fBuffer options'
     context.setVariable('args', ['-d', tgtHOST, "--port=$tgtPORT", '-f', backupFile, '--fBuffer=1kb', '--sNs=People', '--sExclude'])
-  
+
     when: 'restore runs with above args'
     new Restore(context).run()
-  
+
     then: 'the target Node should contain all documents'
       ! assertTargetNodeContainsExtraDocuments()
       assertTargetNodeContainsAllDocuments()
@@ -62,8 +62,4 @@ class MemoryMappedRestoreExploratoryTest extends RequiresExploratoryTestSupport 
   private assertTargetNodeContainsExtraDocuments() {
     tgt.getDB("People").getCollection("Information").count == 10
   }
-
-  
-
-
 }

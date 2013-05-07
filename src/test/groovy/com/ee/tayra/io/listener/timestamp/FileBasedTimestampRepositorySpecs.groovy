@@ -1,8 +1,5 @@
 package com.ee.tayra.io.listener.timestamp
 
-import com.ee.tayra.io.listener.timestamp.FileBasedTimestampRepository;
-
-import groovy.mock.interceptor.MockFor;
 import spock.lang.Specification
 
 class FileBasedTimestampRepositorySpecs extends Specification {
@@ -11,17 +8,17 @@ class FileBasedTimestampRepositorySpecs extends Specification {
   private static File testFile
   private PrintWriter mockConsole
   private String tstamp = '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
-  
+
   def setup() {
     testFile = new File('testTimestamp.out')
     mockConsole = Mock(PrintWriter)
     repository = new FileBasedTimestampRepository(testFile,mockConsole)
   }
-  
+
   def cleanupSpec() {
     testFile.delete()
   }
-  
+
   def itSavesToAFile() {
     when:'timestamp is saved to file'
       repository.save(tstamp)

@@ -43,7 +43,7 @@ CREATECOLLECTION {
     }
   return payload.substring(startIndex, endIndex)
     .split(":") [1].replaceAll("\"", BLANK).trim();
-}
+  }
 },
 
 DROPCOLLECTION {

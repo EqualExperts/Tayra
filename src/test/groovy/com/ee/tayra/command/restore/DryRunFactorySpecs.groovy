@@ -1,15 +1,10 @@
 package com.ee.tayra.command.restore
 
-import java.io.PrintWriter;
-
-import com.ee.tayra.command.restore.DryRunFactory
-import com.ee.tayra.command.restore.RestoreCmdDefaults
-import com.ee.tayra.io.listener.DeafAndDumbReporter;
-import com.ee.tayra.io.writer.ConsoleReplayer;
-import com.ee.tayra.io.writer.SelectiveOplogReplayer;
-import com.ee.tayra.io.reader.nio.MemoryMappedDocumentReader;
-import com.ee.tayra.io.reader.FileDocumentReader;
 import spock.lang.Specification
+
+import com.ee.tayra.io.listener.DeafAndDumbReporter
+import com.ee.tayra.io.writer.ConsoleReplayer
+import com.ee.tayra.io.writer.SelectiveOplogReplayer
 
 class DryRunFactorySpecs extends Specification{
 

@@ -32,7 +32,6 @@ package com.ee.tayra.io.listener;
 
 import java.io.Writer;
 
-
 public class DeafAndDumbReporter implements CopyListener, Reporter {
 
   @Override

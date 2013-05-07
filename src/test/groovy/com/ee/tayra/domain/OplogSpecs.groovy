@@ -1,9 +1,8 @@
 package com.ee.tayra.domain
 
-import com.ee.tayra.domain.operation.RequiresMongoConnection
-import spock.lang.Ignore
-
 import static com.ee.tayra.ConnectionFactory.*
+
+import com.ee.tayra.domain.operation.RequiresMongoConnection
 import com.mongodb.DB
 import com.mongodb.DBCursor
 import com.mongodb.DBObject
@@ -13,187 +12,187 @@ import com.mongodb.util.JSON
 
 public class OplogSpecs extends RequiresMongoConnection {
 
-	private static MongoClient replicaSet
-	private static final String USERNAME = username
-	private static final String PASSWORD = password
-	private MongoCollection oplog
-	private DB local
-	private String query = null
-	private boolean tailable = true
+  private static MongoClient replicaSet
+  private static final String USERNAME = username
+  private static final String PASSWORD = password
+  private MongoCollection oplog
+  private DB local
+  private String query = null
+  private boolean tailable = true
 
-	def setupSpec()throws MongoException {
-		replicaSet = new MongoClient(secureSrcNode, secureSrcPort)
-	}
+  def setupSpec()throws MongoException {
+    replicaSet = new MongoClient(secureSrcNode, secureSrcPort)
+  }
 
-	def cleanupSpec() {
-		replicaSet.close()
-	}
+  def cleanupSpec() {
+    replicaSet.close()
+  }
 
-	def setup() {
-		replicaSet.getDB("admin").authenticate(USERNAME, PASSWORD.toCharArray())
-		oplog = new Oplog(replicaSet)
-		local = replicaSet.getDB("local")
-	}
+  def setup() {
+    replicaSet.getDB("admin").authenticate(USERNAME, PASSWORD.toCharArray())
+    oplog = new Oplog(replicaSet)
+    local = replicaSet.getDB("local")
+  }
 
-	def doesNotConnectToStandaloneMongoInstance() throws Exception {
-		given: 'a standalone node'
-			standalone.getDB('admin').authenticate(USERNAME, PASSWORD.toCharArray())
-			DB local = standalone.getDB("local")
+  def doesNotConnectToStandaloneMongoInstance() {
+    given: 'a standalone node'
+      standalone.getDB('admin').authenticate(USERNAME, PASSWORD.toCharArray())
+      DB local = standalone.getDB("local")
 
-		when: 'oplog created on Db of standalone'
-			new Oplog(standalone)
+    when: 'oplog created on Db of standalone'
+      new Oplog(standalone)
 
-		then: 'error message should be shown as'
-			def problem = thrown(NotAReplicaSetNode)
-			problem.message == "node is not a part of ReplicaSet"
-	}
-
-
-	def readsFirstDocument() throws UnknownHostException, MongoException {
-		given: 'an iterator on the oplog'
-			Iterator<String> iterator = oplog.find(query, tailable)
-
-		when: 'document of oplog is fetched'
-			String actualDocument = iterator.next()
-
-		then: 'it should be an appropriate document'
-			actualDocument instanceof String
-	}
-
-	def doesNotAllowDocumentRemoval() {
-		given: 'an iterator on the oplog'
-			Iterator<String> iterator = oplog.find(query, tailable)
-
-		when: 'it tries to remove oplog document'
-			iterator.remove()
-
-		then: 'error message should be shown as'
-			def problem = thrown(UnsupportedOperationException)
-			problem.message == "remove document on oplog is not supported"
-	}
+    then: 'error message should be shown as'
+      def problem = thrown(NotAReplicaSetNode)
+      problem.message == "node is not a part of ReplicaSet"
+  }
 
 
-	def itTailsOplog() {
-		given: 'a tailable oplog iterator'
-			MongoCollectionIterator<String> iterator = oplog.find(query, tailable)
+  def readsFirstDocument() {
+    given: 'an iterator on the oplog'
+      Iterator<String> iterator = oplog.find(query, tailable)
 
-		and: 'total count of oplog documents'
-			long totalDocuments = local.getCollection("oplog.rs").count()
-			long documentsRead = 0
+    when: 'document of oplog is fetched'
+      String actualDocument = iterator.next()
 
-		when: 'all documents in the oplog are read'
-			while (iterator.hasNext()) {
-				iterator.next()
-				documentsRead++
-				if (documentsRead == totalDocuments) {
-					break
-				}
-			}
-			iterator.close()
+    then: 'it should be an appropriate document'
+      actualDocument instanceof String
+  }
 
-		then: 'documents read must be equal to total oplog documents'
-			documentsRead == totalDocuments
-	}
+  def doesNotAllowDocumentRemoval() {
+    given: 'an iterator on the oplog'
+      Iterator<String> iterator = oplog.find(query, tailable)
 
+    when: 'it tries to remove oplog document'
+      iterator.remove()
 
-	def shoutsWhenQueryingWithAClosedIterator() {
-		given: 'a tailable oplog iterator'
-			MongoCollectionIterator<String> iterator = oplog.find(query, tailable)
-
-		and: 'the iterator is closed'
-			iterator.close()
-
-		when:'the next document is queried'
-			iterator.hasNext()
-
-		then: 'error message should be shown as'
-			def problem = thrown(IteratorAlreadyClosed)
-			problem.message == "Iterator Already Closed"
-	}
+    then: 'error message should be shown as'
+      def problem = thrown(UnsupportedOperationException)
+      problem.message == "remove document on oplog is not supported"
+  }
 
 
-	def shoutsWhenFetchingWithAClosedIterator() {
-		given: 'a tailable oplog iterator'
-			MongoCollectionIterator<String> iterator = oplog.find(query, tailable)
+  def itTailsOplog() {
+    given: 'a tailable oplog iterator'
+      MongoCollectionIterator<String> iterator = oplog.find(query, tailable)
 
-		and: 'the iterator is closed'
-			iterator.close()
+    and: 'total count of oplog documents'
+      long totalDocuments = local.getCollection("oplog.rs").count()
+      long documentsRead = 0
 
-		when:'the next document is fetched'
-			iterator.next()
-
-		then: 'error message should be shown as'
-			def problem = thrown(IteratorAlreadyClosed)
-			problem.message == "Iterator Already Closed"
-	}
-
-	def findsADocumentByQuery() throws Exception {
-		given: 'we fetch the first document from mongo db'
-			DBCursor dbCursor = local.getCollection("oplog.rs")
-									 .find()
-			DBObject document = dbCursor.next()
-
-		when: 'query executes, iterator points to second document'
-			MongoCollectionIterator<String> iterator = oplog.find(JSON.serialize(document), tailable)
-
-		and: 'we also fetch second document'
-			document =  dbCursor.next()
-
-		then: "iterator's current & cursor's current document should be same"
-			iterator.next() == JSON.serialize(document);
-	}
-
-	def avoidsHingeDocumentToBeReadAgain() {
-		given: 'last backup was taken'
-			Iterator<String> previousIterator = oplog.find(null, tailable)
-			String lastDocument = previousIterator.next()
-
-		and: 'we have timestamp of last document'
-			String timestamp = extractTimestamp(lastDocument)
-
-		when: 'backup was performed again'
-			Iterator<String> nextIterator = oplog.find(timestamp, tailable)
-			String nextDocument = nextIterator.next()
-
-		then: 'it continues from where it left'
-			nextDocument == previousIterator.next()
-	}
-
-    def startsBackupFromOplogHeadWithNoQueryClause() {
-      given: 'backup starts...'
-        def documentsRead = 0
-        Iterator<String> iterator = oplog.find(null, false)
-
-      when: 'all documents in the oplog are read'
-        while (iterator.hasNext()) {
-            iterator.next()
-            documentsRead++
+    when: 'all documents in the oplog are read'
+      while (iterator.hasNext()) {
+        iterator.next()
+        documentsRead++
+        if (documentsRead == totalDocuments) {
+          break
         }
-        iterator.close()
+      }
+      iterator.close()
 
-      then: 'documents are read'
-        documentsRead > 0
-    }
+    then: 'documents read must be equal to total oplog documents'
+      documentsRead == totalDocuments
+  }
 
-    def startsBackupFromOplogHeadWithEmptyQueryClause() {
-      given: 'backup starts...'
-        def documentsRead = 0
-        Iterator<String> iterator = oplog.find('', false)
 
-      when: 'all documents in the oplog are read'
-        while (iterator.hasNext()) {
-            iterator.next()
-            documentsRead++
-        }
-        iterator.close()
+  def shoutsWhenQueryingWithAClosedIterator() {
+    given: 'a tailable oplog iterator'
+      MongoCollectionIterator<String> iterator = oplog.find(query, tailable)
 
-      then: 'documents are read'
-        documentsRead > 0
-    }
+    and: 'the iterator is closed'
+      iterator.close()
 
-	private extractTimestamp(String document) {
-		"{ " +  document.substring(document.indexOf("\"ts\""),
-			document.indexOf("}") + 1) + " }"
-	}
+    when:'the next document is queried'
+      iterator.hasNext()
+
+    then: 'error message should be shown as'
+      def problem = thrown(IteratorAlreadyClosed)
+      problem.message == "Iterator Already Closed"
+  }
+
+
+  def shoutsWhenFetchingWithAClosedIterator() {
+    given: 'a tailable oplog iterator'
+      MongoCollectionIterator<String> iterator = oplog.find(query, tailable)
+
+    and: 'the iterator is closed'
+      iterator.close()
+
+    when:'the next document is fetched'
+      iterator.next()
+
+    then: 'error message should be shown as'
+      def problem = thrown(IteratorAlreadyClosed)
+      problem.message == "Iterator Already Closed"
+  }
+
+  def findsADocumentByQuery() throws Exception {
+    given: 'we fetch the first document from mongo db'
+      DBCursor dbCursor = local.getCollection("oplog.rs").find()
+      DBObject document = dbCursor.next()
+
+    when: 'query executes, iterator points to second document'
+      MongoCollectionIterator<String> iterator =
+       oplog.find(JSON.serialize(document), tailable)
+
+    and: 'we also fetch second document'
+      document =  dbCursor.next()
+
+    then: "iterator's current & cursor's current document should be same"
+      iterator.next() == JSON.serialize(document);
+  }
+
+  def avoidsHingeDocumentToBeReadAgain() {
+    given: 'last backup was taken'
+      Iterator<String> previousIterator = oplog.find(null, tailable)
+      String lastDocument = previousIterator.next()
+
+    and: 'we have timestamp of last document'
+      String timestamp = extractTimestamp(lastDocument)
+
+    when: 'backup was performed again'
+      Iterator<String> nextIterator = oplog.find(timestamp, tailable)
+      String nextDocument = nextIterator.next()
+
+    then: 'it continues from where it left'
+      nextDocument == previousIterator.next()
+  }
+
+  def startsBackupFromOplogHeadWithNoQueryClause() {
+    given: 'backup starts...'
+      def documentsRead = 0
+      Iterator<String> iterator = oplog.find(null, false)
+
+    when: 'all documents in the oplog are read'
+      while (iterator.hasNext()) {
+        iterator.next()
+        documentsRead++
+      }
+      iterator.close()
+
+    then: 'documents are read'
+      documentsRead > 0
+  }
+
+  def startsBackupFromOplogHeadWithEmptyQueryClause() {
+    given: 'backup starts...'
+      def documentsRead = 0
+      Iterator<String> iterator = oplog.find('', false)
+
+    when: 'all documents in the oplog are read'
+      while (iterator.hasNext()) {
+        iterator.next()
+        documentsRead++
+      }
+      iterator.close()
+
+    then: 'documents are read'
+      documentsRead > 0
+  }
+
+  private extractTimestamp(String document) {
+    "{ " +  document.substring(document.indexOf("\"ts\""),
+      document.indexOf("}") + 1) + " }"
+  }
 
 }

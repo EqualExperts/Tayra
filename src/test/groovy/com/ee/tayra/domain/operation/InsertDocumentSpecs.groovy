@@ -2,153 +2,150 @@ package com.ee.tayra.domain.operation
 
 import org.bson.types.ObjectId
 
-import com.ee.tayra.domain.operation.InsertDocument;
-import com.ee.tayra.domain.operation.InsertFailed;
 import com.mongodb.BasicDBObjectBuilder
-import com.mongodb.CommandResult;
 import com.mongodb.DBObject
 
 class InsertDocumentSpecs extends RequiresMongoConnection {
-	
-	private String collectionName = 'home'
-	private String prefixedCollectionName = 'home.test'
-	private String anotherDb = 'mongoose'
-	def operation
-	def objId = new ObjectId('509754dd2862862d511f6b57')
-	def name = '[Test Name]'
-	
-	def setup() {
-		operation = new InsertDocument(standalone)
-	}
-	
-	def cleanup() {
-		standalone.getDB(dbName).getCollection(collectionName).drop()
-		standalone.getDB(dbName).getCollection(prefixedCollectionName).drop()
-		standalone.getDB(dbName).dropDatabase()
-		standalone.getDB(anotherDb).dropDatabase()
-	}
-	
-	private void assertThatDocumentIsPresentInCollection(String db, String collection, DBObject document) {
-		standalone.getDB(db).getCollection(collection).findOne(document) == document
-	}
 
-	
-	def insertsDocument() throws Exception {
-		given: 'an oplog entry for insert, upsert'
-			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-					.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
-		
-		when: 'the operation runs'
-			operation.execute(document.toString())
+  private String collectionName = 'home'
+  private String prefixedCollectionName = 'home.test'
+  private String anotherDb = 'mongoose'
+  def operation
+  def objId = new ObjectId('509754dd2862862d511f6b57')
+  def name = '[Test Name]'
 
-		then: 'the document should exist'
-			assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
-	}
-	
-	
-	def insertsDocumentInAPrefixedCollection() throws Exception {
-		given: 'an insert document oplog entry on a prefixed collection'
-			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-					.get()
-			def document = MongoUtils.insertDocument(dbName, prefixedCollectionName, o) as DBObject
-		
-		when: 'the operation runs'
-			operation.execute(document.toString())
-		
-		then: 'the document should exist'
-			assertThatDocumentIsPresentInCollection(dbName, prefixedCollectionName, o)
-	}
-	
-	
-	def insertsDocumentInAnotherDatabase() throws Exception {
-		given: 'an insert document oplog entry on another database'
-			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-					.get()
-			def document = MongoUtils.insertDocument(anotherDb, collectionName, o) as DBObject
+  def setup() {
+    operation = new InsertDocument(standalone)
+  }
 
-		when: 'the operation runs'
-			operation.execute(document.toString())
+  def cleanup() {
+    standalone.getDB(dbName).getCollection(collectionName).drop()
+    standalone.getDB(dbName).getCollection(prefixedCollectionName).drop()
+    standalone.getDB(dbName).dropDatabase()
+    standalone.getDB(anotherDb).dropDatabase()
+  }
 
-		then: 'the document should exist'
-			assertThatDocumentIsPresentInCollection(anotherDb, collectionName, o)
-	}
-	
-	
-	def insertsNestedDocument() {
-		given: 'an insert document oplog entry for nested document'
-			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-						.push('address')
-							.add('street', '[Some Street]')
-							.add('city', '[Some City]')
-							.add('country', '[CN]')
-						.pop()
-					.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+  private void assertThatDocumentIsPresentInCollection(String db, String collection, DBObject document) {
+    standalone.getDB(db).getCollection(collection).findOne(document) == document
+  }
 
-		when: 'the operation runs'
-			operation.execute(document.toString())
 
-		then: 'the document should exist'
-			assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
-	}
-	
-	
-	def insertsDeeplyNestedDocument() {
-		given: 'an insert document oplog entry for deeply nested document'
-			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-						.push('address')
-							.add('street', '[Some Street]')
-							.add('city', '[Some City]')
-							.add('country', '[CN]')
-							.push('geocode')
-								.add('lat', '[Some Lat]')
-								.add('long', '[Some Long]')
-							.pop()
-						.pop()
-					.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+  def insertsDocument() throws Exception {
+    given: 'an oplog entry for insert, upsert'
+      def o = BasicDBObjectBuilder
+          .start()
+            .add('_id', objId)
+            .add('name', name)
+          .get()
+      def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
 
-		when: 'the operation runs'
-			operation.execute(document.toString())
+    when: 'the operation runs'
+      operation.execute(document.toString())
 
-		then: 'the document should exist'
-			assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
-	}
-	
-	
-	def shoutsWhenDuplicateDocumentIsInserted() throws Exception {
-		given: 'an insert document oplog entry'
-			def o = BasicDBObjectBuilder
-					.start()
-						.add('_id', objId)
-						.add('name', name)
-					.get()
-			def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+    then: 'the document should exist'
+      assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
+  }
 
-		and: 'the document already exists'
-			operation.execute(document.toString())
 
-		when: 'the operation runs'
-			operation.execute(document.toString())
-			
-		then: 'it complains that the document cannot be inserted again'
-			def problem = thrown(InsertFailed)
-			problem.message.contains('''E11000 duplicate key error index: tayra.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }''')
-	}
+  def insertsDocumentInAPrefixedCollection() throws Exception {
+    given: 'an insert document oplog entry on a prefixed collection'
+      def o = BasicDBObjectBuilder
+          .start()
+            .add('_id', objId)
+            .add('name', name)
+          .get()
+      def document = MongoUtils.insertDocument(dbName, prefixedCollectionName, o) as DBObject
+
+    when: 'the operation runs'
+      operation.execute(document.toString())
+
+    then: 'the document should exist'
+      assertThatDocumentIsPresentInCollection(dbName, prefixedCollectionName, o)
+  }
+
+
+  def insertsDocumentInAnotherDatabase() throws Exception {
+    given: 'an insert document oplog entry on another database'
+      def o = BasicDBObjectBuilder
+          .start()
+            .add('_id', objId)
+            .add('name', name)
+          .get()
+      def document = MongoUtils.insertDocument(anotherDb, collectionName, o) as DBObject
+
+    when: 'the operation runs'
+      operation.execute(document.toString())
+
+    then: 'the document should exist'
+      assertThatDocumentIsPresentInCollection(anotherDb, collectionName, o)
+  }
+
+
+  def insertsNestedDocument() {
+    given: 'an insert document oplog entry for nested document'
+      def o = BasicDBObjectBuilder
+          .start()
+            .add('_id', objId)
+            .add('name', name)
+            .push('address')
+              .add('street', '[Some Street]')
+              .add('city', '[Some City]')
+              .add('country', '[CN]')
+            .pop()
+          .get()
+      def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+
+    when: 'the operation runs'
+      operation.execute(document.toString())
+
+    then: 'the document should exist'
+      assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
+  }
+
+
+  def insertsDeeplyNestedDocument() {
+    given: 'an insert document oplog entry for deeply nested document'
+      def o = BasicDBObjectBuilder
+          .start()
+            .add('_id', objId)
+            .add('name', name)
+            .push('address')
+              .add('street', '[Some Street]')
+              .add('city', '[Some City]')
+              .add('country', '[CN]')
+              .push('geocode')
+                .add('lat', '[Some Lat]')
+                .add('long', '[Some Long]')
+              .pop()
+            .pop()
+          .get()
+      def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+
+    when: 'the operation runs'
+      operation.execute(document.toString())
+
+    then: 'the document should exist'
+      assertThatDocumentIsPresentInCollection(dbName, collectionName, o)
+  }
+
+
+  def shoutsWhenDuplicateDocumentIsInserted() throws Exception {
+    given: 'an insert document oplog entry'
+      def o = BasicDBObjectBuilder
+          .start()
+            .add('_id', objId)
+            .add('name', name)
+          .get()
+      def document = MongoUtils.insertDocument(dbName, collectionName, o) as DBObject
+
+    and: 'the document already exists'
+      operation.execute(document.toString())
+
+    when: 'the operation runs'
+      operation.execute(document.toString())
+
+    then: 'it complains that the document cannot be inserted again'
+      def problem = thrown(InsertFailed)
+      problem.message.contains('''E11000 duplicate key error index: tayra.home.$_id_  dup key: { : ObjectId('509754dd2862862d511f6b57') }''')
+  }
 }

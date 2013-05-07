@@ -1,7 +1,7 @@
 package com.ee.tayra.exploratory
 
 import com.ee.tayra.command.restore.Restore
-import com.mongodb.MongoClient;
+import com.mongodb.MongoClient
 
 class RestoreExploratoryTest extends RequiresExploratoryTestSupport {
 

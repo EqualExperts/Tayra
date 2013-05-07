@@ -80,7 +80,7 @@ class Chunker implements Iterable<Chunk> {
           } catch (Exception problem) {
             throw new RuntimeException(problem);
           }
-        } else { // no more documents
+        } else {
           return null;
         }
       }

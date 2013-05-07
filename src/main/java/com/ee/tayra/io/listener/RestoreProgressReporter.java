@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-
 public class RestoreProgressReporter extends ProgressReporter {
 
   private static final String EXCEPTION_DETAILS_FILE = "exception.details";

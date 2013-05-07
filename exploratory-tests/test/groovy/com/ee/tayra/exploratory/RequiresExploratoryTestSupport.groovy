@@ -91,9 +91,9 @@ public abstract class RequiresExploratoryTestSupport extends Specification {
   }
 
   protected void deleteDataFrom(MongoClient mongoNode) {
-	  mongoNode.getDB("DL").dropDatabase()
-	  mongoNode.getDB("Tayra").dropDatabase()
-	  mongoNode.getDB("EELab").dropDatabase()
+    mongoNode.getDB("DL").dropDatabase()
+    mongoNode.getDB("Tayra").dropDatabase()
+    mongoNode.getDB("EELab").dropDatabase()
   }
   protected void deleteExtraDataFrom(MongoClient mongoNode) {
     mongoNode.getDB("People").dropDatabase()

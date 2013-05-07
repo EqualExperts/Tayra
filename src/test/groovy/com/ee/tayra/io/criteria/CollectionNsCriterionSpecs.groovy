@@ -63,7 +63,7 @@ class CollectionNsCriterionSpecs extends Specification {
       outcome == criteria.isSatisfiedBy(document)
 
     where:
-      document                         | outcome
+      document                       | outcome
     eelabsInsertDoc                  | true
     eelabsUpdateDoc                  | true
     eelabsDeleteDoc                  | true

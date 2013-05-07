@@ -1,15 +1,13 @@
 package com.ee.tayra.command.backup
 
-import com.ee.tayra.utils.StringDocumentWriter
-import spock.lang.*
-
-import com.ee.tayra.connector.Authenticator
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.listener.ProgressReporter;
-import com.ee.tayra.io.listener.Reporter;
-import com.ee.tayra.io.writer.DocumentWriter;
-
 import static com.ee.tayra.ConnectionFactory.*
+import spock.lang.*
+import com.ee.tayra.connector.Authenticator
+import com.ee.tayra.io.listener.CopyListener
+import com.ee.tayra.io.listener.ProgressReporter
+import com.ee.tayra.io.listener.Reporter
+import com.ee.tayra.io.writer.DocumentWriter
+import com.ee.tayra.utils.StringDocumentWriter
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.ServerAddress
@@ -76,7 +74,7 @@ public class BackupSpecs extends Specification {
   }
 
   def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
-    given: 'localhost not belonging to replica set'
+    given: 'source node not a part of replica set'
       context.setVariable('args', ['-s', unsecureTgtNode, '-f', backupFile, "--port=$unsecureTgtPort"])
 
     when: 'backup runs with above args'
@@ -87,7 +85,7 @@ public class BackupSpecs extends Specification {
   }
 
   def invokesBackupWhenAllEssentialOptionsAreSuppliedForSecureReplicaSet() {
-    given:'arguments contains -s, -f, -u and -p options'
+    given:'arguments contains -s, --port, -f, -u and -p options'
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
 
     and: 'a result captor is injected'
@@ -102,7 +100,7 @@ public class BackupSpecs extends Specification {
   }
 
   def invokesBackupWhenAllMandatoryOptionsAreSuppliedForUnsecureReplicaSet() {
-    given:'arguments contains -s, -f options'
+    given:'arguments contains -s, -f, and --port options'
       context.setVariable('args', ['-s', unsecureSrcNode, '-f', backupFile, "--port=$unsecureSrcPort"])
 
     and: 'a result captor is injected'
@@ -130,7 +128,7 @@ public class BackupSpecs extends Specification {
     given:'arguments contains -s, -f options but not --username'
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile])
 
-    and: 'have a authenticator that does not authenticate'
+    and: 'have a authenticator that mocks authentication failure'
       def mockAuthenticator = Mock(Authenticator)
       context.setVariable('authenticator', mockAuthenticator)
       mockAuthenticator.authenticate('', '') >> { throw new MongoException('Username cannot be empty') }
@@ -143,10 +141,10 @@ public class BackupSpecs extends Specification {
   }
 
   def shoutsWhenIncorrectPasswordIsSupplied() {
-    given:'arguments contains -s and -f option'
+    given:'arguments contains -s, --port and -f option'
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', 'incorrect'])
 
-    and: 'have a authenticator that does not authenticate'
+    and: 'have a authenticator that mocks authentication failure'
       def mockAuthenticator = Mock(Authenticator)
       context.setVariable('authenticator', mockAuthenticator)
       mockAuthenticator.authenticate(username, 'incorrect') >> { throw new MongoException('Authentication Failed to localhost') }
@@ -159,11 +157,11 @@ public class BackupSpecs extends Specification {
   }
 
   def shoutsWhenIncorrectUsernameIsSupplied() {
-    given:'arguments contains -s and -f option'
+    given:'arguments contains -s, --port and -f option'
       def context = new Binding()
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', 'incorrect', '-p', password])
 
-    and: 'have a authenticator that does not authenticate'
+    and: 'have a authenticator that mocks authentication failure'
       def mockAuthenticator = Mock(Authenticator)
       context.setVariable('authenticator', mockAuthenticator)
       mockAuthenticator.authenticate('incorrect', password) >> { throw new MongoException('Authentication Failed to localhost') }
@@ -190,7 +188,7 @@ public class BackupSpecs extends Specification {
   }
 
   def summarizesOnFinishingBackupProcess() {
-    given:'arguments contains -s, -f, -u and -p options'
+    given:'arguments contains -s, --port, -f, -u and -p options'
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
 
     and: 'a reporter is injected'

@@ -1,25 +1,22 @@
 package com.ee.tayra.io.writer
 
-import com.ee.tayra.io.writer.ConsoleReplayer;
-import com.mongodb.DBApiLayer.Result;
-
-import spock.lang.Specification;
+import spock.lang.Specification
 
 class ConsoleReplayerSpecs extends Specification{
 
-	def replaysDocumentToConsole() {
-		given: 'a target console output'
-			PrintWriter targetConsole = Mock(PrintWriter)
-			ConsoleReplayer consoleReplayer = new ConsoleReplayer(targetConsole)
+  def replaysDocumentToConsole() {
+    given: 'a target console output'
+      PrintWriter targetConsole = Mock(PrintWriter)
+      ConsoleReplayer consoleReplayer = new ConsoleReplayer(targetConsole)
 
-		and: 'a document'
-			def document = '"ts"'
+    and: 'a document'
+      def document = '"ts"'
 
-		when: 'document is replayed'
-			consoleReplayer.replay(document)
+    when: 'document is replayed'
+      consoleReplayer.replay(document)
 
-		then: 'it is output to the target console'
-			1 * targetConsole.println(document)
-	}
+    then: 'it is output to the target console'
+      1 * targetConsole.println(document)
+  }
 }
 
