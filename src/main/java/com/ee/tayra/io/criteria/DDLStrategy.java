@@ -92,14 +92,15 @@ NO_STRATEGY {
   private static final String NS = ".*\"ns\".*";
   private static final String DROP = ".*\"drop\".*";
   private static final String CREATE = ".*\"create\".*";
+  private static final String BLANK = "";
 
   public boolean matchCollection(final String incomingCollectionName,
     final String payload) {
     String collection = extractCollection(payload);
     return incomingCollectionName.equals(collection);
   }
+
   abstract String extractCollection(String payload);
-  private static final String BLANK = "";
 
   public static DDLStrategy create(final String payload) {
     if (payload.matches(CREATE)) {

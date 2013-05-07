@@ -32,15 +32,16 @@ package com.ee.tayra.io.listener;
 
 public interface CopyListener {
 
+  void onReadStart(String document);
+
   void onReadSuccess(String document);
+
+  void onReadFailure(String document, Throwable problem);
+
+  void onWriteStart(String document);
 
   void onWriteSuccess(String document);
 
   void onWriteFailure(String document, Throwable problem);
 
-  void onReadFailure(String document, Throwable problem);
-
-  void onReadStart(String document);
-
-  void onWriteStart(String document);
 }

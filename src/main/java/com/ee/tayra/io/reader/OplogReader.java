@@ -39,7 +39,7 @@ public class OplogReader implements CollectionReader {
   private ReadNotifier notifier;
 
   public OplogReader(final MongoCollection collection,
-    final String fromDocument, final boolean tailable) {
+      final String fromDocument, final boolean tailable) {
     iterator = collection.find(fromDocument, tailable);
     notifier = ReadNotifier.NONE;
   }
@@ -51,7 +51,7 @@ public class OplogReader implements CollectionReader {
   @Override
   public final boolean hasDocument() {
     if (iterator == null) {
-        throw new ReaderAlreadyClosed("Reader Already Closed");
+      throw new ReaderAlreadyClosed("Reader Already Closed");
     }
     boolean hasNext = false;
     try {

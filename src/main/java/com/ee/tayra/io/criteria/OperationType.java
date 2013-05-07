@@ -36,6 +36,7 @@ public abstract class OperationType {
   private static final String SYSTEM_INDEXES = "system.indexes";
   private static final String CMD = "$cmd";
   static final String BLANK = "";
+
   public static OperationType create(final String documentNamespace) {
     if (isDDL(documentNamespace)) {
       return new DDLOperation();
@@ -43,9 +44,16 @@ public abstract class OperationType {
     return new DMLOperation();
   }
 
+  public abstract boolean match(final String document,
+      final String documentNamespace, final String incomingNs);
+
   private static boolean isDDL(final String documentNamespace) {
     String command = documentNamespace.split(DOT, 2)[1];
     return ((CMD.equals(command)) || (SYSTEM_INDEXES.equals(command)));
+  }
+
+  private String extractDbName(final String incomingNS) {
+    return incomingNS.split(DOT, 2)[0];
   }
 
   final String extractCollectionName(final String incomingNS) {
@@ -57,27 +65,20 @@ public abstract class OperationType {
   }
 
   final boolean matchDbName(final String document,
-    final String documentNamespace, final String incomingNs) {
-      String dbName = extractDbName(incomingNs);
-      String documentDb = documentNamespace.split(DOT, 2)[0];
-      if (dbName.equals(documentDb)) {
-        return true;
-      }
-      return false;
+      final String documentNamespace, final String incomingNs) {
+    String dbName = extractDbName(incomingNs);
+    String documentDb = documentNamespace.split(DOT, 2)[0];
+    if (dbName.equals(documentDb)) {
+      return true;
+    }
+    return false;
   }
 
   final boolean matchDbAndCollectionName(final String document,
-    final String documentNamespace, final String incomingNs) {
-      if (incomingNs.equals(documentNamespace)) {
-        return true;
-      }
-        return false;
+      final String documentNamespace, final String incomingNs) {
+    if (incomingNs.equals(documentNamespace)) {
+      return true;
+    }
+    return false;
   }
-
-  private String extractDbName(final String incomingNS) {
-    return incomingNS.split(DOT, 2)[0];
-  }
-
-  public abstract boolean match(final String document,
-    final String documentNamespace, final String incomingNs);
 }

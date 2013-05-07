@@ -44,7 +44,7 @@ public abstract class TimestampCriterion implements Criterion {
   public static final String SINCE_TIME = "Since";
 
   public static TimestampCriterion create(final String timeLimit,
-    final String filter) {
+      final String filter) {
     if (UNTIL_TIME.equalsIgnoreCase(timeLimit)) {
       return new Until(filter);
     }
@@ -52,7 +52,7 @@ public abstract class TimestampCriterion implements Criterion {
       return new Since(filter);
     }
     throw new IllegalArgumentException(
-        "Don't know how to process timeoption: " + timeLimit);
+        "Don't know how to process time option: " + timeLimit);
   }
 
   @Override
@@ -90,10 +90,10 @@ public abstract class TimestampCriterion implements Criterion {
 
   private static class Until extends TimestampCriterion {
 
-  private Date timestamp;
-  private int increment;
+    private Date timestamp;
+    private int increment;
 
-  public Until(final String filter) {
+    public Until(final String filter) {
       this.timestamp = getTimestampFrom(filter);
       this.increment = getIncrementFrom(filter);
     }
@@ -114,8 +114,9 @@ public abstract class TimestampCriterion implements Criterion {
 
   private static class Since extends TimestampCriterion {
 
-  private Date timestamp;
-  private int increment;
+    private Date timestamp;
+    private int increment;
+
     public Since(final String filter) {
       this.timestamp = getTimestampFrom(filter);
       this.increment = getIncrementFrom(filter);

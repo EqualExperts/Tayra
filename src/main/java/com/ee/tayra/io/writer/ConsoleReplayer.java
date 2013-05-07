@@ -32,7 +32,6 @@ package com.ee.tayra.io.writer;
 
 import java.io.PrintWriter;
 
-
 public class ConsoleReplayer implements Replayer {
 
   private final PrintWriter console;

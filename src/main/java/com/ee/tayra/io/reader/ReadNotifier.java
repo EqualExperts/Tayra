@@ -37,18 +37,18 @@ public interface ReadNotifier {
 
   void notifyReadStart(String document);
 
-  ReadNotifier NONE = new  ReadNotifier() {
-      @Override
-      public final void notifyReadSuccess(final String document) {
-      }
+  ReadNotifier NONE = new ReadNotifier() {
+    @Override
+    public final void notifyReadSuccess(final String document) {
+    }
 
-      @Override
-      public final void notifyReadFailure(
-      final String document, final Throwable problem) {
-      }
+    @Override
+    public final void notifyReadFailure(final String document,
+        final Throwable problem) {
+    }
 
-      @Override
-      public final void notifyReadStart(final String document) {
-      }
+    @Override
+    public final void notifyReadStart(final String document) {
+    }
   };
 }

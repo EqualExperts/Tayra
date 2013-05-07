@@ -34,7 +34,6 @@ import java.io.IOException;
 
 import com.ee.tayra.io.listener.CopyListener;
 
-
 public class TimestampRecorder implements CopyListener {
 
   private final StringBuilder documentTimestamp; //for performance

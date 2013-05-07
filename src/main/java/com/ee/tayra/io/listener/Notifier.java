@@ -57,7 +57,7 @@ public class Notifier implements ReadNotifier, WriteNotifier {
 
   @Override
   public final void notifyWriteFailure(final String document,
-                                       final Throwable problem) {
+      final Throwable problem) {
     for (CopyListener listener : listeners) {
       listener.onWriteFailure(document, problem);
     }
@@ -65,7 +65,7 @@ public class Notifier implements ReadNotifier, WriteNotifier {
 
   @Override
   public final void notifyReadFailure(final String document,
-                                      final Throwable problem) {
+      final Throwable problem) {
     for (CopyListener listener : listeners) {
         listener.onReadFailure(document, problem);
     }

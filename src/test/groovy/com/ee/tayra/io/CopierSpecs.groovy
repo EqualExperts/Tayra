@@ -1,19 +1,18 @@
 package com.ee.tayra.io
 
-import com.ee.tayra.utils.StringDocumentWriter
+import static com.ee.tayra.ConnectionFactory.*
 import spock.lang.*
 
 import com.ee.tayra.domain.NotAReplicaSetNode
 import com.ee.tayra.domain.Oplog
-import com.ee.tayra.io.listener.CopyListener;
-import com.ee.tayra.io.reader.DocumentReader;
-import com.ee.tayra.io.reader.FileDocumentReader;
-import com.ee.tayra.io.reader.OplogReader;
-import com.ee.tayra.io.writer.DocumentWriter;
-import com.ee.tayra.io.writer.OplogReplayer;
-import com.ee.tayra.io.writer.Replayer;
-
-import static com.ee.tayra.ConnectionFactory.*
+import com.ee.tayra.io.listener.CopyListener
+import com.ee.tayra.io.reader.DocumentReader
+import com.ee.tayra.io.reader.FileDocumentReader
+import com.ee.tayra.io.reader.OplogReader
+import com.ee.tayra.io.writer.DocumentWriter
+import com.ee.tayra.io.writer.OplogReplayer
+import com.ee.tayra.io.writer.Replayer
+import com.ee.tayra.utils.StringDocumentWriter
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DB
 import com.mongodb.DBObject
@@ -52,7 +51,7 @@ public class CopierSpecs extends Specification {
 		}
 	}
 
-	def writesOplogToDestination() throws Exception {
+	def writesOplogToDestination() {
 		given:'a writer and an oplog reader'
 			DocumentWriter writer = new StringDocumentWriter()
 			DBObject dbObject = local.getCollection("oplog.rs").find().next();
@@ -69,7 +68,7 @@ public class CopierSpecs extends Specification {
 			writer.toString().contains("ts")
 	}
 
-	def replaysOplog() throws Exception {
+	def replaysOplog() {
 		given: 'a reader and an oplog replayer'
 			mockOplogReplayer = Mock(OplogReplayer)
 			def bufferedReader = new BufferedReader(new StringReader(document + NEW_LINE))

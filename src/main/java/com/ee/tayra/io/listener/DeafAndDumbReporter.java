@@ -36,6 +36,14 @@ import java.io.Writer;
 public class DeafAndDumbReporter implements CopyListener, Reporter {
 
   @Override
+  public void onReadStart(final String document) {
+  }
+
+  @Override
+  public void onWriteStart(final String document) {
+  }
+
+  @Override
   public final void onReadSuccess(final String document) {
   }
 
@@ -44,12 +52,12 @@ public class DeafAndDumbReporter implements CopyListener, Reporter {
   }
 
   @Override
-  public final void onWriteFailure(final String document,
+  public final void onReadFailure(final String document,
       final Throwable problem) {
   }
 
   @Override
-  public final void onReadFailure(final String document,
+  public final void onWriteFailure(final String document,
       final Throwable problem) {
   }
 
@@ -59,13 +67,5 @@ public class DeafAndDumbReporter implements CopyListener, Reporter {
 
   @Override
   public void writeStartTimeTo(final Writer writer) {
-  }
-
-  @Override
-  public void onReadStart(final String document) {
-  }
-
-  @Override
-  public void onWriteStart(final String document) {
   }
 }

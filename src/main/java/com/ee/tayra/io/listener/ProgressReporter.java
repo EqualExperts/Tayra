@@ -35,7 +35,6 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Date;
 
-
 class ProgressReporter implements CopyListener, Reporter {
 
   private static final int MS_TO_SECONDS = 1000;
