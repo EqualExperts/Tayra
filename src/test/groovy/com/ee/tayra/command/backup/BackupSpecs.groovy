@@ -187,21 +187,6 @@ public class BackupSpecs extends Specification {
       config.password == ''
   }
 
-  def summarizesOnFinishingBackupProcess() {
-    given:'arguments contains -s, --port, -f, -u and -p options'
-      context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f', backupFile, '-u', username, '-p', password])
-
-    and: 'a reporter is injected'
-      def mockProgressReporter = Mock(ProgressReporter)
-      context.setVariable('reporter', mockProgressReporter)
-
-    when: 'backup runs with above args'
-      new Backup(context).run()
-
-    then: 'then reporter summarizes'
-      (_) * mockProgressReporter.summarizeTo(_)
-  }
-
   def backsUpNoDocumentWhenOnlySExcludeOptionIsGiven() {
     given:'arguments contains -s, -f, -u, -p and --sExclude options'
       context.setVariable('args', ['-s', secureSrcNode, "--port=$secureSrcPort", '-f',backupFile, '--sExclude', backupFile,  '-u', username, '-p', password])

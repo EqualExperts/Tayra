@@ -245,4 +245,10 @@
             <Bug code="SI_INSTANCE_BEFORE_FINALS_ASSIGNED" />
         </Not>
     </Match>
+    <Match>
+        <Class name="com.ee.tayra.command.restore.Restore$_run_closure3" />
+        <Not>
+            <Bug code="SE_NO_SERIALVERSIONID" />
+        </Not>
+    </Match>
 </FindBugsFilter>

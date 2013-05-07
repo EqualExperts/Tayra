@@ -181,22 +181,6 @@ class RestoreSpecs extends Specification {
       1 * mockReplayer.replay('"ts"')
   }
 
-  def reportsSummaryAfterCompletion() {
-    given:'arguments contain all essential options'
-      context.setVariable('args', ['-d', secureTgtNode, "--port=$secureTgtPort", '-f', backupFile, '-u', username, '-p', password])
-
-    and: 'the reader is injected'
-      def bufferedReader = new BufferedReader(new StringReader('"ts"' + NEW_LINE))
-      DocumentReader source = new FileDocumentReader(bufferedReader)
-      context.setVariable('reader', source)
-
-    when: 'restore runs with above args'
-      new Restore(context).run()
-
-    then: 'it summarizes'
-      1 * mockReporter.summarizeTo(_)
-  }
-
   def reportsStartTime() {
     given:'arguments contain all essential options'
       context.setVariable('args', ['-d', secureTgtNode, "--port=$secureTgtPort", '-f', backupFile, '-u', username, '-p', password])

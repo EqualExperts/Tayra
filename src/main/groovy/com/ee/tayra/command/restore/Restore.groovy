@@ -134,8 +134,23 @@ System.setErr(stderr)
 
 RestoreFactory factory = null
 MongoClient mongo = null
-try {
+DocumentReader reader = null
+def progressReporter = null
 
+boolean normalExecution = false
+addShutdownHook {
+  if(!normalExecution) {
+    progressReporter?.writeln (console,'==> User forced a Stop-Read...')
+  }
+  try {
+    reader?.close()
+  } catch (Exception e) {
+  }
+  mongo?.close()
+  progressReporter?.summarizeTo console
+}
+
+try {
   if(!options.'dry-run') {
     ServerAddress server = new ServerAddress(config.destination, config.port)
     mongo = new MongoClient(server)
@@ -144,7 +159,7 @@ try {
   factory = RestoreFactory.createFactory(config, mongo, console)
 
   def writer = binding.hasVariable('writer') ? binding.getVariable('writer') : factory.createWriter()
-  def progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
+  progressReporter = binding.hasVariable('reporter') ? binding.getVariable('reporter') : factory.createReporter()
 
   def files = new RotatingFileCollection(restoreFromFile, isMultiple)
   def copier = new Copier()
@@ -152,18 +167,18 @@ try {
   progressReporter.writeStartTimeTo console
 
   files.withFile {
-    DocumentReader reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
+    reader = binding.hasVariable('reader') ? binding.getVariable('reader') : factory.createReader(it)
     copier.copy(reader, writer)
     reader.close()
   }
-
-  progressReporter.summarizeTo console
 } catch (Throwable problem) {
   console.println "Oops!! Could not perform restore...$problem.message , Refer $errorLog for more details."
   problem.printStackTrace(stderr)
 } finally {
   mongo?.close()
 }
+
+normalExecution = true
 
 def getAuthenticator(mongo) {
   binding.hasVariable('authenticator') ?
