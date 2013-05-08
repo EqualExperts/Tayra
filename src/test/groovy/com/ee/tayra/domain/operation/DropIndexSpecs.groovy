@@ -108,7 +108,7 @@ class DropIndexSpecs extends RequiresMongoConnection{
       operation.doExecute(standalone.getDB(dbName), spec)
 
     then: 'it complains that index to be dropped does not exist'
-      def problem = thrown(DropIndexFailed)
+      def problem = thrown(OperationFailed)
       problem.message == "Cannot drop index : " + spec.get('index').toString() + " Index doesn't exist."
   }
 
@@ -160,7 +160,7 @@ class DropIndexSpecs extends RequiresMongoConnection{
       operation.doExecute(standalone.getDB(dbName), spec)
 
     then: 'it complains that index to be dropped does not exist'
-      def problem = thrown(DropIndexFailed)
+      def problem = thrown(OperationFailed)
       problem.message == "Cannot drop index : " + spec.get('index').toString() + " Index doesn't exist."
   }
 }

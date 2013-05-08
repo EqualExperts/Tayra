@@ -51,7 +51,7 @@ class CreateCollection implements SchemaOperation {
     try {
       db.createCollection(collectionName, options);
     } catch (Exception problem) {
-      throw new CreateCollectionFailed(problem.getMessage());
+      throw new OperationFailed(problem.getMessage(), problem);
     }
   }
 

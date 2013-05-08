@@ -48,7 +48,7 @@ class DropDatabaseSpecs extends RequiresMongoConnection {
       operation.doExecute(standalone.getDB(nonExistentDB), spec)
 
     then: 'it complains that database to be dropped does not exist'
-      def problem = thrown(DropDatabaseFailed)
+      def problem = thrown(OperationFailed)
        problem.message == "Could Not Drop Database $nonExistentDB"
   }
 }

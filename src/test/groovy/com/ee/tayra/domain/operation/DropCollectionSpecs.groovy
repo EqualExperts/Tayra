@@ -78,7 +78,7 @@ class DropCollectionSpecs extends RequiresMongoConnection {
       operation.doExecute(db, spec)
 
     then: 'it complains that collection to be dropped does not exist'
-      def problem = thrown(DropCollectionFailed)
+      def problem = thrown(OperationFailed)
       problem.message == "Could Not Drop Collection people"
   }
 }

@@ -38,7 +38,7 @@ class DropCollection implements SchemaOperation {
   public final void doExecute(final DB db, final DBObject spec) {
     final String dropCollectionName = (String) spec.get("drop");
     if (!db.collectionExists(dropCollectionName)) {
-      throw new DropCollectionFailed("Could Not Drop Collection "
+      throw new OperationFailed("Could Not Drop Collection "
           + dropCollectionName);
     }
     db.getCollection(dropCollectionName).drop();

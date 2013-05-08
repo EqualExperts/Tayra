@@ -58,14 +58,14 @@ class InsertDocument extends Operation {
         mongo.getDB(dbName).getCollection(collectionName)
                            .ensureIndex(key, spec);
       } catch (Exception problem) {
-        throw new InsertFailed(problem.getMessage());
+        throw new OperationFailed(problem.getMessage(), problem);
       }
     } else {
       extractParametersFrom(ns);
       try {
         mongo.getDB(dbName).getCollection(collectionName).insert(spec);
       } catch (Exception problem) {
-        throw new InsertFailed(problem.getMessage());
+        throw new OperationFailed(problem.getMessage(), problem);
       }
     }
   }

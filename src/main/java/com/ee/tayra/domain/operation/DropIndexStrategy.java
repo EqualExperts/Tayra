@@ -50,7 +50,7 @@ public enum DropIndexStrategy {
          .getIndexInfo();
     String indexName = (String) spec.get("index");
     if (doesNotExist(indexes, indexName)) {
-          throw new DropIndexFailed("Cannot drop index : "
+          throw new OperationFailed("Cannot drop index : "
             + indexName + " Index doesn't exist.");
         }
         db.getCollection(collectionName).dropIndex(indexName);
@@ -80,7 +80,7 @@ public enum DropIndexStrategy {
     DBObject indexObj = (DBObject) spec.get("index");
            toMongoFormat(indexObj);
            if (doesNotExist(indexes, indexObj)) {
-             throw new DropIndexFailed("Cannot drop index : "
+             throw new OperationFailed("Cannot drop index : "
                + indexObj.toString() + " Index doesn't exist.");
            }
           db.getCollection(collectionName).dropIndex(indexObj);

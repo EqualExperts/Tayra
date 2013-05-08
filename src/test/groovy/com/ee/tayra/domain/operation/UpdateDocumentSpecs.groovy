@@ -198,7 +198,7 @@ class UpdateDocumentSpecs extends RequiresMongoConnection {
       operation.execute(document.toString())
 
     then: 'it complains that document to be updated does not exist'
-      def problem = thrown(UpdateFailed)
+      def problem = thrown(OperationFailed)
       problem.message == 'Document does not exist { \"_id\" : { \"$oid\" : \"'+ objId +'\"}}'
   }
 

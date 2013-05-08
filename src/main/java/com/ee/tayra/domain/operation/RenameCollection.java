@@ -48,7 +48,7 @@ public class RenameCollection implements SchemaOperation {
                     (Boolean) dropTarget.get("dropTarget"));
           }
         } catch (Exception problem) {
-          throw new RenameCollectionFailed(problem.getMessage());
+          throw new OperationFailed(problem.getMessage());
       }
   }
 
