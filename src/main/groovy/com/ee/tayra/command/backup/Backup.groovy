@@ -152,7 +152,8 @@ System.setErr(stderr)
 try {
   progressReporter.writeStartTimeTo console
   printTimestampCaution(timestampRecorder, console)
-  new MongoReplSetConnection(config.source, config.port).using { mongo ->
+  def retryable = true
+  new MongoReplSetConnection(config.source, config.port, retryable, console).using { mongo ->
     getAuthenticator(mongo).authenticate(config.username, config.password)
     def oplog = new Oplog(mongo)
     reader = factory.createReader(oplog)

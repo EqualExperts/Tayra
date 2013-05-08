@@ -11,11 +11,13 @@ public class MongoReplSetConnectionSpecs extends Specification {
   private String source
   private int port
   private MongoReplSetConnection mongoReplsetConnection
+  private PrintWriter console
 
   def setup() {
     source = secureSrcNode
     port = secureSrcPort
-    mongoReplsetConnection = new MongoReplSetConnection(source, port)
+    console = new PrintWriter(System.out,true)
+    mongoReplsetConnection = new MongoReplSetConnection(source, port, true, console)
   }
 
   def cleanup() {
@@ -108,7 +110,7 @@ public class MongoReplSetConnectionSpecs extends Specification {
 
     then: 'ensure execute was invoked '
       executeCalled
-
+      
     and: 'retry was not invoked'
       !retryCalled
   }

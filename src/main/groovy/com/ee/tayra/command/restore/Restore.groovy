@@ -144,9 +144,9 @@ addShutdownHook {
   }
   try {
     reader?.close()
+    mongo?.close()
   } catch (Exception e) {
   }
-  mongo?.close()
   progressReporter?.summarizeTo console
 }
 

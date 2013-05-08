@@ -42,19 +42,22 @@ public class MongoReplSetConnection {
   private def nodes = []
   private boolean retryable = true
   private boolean isMaster = false
+  private PrintWriter console
 
-  public MongoReplSetConnection(String sourceMongoDB, int port, boolean retryable = true) {
+  public MongoReplSetConnection(String sourceMongoDB, int port,
+      boolean retryable = true, PrintWriter console = new PrintWriter(System.out,true)) {
     ServerAddress server = new ServerAddress(sourceMongoDB, port)
     node = new MongoClient(server)
     isMaster = node.getDB("test").command("ismaster").get("ismaster")
     nodes = getNodesWithinReplicaSet(node)
     this.retryable = retryable
+    this.console = console
   }
 
   private def getNodesWithinReplicaSet(master) {
     // TODO: Replace this API by different call (to investigate with mongo guys)
     String [] hosts = node.getDB("test").command("ismaster").get("hosts")
-    println "Hosts are: $hosts"
+    console.println "Hosts are: $hosts"
     hosts.collect { getServerAddress(it) }
   }
 
@@ -74,7 +77,7 @@ public class MongoReplSetConnection {
         shouldContinue = false
       } catch(MongoException.Network problem) {
         if (retryable) {
-          println "\nNode crashed. Re-establishing Connection"
+          console.println "\nNode crashed. Re-establishing Connection"
           betweenRetry.clone().call()
           node = connectToANewNode(nodes)
           nodes = getNodesWithinReplicaSet(node)
@@ -96,11 +99,11 @@ public class MongoReplSetConnection {
   private def getNodeAfterElection(nodes, options) {
     MongoClient mongoClient = new MongoClient(nodes, options)
     while(mongoClient.getReplicaSetStatus().master == null) {
-      println 'Still waiting for master to be elected...'
+      console.println 'Still waiting for master to be elected...'
       sleep 2 * 1000
     }
     String primaryNode = mongoClient.getReplicaSetStatus().master
-    println "Elected master: $primaryNode"
+    console.println "Elected master: $primaryNode"
     mongoClient
   }
 }
