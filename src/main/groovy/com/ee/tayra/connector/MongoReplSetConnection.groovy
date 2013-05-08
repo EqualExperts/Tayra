@@ -45,7 +45,7 @@ public class MongoReplSetConnection {
   private PrintWriter console
 
   public MongoReplSetConnection(String sourceMongoDB, int port,
-      boolean retryable = true, PrintWriter console = new PrintWriter(System.out,true)) {
+      PrintWriter console = new PrintWriter(System.out,true), boolean retryable = true) {
     ServerAddress server = new ServerAddress(sourceMongoDB, port)
     node = new MongoClient(server)
     isMaster = node.getDB("test").command("ismaster").get("ismaster")

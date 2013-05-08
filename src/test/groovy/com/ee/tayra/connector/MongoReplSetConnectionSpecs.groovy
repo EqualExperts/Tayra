@@ -17,7 +17,7 @@ public class MongoReplSetConnectionSpecs extends Specification {
     source = secureSrcNode
     port = secureSrcPort
     console = new PrintWriter(System.out,true)
-    mongoReplsetConnection = new MongoReplSetConnection(source, port, true, console)
+    mongoReplsetConnection = new MongoReplSetConnection(source, port, console)
   }
 
   def cleanup() {
@@ -77,7 +77,7 @@ public class MongoReplSetConnectionSpecs extends Specification {
 
   def doesNotSurviveNodeCrashWhenRetryableIsFalse() {
     given: 'Mongo replica set connection with retryable as false'
-      mongoReplsetConnection = new MongoReplSetConnection(source, port, false)
+      mongoReplsetConnection = new MongoReplSetConnection(source, port, console, false)
       and: 'node crashes'
       def called = false
       def execute = {
@@ -97,7 +97,7 @@ public class MongoReplSetConnectionSpecs extends Specification {
 
   def connectsToASingleNode() {
     given: 'Mongo replica set connection to a single node with retryable as false'
-      mongoReplsetConnection = new MongoReplSetConnection(unsecureTgtNode, unsecureTgtPort, false)
+      mongoReplsetConnection = new MongoReplSetConnection(unsecureTgtNode, unsecureTgtPort, console, false)
       def executeCalled = false
       def retryCalled = false
       def execute = { executeCalled = true  }
