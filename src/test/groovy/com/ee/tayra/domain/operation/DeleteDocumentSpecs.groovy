@@ -131,7 +131,7 @@ class DeleteDocumentSpecs extends RequiresMongoConnection {
         operation.execute(document.toString())
 
     then: 'it complains that document to be deleted does not exist'
-      def problem = thrown(DeleteFailed)
+      def problem = thrown(OperationFailed)
         problem.message == 'Document does not exist { \"_id\" : { \"$oid\" : \"'+ absentObjId +'\"}}'
   }
 }

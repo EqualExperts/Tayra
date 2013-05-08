@@ -55,7 +55,7 @@ class DeleteDocument extends Operation {
                                      .remove(deleteSpec);
       int deletedObjCount = writeResult.getN();
       if (deletedObjCount == 0) {
-        throw new DeleteFailed("Document does not exist "
+        throw new OperationFailed("Document does not exist "
               + deleteSpec.toString());
       }
     }

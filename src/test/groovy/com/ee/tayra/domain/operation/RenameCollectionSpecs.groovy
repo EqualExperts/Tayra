@@ -57,7 +57,7 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
       operation.doExecute(standalone.getDB(dbName), o)
 
     then: 'it complains with the proper error'
-      def problem = thrown(RenameCollectionFailed)
+      def problem = thrown(OperationFailed)
       problem.message.contains("""{ "serverUsed" : "localhost/127.0.0.1:${secureTgtPort}" , "errmsg" : "exception: source namespace does not exist" , "code" : 10026 , "ok" : 0.0}""")
   }
 
@@ -94,7 +94,7 @@ class RenameCollectionSpecs extends RequiresMongoConnection {
       operation.doExecute(standalone.getDB(dbName), o)
 
     then:
-      def problem = thrown(RenameCollectionFailed)
+      def problem = thrown(OperationFailed)
       problem.message == """{ "serverUsed" : "localhost/127.0.0.1:${secureTgtPort}" , "errmsg" : "exception: target namespace exists" , "code" : 10027 , "ok" : 0.0}"""
   }
 }

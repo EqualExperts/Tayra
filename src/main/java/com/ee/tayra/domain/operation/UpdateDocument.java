@@ -58,7 +58,7 @@ class UpdateDocument extends Operation {
 
       final Boolean updated = (Boolean) writeResult.getField("updatedExisting");
       if (!updated) {
-        throw new UpdateFailed("Document does not exist " + id.toString());
+        throw new OperationFailed("Document does not exist " + id.toString());
       }
     }
   }

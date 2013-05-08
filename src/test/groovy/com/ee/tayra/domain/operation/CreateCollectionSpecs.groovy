@@ -46,7 +46,7 @@ class CreateCollectionSpecs extends RequiresMongoConnection {
       operation.doExecute(database, spec)
 
     then: 'it complains that the collection cannot be created again'
-      def problem = thrown(CreateCollectionFailed)
+      def problem = thrown(OperationFailed)
       problem.message.contains('"errmsg" : "collection already exists"')
   }
 

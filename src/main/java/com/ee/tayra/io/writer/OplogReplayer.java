@@ -31,6 +31,7 @@
 package com.ee.tayra.io.writer;
 
 import com.ee.tayra.domain.operation.Operation;
+import com.ee.tayra.domain.operation.OperationFailed;
 import com.ee.tayra.domain.operation.OperationsFactory;
 
 public class OplogReplayer implements Replayer {
@@ -55,8 +56,11 @@ public class OplogReplayer implements Replayer {
       Operation operation = operations.get(operationCode);
       operation.execute(document);
       notifier.notifyWriteSuccess(document);
-    } catch (RuntimeException problem) {
+    } catch (OperationFailed problem) {
       notifier.notifyWriteFailure(document, problem);
+      if (problem.isConnectionLost()) {
+        throw problem;
+      }
     }
   }
 
