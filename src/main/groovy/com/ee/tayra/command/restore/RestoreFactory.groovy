@@ -75,18 +75,14 @@ abstract class RestoreFactory {
 
   protected DocumentReader createReader(final String fileName){
     File file = new File(fileName)
-    if (bufferSizeSpecified()) {
-      DataUnit dataUnit = DataUnit.from(bufferSize)
-      long chunkSize = dataUnit.toLongValue()
-      return new MemoryMappedDocumentReader(fileName, chunkSize)
-    } else {
-      return new FileDocumentReader(new BufferedReader(new FileReader(file)))
-    }
+    DataUnit dataUnit = DataUnit.from(bufferSize)
+    int buffer = dataUnit.toIntValue()
+    return new FileDocumentReader(new BufferedReader(new FileReader(file), buffer))
   }
 
   private boolean bufferSizeSpecified() {
     boolean bufferSpecified = (bufferSize != null &&
-      bufferSize.toString() != 'true' && (bufferSize.length() > 0))
+        bufferSize.toString() != 'true' && (bufferSize.length() > 0))
     return bufferSpecified
   }
 

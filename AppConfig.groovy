@@ -53,7 +53,7 @@ configuration {
 			minor = 8 //changes or feature additions
 			micro = 1 //patches and bug fixes
 			qualifier {
-				alphaNumeric = 'Beta2' //Alpha# or Beta# or CR# or GA, or SP#
+				alphaNumeric = 'Beta3' //Alpha# or Beta# or CR# or GA, or SP#
 			}
             previous = '0.8.0.Beta2'
 			complete = toCompleteVersion()

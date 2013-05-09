@@ -105,6 +105,10 @@ public final class DataUnit {
     return value() * bytesFactor();
   }
 
+  public int toIntValue() {
+    return value() * bytesFactor();
+  }
+
   public static DataUnit from(final String valueWithUnit) {
     if (valueWithUnit == null || valueWithUnit.isEmpty()) {
       throw new IllegalArgumentException("Valid values are B, KB, MB, GB");

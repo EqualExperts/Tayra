@@ -35,7 +35,7 @@ class RestoreFactorySpecs extends Specification{
           false      | DefaultFactory
   }
 
-  def createsAppropriateReaders() {
+  def createsDocumentReader() {
     given:'a file'
       String fileName = 'test.out'
       config.fBuffer= bufferSize
@@ -48,8 +48,7 @@ class RestoreFactorySpecs extends Specification{
 
     where:'appropriate reader is created'
       bufferSize |   klass
-         '8MB'   | MemoryMappedDocumentReader
-          ''     | FileDocumentReader
+         '8KB'   | FileDocumentReader
   }
 
 }

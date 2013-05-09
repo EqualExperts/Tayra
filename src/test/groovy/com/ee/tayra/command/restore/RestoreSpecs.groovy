@@ -304,30 +304,20 @@ class RestoreSpecs extends Specification {
       result.toString().contains('Cannot understand [--sNsss, users]')
   }
 
-  def invokesRestoreInFastModeWhenAllEssentialOptionsAreSuppliedForUnsecuredStandalone() {
+  def invokesRestoreWhenBufferSizeIsSpecifiedForUnsecuredStandalone() {
     given:'arguments contains -d, -port and -f options'
       context.setVariable('args', ['-d', unsecureTgtNode, "--port=$unsecureTgtPort", '-f', backupFile, '--fBuffer=2MB'])
 
-    and: 'a backupFile is given'
-      String document = '{{ts:1}}'
-      def file = File.createTempFile('test', 'out')
-      file.withWriter { writer ->
-      writer.write document
-      writer.write NEW_LINE
-      }
-
     and: 'the reader is injected'
-      long bufferSize = 4096
-      DocumentReader source = new MemoryMappedDocumentReader(file.absolutePath, bufferSize)
+      int bufferSize = 4096
+      def bufferedReader = new BufferedReader(new StringReader('ts' + NEW_LINE), bufferSize)
+      DocumentReader source = new FileDocumentReader(bufferedReader)
       context.setVariable('reader', source)
 
     when: 'restore runs'
       new Restore(context).run()
 
     then: 'perform the restore operation'
-      1 * mockReplayer.replay('{{ts:1}}')
-
-    cleanup:
-      file.delete()
+      1 * mockReplayer.replay('ts')
   }
 }

@@ -42,5 +42,5 @@ class RestoreCmdDefaults {
   public String exceptionDetailsFile = 'exception.details'
   public boolean dryRunRequired = false
   public boolean sExclude = false
-  public String fBuffer = ''
+  public String fBuffer = '8KB'
 }
