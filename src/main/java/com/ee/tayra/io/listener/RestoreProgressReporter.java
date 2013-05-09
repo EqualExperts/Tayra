@@ -103,4 +103,13 @@ public class RestoreProgressReporter extends ProgressReporter {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public final void onReadStart(final String document) {
+    if (document.isEmpty()) {
+      getProgressWriter().printf(
+            "%s Wrote %d Document(s)...\r",
+            spinner[documentsWritten % spinner.length], documentsWritten);
+    }
+  }
 }

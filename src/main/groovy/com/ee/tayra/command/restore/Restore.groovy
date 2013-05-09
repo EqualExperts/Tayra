@@ -140,7 +140,8 @@ def progressReporter = null
 boolean normalExecution = false
 addShutdownHook {
   if(!normalExecution) {
-    progressReporter?.writeln (console,'==> User forced a Stop-Read...')
+    console.println("\n")
+    progressReporter?.writeln (console,'==> User forced a stop-read...')
   }
   try {
     reader?.close()

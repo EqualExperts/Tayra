@@ -42,8 +42,8 @@ class ProgressReporter implements CopyListener, Reporter {
   protected static final String NEW_LINE = System
       .getProperty("line.separator");
   private final PrintWriter progressWriter;
-  private final String[] spinner = new String[] {"/", "-", "\\", "|"};
-  private int documentsWritten = 0;
+  protected final String[] spinner = new String[] {"/", "-", "\\", "|"};
+  protected int documentsWritten = 0;
   private int documentsRead = 0;
   private long startTime;
 
