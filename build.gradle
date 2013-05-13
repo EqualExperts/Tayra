@@ -1,5 +1,3 @@
-import com.sun.org.apache.bcel.internal.util.ClassPath;
-
 import groovy.io.FileType
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -11,8 +9,7 @@ apply plugin: 'jdepend' //for dependency analysis
 apply plugin: 'findbugs' //for static code analysis
 apply plugin: 'pmd'
 
-apply plugin: 'application'
-//mainClassName = 'com.ee.tayra.exploratory.ExploratoryTestRunner'
+//apply plugin: 'application'
 defaultTasks 'clean', 'build'
 
 sourceCompatibility = '1.6'
@@ -85,9 +82,9 @@ repositories {
 }
 
 configurations {
-	cobertura
-	compile
-	tests
+  cobertura
+  compile
+  tests
 }
 
 dependencies {
@@ -100,11 +97,11 @@ dependencies {
 }
 
 jar {
-	manifest {
-		attributes.putAll(project.ext.manifest)
-	}
+  manifest {
+    attributes.putAll(project.ext.manifest)
+  }
 
-	doLast {
+  doLast {
         copy {
             from (configurations.compile.asPath.split(File.pathSeparator))
             into "$libsDir"
@@ -114,10 +111,10 @@ jar {
 
 sourceSets {
 test {
-		groovy {
-			srcDir "$exploratoryTestSrcDir"
-		}
-	}
+    groovy {
+      srcDir "$exploratoryTestSrcDir"
+    }
+  }
 }
 
 clean << {
@@ -125,35 +122,35 @@ clean << {
 }
 
 test {
-	systemProperties['portPrefix'] = project.ext.portPrefix
-	def originalClasspath = getClasspath()
-	doFirst {
+  systemProperties['portPrefix'] = project.ext.portPrefix
+  def originalClasspath = getClasspath()
+  doFirst {
         println "Running tests for Mongods with port prefix $project.ext.portPrefix"
         ant.taskdef(resource:'tasks.properties', classpath:configurations.cobertura.asPath)
-		//Note the classpath order: instrumented classes are before the original
-		//uninstrumented classes.  This is important
-		setClasspath(files("$instrumentedClassesDir") + originalClasspath)
+    //Note the classpath order: instrumented classes are before the original
+    //uninstrumented classes.  This is important
+    setClasspath(files("$instrumentedClassesDir") + originalClasspath)
 
-		ant.'cobertura-instrument'(todir:project.ext.instrumentedClassesDir) {
-			ignore(regex:"org.apache.*, com.mongodb.*")
-			fileset(dir:"${project.buildDir}/classes/main", includes:'**/*.class', excludes:'**/*Specs.class')
-		}
-	}
+    ant.'cobertura-instrument'(todir:project.ext.instrumentedClassesDir) {
+      ignore(regex:"org.apache.*, com.mongodb.*")
+      fileset(dir:"${project.buildDir}/classes/main", includes:'**/*.class', excludes:'**/*Specs.class')
+    }
+  }
 
-	exclude ('**/exploratory/*.class')
+  exclude ('**/exploratory/*.class')
 
-	doLast {
-		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'xml') {
-			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
-			sourceSets.main*.groovy.srcDirs*.each { fileset(dir:it) }
-		}
-		ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'html') {
-			sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
-			sourceSets.main*.groovy.srcDirs*.each { fileset(dir:it) }
-		}
-		ant.'cobertura-check'(totalbranchrate:project.ext.branchCoverageBaseline, totallinerate:project.ext.lineCoverageBaseline)
-		setClasspath(originalClasspath)
-	}
+  doLast {
+    ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'xml') {
+      sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
+      sourceSets.main*.groovy.srcDirs*.each { fileset(dir:it) }
+    }
+    ant.'cobertura-report'(destDir: project.ext.coverageReportsDir, format:'html') {
+      sourceSets.main*.java.srcDirs*.each { fileset(dir:it) }
+      sourceSets.main*.groovy.srcDirs*.each { fileset(dir:it) }
+    }
+    ant.'cobertura-check'(totalbranchrate:project.ext.branchCoverageBaseline, totallinerate:project.ext.lineCoverageBaseline)
+    setClasspath(originalClasspath)
+  }
 }
 
 // For individual use assumes you have binaries existing already.
@@ -178,21 +175,21 @@ def runAcceptanceTests(String srcFolder, String reportsFolder) {
     runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
 
     def accTestReportsDir = new File("$project.ext.acceptanceTestReportsDir")
-	if(!accTestReportsDir.exists()) {
-		accTestReportsDir.mkdirs()
-	}
-	javaexec {
+  if(!accTestReportsDir.exists()) {
+    accTestReportsDir.mkdirs()
+  }
+  javaexec {
         systemProperties['portPrefix'] = project.ext.portPrefix
-	    main = 'fitlibrary.runner.FolderRunner'
-	    classpath = runtimeClasspath
-	    args = ["$srcFolder", "$reportsFolder"]
-	}
+      main = 'fitlibrary.runner.FolderRunner'
+      classpath = runtimeClasspath
+      args = ["$srcFolder", "$reportsFolder"]
+  }
 }
 
 task createTestJar(type: Jar, dependsOn: [test]) {
-		baseName = "${project.archivesBaseName}-test"
-			destinationDir = project.distsDir
-			from sourceSets.test.output
+    baseName = "${project.archivesBaseName}-test"
+      destinationDir = project.distsDir
+      from sourceSets.test.output
 }
 
 task createDeployZip(type: Zip) {
@@ -202,66 +199,42 @@ task createDeployZip(type: Zip) {
 }
 
 task unzip(type: Copy) {
-	def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
-			def outputDir = file(project.ext.explodedDir)
-			from zipTree(zipFile)
-	into outputDir
+  def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+      def outputDir = file(project.ext.explodedDir)
+      from zipTree(zipFile)
+  into outputDir
 }
 
-//task uberjar(type: Jar, dependsOn:[test]) {
-//	baseName = "${project.archivesBaseName}-uber"
-//
-//	from zipTree("${libsDir}/${project.archivesBaseName}.jar")
-//	from files(sourceSets.test.output)
-//	from configurations.compile.asFileTree.files.collect { zipTree(it) }
-//	from configurations.testCompile.asFileTree.files.collect { zipTree(it) }
-//	from files("${projectDir}/connection.properties")
-//
-//	destinationDir = project.distsDir
-//	manifest {
-//		attributes 'Main-Class': 'com.ee.tayra.exploratory.ExploratoryTestRunner'
-//	}
-//}
-
-//task ('exploratory-test') << {
-//	
-//	String jarPath = "${project.distsDir}/" + (new File("${project.archivesBaseName}-uber.jar"))
-//	javaexec {
-//		systemProperties['portPrefix'] = project.ext.portPrefix
-//		main = '-jar';
-//		args jarPath }
-//}
-
 task ('exploratory-test', dependsOn:'unzip') << {
-	def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
-	if(!zipFile.exists()) {
-		throw new RuntimeException(">>> Please run gradle to build the binary distributable ${project.archivesBaseName}.zip first!")
-	}
-	def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
-	runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
-	runtimeClasspath = runtimeClasspath + fileTree(dir: "$projectDir", include: 'connection.properties')
-	runtimeClasspath = runtimeClasspath + files(configurations.testCompile.asPath.split(File.pathSeparator))
+  def zipFile = file("${project.distsDir}/${project.archivesBaseName}.zip")
+  if(!zipFile.exists()) {
+    throw new RuntimeException(">>> Please run gradle to build the binary distributable ${project.archivesBaseName}.zip first!")
+  }
+  def runtimeClasspath = fileTree(dir: "${project.ext.explodedDir}/libs", include: '*.jar')
+  runtimeClasspath = runtimeClasspath + fileTree(dir: project.distsDir, include: '*.jar')
+  runtimeClasspath = runtimeClasspath + fileTree(dir: "$projectDir", include: 'connection.properties')
+  runtimeClasspath = runtimeClasspath + files(configurations.testCompile.asPath.split(File.pathSeparator))
 
-	javaexec {
-		systemProperties['portPrefix'] = project.ext.portPrefix
-		main = 'com.ee.tayra.exploratory.ExploratoryTestRunner'
-		classpath = runtimeClasspath
-	}
+  javaexec {
+    systemProperties['portPrefix'] = project.ext.portPrefix
+    main = 'com.ee.tayra.exploratory.ExploratoryTestRunner'
+    classpath = runtimeClasspath
+  }
 }
 
 task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
-	doFirst {
-		ant.mkdir(dir:"$distsBinDir")
-		prepareExecutables()
-		prepareTOCForDocumentation()
-	}
-	from project.ext.distsBinDir
-	from (project.ext.distsTemplateDir) {
-		include ('**/*.txt')
-		exclude ('demo', '**/*.document')
-	}
-	from (project.ext.distsTemplateDir) { include ('demo', '**/*.document') into ('docs') }
-	from ("$libsDir") { into ('libs') }
+  doFirst {
+    ant.mkdir(dir:"$distsBinDir")
+    prepareExecutables()
+    prepareTOCForDocumentation()
+  }
+  from project.ext.distsBinDir
+  from (project.ext.distsTemplateDir) {
+    include ('**/*.txt')
+    exclude ('demo', '**/*.document')
+  }
+  from (project.ext.distsTemplateDir) { include ('demo', '**/*.document') into ('docs') }
+  from ("$libsDir") { into ('libs') }
     from (project.ext.acceptanceTestDir) {
       into ('docs')
       exclude ('stories/not-played', 'stories/cud/files', '**/toc.html')
@@ -269,37 +242,37 @@ task distribute(type:Zip, dependsOn: [assemble, createDeployZip]) {
 }
 
 findbugs {
-	toolVersion = "2.0.1"
-	reportsDir = file("$reporting.baseDir/findbugs")
-	effort = "max"
-	reportLevel = "high"
+  toolVersion = "2.0.1"
+  reportsDir = file("$reporting.baseDir/findbugs")
+  effort = "max"
+  reportLevel = "high"
 }
 
 tasks.withType(FindBugs) {
-	excludeFilter = file("${projectDir}/config/findbugs/excludeFilter.xml")
+  excludeFilter = file("${projectDir}/config/findbugs/excludeFilter.xml")
 }
 
 checkstyleTest {
-	exclude('**/*/*Specs.java')
+  exclude('**/*/*Specs.java')
 }
 
 findbugsTest.enabled = false
 
 def prepareExecutables() {
-	def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }
-	new File("$distsTemplateDir").list().each { filename ->
-		if(filename.startsWith('backup') || filename.startsWith('restore')) {
-			def contents = new File("$distsTemplateDir/$filename").text
-			new FileWriter("$distsBinDir/$filename").withWriter { writer ->
-				if(filename.endsWith('.sh')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"\$TAYRA_HOME/$it"}).join(":"))
-				}
-				if(filename.endsWith('.bat')) {
-					writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"%TAYRA_HOME%/$it"}).join(";"))
-				}
-			}
-		}
-	}
+  def allLibFiles = new File("$libsDir").list().collect { "libs/$it" }
+  new File("$distsTemplateDir").list().each { filename ->
+    if(filename.startsWith('backup') || filename.startsWith('restore')) {
+      def contents = new File("$distsTemplateDir/$filename").text
+      new FileWriter("$distsBinDir/$filename").withWriter { writer ->
+        if(filename.endsWith('.sh')) {
+          writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"\$TAYRA_HOME/$it"}).join(":"))
+        }
+        if(filename.endsWith('.bat')) {
+          writer.append contents.replace('%%JAVA_CLASS_PATH%%', allLibFiles.collect({"%TAYRA_HOME%/$it"}).join(";"))
+        }
+      }
+    }
+  }
 }
 
 task document << {
@@ -358,10 +331,10 @@ task backupCurrentDeployScripts(type: Zip, dependsOn: setupDeploy) {
 task deploy (dependsOn: backupCurrentDeployScripts) {
   doLast {
     def zipFile1 = file("${project.distsDir}/${project.archivesBaseName}.zip")
-	def zipFile2 = file("${project.distsDir}/${project.ext.deployScriptsZip}.zip")
+  def zipFile2 = file("${project.distsDir}/${project.ext.deployScriptsZip}.zip")
     copy {
       from zipTree(zipFile1)
-	  from zipTree(zipFile2)
+    from zipTree(zipFile2)
       into project.ext.deployDir
     }
     ant.chmod (perm : 'a+x') {
@@ -384,20 +357,20 @@ def killFirst(def processName) {
 }
 
 def getProcessId(def processName, def os) {
-	def winProcessCmd = "wmic process where \"name='java.exe' and commandLine like '%$processName%'\" get processid"
-	def processCmd = os ==~ /Win.*/ ? "$winProcessCmd " : 'ps -ef'
-	def killableProcessId = null
-	println "Executing $processCmd on $os..."
-	killableProcessId = os ==~ /Win.*/ ?
-			  processCmd.execute().in.readLines().each { it.trim() }.join(" ")
-			: processCmd.execute().in.filterLine {it.contains("$processName".replaceAll('\"',''))
-		}
-	def args = "$killableProcessId".split() as List
-	def processIdToKill = ''
-	if(args) {
-		processIdToKill = args[1]
-	}
-	processIdToKill
+  def winProcessCmd = "wmic process where \"name='java.exe' and commandLine like '%$processName%'\" get processid"
+  def processCmd = os ==~ /Win.*/ ? "$winProcessCmd " : 'ps -ef'
+  def killableProcessId = null
+  println "Executing $processCmd on $os..."
+  killableProcessId = os ==~ /Win.*/ ?
+        processCmd.execute().in.readLines().each { it.trim() }.join(" ")
+      : processCmd.execute().in.filterLine {it.contains("$processName".replaceAll('\"',''))
+    }
+  def args = "$killableProcessId".split() as List
+  def processIdToKill = ''
+  if(args) {
+    processIdToKill = args[1]
+  }
+  processIdToKill
 }
 
-build.dependsOn = ['check', 'createTestJar',/* 'uberjar',*/ 'distribute', 'smoke-test']
+build.dependsOn = ['check', 'createTestJar', 'distribute', 'smoke-test']
