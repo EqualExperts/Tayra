@@ -9,7 +9,6 @@ apply plugin: 'jdepend' //for dependency analysis
 apply plugin: 'findbugs' //for static code analysis
 apply plugin: 'pmd'
 
-//apply plugin: 'application'
 defaultTasks 'clean', 'build'
 
 sourceCompatibility = '1.6'
