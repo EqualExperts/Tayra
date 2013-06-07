@@ -36,37 +36,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class DataUnit {
-  public static final DataUnit NOTHING = new DataUnit(0, 1, null);
-  public static final DataUnit  B = new DataUnit(1, 1, NOTHING);
-  public static final DataUnit KB = new DataUnit(1, 1024, B);
-  public static final DataUnit MB = new DataUnit(1, 1024, KB);
-  public static final DataUnit GB = new DataUnit(1, 1024, MB);
-
   private static final String regex = "^([0-9]+)(.+)$";
   private static final Pattern numberPattern = Pattern.compile(regex);
   public static final int PRIME = 31;
   private static final Map<String, DataUnit> cache
             = new HashMap<String, DataUnit>();
 
-  private final int bytesFactor;
+  private final ByteUnit byteUnit;
   private final int value;
 
-  private DataUnit(final int value, final DataUnit unit) {
-    this(value, 1, unit);
-  }
-
-  private
-  DataUnit(final int value, final int bytesFactor, final DataUnit other) {
-    if (other == NOTHING) {
-      this.bytesFactor = bytesFactor;
-    } else {
-      this.bytesFactor = bytesFactor * other.bytesFactor();
-    }
+  private DataUnit(final int value, final ByteUnit byteUnit) {
     this.value = value;
-  }
-
-  public int bytesFactor() {
-    return bytesFactor;
+    this.byteUnit = byteUnit;
   }
 
   public int value() {
@@ -78,35 +59,27 @@ public final class DataUnit {
     if (this == other) {
       return true;
     }
-    if (other == null || getClass() != other.getClass()) {
+    if (other == null) {
       return false;
     }
 
+    if (getClass() != other.getClass()) {
+      return false;
+    }
     DataUnit that = (DataUnit) other;
 
-    if (bytesFactor != that.bytesFactor) {
-      return false;
-    }
-
-    if (value != that.value) {
-      return false;
-    }
-    return true;
+    return value == that.value && byteUnit == that.byteUnit;
   }
 
   @Override
   public int hashCode() {
-    int result = bytesFactor;
+    int result = byteUnit.hashCode();
     result = PRIME * result + value;
     return result;
   }
 
-  public long toLongValue() {
-    return value() * bytesFactor();
-  }
-
-  public int toIntValue() {
-    return value() * bytesFactor();
+  public int toBytes() {
+    return value() * byteUnit.toInt();
   }
 
   public static DataUnit from(final String valueWithUnit) {
@@ -121,25 +94,11 @@ public final class DataUnit {
       String group = matcher.group(1);
       int value = Integer.parseInt(group);
       String unit = matcher.group(2);
-      final DataUnit dunit = new DataUnit(value, toBasicUnit(unit));
+      final DataUnit dunit = new DataUnit(value, ByteUnit.from(unit));
       cache.put(valueWithUnit, dunit);
       return dunit;
     }
     throw new IllegalArgumentException("Don't know how to represent "
             + valueWithUnit);
-  }
-
-  private static DataUnit toBasicUnit(final String unit) {
-    String unitUpperCase = unit.trim().toUpperCase();
-    if (unitUpperCase.contains("G")) {
-      return GB;
-    }
-    if (unitUpperCase.contains("M")) {
-      return MB;
-    }
-    if (unitUpperCase.contains("K")) {
-      return KB;
-    }
-    return B;
   }
 }

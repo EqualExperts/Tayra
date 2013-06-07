@@ -76,7 +76,7 @@ abstract class RestoreFactory {
   protected DocumentReader createReader(final String fileName){
     File file = new File(fileName)
     DataUnit dataUnit = DataUnit.from(bufferSize)
-    int buffer = dataUnit.toIntValue()
+    int buffer = dataUnit.toBytes()
     return new FileDocumentReader(new BufferedReader(new FileReader(file), buffer))
   }
 
