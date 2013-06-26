@@ -42,4 +42,5 @@ Please refer to `AppConfig.groovy` - a single place of change for all the projec
 ## License
 **Tayra is licensed under the terms of the [FreeBSD License](http://en.wikipedia.org/wiki/BSD_licenses)**
 
-
+## Acknowledgment
+**This product is developed using IntelliJ IDEA 12.1.4 Ultimate Edition under free open source license granted by JetBrains**
