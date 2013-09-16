@@ -1,0 +1,37 @@
+Tayra 0.8.0 Beta2 Release Notes
+
+
+This document lists down all the new features, changes and fixes 
+for 0.8.0 release of Tayra. This is the second release of Tayra.
+
+Date of the release: April 4, 2013
+
+
+Source code:
+The code is hosted on github as a free and open resource for use and modification,
+at https://github.com/EqualExperts/Tayra
+
+
+Documentation:
+Documentation is shipped within the product. For more you can check on github
+repository at https://github.com/EqualExperts/Tayra
+
+
+Installation Instructions:
+Installation instructions are mentioned in Readme.txt along with the product.
+
+
+Additions:
+* Selectively backup data on the basis of one or more databases and collections with --sNs
+* Selectively restore data since a point in time with the option --sSince
+* Selectively restore multiple dbs and collections with --sNs
+* Option --sExclude to exclude the documents satisfying the criteria.
+* Preview the documents to be restored with the option --dry-run
+* Read from a secondary node of the replicaset for backup
+
+
+Changes:
+* Option --sDb in restore to select a database is now changed to --sNs (select namespace) 
+  to select a namespace of a document in the form of <database>.<collection>
+* Read preference for a node connected to primary of a replicaset for backup is 'primary only'
+  whereas that of a node connected to secondary is 'secondary preferred'

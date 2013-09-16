@@ -1,0 +1,35 @@
+Tayra 0.8.1 Beta3 Release Notes
+
+
+Tayra 0.8.1 Beta3 is a focused maintenance update which includes bug fixes and performance enhancements.
+For details of the existing features, please refer to the previous release notes.
+
+Date of the release: May 13, 2013
+
+
+Source code:
+The code is hosted on github as a free and open resource for use and modification,
+at https://github.com/EqualExperts/Tayra
+
+
+Documentation:
+Documentation is shipped within the product. For more you can check on github
+repository at https://github.com/EqualExperts/Tayra
+
+
+Installation Instructions:
+Installation instructions are mentioned in Readme.txt along with the product.
+
+
+Additions:
+* Override default buffer size of 8KB used by FileReader through --fBuffer option to read backup file during restore.
+
+
+Changes:
+* Upgraded mongo-java-driver to 2.11.1
+
+
+Fixes:
+*  In case of Selective Backup, the recorded timestamp is the timestamp of the last document read from the oplog and not of the last document written to the backup file.
+*  When target mongodb crashes during restore, process ends with a summary and unrestored documents are written to exception.documents file.
+* In case of a document not being restored, the cause of exception is specified in exception.details file
