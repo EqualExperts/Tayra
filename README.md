@@ -1,4 +1,4 @@
-# Tayra  <a href="http://www.eelabs.co.uk/projects/tayra/"><img src="http://www.equalexperts.com/asset/images/EE-Labs-Logo-200x121px.jpg" height="90" width="120" align="right"></a>
+# Tayra  <a href="http://www.eelabs.co.uk/projects/tayra/"><img src="http://www.equalexperts.com/resources/img/eelogo.png" align="right"></a>
 ***Incremental backup tool for MongoDB***
 ##Overview
 
