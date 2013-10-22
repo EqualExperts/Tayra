@@ -38,6 +38,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.QueryBuilder;
 import com.mongodb.util.JSON;
+import com.mongodb.util.JSONSerializers;
 
 public class Oplog implements MongoCollection {
 
@@ -102,7 +103,8 @@ public class Oplog implements MongoCollection {
       if (cursor == null) {
             throw new IteratorAlreadyClosed("Iterator Already Closed");
       }
-      return JSON.serialize(cursor.next());
+//      return JSON.serialize(cursor.next());
+      return JSONSerializers.getStrict().serialize(cursor.next());
     }
 
     @Override

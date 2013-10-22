@@ -60,3 +60,4 @@ target
 acceptance-tests/stories/played/cud/files
 exception.details
 acceptance-tests/index.html
+.metadata/
