@@ -7,7 +7,7 @@
 #else
 #  MONGO_HOME='$MONGO_HOME'
 #fi
-mongoData=/var/tmp/mongo-data
+mongoData=/home/swanand/data/tayra
 mongoBase=$mongoData/$PORT_PREFIX
 basePath=$mongoBase/replSetData
 basePathSt=$mongoBase/standaloneData
