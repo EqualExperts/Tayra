@@ -36,7 +36,7 @@ public class RotatingFileCollectionSpecs extends Specification{
   def itIteratesAllFilesInReverseOrderOfSuffix() {
     given: 'a file'
       nameOfFile = 'test.log'
-      def expectedFiles = [nameOfFile + ".2", nameOfFile + ".1", nameOfFile]
+      def expectedFiles = [workingDirectory + System.getProperty("file.separator") + nameOfFile + ".2", workingDirectory + System.getProperty("file.separator") + nameOfFile + ".1", workingDirectory + System.getProperty("file.separator") + nameOfFile]
       def actualFiles = []
 
     and: 'multiple files having postfix exist'
