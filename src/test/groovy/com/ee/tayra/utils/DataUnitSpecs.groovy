@@ -3,24 +3,7 @@ package com.ee.tayra.utils
 import static com.ee.tayra.utils.DataUnit.*
 import spock.lang.Specification
 
-class DataUnitSpecs extends Specification{
-
-  def ensuresDefaultValues() {
-    given:'Data Units'
-      def unit = dataUnit
-
-    expect:'default values are fetched'
-      unit.value() == expectedValue
-      unit.bytesFactor() == expectedByteFactor
-      unit.toLongValue() == expectedlongValue
-
-    where:'default values to b'
-     dataUnit |  expectedValue   | expectedByteFactor |  expectedlongValue
-         B    |         1        |         1          |         1
-        KB    |         1        |       1024         |       1024
-        MB    |         1        |    1024 * 1024     |    1024 * 1024
-        GB    |         1        | 1024 * 1024 * 1024 | 1024 * 1024 * 1024
-  }
+class DataUnitSpecs extends Specification {
 
   def shoutsWhenEmptyStringIsPassed() {
     when:'an empty string is passed'
@@ -41,29 +24,20 @@ class DataUnitSpecs extends Specification{
   }
 
 
-  def convertsToLong() {
-    when:'a value is passed'
-      def unit = from('5MB')
-
-    then:'equivalent long value is obtained'
-      unit.toLongValue() == 5 * 1024 * 1024
-  }
-
-  def returnsAppropriateDataUnit() {
+  def convertsToBytes() {
     given:'Data Units'
       def unit = from(stringValue)
 
     expect:'appropriate values are fetched'
       unit.value() == value
-      unit.bytesFactor() == byteFactor
-      unit.toLongValue() == longValue
+      unit.toBytes() == bytes
 
     where:'default values to b'
-      stringValue |  value  |     byteFactor     |     longValue
-           '9B'   |    9    |         1          |         9
-          '8KB'   |    8    |       1024         |       8 * 1024
-          '7MB'   |    7    |    1024 * 1024     |    7 * 1024 * 1024
-          '6GB'   |    6    | 1024 * 1024 * 1024 | 6 * 1024 * 1024 * 1024
+      stringValue |  value  |    bytes
+           '9B'   |    9    |       9
+          '8KB'   |    8    |     8 * 1024
+          '7MB'   |    7    |   7 * 1024 * 1024
+          '6GB'   |    6    | 6 * 1024 * 1024 * 1024
   }
 
   def areEqual() {
