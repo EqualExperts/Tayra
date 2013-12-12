@@ -59,7 +59,7 @@ public class TimestampRecorder implements CopyListener {
   }
 
   private String timestampFrom(final String data) {
-    return data.substring(data.indexOf("\"ts\""), data.indexOf("}") + 1);
+    return data.substring(data.indexOf("\"ts\""), data.indexOf("}") + 2);
   }
 
   public final void stop() throws IOException {

@@ -52,7 +52,7 @@ public abstract class RequiresExploratoryTestSupport extends Specification {
   }
 
   def updateTimestampFileToNow() {
-    String time = '{ "ts" : { "$ts" : ' + ((int)(System.currentTimeMillis()/1000)) + ', "$inc" : 0} }'
+    String time = '{ "ts" : { "$timestamp" : { "t" : ' + ((int)(System.currentTimeMillis()/1000)) + ', "i" : 0}} }'
     timestampFile.text = time
     timestamp = timestampFile.text
   }

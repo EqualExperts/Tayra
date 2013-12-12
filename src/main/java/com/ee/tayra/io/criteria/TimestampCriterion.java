@@ -69,6 +69,17 @@ public abstract class TimestampCriterion implements Criterion {
     return Integer.MAX_VALUE;
   }
 
+  private static int getIncrementFromDocument(final String document) {
+    if (document.contains("i:")) {
+      int incStartIndex = document.indexOf("i:")
+          + "i:".length();
+      int incEndIndex = document.indexOf("}", incStartIndex);
+      return Integer.parseInt(document
+          .substring(incStartIndex, incEndIndex).trim());
+    }
+    return Integer.MAX_VALUE;
+  }
+
   private static Date getTimestampFrom(final String filter) {
     if (filter.contains(TS_IDENTIFIER)) {
       int tsStartIndex = filter.indexOf(TS_IDENTIFIER)
@@ -88,6 +99,25 @@ public abstract class TimestampCriterion implements Criterion {
     }
   }
 
+  private static Date getTimestampFromDocument(final String document) {
+      if (document.contains("t:")) {
+        int tsStartIndex = document.indexOf("t:")
+            + "t:".length();
+        int tsEndIndex = document.indexOf("i:");
+        return new Date(Long.parseLong(document
+            .substring(tsStartIndex, tsEndIndex).replaceAll(",", "")
+            .trim())
+            * MILLI_CONVERSION);
+      } else {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+        try {
+          return format.parse(document.substring(document.indexOf("=") + 1));
+        } catch (ParseException e) {
+          throw new RuntimeException(e.getMessage());
+        }
+      }
+  }
+
   private static class Until extends TimestampCriterion {
 
     private Date timestamp;
@@ -102,11 +132,11 @@ public abstract class TimestampCriterion implements Criterion {
     public boolean isSatisfiedBy(final String document) {
       String tsDocument = document.replaceAll("\"", "").replaceAll(" ",
           "");
-      if (timestamp.compareTo(getTimestampFrom(tsDocument)) > 0) {
+      if (timestamp.compareTo(getTimestampFromDocument(tsDocument)) > 0) {
         return true;
       }
-      if (timestamp.compareTo(getTimestampFrom(tsDocument)) == 0) {
-        return increment >= getIncrementFrom(tsDocument);
+      if (timestamp.compareTo(getTimestampFromDocument(tsDocument)) == 0) {
+        return increment >= getIncrementFromDocument(tsDocument);
       }
       return false;
     }
@@ -126,11 +156,11 @@ public abstract class TimestampCriterion implements Criterion {
     public final boolean isSatisfiedBy(final String document) {
       String tsDocument = document.replaceAll("\"", "").replaceAll(" ",
           "");
-      if (timestamp.compareTo(getTimestampFrom(tsDocument)) < 0) {
+      if (timestamp.compareTo(getTimestampFromDocument(tsDocument)) < 0) {
         return true;
       }
-      if (timestamp.compareTo(getTimestampFrom(tsDocument)) == 0) {
-        return increment <= getIncrementFrom(tsDocument);
+      if (timestamp.compareTo(getTimestampFromDocument(tsDocument)) == 0) {
+        return increment <= getIncrementFromDocument(tsDocument);
       }
       return false;
     }

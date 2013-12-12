@@ -184,8 +184,8 @@ private printTimestampCaution(timestampRecorder, PrintWriter console) {
   }
   else {
     def timestampJson = new JsonSlurper().parseText(timestamp)
-    Integer time = timestampJson['ts']['$ts']
-    Integer inc = timestampJson['ts']['$inc']
+    Integer time = timestampJson['ts']['$timestamp']['t']
+    Integer inc = timestampJson['ts']['$timestamp']['i']
     def bsonTime = new BSONTimestamp(time, inc)
     console.println "Backup is starting from: \n $bsonTime ==> (${timestamp})"
   }

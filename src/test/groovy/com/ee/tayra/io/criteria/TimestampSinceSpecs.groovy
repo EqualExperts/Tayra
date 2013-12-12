@@ -5,8 +5,8 @@ import spock.lang.Specification
 
 public class TimestampSinceSpecs extends Specification{
 
-  static def afterDocument = '{ts:{$ts:1357537755,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
-  static def beforeDocument = '{ts:{$ts:1357537750,$inc:1} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+  static def afterDocument = '{ts:{$timestamp: {t : 1357537755,i:1}} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
+  static def beforeDocument = '{ts:{$timestamp: {t : 1357537750,i:1}} , "h" : -2719432537158937612 , "v" : 2 , "op" : "i" , "ns" : "test.things" , "o" : { "_id" : { "$oid" : "50ea61d85bdcefd43e2994ae"} , "roll" : 0.0}}'
 
   def satisfiesSinceCriteriaWithJSONTimestamp () {
 
