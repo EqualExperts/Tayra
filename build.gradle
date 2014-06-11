@@ -24,7 +24,7 @@ project.ext {
   previousArchiveName = project.ext.appConfig.product.distribution.previousArchiveName
 
   //libs
-  mongoDriver = 'org.mongodb:mongo-java-driver:2.11.0'
+  mongoDriver = 'org.mongodb:mongo-java-driver:2.11.1'
   groovy = 'org.codehaus.groovy:groovy-all:2.0.5'
   commonsCli = 'commons-cli:commons-cli:1.1'
   functionaljava = 'org.functionaljava:functionaljava:3.1'
