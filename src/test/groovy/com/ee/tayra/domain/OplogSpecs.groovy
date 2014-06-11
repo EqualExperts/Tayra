@@ -9,6 +9,7 @@ import com.mongodb.DBObject
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
 import com.mongodb.util.JSON
+import com.mongodb.util.JSONSerializers;
 
 public class OplogSpecs extends RequiresMongoConnection {
 
@@ -139,7 +140,7 @@ public class OplogSpecs extends RequiresMongoConnection {
       document =  dbCursor.next()
 
     then: "iterator's current & cursor's current document should be same"
-      iterator.next() == JSON.serialize(document);
+      iterator.next() == JSONSerializers.getStrict().serialize(document);
   }
 
   def avoidsHingeDocumentToBeReadAgain() {
@@ -192,7 +193,7 @@ public class OplogSpecs extends RequiresMongoConnection {
 
   private extractTimestamp(String document) {
     "{ " +  document.substring(document.indexOf("\"ts\""),
-      document.indexOf("}") + 1) + " }"
+      document.indexOf("}") + 1) + " }}"
   }
 
 }

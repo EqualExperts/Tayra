@@ -8,6 +8,7 @@ import org.bson.types.BSONTimestamp
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
 import com.mongodb.util.JSON
+import com.mongodb.util.JSONSerializers
 
 @TupleConstructor
 class DocumentBuilder {
@@ -24,7 +25,7 @@ class DocumentBuilder {
 
   Closure documentStructure() {
     def document = {
-      ts JSON.serialize(ts)
+      ts JSONSerializers.getStrict().serialize(ts)
       h h
       op op
       ns ns

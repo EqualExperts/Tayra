@@ -75,9 +75,11 @@ project.ext {
 
 repositories {
   mavenCentral()
-  mavenRepo url: 'http://bits.netbeans.org/maven2/'
-  mavenRepo url: 'http://functionaljava.googlecode.com/svn/maven/'
-  mavenRepo url: 'http://code.google.com/p/google-maven-repository'
+  maven {
+    url 'http://bits.netbeans.org/maven2/'
+    url 'http://functionaljava.googlecode.com/svn/maven/'
+    url 'http://code.google.com/p/google-maven-repository'
+  }
 }
 
 configurations {
@@ -87,7 +89,6 @@ configurations {
 }
 
 dependencies {
-  groovy(groovy)
   compile(project.ext.mongoDriver, project.ext.groovy, project.ext.commonsCli, project.ext.functionaljava, project.ext.log4j)
   testCompile(project.ext.hamcrest, project.ext.junit, project.ext.mockito, project.ext.spock, project.ext.cglib, project.ext.jdepend)
   testCompile fileTree (dir: "$unmanagedTestLibDir", includes: ['*.jar'])

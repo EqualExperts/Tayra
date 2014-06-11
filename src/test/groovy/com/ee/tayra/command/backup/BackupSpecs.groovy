@@ -260,11 +260,15 @@ public class BackupSpecs extends Specification {
 
 	  and: 'backup runs with above args'
 		new Backup(context).run()
+		println "1st Backup: \n" + result.toString()
 
 	  when: 'backup is run again and timestamp file exists'
 		new Backup(context).run()
+		println "2nd Backup: \n" + result.toString()
 
 	  then: 'Notification message should be shown as'
+	  	println "Before assertion: \n" + result.toString()
 		result.toString().contains('Backup is starting from:')
+		
 	}
 }

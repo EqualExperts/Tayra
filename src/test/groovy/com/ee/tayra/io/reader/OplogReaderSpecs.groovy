@@ -42,7 +42,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read expected document'
-      oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"c","ns":"' + dbName + '.$cmd","o":"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}'
+      oplogDocumentString == '{"ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}}","h":"3493050463814977392","op":"c","ns":"' + dbName + '.$cmd","o":"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}'
   }
 
 
@@ -63,7 +63,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read the expected document'
-      oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"i","ns":"' + "$dbName.$collectionName" + '","o":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}'
+      oplogDocumentString == '{"ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}}","h":"3493050463814977392","op":"i","ns":"' + "$dbName.$collectionName" + '","o":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}'
   }
 
 
@@ -123,7 +123,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read the expected document'
-      oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"c","ns":"' + "$dbName" +'.$cmd","o":"{ \\"drop\\" : \\"'+ collectionName +'\\"}"}'
+      oplogDocumentString == '{"ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}}","h":"3493050463814977392","op":"c","ns":"' + "$dbName" +'.$cmd","o":"{ \\"drop\\" : \\"'+ collectionName +'\\"}"}'
   }
 
 

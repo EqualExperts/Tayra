@@ -23,12 +23,12 @@ START "Unsecure@%PORT_PREFIX%52" mongod --port %PORT_PREFIX%""52 --dbpath %baseP
 START "Unsecure@%PORT_PREFIX%50" mongod --port %PORT_PREFIX%""50 --dbpath %basePath%\unsec1 --replSet rs1 --smallfiles &
 START "Unsecure@%PORT_PREFIX%51" mongod --port %PORT_PREFIX%""51 --dbpath %basePath%\unsec2 --replSet rs1 --smallfiles &
 
-sleep 30
+timeout 30
 echo "Initiating ReplicaSets..."
 START "mongo-%PORT_PREFIX%17" mongo --port %PORT_PREFIX%17 --eval "rs.initiate({ _id:'rs0', members:[{_id: 0, host:'localhost:%PORT_PREFIX%17', priority:10}, {_id: 1, host:'localhost:%PORT_PREFIX%18', priority:3}, {_id: 2, host:'localhost:%PORT_PREFIX%19', priority:3}]})" &
 START "mongo-%PORT_PREFIX%50" mongo --port %PORT_PREFIX%50 --eval "rs.initiate({ _id:'rs1', members:[{_id: 0, host:'localhost:%PORT_PREFIX%50', priority:10}, {_id: 1, host:'localhost:%PORT_PREFIX%51', priority:3}]})" &
 
-sleep 180
+timeout 180
 echo "Creating Users..."
 START "mongo-%PORT_PREFIX%20" mongo --port %PORT_PREFIX%20 admin .\createAdmin.js &
 START "mongo-%PORT_PREFIX%17" mongo --port %PORT_PREFIX%17 admin .\createAdmin.js &

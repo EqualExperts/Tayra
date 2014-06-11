@@ -11,7 +11,8 @@ public class TimestampRecorderSpecs extends Specification {
 
     private TimestampRepository mockRepository
     def timestampRecorder
-    private final String timestamp = '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+//    private final String timestamp = '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+	private final String timestamp = '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
 
   def setup() {
       mockRepository = Mock(TimestampRepository)
@@ -81,10 +82,10 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.onReadFailure(null, new IOException("Disk Full!"))
 
       then: 'recorder should have timestamp of the previous document'
-        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
 
       and: 'recorder should preserve timestamp of the last document'
-        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
     }
 
     def preservesDocumentTimestampOnWriteSuccess() {
@@ -131,10 +132,10 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.onWriteFailure(documentTwo, new IOException("Disk Full"))
 
       then: 'recorder should preserve timestamp of the current document'
-        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105653 , \\"$inc\\" : 1} }'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105653 , \\"i\\" : 1}} }'
 
       and: 'recorder should preserve timestamp of latest successful write'
-      timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+      timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
   }
 
   def preservesDocumentTimestampsWhenIncomingDocumentDoesNotHaveTimestampEntry() {
@@ -157,10 +158,10 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.onWriteSuccess(documentWithoutTS)
 
       then: 'recorder ignores recording document without timestamp'
-        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
 
       and: 'recorder preserves timestamp of last document containing timestamp'
-    timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+    timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
   }
 
     def doesNothingOnReadStart() {
@@ -176,10 +177,10 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.onReadStart(documentTwo)
 
       then: 'recorder should preserve timestamp of the current document'
-        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
 
       and: 'recorder should preserve timestamp of last document'
-        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
     }
 
     def doesNothingOnWriteStart() {
@@ -198,9 +199,9 @@ public class TimestampRecorderSpecs extends Specification {
         timestampRecorder.onWriteStart(documentTwo)
 
       then: 'recorder should preserve timestamp of the current document'
-        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105653 , \\"$inc\\" : 1} }'
+        timestampRecorder.getDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105653 , \\"i\\" : 1}} }'
 
       and: 'recorder should preserve timestamp of last document'
-        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1} }'
+        timestampRecorder.getLastDocumentTimestamp() == '{ "ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}} }'
     }
 }

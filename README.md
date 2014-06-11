@@ -23,10 +23,10 @@
 * [Approach, Design Overview] (http://www.slideshare.net/DhavalDalal/tayra-demo) 
 
 ## Binary Distributions
-**[Download from here](http://www.eelabs.co.uk/projects/tayra/)**.  
+**[Download from here](http://www.eelabs.co.uk/projects/tayra/)**.
 
 ## Build Info
-We are using Gradle 1.2 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
+We are using Gradle 1.11 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
 Please do not checkin Eclipse or Intellij or any IDE specific files.  For Idea or Eclipse they
 can be generated using
 * `gradle eclipse`
@@ -44,3 +44,6 @@ Please refer to `AppConfig.groovy` - a single place of change for all the projec
 
 ## Acknowledgment
 This product is developed using **IntelliJ IDEA 12.1.4 Ultimate Edition** under free **open source license** granted by **JetBrains**
+
+## Releases
+Latest release 0.8.2-Beta3 is a bug fix release for issue# 3 - backup failed on fields with binary data
