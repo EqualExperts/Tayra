@@ -1,23 +1,22 @@
 package com.ee.tayra.domain.operation
 
+import com.mongodb.BasicDBObjectBuilder
 import groovy.transform.TupleConstructor
-
-import com.mongodb.DBObject
-import com.mongodb.util.JSON
 
 @TupleConstructor
 class DeleteDocumentBuilder extends DocumentBuilder {
 
   boolean b;
 
-  Closure documentStructure() {
-    def document = {
-      ts JSON.serialize(ts)
-      h h
-      op op
-      ns ns
-      b b
-      o JSON.serialize(o)
+  def objectStructure() {
+    BasicDBObjectBuilder
+      .start()
+        .add('ts', ts)
+        .add('h', h)
+        .add('op', op)
+        .add('ns', ns)
+        .add('b', b)
+        .add('o', o)
+      .get()
     }
-  }
 }

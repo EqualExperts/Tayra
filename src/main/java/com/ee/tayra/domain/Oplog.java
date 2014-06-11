@@ -103,7 +103,6 @@ public class Oplog implements MongoCollection {
       if (cursor == null) {
             throw new IteratorAlreadyClosed("Iterator Already Closed");
       }
-//      return JSON.serialize(cursor.next());
       return JSONSerializers.getStrict().serialize(cursor.next());
     }
 

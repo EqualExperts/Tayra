@@ -1,14 +1,16 @@
 package com.ee.tayra.io.reader
 
-import org.bson.types.ObjectId
-
-import spock.lang.*
-
 import com.ee.tayra.domain.MongoCollection
 import com.ee.tayra.domain.MongoCollectionIterator
 import com.ee.tayra.domain.operation.MongoUtils
+import com.ee.tayra.utils.StringDocumentWriter
 import com.mongodb.BasicDBObjectBuilder
+import com.mongodb.DBObject
 import com.mongodb.MongoException
+import com.mongodb.util.JSON
+import com.mongodb.util.JSONSerializers
+import org.bson.types.ObjectId
+import spock.lang.Specification
 
 public class OplogReaderSpecs extends Specification {
 
@@ -18,7 +20,7 @@ public class OplogReaderSpecs extends Specification {
   private String dbName = 'tayra'
   private String collectionName = 'home'
   private String name = '[Test Name]'
-  private String fromTimestamp = '{\"ts\" : { \"$ts\" : 1354096315 , \"$inc\" : 10}}'
+  private String fromTimestamp = '{"ts" : { "$ts" : 1354096315 , "$inc" : 10}}'
   def objId
 
   def setup() {
@@ -42,7 +44,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read expected document'
-      oplogDocumentString == '{"ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}}","h":"3493050463814977392","op":"c","ns":"' + dbName + '.$cmd","o":"{ \\"create\\" : \\"' + collectionName + '\\" , \\"capped\\" : false , \\"size\\" :  null  , \\"max\\" :  null }"}'
+      oplogDocumentString == '{ "ts" : { "$timestamp" : { "t" : 1352105652 , "i" : 1}} , "h" : "3493050463814977392" , "op" : "c" , "ns" : "' + dbName + '.$cmd" , "o" : { "create" : "' + collectionName + '" , "capped" : false , "size" :  null  , "max" :  null }}'
   }
 
 
@@ -63,9 +65,28 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read the expected document'
-      oplogDocumentString == '{"ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}}","h":"3493050463814977392","op":"i","ns":"' + "$dbName.$collectionName" + '","o":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"} , \\"name\\" : \\"' + name + '\\"}"}'
+      oplogDocumentString == '{ "ts" : { "$timestamp" : { "t" : 1352105652 , "i" : 1}} , "h" : "3493050463814977392" , "op" : "i" , "ns" : "' + "$dbName.$collectionName" + '" , "o" : { "_id" : { "$oid" : "' + objId + '"} , "name" : "' + name + '"}}'
   }
 
+    def readsBinaryData() {
+      given: 'a binary data insert oplog entry'
+        def o = new BasicDBObjectBuilder()
+              .start()
+                .add('_id', objId)
+                .add('binaryData', binaryData)
+              .get()
+      def document = MongoUtils.insertDocument(dbName, collectionName, o) as String
+
+      and: 'oplog iterator returns the document'
+        mockOplogCollectionIterator.hasNext() >> true
+        mockOplogCollectionIterator.next() >> document
+
+      when: 'reader reads that document'
+        String oplogDocumentString = reader.readDocument()
+
+      then: 'it should read the expected document having binary data'
+        oplogDocumentString == '{ "ts" : { "$timestamp" : { "t" : 1352105652 , "i" : 1}} , "h" : "3493050463814977392" , "op" : "i" , "ns" : "' + "$dbName.$collectionName" + '" , "o" : { "_id" : { "$oid" : "' + objId + '"} , "binaryData" : { "$binary" : "' + binaryDataAsString + '" , "$type" : 0}}}'
+    }
 
   def readsAnUpdateOperationDocument() {
     given: 'an update document oplog entry'
@@ -88,7 +109,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read the expected document'
-      oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"u","ns":"' + "$dbName.$collectionName" + '","o2":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}","o":"{ \\"name\\" : \\"'+name+'\\"}"}'
+      oplogDocumentString == '{ "ts" : { "$timestamp" : { "t" : 1352105652 , "i" : 1}} , "h" : "3493050463814977392" , "op" : "u" , "ns" : "' + "$dbName.$collectionName" + '" , "o2" : { "_id" : { "$oid" : "' + objId + '"}} , "o" : { "name" : "' + name + '"}}'
   }
 
 
@@ -108,7 +129,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then:'it should read the expected document'
-      oplogDocumentString == '{"ts":"{ \\"$ts\\" : 1352105652 , \\"$inc\\" : 1}","h":"3493050463814977392","op":"d","ns":"' + "$dbName.$collectionName" + '","b":true,"o":"{ \\"_id\\" : { \\"$oid\\" : \\"' + objId + '\\"}}"}'
+      oplogDocumentString == '{ "ts" : { "$timestamp" : { "t" : 1352105652 , "i" : 1}} , "h" : "3493050463814977392" , "op" : "d" , "ns" : "' + "$dbName.$collectionName" + '" , "b" : true , "o" : { "_id" : { "$oid" : "' + objId + '"}}}'
   }
 
   def readsADropCollectionOperationDocument() {
@@ -123,7 +144,7 @@ public class OplogReaderSpecs extends Specification {
       String oplogDocumentString = reader.readDocument()
 
     then: 'it should read the expected document'
-      oplogDocumentString == '{"ts":"{ \\"$timestamp\\" : { \\"t\\" : 1352105652 , \\"i\\" : 1}}","h":"3493050463814977392","op":"c","ns":"' + "$dbName" +'.$cmd","o":"{ \\"drop\\" : \\"'+ collectionName +'\\"}"}'
+      oplogDocumentString == '{ "ts" : { "$timestamp" : { "t" : 1352105652 , "i" : 1}} , "h" : "3493050463814977392" , "op" : "c" , "ns" : "' + "$dbName" +'.$cmd" , "o" : { "drop" : "'+ collectionName +'"}}'
   }
 
 
@@ -230,4 +251,7 @@ public class OplogReaderSpecs extends Specification {
         problem.getClass() == MongoException
         1 * mockNotifier.notifyReadFailure(null, problem)
     }
+
+    def binaryDataAsString = 'UmVhZE1lLnR4dAo9PT09PT09PT09CgpUYXlyYSBpcyBhbiBpbmNyZW1lbnRhbCBiYWNrdXAgYW5kIHJlc3RvcmUgdXRpbGl0eSBmb3IgTW9uZ29EQi4KCllvdSBjYW4gdmlldyBUYXlyYSBhcyBhbiBleHRlcm5hbCBhbmQgcGVyc2lzdGVudCBvcGxvZyB0aGF0IGlzIHN0b3JlZCBvbiB0aGUKZmlsZSBzeXN0ZW0gaW5zdGVhZCBvZiByZXNpZGluZyB3aXRoaW4gTW9uZ29EQi4gVGhlIGZpbGVzIGdlbmVyYXRlZCBjYW4gdGhlbiBiZQp1c2VkIHRvIHJlc3RvcmUgdGhlIGRhdGEgaW5jcmVtZW50YWxseSB0byBhbnkgdGFyZ2V0IE1vbmdvREIgaW5zdGFuY2UsIHdoaWNoIGNhbgpiZSBpbmplY3RlZCBpbnRvIGEgcmVwbGljYSBzZXQgaW4gY2FzZSBvZiBhbnkgZXZlbnQgdGhhdCB0aHJlYXRlbnMgdGhlCmF2YWlsYWJpbGl0eSBvZiBzZXJ2aWNlLgoKSW5pdGlhbGx5LCB5b3UgY2FuIHNlZWQgYmFja3VwIGFuZCBzdWJzZXF1ZW50bHkgYmFjay11cCBkYXRhIGluIGFuIGluY3JlbWVudGFsCmZhc2hpb24uCgpZb3UgY2FuIGFsc28gc3BlY2lmeSB0aGUgbnVtYmVyIG9mIGZpbGVzIGFuZCBzaXplIG9mIHRob3NlIGZpbGVzIHRvIGVuc3VyZQpyb3RhdGluZyBvdXRwdXQgZmlsZXMsIGdpdmluZyB5b3UgYSB3aW5kb3cgdG8gcGVyZm9ybSByZXN0b3JlIG9uY2UgbWF4IG51bWJlcgpvbiB0aGUgcm90YXRpbmcgZmlsZSBpcyByZWFjaGVkLgoKWW91IGNhbiBkZWNpZGUgZWl0aGVyIHRvIGJhY2t1cCBmcm9tIHByaW1hcnkgb3Igc2Vjb25kYXJ5IG9mIHRoZSByZXBsaWNhIHNldCBieQpzdGFydGluZyB0aGUgcHJvY2VzcyBvdmVyIHRoYXQgbm9kZS4gSW4gdGhlIGV2ZW50IG9mIGEgbm9kZSBjcmFzaCwgVGF5cmEgd2lsbAphdXRvbWF0aWNhbGx5IHN3aXRjaCBvdmVyIHRvIHRoZSBuZXh0IHNpbWlsYXIgbm9kZSAocHJpbWFyeSBmb3IgcHJpbWFyeSBhbmQKc2Vjb25kYXJ5IHByZWZlcnJlZCBmb3Igc2Vjb25kYXJ5KSBhbmQgd2lsbCByZXN1bWUgdGhlIGJhY2t1cCBmcm9tIHdoZXJlIGl0IGxlZnQKd2l0aG91dCB1c2VyIGludGVydmVudGlvbi4KCllvdSBjYW4gYWxzbyBwZXJmb3JtIGEgYmFja3VwIG9yIHJlc3RvcmUgYnkgc2VsZWN0aXZlbHkgaW5jbHVkaW5nIG9yIGV4Y2x1ZGluZyAKZG9jdW1lbnRzIHNhdGlzZnlpbmcgYSBjZXJ0YWluIGNyaXRlcmlhLiBDcml0ZXJpYSB3aGljaCBjYW4gYmUgYXBwbGllZCBhcmUgCnRpbWUtYm91bmRpbmcgZG9jdW1lbnRzLCBmaWx0ZXJpbmcgb24gdGhlIGJhc2lzIG9mIGRhdGFiYXNlIGFuZCBjb2xsZWN0aW9ucy4KCllvdSBjYW4gaGF2ZSBhIGRyeS1ydW4gdG8gYW5hbHlzZSB0aGUgZG9jdW1lbnRzIHlvdSBoYXZlIHNlbGVjdGVkIHRvIGJlIHJlc3RvcmVkLgoKRmVhdHVyZXMgU3VtbWFyeToKKiBTZWxlY3RpdmUgcmVzdG9yZQoqIFJvdGF0aW5nIExvZ3MgaW4gYmFja3VwIGFuZCByZXN0b3JlCiogU3Vydml2aW5nIG5vZGUgY3Jhc2ggaW4gYSByZXBsaWNhIHNldAoqIFNlY3VyZWQgYW5kIHVuc2VjdXJlZCBiYWNrdXAvcmVzdG9yZQoqIERyeS1ydW4KKiBTZWxlY3RpdmUgYmFja3VwCiogTW9yZSBncmFudWxhciBzZWxlY3Rpb24gY3JpdGVyaWEgZm9yIGJhY2t1cCBhbmQgcmVzdG9yZQogIC1tdWx0aXBsZSBkYnMgYW5kIGNvbGxlY3Rpb25zCiAgLWV4Y2x1ZGUgdGhlIGNyaXRlcmlhIGdpdmVuCgpQcmUtUmVxdWlzaXRlcwoqIEl0IGFzc3VtZXMgdGhhdCB5b3UgaGF2ZSBKREsxLjYgb3IgMS43IGluc3RhbGxlZCBhbmQgeW91IGhhdmUgamF2YQppbiB5b3VyIHBhdGguCgpSdW5uaW5nIFRheXJhCiogQWZ0ZXIgaGF2aW5nIGV4cGxvZGVkIHRoZSBUYXlyYSB6aXAgLQogICogRm9yIFVuaXggbWFjaGluZSwgZ3JhbnQgZXhlY3V0YWJsZSBwZXJtaXNzaW9ucyB0byBiYWNrdXAuc2ggYW5kIHJlc3RvcmUuc2gKICAgIHNjcmlwdHMuCiAgKiBJbiBvcmRlciB0byBzdGFydCBiYWNraW5nIHVwIGEgTW9uZ29EQiAocGFydGljaXBhdGluZyBpbiBhIFJlcGxpY2FTZXQpLCB5b3UKICAgIG1heSB1c2UgdGhlIGJhY2t1cCBzY3JpcHQuCiAgKiBJbiBvcmRlciB0byByZXN0b3JlIGEgYmFja2VkIHVwIGZpbGUgdG8gYSBNb25nb0RCIChjYW4gYmUgaW4gc3RhbmRhbG9uZQogIG1vZGUpLCB5b3UgbWF5IHVzZSB0aGUgcmVzdG9yZSBzY3JpcHQuCiogV2hlbiB1c2luZyByb3RhdGluZyBsb2dzIGZlYXR1cmUsIHRoZSBsb2cgd2l0aCBtYXhpbXVtIGluZGV4IHdpbGwgaGF2ZQogIGVudHJpZXMgZmFydGhlc3QgaW4gaGlzdG9yeS4KCldoYXQgbWF5IEZ1dHVyZSByZWxlYXNlcyBpbmNsdWRlPwoqIEZpbHRlciBvdXQgZG9jdW1lbnRzIG9uIHRoZSBiYXNpcyBvZiBvcGVyYXRpb24gcGVyZm9ybWVkCiogR2xvYnMgZm9yIGRhdGFiYXNlIGFuZCBjb2xsZWN0aW9uIG5hbWVzCg=='
+    def binaryData = JSON.parse('{ "$binary" : "' + binaryDataAsString + '" , "$type" : 0}')
 }

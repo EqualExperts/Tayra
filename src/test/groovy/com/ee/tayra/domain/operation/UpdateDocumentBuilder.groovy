@@ -1,26 +1,13 @@
 package com.ee.tayra.domain.operation
 
-import groovy.transform.TupleConstructor
-
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
-import com.mongodb.util.JSON
+import groovy.transform.TupleConstructor
 
 @TupleConstructor
 class UpdateDocumentBuilder extends DocumentBuilder {
 
   DBObject o2
-
-  Closure documentStructure() {
-    def document = {
-      ts JSON.serialize(ts)
-      h h
-      op op
-      ns ns
-      o2 JSON.serialize(o2)
-      o JSON.serialize(o)
-    }
-  }
 
   def objectStructure() {
     BasicDBObjectBuilder

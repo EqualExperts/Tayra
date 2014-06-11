@@ -1,14 +1,10 @@
 package com.ee.tayra.domain.operation
 
-import groovy.json.JsonBuilder
-import groovy.transform.*
-
-import org.bson.types.BSONTimestamp
-
 import com.mongodb.BasicDBObjectBuilder
 import com.mongodb.DBObject
-import com.mongodb.util.JSON
 import com.mongodb.util.JSONSerializers
+import groovy.transform.TupleConstructor
+import org.bson.types.BSONTimestamp
 
 @TupleConstructor
 class DocumentBuilder {
@@ -21,16 +17,6 @@ class DocumentBuilder {
 
   String toString() {
     asType String
-  }
-
-  Closure documentStructure() {
-    def document = {
-      ts JSONSerializers.getStrict().serialize(ts)
-      h h
-      op op
-      ns ns
-      o JSON.serialize(o)
-    }
   }
 
   def objectStructure() {
@@ -46,9 +32,7 @@ class DocumentBuilder {
 
   def asType(Class type) {
     if(type == String) {
-      def builder = new JsonBuilder()
-      builder documentStructure()
-      return builder.toString()
+        return JSONSerializers.getStrict().serialize(objectStructure())
     }
     if(type == DBObject) {
       return objectStructure()
