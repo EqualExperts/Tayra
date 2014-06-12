@@ -1,19 +1,18 @@
 #!/bin/sh
 #sudo service mongodb stop
-#if [ -z "$MONGO_HOME" ]; then
- 
+if [ -z "$MONGO_HOME" ]; then
   MONGO_HOME=$1
   PORT_PREFIX=$2
-#else
-#  MONGO_HOME='$MONGO_HOME'
-#fi
-mongoData=/home/swanand/data/tayra
+else
+  MONGO_HOME='$MONGO_HOME'
+fi
+mongoData=Tayra
 mongoBase=$mongoData/$PORT_PREFIX
 basePath=$mongoBase/replSetData
 basePathSt=$mongoBase/standaloneData
 rm -rf $mongoBase/ 
 mkdir $mongoData/ $mongoBase/ $basePath/ $basePathSt/
-mkdir $basePath/db $basePath/db2 $basePath/db3 $basePathSt/20 $basePathSt/21 $basePath/unsec1 $basePath/unsec2
+mkdir $basePath/db $basePath/db2 $basePath/db3 $basePathSt/20 $basePathSt/52 $basePath/unsec1 $basePath/unsec2
 echo Zom89ZAH > $basePath/keyfile
 chmod 700 $basePath/keyfile
 
@@ -33,7 +32,7 @@ $MONGO_HOME/bin/mongod --port $PORT_PREFIX""20 --dbpath $basePathSt/20 --auth --
 #
 # Unsecure Target 
 ################################################################3
-$MONGO_HOME/bin/mongod --port $PORT_PREFIX""52 --dbpath $basePathSt/21 --smallfiles &
+$MONGO_HOME/bin/mongod --port $PORT_PREFIX""52 --dbpath $basePathSt/52 --smallfiles &
  
 #
 # Unsecure Replica Set

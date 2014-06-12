@@ -1,2 +1,2 @@
 #!/bin/sh
-kill -2 $(ps aux | grep 'mongod' | awk '{print $2}')
+kill -9 $(ps aux | grep 'mongod' | awk '{print $2}')
