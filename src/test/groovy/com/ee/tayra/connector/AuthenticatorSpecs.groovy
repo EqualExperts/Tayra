@@ -84,7 +84,7 @@ class AuthenticatorSpecs extends Specification {
       authenticator.authenticate(username, password)
 
     then: 'error message should be thrown as'
-      def problem = thrown(MongoException.Network)
-      problem.message == 'Read operation to server localhost/127.0.0.1:34567 failed on database admin'
+      def problem = thrown(MongoException)
+      problem.message.contains('Timed out while waiting to connect')
   }
 }

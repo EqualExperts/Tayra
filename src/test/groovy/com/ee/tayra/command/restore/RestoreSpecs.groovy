@@ -162,7 +162,7 @@ class RestoreSpecs extends Specification {
       new Restore(context).run()
 
     then:'error message should be thrown as'
-      result.toString().contains("Oops!! Could not perform restore...nonexistentHost")
+      result.toString().contains("Oops!! Could not perform restore...")
   }
 
   def invokesRestoreWhenSelectNamespaceOptionIsSupplied() {

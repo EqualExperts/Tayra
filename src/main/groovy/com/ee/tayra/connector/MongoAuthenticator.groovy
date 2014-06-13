@@ -30,8 +30,10 @@
  ******************************************************************************/
 package com.ee.tayra.connector
 
+import com.mongodb.CommandFailureException
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
+import com.mongodb.MongoSocketException
 
 class MongoAuthenticator implements Authenticator {
 
@@ -43,12 +45,14 @@ class MongoAuthenticator implements Authenticator {
 
   private boolean onUnsecureDB() {
     try {
-      mongo.databaseNames
-      return true
-    } catch (MongoException.Network problem) {
-      throw problem
+        mongo.databaseNames
+        return true
+        /*} catch (MongoSocketException problem) {
+      throw problem*/
+    } catch (CommandFailureException problem) {
+        return false
     } catch (MongoException problem) {
-      return false
+      throw problem
     }
   }
 

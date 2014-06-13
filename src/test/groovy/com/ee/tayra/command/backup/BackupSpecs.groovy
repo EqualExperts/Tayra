@@ -70,7 +70,7 @@ public class BackupSpecs extends Specification {
       new Backup(context).run()
 
     then: 'error message should be shown as'
-      result.toString().contains('Oops!! Could not perform backup...nonexistentHost')
+      result.toString().contains('Oops!! Could not perform backup...')
   }
 
   def shoutsWhenSourceMongoDBIsNotAPartOfReplicaSet() {
