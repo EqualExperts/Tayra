@@ -68,7 +68,9 @@ class MongoAuthenticator implements Authenticator {
     }
     if(!mongo.getDB('admin').authenticate(username, password.toCharArray())) {
       throw new MongoException("Authentication Failed to $mongo.address.host")
-    }
+    } else if (!mongo.getDB('local').authenticate(username, password.toCharArray())) {
+      throw new MongoException("Authentication Failed to $mongo.address.host")
+  	}
     true
   }
 }
