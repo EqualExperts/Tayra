@@ -23,7 +23,7 @@
 * [Approach, Design Overview] (http://www.slideshare.net/DhavalDalal/tayra-demo) 
 
 ## Binary Distributions
-**[Download from here](http://www.eelabs.co.uk/projects/tayra/)**.
+**[Download from here](http://equalexperts.github.io/Tayra/)**.
 
 ## Build Info
 We are using Gradle 1.11 for our builds.  You can download it [here](http://services.gradle.org/distributions/gradle-1.2-bin.zip)
