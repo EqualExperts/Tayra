@@ -29,15 +29,12 @@
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
 package com.ee.tayra.command.backup
-
-import groovy.json.JsonSlurper
-
-import org.bson.types.BSONTimestamp
-
 import com.ee.tayra.connector.MongoAuthenticator
 import com.ee.tayra.connector.MongoReplSetConnection
-import com.ee.tayra.domain.*
-import com.ee.tayra.io.*
+import com.ee.tayra.domain.Oplog
+import com.ee.tayra.io.Copier
+import groovy.json.JsonSlurper
+import org.bson.types.BSONTimestamp
 
 def cli = new CliBuilder(usage:'backup -s <MongoDB> [--port=number] -f <file> [--fSize=BackupFileSize] [--fMax=NumberOfRotatingLogs] [-t] [-u username] [-p password] [--sNs=<dbName>]')
 cli.with {
@@ -165,6 +162,7 @@ try {
   }
 } catch (Throwable problem) {
   console.println "Oops!! Could not perform backup...$problem.message"
+    Runtime.getRuntime().exit(1);
 } finally {
   reader?.close()
   timestampRecorder.stop()
@@ -184,8 +182,8 @@ private printTimestampCaution(timestampRecorder, PrintWriter console) {
   }
   else {
     def timestampJson = new JsonSlurper().parseText(timestamp)
-    Integer time = timestampJson['ts']['$timestamp']['t']
-    Integer inc = timestampJson['ts']['$timestamp']['i']
+    Integer time = timestampJson['ts']['$ts']
+    Integer inc = timestampJson['ts']['$inc']
     def bsonTime = new BSONTimestamp(time, inc)
     console.println "Backup is starting from: \n $bsonTime ==> (${timestamp})"
   }
