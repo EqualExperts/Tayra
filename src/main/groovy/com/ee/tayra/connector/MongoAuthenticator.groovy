@@ -29,11 +29,9 @@
  * official policies, either expressed or implied, of the Tayra Project.
  ******************************************************************************/
 package com.ee.tayra.connector
-
 import com.mongodb.CommandFailureException
 import com.mongodb.MongoClient
 import com.mongodb.MongoException
-import com.mongodb.MongoSocketException
 
 class MongoAuthenticator implements Authenticator {
 
@@ -67,10 +65,10 @@ class MongoAuthenticator implements Authenticator {
       throw new MongoException('Password cannot be empty')
     }
     if(!mongo.getDB('admin').authenticate(username, password.toCharArray())) {
-      throw new MongoException("Authentication Failed to $mongo.address.host")
-    } else if (!mongo.getDB('local').authenticate(username, password.toCharArray())) {
-      throw new MongoException("Authentication Failed to $mongo.address.host")
-  	}
+        if (!mongo.getDB('local').authenticate(username, password.toCharArray())) {
+            throw new MongoException("Authentication Failed to $mongo.address.host")
+        }
+    }
     true
   }
 }
