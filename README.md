@@ -18,7 +18,6 @@
 <br>
 
 ## Documentation
-* You can view the Youtube video on Tayra [here](http://youtu.be/CoKkoxF984I)
 * Please find the documentation [here](http://htmlpreview.github.com/?https://github.com/EqualExperts/Tayra/blob/master/acceptance-tests/index.html) for usage. Additionally, you can refer to the `ReadMe.txt` within binary distribution for features.
 * [Approach, Design Overview] (http://www.slideshare.net/DhavalDalal/tayra-demo) 
 
