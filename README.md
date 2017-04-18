@@ -1,6 +1,6 @@
 # Tayra  <a href="http://www.eelabs.co.uk/projects/tayra/"><img src="http://www.equalexperts.com/resources/img/eelogo.png" align="right"></a>
 ***Incremental backup tool for MongoDB***
-##Overview
+## Overview
 
  Tayra can be viewed as an external and persistent oplog that is stored on the 
  file system instead of residing within MongoDB. The files generated can then be
